@@ -1,0 +1,16 @@
+# science1  .sub -- run 40 instances of science.exe
+
+# Dirty way to "ensure" that the libs are there 
+Requirements	        = OpSysMajorVer == 14
+executable              = scattering-condor.sh
+arguments               = "$(Process) >out/process$(Process).out 2>out/process$(Process).err"
+#transfer_input_files    = Args OmegaList scuff-em/lib/libscuff.a scuff-em/lib/libscuff.la scuff-em/lib/libscuff.so scuff-em/lib/libscuff.so.0 scuff-em/lib/libscuff.so.0.0.0 
+transfer_input_files    = Args,OmegaList,scuff-em/lib,scuff-em/bin,DelgaSphere.scuffcache,DelgaSphere.scuffgeo
+output			= out/$(Process).shout
+#infile-$(Process)A.txt,infile-$(Process)B.txt
+should_transfer_files   = IF_NEEDED
+when_to_transfer_output = ON_EXIT
+transfer_output_files   = out_$(Process).tar
+log                     = scattering-condor.log
+queue 100
+

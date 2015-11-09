@@ -1,0 +1,4 @@
+geometry  DelgaSphere.scuffgeo
+ReadCache     DelgaSphere.scuffcache
+psStrength 0 0 1
+psLocation 0 0 0.008

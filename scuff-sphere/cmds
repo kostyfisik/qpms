@@ -1,0 +1,4 @@
+gmsh -2 Sphere.geo -o Sphere.msh
+# preview of the scuff geometry (creates the *.pp file which can be viewed in gmsh)
+/localwrk/necadam1/scuff-em/bin/scuff-analyze --geometry DelgaSphere.scuffgeo --WriteGMSHFiles
+python3 OutGen.py

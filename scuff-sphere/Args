@@ -1,0 +1,6 @@
+geometry  DelgaSphere.scuffgeo
+cache     DelgaSphere.scuffcache
+EPFile    EPFile_30ring-xz
+OmegaFile OmegaList
+psStrength 0 0 1
+psLocation 0 0 0.008
