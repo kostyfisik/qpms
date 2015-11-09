@@ -89,8 +89,7 @@ Technical notes on quantum electromagnetic multiple scattering
 \end_layout
 
 \begin_layout Author
-M.
- Nečada
+Marek Nečada
 \end_layout
 
 \begin_layout Affiliation
@@ -200,11 +199,22 @@ Available software
 \end_layout
 
 \begin_layout Subsection
-SCUFF-EM
+SCUFF-EM 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "reid_scuff-em_2015"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
+
+\family typewriter
 SCUFF-TMATRIX
+\family default
+
 \begin_inset CommandInset label
 LatexCommand label
 name "sub:SCUFF-TMATRIX"
@@ -214,8 +224,210 @@ name "sub:SCUFF-TMATRIX"
 
 \end_layout
 
+\begin_layout Subsubsection
+
+\family typewriter
+SCUFF-SCATTER
+\family default
+
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:SCUFF-SCATTER"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Caveats
+\end_layout
+
+\begin_layout Description
+Units.
+ 
+\family typewriter
+SCUFF-SCATTER
+\family default
+'s Angular frequencies specified using the 
+\family typewriter
+--Omega
+\family default
+ or 
+\family typewriter
+--OmegaFile
+\family default
+ arguments are interpreted in units of 
+\begin_inset Formula $c/1\,\mathrm{μm}=3\cdot10^{14}\,\mathrm{rad/s}$
+\end_inset
+
+ 
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset CommandInset href
+LatexCommand href
+name "http://homerreid.dyndns.org/scuff-EM/scuff-scatter/scuffScatterExamples.shtml"
+target "http://homerreid.dyndns.org/scuff-EM/scuff-scatter/scuffScatterExamples.shtml"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ 
+\emph on
+TODO what are the output units?
+\end_layout
+
 \begin_layout Subsection
-MSTM
+MSTM 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mackowski_mstm_2013"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The incident field is a gaussian beam or a plane wave in the vanilla code
+ (no multipole radiation as input!).
+\end_layout
+
+\begin_layout Itemize
+The bulk of the useful code is in the 
+\family typewriter
+mstm-modules-v3.0.f90
+\family default
+ file.
+\end_layout
+
+\begin_layout Itemize
+For solving the interaction equations 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(14)"
+key "mackowski_mstm_2013"
+
+\end_inset
+
+, the BCGM (biconjugate gradient method) is used.
+\end_layout
+
+\begin_layout Itemize
+According to the manual 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "2.3"
+key "mackowski_mstm_2013"
+
+\end_inset
+
+, they use some method (rotational-axial translation decomposition of the
+ translation operation), which 
+\begin_inset Quotes eld
+\end_inset
+
+reduces the operation from an 
+\begin_inset Formula $L_{S}^{4}$
+\end_inset
+
+ process to 
+\begin_inset Formula $L_{S}^{3}$
+\end_inset
+
+ process where 
+\begin_inset Formula $L_{S}$
+\end_inset
+
+ is the truncation order of the expansion
+\begin_inset Quotes erd
+\end_inset
+
+ (more details can probably be found at 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "around (68)"
+key "mackowski_calculation_1996"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+Not sure if this holds also for nonspherical particles, I should either
+ read carefully 
+\emph default
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mackowski_calculation_1996"
+
+\end_inset
+
+
+\emph on
+ or look into 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mishchenko_electromagnetic_2003"
+
+\end_inset
+
+ which is also cited in the manual.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+By default spheres, it is possible to add own T-Matrix coefficients instead.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+Is it then possible to insert a T-Matrix of an arbitrary shape, or is it
+ somehow limited to 
+\begin_inset Quotes eld
+\end_inset
+
+spherical-like
+\begin_inset Quotes erd
+\end_inset
+
+ particles?
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Why the heck are the T-matrix options listed in the 
+\begin_inset Quotes eld
+\end_inset
+
+Options for random orientation calculations
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Section
+Code integration
 \end_layout
 
 \begin_layout Standard
