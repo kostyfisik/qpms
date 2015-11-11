@@ -558,6 +558,18 @@ background permittivity
 \end_inset
 
 , 
+\begin_inset Formula $\omega_{3}\approx3.30\,\mathrm{eV}$
+\end_inset
+
+, 
+\begin_inset Formula $\omega_{4}\approx3.34\,\mathrm{eV}$
+\end_inset
+
+,
+\begin_inset Formula $\omega_{5}\approx3.364\,\mathrm{eV}$
+\end_inset
+
+ 
 \begin_inset Formula $\omega_{\infty}\approx3.4692\,\mathrm{eV}$
 \end_inset
 
@@ -712,6 +724,15 @@ key "delga_quantum_2014"
 Detector:
 \series default
  not stated in the paper
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Numerics:
+\series default
+ looking at the leftmost ball in Fig.
+ 3, it seems that their SVW cutoff is around 12.
 \end_layout
 
 \begin_layout Standard
