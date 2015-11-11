@@ -1,5 +1,5 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
 \begin_document
 \begin_header
 \textclass revtex4
@@ -13,41 +13,32 @@
 \font_roman default
 \font_sans default
 \font_typewriter default
-\font_math auto
 \font_default_family default
 \use_non_tex_fonts true
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
+
 \graphics default
-\default_output_format default
+\default_output_format pdf4
 \output_sync 0
-\bibtex_command default
+\bibtex_command bibtex
 \index_command default
 \paperfontsize default
 \spacing single
 \use_hyperref false
 \papersize a4paper
 \use_geometry false
-\use_package amsmath 1
-\use_package amssymb 1
-\use_package cancel 1
-\use_package esint 1
-\use_package mathdots 1
-\use_package mathtools 1
-\use_package mhchem 1
-\use_package stackrel 1
-\use_package stmaryrd 1
-\use_package undertilde 1
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
 \cite_engine basic
-\cite_engine_type default
-\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -329,6 +320,8 @@ key "mackowski_mstm_2013"
 \end_inset
 
 , the BCGM (biconjugate gradient method) is used.
+ (According to Wikipedia, this method is numerically unstable but has a
+ stabilized version (stabilized BCGM).)
 \end_layout
 
 \begin_layout Itemize
@@ -431,11 +424,294 @@ Options for random orientation calculations
 \begin_inset Quotes erd
 \end_inset
 
-?
+? 
 \end_layout
 
 \begin_layout Section
 Code integration
+\end_layout
+
+\begin_layout Section
+Testing and reproduction of foreign results
+\end_layout
+
+\begin_layout Subsection
+Delga PRL 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "delga_quantum_2014"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Parameters
+\end_layout
+
+\begin_layout Itemize
+Surrounding lossless dielectric 
+\series bold
+medium
+\series default
+ with permittivity 
+\begin_inset Formula $\epsilon_{d}=2.13$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+QEs:
+\series default
+ dipole moment 
+\begin_inset Formula $\mu=0.19\, e\cdot\mathrm{nm}=9.12\,\mathrm{D}$
+\end_inset
+
+, count 
+\begin_inset Formula $N\in\left\{ 1,50,100,200\right\} $
+\end_inset
+
+, radial orientation, 
+\begin_inset Formula $h=1\,\mathrm{nm}$
+\end_inset
+
+ above the sphere (except for Fig.
+ 5 where variable), natural frequency 
+\begin_inset Formula $\Omega_{n}=\omega_{0}-i\gamma_{\mathrm{QE}}/2,$
+\end_inset
+
+ 
+\begin_inset Formula $\omega_{0}=$
+\end_inset
+
+ varies, 
+\begin_inset Formula $\gamma_{\mathrm{QE}}=15\,\mathrm{meV}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sphere: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+radius 
+\begin_inset Formula $a=7\,\mathrm{nm}$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Itemize
+Drude model 
+\begin_inset Formula $\epsilon_{m}(\omega)=\epsilon_{\infty}-\frac{\omega_{p}^{2}}{\omega\left(\omega+i\gamma_{p}\right)}$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Drude parameters 
+\begin_inset Formula $\omega_{p}=9\,\mathrm{eV}$
+\end_inset
+
+, 
+\begin_inset Formula $\epsilon_{\infty}=4.6$
+\end_inset
+
+, 
+\begin_inset Formula $\gamma_{p}=0.1\,\mathrm{eV}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+background permittivity 
+\begin_inset Formula $\epsilon_{d}(\omega)=2.13$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+(approximate?; not really a parameter) LSP resonances 
+\begin_inset Formula $\omega_{l}=\omega_{p}/\sqrt{\epsilon_{\infty}+\left(1+1/l\right)\epsilon_{d}}$
+\end_inset
+
+; particularly, 
+\begin_inset Formula $\omega_{1}\approx3.0236\,\mathrm{eV}$
+\end_inset
+
+, 
+\begin_inset Formula $\omega_{2}\approx3.2236\,\mathrm{eV}$
+\end_inset
+
+, 
+\begin_inset Formula $\omega_{\infty}\approx3.4692\,\mathrm{eV}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+Detector:
+\series default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Far field: 
+\begin_inset Formula $1\,\mathrm{\mu m}$
+\end_inset
+
+ away from the center of the nanoparticle along the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis (Fig.
+ 3).
+\end_layout
+
+\begin_layout Itemize
+Near field: position not specified in the paper; but in Fig.
+ 4(b) there are 
+\begin_inset Quotes eld
+\end_inset
+
+polarization spectra
+\begin_inset Quotes erd
+\end_inset
+
+ instead of 
+\begin_inset Quotes eld
+\end_inset
+
+light spectra
+\begin_inset Quotes erd
+\end_inset
+
+ (eq.
+ 4) in Fig.
+ 4(a).
+ Does this mean that they are evaluated somewhere in/on the sphere? Or in
+ the particle? The latter is likely, as it is given by 
+\begin_inset Formula $P_{n}\left(\omega\right)=\left\langle \sigma_{n}^{+}\left(-\omega\right)\sigma_{n}^{-}(\omega)\right\rangle $
+\end_inset
+
+ (cf.
+ the column below Fig.
+ 3).
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+Testing
+\end_layout
+
+\begin_layout Standard
+In my 
+\begin_inset Quotes eld
+\end_inset
+
+old
+\begin_inset Quotes erd
+\end_inset
+
+ code, there no splitting observable around 
+\begin_inset Formula $\omega\approx\omega_{0}\approx\omega_{\infty}\approx3.46\,\mathrm{eV}$
+\end_inset
+
+.
+ This is perhaps because the couplings to the higher multipoles is miscalculated
+ (too small).
+ No splitting around the NP dipole (
+\begin_inset Formula $\approx3,02\,\mathrm{eV}$
+\end_inset
+
+) should be OK for single QE in far field (cf.
+ Fig.
+ 3).
+ And there are yet the 
+\begin_inset Quotes eld
+\end_inset
+
+switched axes
+\begin_inset Quotes erd
+\end_inset
+
+...
+\end_layout
+
+\begin_layout Subsection
+Delga JoO 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "delga_theory_2014"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Parameters
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+QEs:
+\series default
+ dipole moment 
+\begin_inset Formula $\mu=0.38\, e\cdot\mathrm{nm}=18.24\,\mathrm{D}$
+\end_inset
+
+ (double), otherwise the same parameters as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "delga_quantum_2014"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sphere: 
+\series default
+as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "delga_quantum_2014"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Detector:
+\series default
+ not stated in the paper
 \end_layout
 
 \begin_layout Standard
