@@ -427,6 +427,27 @@ Options for random orientation calculations
 ? 
 \end_layout
 
+\begin_layout Subsubsection
+Interesting subroutines
+\end_layout
+
+\begin_layout Itemize
+rottranfarfield: it states 
+\begin_inset Quotes eld
+\end_inset
+
+far field formula for outgoing vswf translation
+\begin_inset Quotes erd
+\end_inset
+
+.
+ What is that and how does it differ from whatever else (near field?) formula?
+\end_layout
+
+\begin_layout Itemize
+
+\end_layout
+
 \begin_layout Section
 Code integration
 \end_layout
@@ -733,6 +754,15 @@ Numerics:
 \series default
  looking at the leftmost ball in Fig.
  3, it seems that their SVW cutoff is around 12.
+\end_layout
+
+\begin_layout Section
+TODO
+\end_layout
+
+\begin_layout Itemize
+Päivi's suggestion: suppress the dipole and let it interact only with the
+ higher multipoles.
 \end_layout
 
 \begin_layout Standard
