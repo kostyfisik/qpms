@@ -198,6 +198,10 @@ reference "sub:SCUFF-TMATRIX"
 Available software
 \end_layout
 
+\begin_layout Itemize
+TODO which of them can calculate the VSWF translation coefficients?
+\end_layout
+
 \begin_layout Subsection
 SCUFF-EM 
 \begin_inset CommandInset citation
@@ -424,7 +428,21 @@ Options for random orientation calculations
 \begin_inset Quotes erd
 \end_inset
 
-? 
+? Well, it seems that for fixed orientation, it is not possible to specify
+ the T-matrix, cf.
+ the description of 
+\family typewriter
+fixed_or_random_orientation
+\family default
+ option in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "3.2.3"
+key "mackowski_mstm_2013"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -432,7 +450,11 @@ Interesting subroutines
 \end_layout
 
 \begin_layout Itemize
-rottranfarfield: it states 
+
+\family typewriter
+rottranfarfield
+\family default
+: it states 
 \begin_inset Quotes eld
 \end_inset
 
@@ -444,10 +466,181 @@ far field formula for outgoing vswf translation
  What is that and how does it differ from whatever else (near field?) formula?
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Subsection
+py_gmm
+\begin_inset CommandInset citation
+LatexCommand cite
+key "pellegrini_py_gmm_2015"
+
+\end_inset
+
 
 \end_layout
 
+\begin_layout Itemize
+Fortran code, already (partially) pythonized using 
+\family typewriter
+f2py
+\family default
+ by the authors(?); under GNU GPLv3.
+ This could save my day.
+\end_layout
+
+\begin_layout Itemize
+Lots of unnecessary code duplication (see e.g.
+ 
+\family typewriter
+coeff_sp2
+\family default
+ and 
+\family typewriter
+coeff_sp2_dip
+\family default
+ subroutines).
+\end_layout
+
+\begin_layout Itemize
+Has comments!!! (Sometimes they are slightly inaccurate due to the copy-pasting,
+ but it is still one of the most readable FORTRAN codes I have seen.)
+\end_layout
+
+\begin_layout Itemize
+The subroutines seem not to be bloated with dependencies on static/global
+ variables, so they should be quite easily reusable.
+\end_layout
+
+\begin_layout Itemize
+The FORTRAN code was apparently used in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "pellegrini_interacting_2007"
+
+\end_inset
+
+.
+ Uses the multiple-scattering formalism described in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xu_efficient_1998"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Interesting subroutines
+\end_layout
+
+\begin_layout Standard
+Mie scattering:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+coeff_sp2
+\family default
+: calculation of the Mie scattering coefficients (
+\begin_inset Formula $\overline{a}_{n}^{l},\overline{b}_{n}^{l}$
+\end_inset
+
+ as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(1), (2), \\ldots"
+key "pellegrini_py_gmm_2015"
+
+\end_inset
+
+), for a set of spheres (therefore all the parameters have +1 dimension).
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+What does the input parameter 
+\family typewriter
+v_req
+\family default
+ (
+\emph on
+vettore raggi equivalenti
+\emph default
+) mean?
+\end_layout
+
+\begin_layout Itemize
+How do I put in the environment permittivity?
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+m_epseq
+\family default
+ are real and imaginary parts of the permittivity (which are then transformed
+ into complex 
+\family typewriter
+v_epsc
+\family default
+)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ref_index
+\family default
+ is the environment refractive index (called 
+\family typewriter
+n_matrix 
+\family default
+in the example ipython notebook)
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+v_req
+\family default
+ are the sphere radii?
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+nstop
+\family default
+ is the maximum order of the 
+\begin_inset Formula $n$
+\end_inset
+
+-expansion
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+neq
+\family default
+ is ns, number of spheres for which the calculation is performed apparently,
+ it is connected to some 
+\begin_inset Quotes eld
+\end_inset
+
+dirty hack to interface fortran and python properly
+\begin_inset Quotes erd
+\end_inset
+
+ (cf.
+ 
+\family typewriter
+gmm_f2py_module.f90
+\family default
+)
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Code integration
 \end_layout
@@ -688,6 +881,30 @@ switched axes
 \end_inset
 
 ...
+\end_layout
+
+\begin_layout Standard
+If I set the dipole reflection coefficients RH[1], RV[1] to zero, and multiply
+ the the quadrupole reflection coefficients RH[2], RV[2] by 
+\begin_inset Formula $10^{6}$
+\end_inset
+
+, the peak at 
+\begin_inset Formula $3.0\,\mathrm{eV}$
+\end_inset
+
+ dissapears and a tiny(!) peak appears around the (expected) position of
+ 
+\begin_inset Formula $3.0\,\mathrm{eV}$
+\end_inset
+
+.
+ Have I fucked up the Mie reflection coefficients? Sounds like if I forgot
+ a factor of 
+\begin_inset Formula $c$
+\end_inset
+
+ somewhere.
 \end_layout
 
 \begin_layout Subsection

@@ -53,7 +53,7 @@ external_to_internal_expansion #
 m1_to_the_n # sign flipped for odd degrees
 rottranfarfield # far field formula for outgoing vswf translation
 farfieldtranslationerror # correction ter for hybrid bcgm solution
-rottran # the vectorized rotation translation-rotation operation
+rottran # the vectorized rotation translation-rotation operation !!!!	
 spheregaussianbeamcoef # GB coefficients for sphere-centered expansion, obtained via translation
 rotvec # rotation of expansion coefficients amn by euler angles
 
