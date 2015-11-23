@@ -82,6 +82,17 @@
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\uvec}[1]{\mathbf{\boldsymbol{\hat{#1}}}}
+{\boldsymbol{\hat{\mathbf{#1}}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -167,15 +178,216 @@ Computing classical Green's functions
 \end_layout
 
 \begin_layout Subsection
-Boundary element method
+T-Matrix method
 \end_layout
 
-\begin_layout Subsection
-T-Matrix method
+\begin_layout Subsubsection
+VSWF decomposition
+\end_layout
+
+\begin_layout Standard
+Expressions for VSWF in Xu 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(2)"
+key "xu_calculation_1996"
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect M_{mn}^{(J)} & = & \left(i\uvec{\theta}\pi_{mn}(\cos\theta)-\uvec{\phi}\tau_{mn}(\cos\theta)\right)z_{n}^{(J)}(kr)e^{im\phi},\\
+\vect N_{mn}^{(J)} & = & \uvec rn(n+1)P_{n}^{m}(\cos\theta)\frac{z_{n}^{(J)}(kr)}{kr}e^{im\phi}\\
+ &  & +\left(\uvec{\theta}\tau_{mn}(\cos\theta)+i\uvec{\phi}\pi_{mn}(\cos\theta)\right)\\
+ &  & \phantom{+}\times\frac{1}{kr}\frac{\ud\left(rz_{n}^{(J)}(kr)\right)}{\ud r}e^{im\phi},\\
+ & = & ...
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $z_{n}^{(J)}$
+\end_inset
+
+ denotes 
+\begin_inset Formula $j_{n},y_{n},h_{n}^{+},h_{n}^{-}$
+\end_inset
+
+ for 
+\begin_inset Formula $J=1,2,3,4$
+\end_inset
+
+, respectively, and
+\begin_inset Formula 
+\begin{eqnarray*}
+\pi_{mn}(\cos\theta) & = & \frac{m}{\sin\theta}P_{n}^{m}(\cos\theta),\\
+\tau_{mn}(\cos\theta) & = & \frac{\ud P_{n}^{m}(\cos\theta)}{\ud\theta}=-\sin\theta\frac{\ud P_{n}^{m}(\cos\theta)}{\ud\cos\theta}.
+\end{eqnarray*}
+
+\end_inset
+
+The expressions for 
+\begin_inset Formula $\vect M_{mn}^{(J)},\vect N_{mn}^{(J)}$
+\end_inset
+
+ are dimensionless.
+\end_layout
+
+\begin_layout Standard
+Expansions for the scattered fields are
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4)"
+key "xu_calculation_1996"
+
+\end_inset
+
+: 
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect E_{s}(j) & = & \sum_{n=1}^{\infty}\sum_{m=-n}^{n}iE_{mn}\left[a_{mn}^{j}\vect N_{mn}^{(3)}+b_{mn}^{j}\vect M_{mn}^{(3)}\right],\\
+\vect H_{s}(j) & = & \frac{k}{\omega\mu}\sum_{n=1}^{\infty}\sum_{m=-n}^{n}E_{mn}\left[b_{mn}^{j}\vect N_{mn}^{(3)}+a_{mn}^{j}\vect M_{mn}^{(3)}\right].
+\end{eqnarray*}
+
+\end_inset
+
+These expansions should be OK in SI units (take the Fourier transform of
+ 
+\begin_inset Formula $\nabla\times\vect E=-\partial\vect B/\partial t$
+\end_inset
+
+ and 
+\begin_inset Formula $\vect B=\mu\vect H$
+\end_inset
+
+).
+ For internal field of a sphere, the (regular-wave) expansion reads
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect E_{I}(j) & = & -\sum_{n=1}^{\infty}\sum_{m=-n}^{n}iE_{mn}\left[d_{mn}^{j}\vect N_{mn}^{(1)}+c_{mn}^{j}\vect M_{mn}^{(1)}\right],\\
+\vect H_{I}(j) & = & -\frac{k}{\omega\mu}\sum_{n=1}^{\infty}\sum_{m=-n}^{n}E_{mn}\left[c_{mn}^{j}\vect N_{mn}^{(1)}+d_{mn}^{j}\vect M_{mn}^{(1)}\right]
+\end{eqnarray*}
+
+\end_inset
+
+(note the minus sign; I am not sure about its role) and the incident field
+ (incl.
+ field from the other scatterers) is assumed to have the same regular-wave
+ form
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect E_{i}(j) & = & -\sum_{n=1}^{\infty}\sum_{m=-n}^{n}iE_{mn}\left[p_{mn}^{j}\vect N_{mn}^{(1)}+q_{mn}^{j}\vect M_{mn}^{(1)}\right],\\
+\vect H_{i}(j) & = & -\frac{k}{\omega\mu}\sum_{n=1}^{\infty}\sum_{m=-n}^{n}E_{mn}\left[q_{mn}^{j}\vect N_{mn}^{(1)}+p_{mn}^{j}\vect M_{mn}^{(1)}\right].
+\end{eqnarray*}
+
+\end_inset
+
+The common multipole-dependent factor is given by
+\begin_inset Formula 
+\[
+E_{mn}=\left|E_{0}\right|i^{n}(2n+1)\frac{\left(n-m\right)!}{\left(n+m\right)!}
+\]
+
+\end_inset
+
+which 
+\begin_inset Quotes eld
+\end_inset
+
+is desired for keeping the formulation of the multisphere scattering theory
+ consistent with that of the Mie theory.
+ It ensures that all the expressions in the multisphere theory turn out
+ to be identical to those in the Mie theory when one is dealing with a cluster
+ containing only one sphere and illuminated by a single plane wave
+\begin_inset Quotes erd
+\end_inset
+
+.
+ (According to Bohren&Huffman 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4.37)"
+key "bohren_absorption_1983"
+
+\end_inset
+
+, the decomposition of a plane wave reads
+\begin_inset Formula 
+\[
+\vect E=E_{0}\sum_{n=1}^{\infty}i^{n}\frac{2n+1}{n(n+1)}\left(\vect M_{o1n}^{(1)}-i\vect N_{e1n}^{(1)}\right),
+\]
+
+\end_inset
+
+where the even/odd VSWF and 
+\begin_inset Formula $m\ge0$
+\end_inset
+
+ convention is used.)
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+It should be possible to just take it away and the abovementioned expansions
+ are still consistent, are they not?
+\end_layout
+
+\begin_layout Subsubsection
+Mie scattering
+\end_layout
+
+\begin_layout Standard
+For the exact form of the coefficients following from the boundary conditions
+ on the spherical surface, cf.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(12–13)"
+key "xu_calculation_1996"
+
+\end_inset
+
+.
+ For the particular case of spherical nanoparticle, it is important that
+ they can be written as 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(14–15)"
+key "xu_calculation_1996"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{alignat*}{1}
+a_{mn}^{j} & =a_{n}^{j}p_{mn}^{j},\quad b_{mn}^{j}=b_{n}^{j}q_{mn}^{j},\\
+c_{mn}^{j} & =c_{n}^{j}q_{mn}^{j},\quad d_{mn}^{j}=d_{n}^{j}p_{mn}^{j},
+\end{alignat*}
+
+\end_inset
+
+in other words, the Mie coefficients do not depend on 
+\begin_inset Formula $m$
+\end_inset
+
+ but solely on 
+\begin_inset Formula $n$
+\end_inset
+
+ (which is not surprising and probably follows from the Wigner-Eckart theorem).
 \end_layout
 
 \begin_layout Subsection
 T-Matrix resummation (multiple scatterers)
+\end_layout
+
+\begin_layout Subsection
+Boundary element method
 \end_layout
 
 \begin_layout Subsection
