@@ -190,7 +190,7 @@ Expressions for VSWF in Xu
 \begin_inset CommandInset citation
 LatexCommand cite
 after "(2)"
-key "xu_calculation_1996"
+key "xu_electromagnetic_1995"
 
 \end_inset
 
@@ -199,13 +199,13 @@ key "xu_calculation_1996"
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{eqnarray*}
-\vect M_{mn}^{(J)} & = & \left(i\uvec{\theta}\pi_{mn}(\cos\theta)-\uvec{\phi}\tau_{mn}(\cos\theta)\right)z_{n}^{(J)}(kr)e^{im\phi},\\
-\vect N_{mn}^{(J)} & = & \uvec rn(n+1)P_{n}^{m}(\cos\theta)\frac{z_{n}^{(J)}(kr)}{kr}e^{im\phi}\\
- &  & +\left(\uvec{\theta}\tau_{mn}(\cos\theta)+i\uvec{\phi}\pi_{mn}(\cos\theta)\right)\\
- &  & \phantom{+}\times\frac{1}{kr}\frac{\ud\left(rz_{n}^{(J)}(kr)\right)}{\ud r}e^{im\phi},\\
- & = & ...
-\end{eqnarray*}
+\begin{eqnarray}
+\vect M_{mn}^{(J)} & = & \left(i\uvec{\theta}\pi_{mn}(\cos\theta)-\uvec{\phi}\tau_{mn}(\cos\theta)\right)z_{n}^{(J)}(kr)e^{im\phi},\nonumber \\
+\vect N_{mn}^{(J)} & = & \uvec rn(n+1)P_{n}^{m}(\cos\theta)\frac{z_{n}^{(J)}(kr)}{kr}e^{im\phi}\label{eq:vswf}\\
+ &  & +\left(\uvec{\theta}\tau_{mn}(\cos\theta)+i\uvec{\phi}\pi_{mn}(\cos\theta)\right)\nonumber \\
+ &  & \phantom{+}\times\frac{1}{kr}\frac{\ud\left(rz_{n}^{(J)}(kr)\right)}{\ud r}e^{im\phi},\nonumber \\
+ & = & ...\nonumber 
+\end{eqnarray}
 
 \end_inset
 
@@ -242,7 +242,7 @@ Expansions for the scattered fields are
 \begin_inset CommandInset citation
 LatexCommand cite
 after "(4)"
-key "xu_calculation_1996"
+key "xu_electromagnetic_1995"
 
 \end_inset
 
@@ -337,6 +337,23 @@ It should be possible to just take it away and the abovementioned expansions
  are still consistent, are they not?
 \end_layout
 
+\begin_layout Standard
+In 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sec. 4A"
+key "xu_electromagnetic_1995"
+
+\end_inset
+
+, there are formulae for translation of the plane wave between VSWF with
+ different origins.
+\end_layout
+
+\begin_layout Standard
+o
+\end_layout
+
 \begin_layout Subsubsection
 Mie scattering
 \end_layout
@@ -348,7 +365,7 @@ For the exact form of the coefficients following from the boundary conditions
 \begin_inset CommandInset citation
 LatexCommand cite
 after "(12–13)"
-key "xu_calculation_1996"
+key "xu_electromagnetic_1995"
 
 \end_inset
 
@@ -358,7 +375,7 @@ key "xu_calculation_1996"
 \begin_inset CommandInset citation
 LatexCommand cite
 after "(14–15)"
-key "xu_calculation_1996"
+key "xu_electromagnetic_1995"
 
 \end_inset
 
@@ -380,6 +397,236 @@ in other words, the Mie coefficients do not depend on
 \end_inset
 
  (which is not surprising and probably follows from the Wigner-Eckart theorem).
+\end_layout
+
+\begin_layout Subsubsection
+Translation coefficients
+\end_layout
+
+\begin_layout Standard
+A quite detailed study can be found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xu_calculation_1996"
+
+\end_inset
+
+, I have not read the recenter one 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xu_efficient_1998"
+
+\end_inset
+
+ which deals with efficient evaluation of Wigner 3jm symbols and Gaunt coefficie
+nts.
+ 
+\end_layout
+
+\begin_layout Standard
+With the VSWF as in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:vswf"
+
+\end_inset
+
+ and translation relations in the form 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(38,39)"
+key "xu_calculation_1996"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect M_{\mu\nu}^{(J)l} & = & \sum_{n=1}^{\infty}\sum_{m=-n}^{n}\left[A_{mn}^{\mu\nu}\vect M_{mn}^{(1)j}+B_{mn}^{\mu\nu}\vect N_{mn}^{(1)j}\right],\quad r\le d_{lj},\\
+\vect N_{\mu\nu}^{(J)l} & = & \sum_{n=1}^{\infty}\sum_{m=-n}^{n}\left[B_{mn}^{\mu\nu}\vect M_{mn}^{(1)j}+A_{mn}^{\mu\nu}\vect N_{mn}^{(1)j}\right],\quad r\le d_{lj},\\
+\vect M_{\mu\nu}^{(J)l} & = & \sum_{n=1}^{\infty}\sum_{m=-n}^{n}\left[A_{mn}^{\mu\nu}\vect M_{mn}^{(J)j}+B_{mn}^{\mu\nu}\vect N_{mn}^{(J)j}\right],\quad r\ge d_{lj},\\
+\vect N_{\mu\nu}^{(J)l} & = & \sum_{n=1}^{\infty}\sum_{m=-n}^{n}\left[B_{mn}^{\mu\nu}\vect M_{mn}^{(J)j}+A_{mn}^{\mu\nu}\vect N_{mn}^{(J)j}\right],\quad r\ge d_{lj},
+\end{eqnarray*}
+
+\end_inset
+
+the translation coefficients (which should in fact be also labeled with
+ their origin indices 
+\begin_inset Formula $l,j$
+\end_inset
+
+) are 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(82,83)"
+key "xu_calculation_1996"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{multline*}
+A_{mn}^{\mu\nu}=\\
+\frac{(-1)^{m}i^{\nu+n}(n+2)_{n-1}\left(\nu+2\right)_{\nu+1}(n+\nu+m-\mu)!}{4n(n+\nu+1)_{n+\nu}(n-m)!(\nu+m)!}\\
+\times e^{i(\mu-m)\phi_{lj}}\sum_{q=0}^{q_{\mathrm{max}}}(-1)^{q}\left[n(n+1)+\nu(\nu+1)-p(p+1)\right]\\
+\times\tilde{a}_{1q}\begin{pmatrix}z_{p}^{(J)}(kd_{lj})\\
+j_{p}(kd_{lj})
+\end{pmatrix}P_{p}^{\mu-m}(\cos\theta_{lj}),\qquad\begin{pmatrix}r\le d_{lj}\\
+r\ge d_{lj}
+\end{pmatrix};
+\end{multline*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline*}
+B_{mn}^{\mu\nu}=\\
+\frac{(-1)^{m}i^{\nu+n+1}(n+2)_{n+1}\left(\nu+2\right)_{\nu+1}(n+\nu+m-\mu+1)!}{4n(n+1)(n+m+1)(n+\nu+2)_{n+\nu+1}(n-m)!(\nu+m)!}\\
+\times e^{i(\mu-m)\phi_{lj}}\sum_{q=0}^{Q_{\mathrm{max}}}(-1)^{q}\Big\{2(n+1)(\nu-\mu)\tilde{a}_{2q}-\\
+-\left[p(p+3)-\nu(\nu+1)-n(n+3)-2\mu(n+1)\right]\tilde{a}_{3q}\Big\}\\
+\times\begin{pmatrix}z_{p+1}^{(J)}(kd_{lj})\\
+j_{p+1}(kd_{lj})
+\end{pmatrix}P_{p+1}^{\mu-m}(\cos\theta_{lj}),\qquad\begin{pmatrix}r\le d_{lj}\\
+r\ge d_{lj}
+\end{pmatrix};
+\end{multline*}
+
+\end_inset
+
+where 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(79,80)"
+key "xu_calculation_1996"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{a}_{1q} & = & a(-m,n,\mu,\nu,n+\nu-2q)/a(-m,n,\mu,\nu,n+\nu),\\
+\tilde{a}_{2q} & = & a(-m-1,n+1,\mu+1,\nu,n+\nu+1-2q)/\\
+ &  & /a(-m-1,n+1,\mu+1,\nu,n+\nu+1),\\
+\tilde{a}_{3q} & = & a(-m,n+1,\mu,\nu,n+\nu+1-2q)/\\
+ &  & /a(-m,n+1,\mu,\nu,\mu+\nu+1),
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+p & = & n+\nu-2q\\
+q_{\max} & = & \min\left(n,\nu,\frac{n+\nu-\left|m-\mu\right|}{2}\right),\\
+Q_{\max} & = & \min\left(n+1,\nu,\frac{n+\nu+1-\left|m-\mu\right|}{2}\right),
+\end{eqnarray*}
+
+\end_inset
+
+with the Pochhammer symbol / falling factorial (hope it is the 
+\emph on
+falling
+\emph default
+ one; Xu does not explain the notation anywhere)
+\begin_inset Formula 
+\[
+(x)_{n}=x\left(x-1\right)\left(x-2\right)\dots\left(x-n+1\right)=\frac{x!}{\left(x-n\right)!}
+\]
+
+\end_inset
+
+(in contrast to the rising factorial 
+\begin_inset Formula 
+\[
+x^{(n)}=x(x+1)(x+2)\dots(x+n-1)=\frac{(x+n-1)!}{(x-1)!},
+\]
+
+\end_inset
+
+ their mutual relation should then be 
+\begin_inset Formula $(x)_{n}=(x-n+1)^{(n)}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The implementation should be checked with 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Table II"
+key "xu_calculation_1996"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Equations for the scattering problem
+\end_layout
+
+\begin_layout Standard
+The linear system for the scattering problem reads 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(30)"
+key "xu_electromagnetic_1995"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{mn}^{j} & = & a_{n}^{j}\left\{ p_{mn}^{j,j}-\sum_{l\neq j}^{(1,L)}\sum_{\nu=1}^{\infty}\sum_{\mu=-\nu}^{\nu}\left[a_{\mu\nu}^{l}A_{mn}^{\mu\nu;lj}+b_{\mu\nu}^{l}B_{mn}^{\mu\nu;lj}\right]\right\} \\
+b_{mn}^{j} & = & b_{n}^{j}\left\{ q_{mn}^{j,j}-\sum_{l\neq j}^{(1,L)}\sum_{\nu=1}^{\infty}\sum_{\mu=-\nu}^{\nu}\left[a_{\mu\nu}^{l}B_{mn}^{\mu\nu;lj}+b_{\mu\nu}^{l}A_{mn}^{\mu\nu;lj}\right]\right\} 
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $p_{mn}^{j,j},q_{mn}^{j,j}$
+\end_inset
+
+ are the expansion coefficients of the initial incident waves in the 
+\begin_inset Formula $j$
+\end_inset
+
+-th particle's coordinate system 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sec. 4A"
+key "xu_electromagnetic_1995"
+
+\end_inset
+
+.
+ 
+\emph on
+TODO expressions for 
+\begin_inset Formula $p_{mn}^{j,j},q_{mn}^{j,j}$
+\end_inset
+
+ in the case of dipole initial wave.
+\end_layout
+
+\begin_layout Subsubsection
+Solving the linear system
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sec. 5"
+key "xu_electromagnetic_1995"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
