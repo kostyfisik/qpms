@@ -177,6 +177,33 @@ key "landau_computational_2015"
 Computing classical Green's functions
 \end_layout
 
+\begin_layout Standard
+The formulae below might differ depending on the conventions used by various
+ authors.
+ For instance, Taylor 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "taylor_optical_2011"
+
+\end_inset
+
+ uses normalized spherical wavefunctions 
+\begin_inset Formula $\widetilde{\vect M}_{mn}^{(j)},\widetilde{\vect N}_{mn}^{(j)}$
+\end_inset
+
+ which are designed in a way that avoids float number overflow of some of
+ the variables during the numerical calculation.
+\end_layout
+
+\begin_layout Standard
+Beware of various conventions in definitions of Legendre functions etc.
+ (the implementation in py-gmm differs, for example, by a factor of 
+\begin_inset Formula $(-1)^{m}$
+\end_inset
+
+ from scipy.special.lpmn.
+\end_layout
+
 \begin_layout Subsection
 T-Matrix method
 \end_layout
@@ -527,31 +554,59 @@ Q_{\max} & = & \min\left(n+1,\nu,\frac{n+\nu+1-\left|m-\mu\right|}{2}\right),
 
 \end_inset
 
-with the Pochhammer symbol / falling factorial (hope it is the 
+where the parentheses with lower index mean most likely the Pochhammer symbol
+ / 
 \emph on
-falling
+rising
 \emph default
- one; Xu does not explain the notation anywhere)
+ factorial 
 \begin_inset Formula 
 \[
-(x)_{n}=x\left(x-1\right)\left(x-2\right)\dots\left(x-n+1\right)=\frac{x!}{\left(x-n\right)!}
+\left(x\right)_{n}=x(x+1)(x+2)\dots(x+n-1)=\frac{(x+n-1)!}{(x-1)!}=\frac{\Gamma(x+n)}{\Gamma(x)},
 \]
 
 \end_inset
 
-(in contrast to the rising factorial 
-\begin_inset Formula 
-\[
-x^{(n)}=x(x+1)(x+2)\dots(x+n-1)=\frac{(x+n-1)!}{(x-1)!},
-\]
+which is damn confusing (because this can also mean the falling factorial,
+ cf.
+ Wikipedia); and Xu does not bother explaining the notation 
+\emph on
+anywhere
+\emph default
+.
+ The fact that it is the rising factorial has been checked by comparing
+ 
+\begin_inset Formula $a_{0}$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(78)"
+key "xu_calculation_1996"
 
 \end_inset
 
- their mutual relation should then be 
-\begin_inset Formula $(x)_{n}=(x-n+1)^{(n)}$
+ to some implementation from the internets 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset CommandInset href
+LatexCommand href
+name "https://raw.githubusercontent.com/michael-hartmann/gaunt/master/gaunt.py"
+target "https://raw.githubusercontent.com/michael-hartmann/gaunt/master/gaunt.py"
+
 \end_inset
 
-).
+
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
