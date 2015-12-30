@@ -202,6 +202,22 @@ Beware of various conventions in definitions of Legendre functions etc.
 \end_inset
 
  from scipy.special.lpmn.
+ I think this is also the reason that lead to the 
+\begin_inset Quotes eld
+\end_inset
+
+wrong
+\begin_inset Quotes erd
+\end_inset
+
+ signs in the addition coefficients in my code compared to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xu_calculation_1996"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
