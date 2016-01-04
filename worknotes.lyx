@@ -1172,7 +1172,24 @@ gmm_f2py_module.f90
 
 \end_deeper
 \begin_layout Section
-Code integration
+Implementation / code integration
+\end_layout
+
+\begin_layout Standard
+There are several scipy functions to compute the Legendre polynomials.
+ lpmv is ufunc, whereas lpmn is not; lpmn can, however, compute also the
+ derivatives.
+ This is a bit annoying, because I have to iterate the positions with a
+ for loop.
+\end_layout
+
+\begin_layout Standard
+The default gsl legendre function (gsl_sf_legendre_array) without additional
+ parameters has opposite sign than the scipy.special.lpmn, and it should contain
+ the Condon-Shortley phase; thus scipy.special.lpmn probably does NOT include
+ the CS phase.
+ But again, this should hopefully play no role.
+ The overall normalisation, on the other hand, plays huge role.
 \end_layout
 
 \begin_layout Section
