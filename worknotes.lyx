@@ -281,6 +281,105 @@ The expressions for
 \end_layout
 
 \begin_layout Standard
+
+\emph on
+Note about the case 
+\begin_inset Formula $\theta\to0,\pi$
+\end_inset
+
+:
+\emph default
+ There is a divergent 
+\begin_inset Formula $1/\sin\theta$
+\end_inset
+
+ factor in the 
+\begin_inset Formula $\pi_{mn}(\cos\theta)$
+\end_inset
+
+ function.
+ For 
+\begin_inset Formula $m=0$
+\end_inset
+
+, it is irrelevant because of the 
+\begin_inset Formula $m$
+\end_inset
+
+ factor (it would be bad otherwise, because 
+\begin_inset Formula $P_{n}^{0}(\cos\theta)$
+\end_inset
+
+ does not go to zero at 
+\begin_inset Formula $\theta\to0,\pi$
+\end_inset
+
+).
+ For 
+\begin_inset Formula $\left|m\right|\ge2$
+\end_inset
+
+, 
+\begin_inset Formula $P_{n}^{m}(x)$
+\end_inset
+
+ behaves as 
+\begin_inset Formula $o(x+1),o(x-1)$
+\end_inset
+
+ at 
+\begin_inset Formula $-1,1$
+\end_inset
+
+, so 
+\begin_inset Formula $P_{n}^{m}(\cos\theta)$
+\end_inset
+
+ goes like 
+\begin_inset Formula $o(\theta^{2}),o\left((\theta-\pi)^{2}\right)$
+\end_inset
+
+ at 
+\begin_inset Formula $0,\pi$
+\end_inset
+
+, which safely eliminates the divergent factor.
+ However, for 
+\begin_inset Formula $\left|m\right|=1$
+\end_inset
+
+, the whole expression 
+\begin_inset Formula $P_{n}^{m}(\cos\theta)/\sin\theta$
+\end_inset
+
+ has a finite nonzero limit for 
+\begin_inset Formula $\theta\to0,\pi$
+\end_inset
+
+.
+ According to Mathematica (for 
+\begin_inset Formula $\theta\to\pi,$
+\end_inset
+
+ Mathematica does not work well, but it can be derived from the 
+\begin_inset Formula $\theta\to0$
+\end_inset
+
+ case and oddness/evenness).
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+\lim_{\theta\to0}\frac{P_{n}^{1}(\cos\theta)}{\sin\theta} & = & -\frac{1}{2}n(1+n),\qquad\lim_{\theta\to0}\frac{P_{n}^{-1}(\cos\theta)}{\sin\theta}=\frac{1}{2},\\
+\lim_{\theta\to\pi}\frac{P_{n}^{1}(\cos\theta)}{\sin\theta} & = & \frac{\left(-1\right)^{n}}{2}n(1+n),\qquad\lim_{\theta\to\pi}\frac{P_{n}^{-1}(\cos\theta)}{\sin\theta}=\frac{\left(-1\right)^{n+1}}{2}.
+\end{eqnarray*}
+
+\end_inset
+
+NOT COMPLETELY SURE ABOUT THE SIGN/NORMALIZATION CONVENTION HERE.
+ IT HAS TO BE CHECKED.
+\end_layout
+
+\begin_layout Standard
 Expansions for the scattered fields are
 \begin_inset CommandInset citation
 LatexCommand cite
