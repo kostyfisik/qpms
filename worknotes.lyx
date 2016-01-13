@@ -1291,6 +1291,28 @@ The default gsl legendre function (gsl_sf_legendre_array) without additional
  The overall normalisation, on the other hand, plays huge role.
 \end_layout
 
+\begin_layout Subsection
+Scattering-Taylor.ipynb
+\end_layout
+
+\begin_layout Standard
+In the conventions used (no Condon-Shortley phase AFAIK), the following
+ symmetries hold for 
+\begin_inset Formula $J=1$
+\end_inset
+
+ (regular wavefunctions):
+\begin_inset Formula 
+\begin{eqnarray*}
+\widetilde{\vect M}_{m,n}^{(1)} & = & (-1)^{m}\widetilde{\vect M}_{-m,n}^{(1)},\\
+\widetilde{\vect N}_{m,n}^{(1)} & = & (-1)^{m}\widetilde{\vect N}_{-m,n}^{(1)}.
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Testing and reproduction of foreign results
 \end_layout
