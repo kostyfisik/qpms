@@ -1,4 +1,5 @@
 import numpy as np
+from qpms_c import *
 ň = np.newaxis
 from scipy.constants import epsilon_0 as ε_0, c, pi as π, e, hbar as ℏ, mu_0 as μ_0
 eV = e
