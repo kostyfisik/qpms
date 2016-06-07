@@ -118,8 +118,56 @@ All the conventions
 Plane wave expansion
 \end_layout
 
+\begin_layout Section
+Radiated energy
+\end_layout
+
+\begin_layout Section
+Limit solutions
+\end_layout
+
+\begin_layout Subsection
+Far-field asymptotic solution
+\end_layout
+
+\begin_layout Standard
+TODO start from 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(A7)"
+key "pustovit_plasmon-mediated_2010"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Near field limit
+\end_layout
+
 \begin_layout Chapter
 Mie Theory
+\end_layout
+
+\begin_layout Section
+Full version
+\end_layout
+
+\begin_layout Section
+Long wave approximation
+\end_layout
+
+\begin_layout Standard
+TODO start from 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(A11)"
+key "pustovit_plasmon-mediated_2010"
+
+\end_inset
+
+ and around.
 \end_layout
 
 \begin_layout Chapter
@@ -140,6 +188,17 @@ Translation of spherical waves: shit gets insane
 
 \begin_layout Chapter
 Multiple scattering: nice linear algebra born from all the shit
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "dipdip"
+options "plain"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
