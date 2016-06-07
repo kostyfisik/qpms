@@ -1,0 +1,146 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass report
+\begin_preamble
+%\renewcommand*{\chapterheadstartvskip}{\vspace*{1cm}}
+%\renewcommand*{\chapterheadendvskip}{\vspace{2cm}}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a5paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language swedish
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Electromagnetic multiple scattering, spherical waves and shit
+\end_layout
+
+\begin_layout Author
+Marek Nečada
+\end_layout
+
+\begin_layout Chapter
+Zillion conventions for spherical vector waves
+\end_layout
+
+\begin_layout Section
+Legendre polynomials and spherical harmonics: messy from the very beginning
+\end_layout
+
+\begin_layout Section
+Pi and tau (?), spherical Bessel functions
+\end_layout
+
+\begin_layout Section
+Vector spherical harmonics (?)
+\end_layout
+
+\begin_layout Section
+All the conventions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $M,N,\psi,\chi,\widetilde{M},\widetilde{N},u,v,w,\dots$
+\end_inset
+
+, sine/cosine convention (B&H), ...
+\end_layout
+
+\begin_layout Section
+Plane wave expansion
+\end_layout
+
+\begin_layout Chapter
+Mie Theory
+\end_layout
+
+\begin_layout Chapter
+Green's functions
+\end_layout
+
+\begin_layout Section
+xyz pure free-space dipole waves in terms of SVWF
+\end_layout
+
+\begin_layout Section
+Mie decomposition of Green's function for single nanoparticle
+\end_layout
+
+\begin_layout Chapter
+Translation of spherical waves: shit gets insane
+\end_layout
+
+\begin_layout Chapter
+Multiple scattering: nice linear algebra born from all the shit
+\end_layout
+
+\end_body
+\end_document
