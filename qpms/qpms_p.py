@@ -669,6 +669,14 @@ def G_Mie_scat_cart(source_cart, dest_cart, a, nmax, k_i, k_e, μ_i=1, μ_e=1, J
     return G_Mie_scat_precalc_cart_new(source_cart, dest_cart, RH, RV, a, nmax, k_i, k_e, μ_i, μ_e, J_ext, J_scat)
 
 
+#TODO
+def cross_section_Mie_precalc():
+    pass
+
+def cross_section_Mie(a, nmax, k_i, k_e, μ_i, μ_e,):
+    pass
+
+
 # In[9]:
 
 # From PRL 112, 253601 (1)
