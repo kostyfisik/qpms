@@ -504,6 +504,7 @@ def mie_coefficients(a, nmax,  #ω, ε_i, ε_e=1, J_ext=1, J_scat=3
 
     FIXME test the magnetic case
     TODO description
+    RH concerns the N ("electric") part, RV the M ("magnetic") part
     #
     
     Parameters
