@@ -214,6 +214,9 @@ def zJn(n, z, J=1):
 
 
 # The following 4 funs have to be refactored, possibly merged
+
+# FIXME: this can be expressed simply as:
+# $$ -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}+\delta_{m,-1}) $$
 def π̃_zerolim(nmax): # seems OK
     """
     lim_{θ→ 0-} π̃(cos θ)
@@ -248,6 +251,8 @@ def π̃_pilim(nmax): # Taky OK, jen to možná není kompatibilní se vzorečky
     π̃_y = prenorm *     π̃_y
     return π̃_y
 
+# FIXME: this can be expressed simply as
+# $$ -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}-\delta_{m,-1}) $$
 def τ̃_zerolim(nmax):
     """
     lim_{θ→ 0-} τ̃(cos θ)
