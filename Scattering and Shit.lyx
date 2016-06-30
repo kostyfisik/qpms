@@ -108,18 +108,82 @@ Zillion conventions for spherical vector waves
 Legendre polynomials and spherical harmonics: messy from the very beginning
 \end_layout
 
-\begin_layout Subsection
-Kristensson 
+\begin_layout Standard
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+FIXME check the Condon-Shortley phases.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Associated Legendre polynomial of degree 
+\begin_inset Formula $l\ge0$
+\end_inset
+
+ and order 
+\begin_inset Formula $m,$
+\end_inset
+
+ 
+\begin_inset Formula $l\ge m\ge-l$
+\end_inset
+
+, is given by the recursive relation
+\begin_inset Formula 
+\[
+P_{l}^{-m}=\underbrace{\left(-1\right)^{m}}_{\mbox{Condon-Shortley phase}}\frac{1}{2^{l}l!}\left(1-x^{2}\right)^{m/2}\frac{\ud^{l+m}}{\ud x^{l+m}}\left(x^{2}-1\right)^{l}.
+\]
+
+\end_inset
+
+There is a relation between the positive and negative orders,
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-P_{l}^{-m}=\left(-1\right)^{m}\frac{\left(l-m\right)!}{\left(l+m\right)!}P_{l}^{m}\left(\cos\theta\right),\quad m\ge0
+P_{l}^{-m}=\underbrace{\left(-1\right)^{m}}_{\mbox{C.-S. p.}}\frac{\left(l-m\right)!}{\left(l+m\right)!}P_{l}^{m}\left(\cos\theta\right),\quad m\ge0.
 \]
 
 \end_inset
 
+The index 
+\begin_inset Formula $l$
+\end_inset
+
+ (in certain notations, it is often 
+\begin_inset Formula $n$
+\end_inset
+
+) is called 
+\emph on
+degree
+\emph default
+, index 
+\begin_inset Formula $m$
+\end_inset
+
+ is the 
+\emph on
+order
+\emph default
+.
+ These two terms are then transitively used for all the object which build
+ on the associated Legendre polynomials, i.e.
+ spherical harmonics, vector spherical harmonics, spherical waves etc.
+\end_layout
+
+\begin_layout Subsection
+Kristensson 
+\end_layout
+
+\begin_layout Standard
 Kristensson uses the Condon-Shortley phase, so (sect.
  [K]D.2)
 \end_layout
@@ -528,10 +592,11 @@ In this section I summarize the formulae for power
 \begin_inset Formula $E_{0}$
 \end_inset
 
-, this can be used to calculate the absorption cross section,
+, this can be used to calculate the absorption cross section (TODO check
+ if it should be multiplied by the 2),
 \begin_inset Formula 
 \[
-\sigma_{\mathrm{abs}}=-\frac{P}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}.
+\sigma_{\mathrm{abs}}=-\frac{2P}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}.
 \]
 
 \end_inset
@@ -576,7 +641,18 @@ Here
 The radiated power is then (2.28): 
 \begin_inset Formula 
 \[
-P=\frac{1}{2}\sum_{n}\left(\left|f_{n}\right|^{2}+\Re\left(f_{n}a_{n}^{*}\right)\right)
+P=\frac{1}{2}\sum_{n}\left(\left|f_{n}\right|^{2}+\Re\left(f_{n}a_{n}^{*}\right)\right).
+\]
+
+\end_inset
+
+The first term is obviously the power radiated away by the outgoing waves.
+ The second term must then be minus the power sucked by the scatterer from
+ the exciting wave.
+ If the exciting wave is plane, it gives us the extinction cross section
+\begin_inset Formula 
+\[
+\sigma_{\mathrm{tot}}=-\frac{\sum_{n}\Re\left(f_{n}a_{n}^{*}\right)}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}
 \]
 
 \end_inset
@@ -656,7 +732,15 @@ reference "eq:power-Kristensson-E"
 The radiated power is then
 \begin_inset Formula 
 \[
-P=\frac{1}{2}\sum_{m,n}\frac{n\left(n+1\right)}{k^{2}\eta_{0}}\left(\left|a_{mn}\right|^{2}+\left|b_{mn}\right|^{2}-\Re\left(a_{mn}p_{mn}^{*}\right)-\Re\left(b_{mn}q_{mn}^{*}\right)\right).
+P=\frac{1}{2}\sum_{m,n}\frac{n\left(n+1\right)}{k^{2}\eta_{0}\eta}\left(\left|a_{mn}\right|^{2}+\left|b_{mn}\right|^{2}-\Re\left(a_{mn}p_{mn}^{*}\right)-\Re\left(b_{mn}q_{mn}^{*}\right)\right).
+\]
+
+\end_inset
+
+If the exciting wave is a plane wave, the extinction cross section is
+\begin_inset Formula 
+\[
+\sigma_{\mathrm{tot}}=\frac{\Re\left(a_{mn}p_{mn}^{*}\right)+\Re\left(b_{mn}q_{mn}^{*}\right)}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}
 \]
 
 \end_inset
@@ -689,15 +773,166 @@ Near field limit
 \end_layout
 
 \begin_layout Chapter
-Mie Theory
+Single particle scattering and Mie theory
+\end_layout
+
+\begin_layout Standard
+The basic idea is simple.
+ For an exciting spherical wave (usually the regular wave in whatever convention
+) of a given frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+, type 
+\begin_inset Formula $\zeta$
+\end_inset
+
+ (electric or magnetic), degree 
+\begin_inset Formula $l$
+\end_inset
+
+ and order 
+\begin_inset Formula $m$
+\end_inset
+
+, the particle responds with waves from the complementary set (e.g.
+ outgoing waves), with the same frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+, but any type 
+\begin_inset Formula $\zeta'$
+\end_inset
+
+, degree 
+\begin_inset Formula $l'$
+\end_inset
+
+ and order 
+\begin_inset Formula $m'$
+\end_inset
+
+, in a way that the Maxwell's equations are satisfied, with the coefficients
+ 
+\begin_inset Formula $T_{l',m';l,m}^{\zeta',\zeta}(\omega)$
+\end_inset
+
+.
+ This yields one row in the scattering matrix (often called the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix) 
+\begin_inset Formula $T(\omega)$
+\end_inset
+
+, which fully characterizes the scattering properties of the particle (in
+ the linear regime, of course).
+ Analytical expression for the matrix is known for spherical scatterer,
+ otherwise it is computed numerically (using DDA, BEM or whatever).
+ So if we have the two sets of spherical wave functions 
+\begin_inset Formula $\vect f_{lm}^{J_{1},\zeta}$
+\end_inset
+
+, 
+\begin_inset Formula $\vect f_{lm}^{J_{2},\zeta}$
+\end_inset
+
+ and the full 
+\begin_inset Quotes sld
+\end_inset
+
+exciting
+\begin_inset Quotes srd
+\end_inset
+
+ wave has electric field given as
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{ext}}=\sum_{\zeta=\mathrm{E,M}}\sum_{l,m}c_{lm}^{\zeta}\vect f_{lm}^{\zeta},
+\]
+
+\end_inset
+
+the 
+\begin_inset Quotes sld
+\end_inset
+
+scattered
+\begin_inset Quotes srd
+\end_inset
+
+ field will be
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{scat}}=\sum_{\zeta',l',m'}\sum_{\zeta,l,m}T_{l',m';l,m}^{\zeta',\zeta}c_{lm}^{\zeta}\vect f_{l'm'}^{\zeta'},
+\]
+
+\end_inset
+
+and the total field around the scaterer is 
+\begin_inset Formula $\vect E=\vect E_{\mathrm{ext}}+\vect E_{\mathrm{scat}}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
-Full version
+Mie theory – full version
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $T$
+\end_inset
+
+-matrix for a spherical particle is type-, degree- and order- diagonal,
+ that is, 
+\begin_inset Formula $T_{l',m';l,m}^{\zeta',\zeta}(\omega)=0$
+\end_inset
+
+ if 
+\begin_inset Formula $l\ne l'$
+\end_inset
+
+, 
+\begin_inset Formula $m\ne m'$
+\end_inset
+
+ or 
+\begin_inset Formula $\zeta\ne\zeta'$
+\end_inset
+
+.
+ Moreover, it does not depend on 
+\begin_inset Formula $m$
+\end_inset
+
+, so
+\begin_inset Formula 
+\[
+T_{l',m';l,m}^{\zeta',\zeta}(\omega)=T_{l}^{\zeta}\left(\omega\right)\delta_{\zeta'\zeta}\delta_{l'l}\delta_{m'm}
+\]
+
+\end_inset
+
+where for the usual choice 
+\begin_inset Formula $J_{1}=1,J_{2}=3$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+T_{l}^{E}\left(\omega\right) & = & TODO,\\
+T_{l}^{M}(\omega) & = & TODO.
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
-Long wave approximation
+Long wave approximation for spherical nanoparticle
 \end_layout
 
 \begin_layout Standard
