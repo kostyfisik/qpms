@@ -79,8 +79,21 @@
 
 \begin_body
 
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
+\end_layout
+
 \begin_layout Title
-Electromagnetic multiple scattering, spherical waves and shit
+Electromagnetic multiple scattering, spherical waves and ****
 \end_layout
 
 \begin_layout Author
@@ -95,31 +108,560 @@ Zillion conventions for spherical vector waves
 Legendre polynomials and spherical harmonics: messy from the very beginning
 \end_layout
 
+\begin_layout Subsection
+Kristensson 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P_{l}^{-m}=\left(-1\right)^{m}\frac{\left(l-m\right)!}{\left(l+m\right)!}P_{l}^{m}\left(\cos\theta\right),\quad m\ge0
+\]
+
+\end_inset
+
+Kristensson uses the Condon-Shortley phase, so (sect.
+ [K]D.2)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Y_{lm}\left(\hat{\vect r}\right)=\left(-1\right)^{m}\sqrt{\frac{2l+1}{4\pi}\frac{\left(l-m\right)!}{\left(l+m\right)!}}P_{l}^{m}\left(\cos\theta\right)e^{im\phi}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Y_{lm}^{\dagger}\left(\hat{\vect r}\right)=Y_{lm}^{*}\left(\hat{\vect r}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Y_{l,-m}\left(\hat{\vect r}\right)=\left(-1\right)^{m}Y_{lm}^{\dagger}\left(\hat{\vect r}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Orthonormality:
+\begin_inset Formula 
+\[
+\int Y_{lm}\left(\hat{\vect r}\right)Y_{l'm'}^{\dagger}\left(\hat{\vect r}\right)\,\ud\Omega=\delta_{ll'}\delta_{mm'}
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-Pi and tau (?), spherical Bessel functions
+Pi and tau
+\end_layout
+
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{\pi}_{mn}\left(\cos\theta\right) & = & \sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}\frac{m}{\sin\theta}P_{n}^{m}\left(\cos\theta\right)\\
+\tilde{\tau}_{mn}\left(\cos\theta\right) & = & \sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}\frac{\ud}{\ud\theta}P_{n}^{m}\left(\cos\theta\right)
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
 Vector spherical harmonics (?)
 \end_layout
 
-\begin_layout Section
-All the conventions
+\begin_layout Subsection
+Kristensson
 \end_layout
 
 \begin_layout Standard
+Original formulation, sect.
+ [K]D.3.3
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect A_{1lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{1}{\sin\theta}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\\
+\vect A_{2lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\\
+\vect A_{3lm}\left(\hat{\vect r}\right) & = & \hat{\vect r}Y_{lm}\left(\hat{\vect r}\right)
+\end{eqnarray*}
+
+\end_inset
+
+Normalisation:
+\begin_inset Formula 
+\[
+\int\vect A_{n}\left(\hat{\vect r}\right)\cdot\vect A_{n'}^{\dagger}\left(\hat{\vect r}\right)\,\ud\Omega=\delta_{nn'}
+\]
+
+\end_inset
+
+Here 
+\begin_inset Formula $\mbox{ }^{\dagger}$
+\end_inset
+
+ means just complex conjugate, apparently (see footnote on p.
+ 89).
+\end_layout
+
+\begin_layout Section
+Spherical Bessel functions
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Spherical-Bessel-functions"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The radial dependence of spherical vector waves is given by the spherical
+ Bessel functions and their first derivatives.
+ Commonly, the following notation is adopted
+\begin_inset Formula 
+\begin{eqnarray*}
+z_{n}^{(1)}(x) & = & j_{n}(x),\\
+z_{n}^{(2)}(x) & = & y_{n}(x),\\
+z_{n}^{(3)}(x) & = & h_{n}^{(1)}(x)=j_{n}(x)+iy_{n}(x),\\
+z_{n}^{(4)}(x) & = & h_{n}^{(2)}(x)=j_{n}(x)-iy_{n}(x).
+\end{eqnarray*}
+
+\end_inset
+
+Here, 
+\begin_inset Formula $j_{n}$
+\end_inset
+
+ is the spherical Bessel function of first kind (regular), 
+\begin_inset Formula $y_{j}$
+\end_inset
+
+ is the spherical Bessel function of second kind (singular), and 
+\begin_inset Formula $h_{n}^{(1)},h_{n}^{(2)}$
+\end_inset
+
+ are the Hankel functions a.k.a.
+ spherical Bessel functions of third kind.
+ In spherical vector waves, 
+\begin_inset Formula $j_{n}$
+\end_inset
+
+ corresponds to regular waves, 
+\begin_inset Formula $h^{(1)}$
+\end_inset
+
+ corresponds (by the usual convention) to outgoing waves, and 
+\begin_inset Formula $h^{(2)}$
+\end_inset
+
+ corresponds to incoming waves.
+ To describe scattering, we need two sets of waves with two different types
+ of spherical Bessel functions 
+\begin_inset Formula $z_{n}^{(J)}$
+\end_inset
+
+.
+ Most common choice is 
+\begin_inset Formula $J=1,3$
+\end_inset
+
+, because if we decompose the field into spherical waves centered at 
+\begin_inset Formula $\vect r_{0}$
+\end_inset
+
+, the field produced by other sources (e.g.
+ spherical waves from other scatterers or a plane wave) is always regular
+ at 
+\begin_inset Formula $\vect r_{0}$
+\end_inset
+
+.
+ Second choice which makes a bit of sense is 
+\begin_inset Formula $J=3,4$
+\end_inset
+
+ as it leads to a nice expression for the energy transport.
+\end_layout
+
+\begin_layout Section
+Spherical vector waves
+\end_layout
+
+\begin_layout Standard
+TODO 
 \begin_inset Formula $M,N,\psi,\chi,\widetilde{M},\widetilde{N},u,v,w,\dots$
 \end_inset
 
 , sine/cosine convention (B&H), ...
 \end_layout
 
+\begin_layout Standard
+There are two mutually orthogonal types of divergence-free (everywhere except
+ in the origin for singular waves) spherical vector waves, which I call
+ electric and magnetic, given by the type of multipole source to which they
+ correspond.
+ This is another distinction than the regular/singular/ingoing/outgoing
+ waves given by the type of the radial dependence (cf.
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Spherical-Bessel-functions"
+
+\end_inset
+
+).
+ Oscillating electric current in a tiny rod parallel to its axis will generate
+ electric dipole waves (net dipole moment of magnetic current is zero) moment
+ , whereas oscillating electric current in a tiny circular loop will generate
+ magnetic dipole waves (net dipole moment of electric current is zero).
+\end_layout
+
+\begin_layout Standard
+In the usual cases we encounter, the part described by the magnetic waves
+ is pretty small.
+\end_layout
+
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+Definition [T](2.40); 
+\begin_inset Formula $\widetilde{\vect N}_{mn}^{(j)},\widetilde{\vect M}_{mn}^{(j)}$
+\end_inset
+
+ are the electric and magnetic waves, respectively:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\widetilde{\vect N}_{mn}^{(j)} & = & \frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\hat{\vect r}\\
+ &  & +\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)\\
+\widetilde{\vect M}_{mn}^{(j)} & = & \left[i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}-\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Kristensson
+\end_layout
+
+\begin_layout Standard
+Definition [K](2.4.6); 
+\begin_inset Formula $\vect u_{\tau lm},\vect v_{\tau lm},\vect w_{\tau lm}$
+\end_inset
+
+ are the waves with 
+\begin_inset Formula $j=3,1,4$
+\end_inset
+
+ respectively, i.e.
+ outgoing, regular and incoming waves.
+ The first index distinguishes between the electric (
+\begin_inset Formula $\tau=2$
+\end_inset
+
+) and magnetic (
+\begin_inset Formula $\tau=1$
+\end_inset
+
+).
+ Kristensson uses a multiindex 
+\begin_inset Formula $n\equiv(\tau,l,m)$
+\end_inset
+
+ to simlify the notation.
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\vect{u/v/w}\right)_{2lm} & = & \frac{1}{kr}\frac{\ud\left(kr\, z_{l}^{(j)}\left(kr\right)\right)}{\ud\, kr}\vect A_{2lm}\left(\hat{\vect r}\right)+\sqrt{l\left(l+1\right)}\frac{z_{l}^{(j)}(kr)}{kr}\vect A_{3lm}\left(\hat{\vect r}\right)\\
+\left(\vect{u/v/w}\right)_{1lm} & = & z_{l}^{(j)}\left(kr\right)\vect A_{1lm}\left(\hat{\vect r}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Relation between Kristensson and Taylor
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Kristensson-v-Taylor"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Kristensson's and Taylor's VSWFs seem to differ only by an 
+\begin_inset Formula $l$
+\end_inset
+
+-dependent normalization factor, and notation of course (n.b.
+ the inverse index order)
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\vect{u/v/w}\right)_{2lm} & = & \frac{\widetilde{\vect N}_{ml}^{(3/1/4)}}{\sqrt{l\left(l+1\right)}}\\
+\left(\vect{u/v/w}\right)_{1lm} & = & \frac{\widetilde{\vect M}_{ml}^{(3/1/4)}}{\sqrt{l\left(l+1\right)}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Plane wave expansion
 \end_layout
 
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $x$
+\end_inset
+
+-polarised, 
+\begin_inset Formula $z$
+\end_inset
+
+-propagating plane wave, 
+\begin_inset Formula $\vect E=E_{0}\hat{\vect x}e^{i\vect k\cdot\hat{\vect z}}$
+\end_inset
+
+ (CHECK):
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect E & = & -i\left(p_{mn}\widetilde{\vect N}_{mn}^{(1)}+q_{mn}\widetilde{\vect M}_{mn}^{(1)}\right)\\
+p_{mn} & = & E_{0}\frac{4\pi i^{n}}{n(n+1)}\tilde{\tau}_{mn}(1)\\
+q_{mn} & = & E_{0}\frac{4\pi i^{n}}{n(n+1)}\tilde{\pi}_{mn}(1)
+\end{eqnarray*}
+
+\end_inset
+
+while it can be shown that
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{\pi}_{mn}(1) & = & -\frac{1}{2}\sqrt{\frac{\left(2n+1\right)\left(n\left(n+1\right)\right)}{4\pi}}\left(\delta_{m,1}+\delta_{m,-1}\right)\\
+\tilde{\tau}_{mn}(1) & = & -\frac{1}{2}\sqrt{\frac{\left(2n+1\right)\left(n\left(n+1\right)\right)}{4\pi}}\left(\delta_{m,1}-\delta_{m,-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Kristensson
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $x$
+\end_inset
+
+-polarised, 
+\begin_inset Formula $z$
+\end_inset
+
+-propagating plane wave, 
+\begin_inset Formula $\vect E=E_{0}\hat{\vect x}e^{i\vect k\cdot\hat{\vect z}}$
+\end_inset
+
+ (CHECK, ):
+\begin_inset Formula 
+\[
+\vect E=\sum_{n}a_{n}\vect v_{n}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{1lm} & = & E_{0}i^{l+1}\sqrt{\left(2l+1\right)\pi}\left(\delta_{m,1}+\delta_{m,-1}\right)\\
+a_{2lm} & = & E_{0}i^{l+1}\sqrt{\left(2l+1\right)\pi}\left(\delta_{m,1}+\delta_{m,-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Radiated energy
+\end_layout
+
+\begin_layout Standard
+In this section I summarize the formulae for power 
+\begin_inset Formula $P$
+\end_inset
+
+ radiated from the system.
+ For an absorbing scatterer, this should be negative (n.b.
+ sign conventions can be sometimes confusing).
+ If the system is excited by a plane wave with intensity 
+\begin_inset Formula $E_{0}$
+\end_inset
+
+, this can be used to calculate the absorption cross section,
+\begin_inset Formula 
+\[
+\sigma_{\mathrm{abs}}=-\frac{P}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Kristensson
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Radiated enenergy-Kristensson"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sect.
+ [K]2.6.2; here this form of expansion is assumed:
+\begin_inset Formula 
+\begin{equation}
+\vect E\left(\vect r,\omega\right)=k\sqrt{\eta_{0}\eta}\sum_{n}\left(a_{n}\vect v_{n}\left(k\vect r\right)+f_{n}\vect u_{n}\left(k\vect r\right)\right).\label{eq:power-Kristensson-E}
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $\eta_{0}=\sqrt{\mu_{0}/\varepsilon_{0}}$
+\end_inset
+
+ is the wave impedance of free space and 
+\begin_inset Formula $\eta=\sqrt{\mu/\varepsilon}$
+\end_inset
+
+ is the relative wave impedance of the medium.
+ 
+\end_layout
+
+\begin_layout Standard
+The radiated power is then (2.28): 
+\begin_inset Formula 
+\[
+P=\frac{1}{2}\sum_{n}\left(\left|f_{n}\right|^{2}+\Re\left(f_{n}a_{n}^{*}\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+Here I derive the radiated power in Taylor's convention by applying the
+ relations from subsection 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Kristensson-v-Taylor"
+
+\end_inset
+
+ to the Kristensson's formulae (sect.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Radiated enenergy-Kristensson"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Assume the external field decomposed as (here I use tildes even for the
+ expansion coefficients in order to avoid confusion with the 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:power-Kristensson-E"
+
+\end_inset
+
+) 
+\begin_inset Formula 
+\[
+\vect E\left(\vect r,\omega\right)=\sum_{mn}\left[-i\left(\tilde{p}_{mn}\vect{\widetilde{N}}_{mn}^{(1)}+\tilde{q}_{mn}\widetilde{\vect M}_{mn}^{(1)}\right)+i\left(\tilde{a}_{mn}\widetilde{\vect N}_{mn}^{(3)}+\tilde{b}_{mn}\widetilde{\vect M}_{mn}^{(3)}\right)\right]
+\]
+
+\end_inset
+
+(there is minus between the regular and outgoing part!).
+ The coefficients are related to those from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:power-Kristensson-E"
+
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+\tilde{p}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{-i\sqrt{n(n+1)}}a_{2nm},\quad\tilde{q}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{-i\sqrt{n(n+1)}}a_{1nm},
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\tilde{a}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{i\sqrt{n(n+1)}}f_{2nm},\quad\tilde{b}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{i\sqrt{n(n+1)}}f_{1nm}.
+\]
+
+\end_inset
+
+The radiated power is then
+\begin_inset Formula 
+\[
+P=\frac{1}{2}\sum_{m,n}\frac{n\left(n+1\right)}{k^{2}\eta_{0}}\left(\left|a_{mn}\right|^{2}+\left|b_{mn}\right|^{2}-\Re\left(a_{mn}p_{mn}^{*}\right)-\Re\left(b_{mn}q_{mn}^{*}\right)\right).
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -183,11 +725,11 @@ Mie decomposition of Green's function for single nanoparticle
 \end_layout
 
 \begin_layout Chapter
-Translation of spherical waves: shit gets insane
+Translation of spherical waves: getting insane
 \end_layout
 
 \begin_layout Chapter
-Multiple scattering: nice linear algebra born from all the shit
+Multiple scattering: nice linear algebra born from all the mess
 \end_layout
 
 \begin_layout Standard
