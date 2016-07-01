@@ -740,7 +740,7 @@ P=\frac{1}{2}\sum_{m,n}\frac{n\left(n+1\right)}{k^{2}\eta_{0}\eta}\left(\left|a_
 If the exciting wave is a plane wave, the extinction cross section is
 \begin_inset Formula 
 \[
-\sigma_{\mathrm{tot}}=\frac{\Re\left(a_{mn}p_{mn}^{*}\right)+\Re\left(b_{mn}q_{mn}^{*}\right)}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}
+\sigma_{\mathrm{tot}}=\frac{1}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}k^{2}\eta_{0}\eta}\sum_{m,n}n(n+1)\left(\Re\left(a_{mn}p_{mn}^{*}\right)+\Re\left(b_{mn}q_{mn}^{*}\right)\right)
 \]
 
 \end_inset
