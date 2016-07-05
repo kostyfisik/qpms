@@ -286,6 +286,86 @@ Here
  89).
 \end_layout
 
+\begin_layout Subsection
+Jackson
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.101)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\vect X_{lm}(\theta,\phi)=\frac{1}{\sqrt{l(l+1)}}\vect LY_{lm}(\theta,\phi)
+\]
+
+\end_inset
+
+where 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.119)"
+key "jackson_classical_1998"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\vect L=\frac{1}{i}\left(\vect r\times\vect{\nabla}\right)
+\]
+
+\end_inset
+
+for its expression in spherical coordinates and other properties check Jackson's
+ book around the definitions.
+\end_layout
+
+\begin_layout Standard
+Normalisation 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.120)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\int\vect X_{l'm'}^{*}\cdot\vect X_{lm}\,\ud\Omega=\delta_{ll'}\delta_{mm'}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Local sum rule 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.153)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\sum_{m=-l}^{l}\left|\vect X_{lm}(\theta,\phi)^{2}\right|=\frac{2l+1}{4\pi}
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Spherical Bessel functions
 \begin_inset CommandInset label
@@ -295,6 +375,11 @@ name "sec:Spherical-Bessel-functions"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Cf.
+ [DLMF] §10.47–60.
 \end_layout
 
 \begin_layout Standard
@@ -364,6 +449,33 @@ Here,
 \end_inset
 
  as it leads to a nice expression for the energy transport.
+\end_layout
+
+\begin_layout Subsection
+Limiting Forms
+\end_layout
+
+\begin_layout Standard
+[DLMF] §10.52:
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $z\to0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+j_{n}(z) & \sim & z^{n}/(2n+1)!!\\
+h_{n}^{(1)}(z)\sim iy(z) & \sim & -i\left(2n+1\right)!!/z^{n+1}
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -748,6 +860,29 @@ If the exciting wave is a plane wave, the extinction cross section is
 
 \end_layout
 
+\begin_layout Subsection
+Jackson
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.155)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+P=\frac{Z_{0}}{2k^{2}}\sum_{l,m}\left[\left|a_{E}(l,m)\right|^{2}+\left|a_{M}(l,m)\right|^{2}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Limit solutions
 \end_layout
@@ -765,7 +900,7 @@ key "pustovit_plasmon-mediated_2010"
 
 \end_inset
 
-
+ and Jackson (9.169) and around.
 \end_layout
 
 \begin_layout Subsection
@@ -784,15 +919,15 @@ The basic idea is simple.
 \end_inset
 
 , type 
-\begin_inset Formula $\zeta$
+\begin_inset Formula $\zeta'$
 \end_inset
 
  (electric or magnetic), degree 
-\begin_inset Formula $l$
+\begin_inset Formula $l'$
 \end_inset
 
  and order 
-\begin_inset Formula $m$
+\begin_inset Formula $m'$
 \end_inset
 
 , the particle responds with waves from the complementary set (e.g.
@@ -801,20 +936,20 @@ The basic idea is simple.
 \end_inset
 
 , but any type 
-\begin_inset Formula $\zeta'$
+\begin_inset Formula $\zeta$
 \end_inset
 
 , degree 
-\begin_inset Formula $l'$
+\begin_inset Formula $l$
 \end_inset
 
  and order 
-\begin_inset Formula $m'$
+\begin_inset Formula $m$
 \end_inset
 
 , in a way that the Maxwell's equations are satisfied, with the coefficients
  
-\begin_inset Formula $T_{l',m';l,m}^{\zeta',\zeta}(\omega)$
+\begin_inset Formula $T_{l,m;l',m'}^{\zeta,\zeta'}(\omega)$
 \end_inset
 
 .
@@ -849,7 +984,7 @@ exciting
  wave has electric field given as
 \begin_inset Formula 
 \[
-\vect E_{\mathrm{ext}}=\sum_{\zeta=\mathrm{E,M}}\sum_{l,m}c_{lm}^{\zeta}\vect f_{lm}^{\zeta},
+\vect E_{\mathrm{inc}}=\sum_{\zeta'=\mathrm{E,M}}\sum_{l',m'}c_{l'm'}^{\zeta'}\vect f_{l'm'}^{\zeta'},
 \]
 
 \end_inset
@@ -865,7 +1000,7 @@ scattered
  field will be
 \begin_inset Formula 
 \[
-\vect E_{\mathrm{scat}}=\sum_{\zeta',l',m'}\sum_{\zeta,l,m}T_{l',m';l,m}^{\zeta',\zeta}c_{lm}^{\zeta}\vect f_{l'm'}^{\zeta'},
+\vect E_{\mathrm{scat}}=\sum_{\zeta',l',m'}\sum_{\zeta,l,m}T_{l,m;l',m'}^{\zeta,\zeta'}c_{l'm'}^{\zeta'}\vect f_{lm}^{\zeta},
 \]
 
 \end_inset
@@ -910,7 +1045,7 @@ Mie theory – full version
 , so
 \begin_inset Formula 
 \[
-T_{l',m';l,m}^{\zeta',\zeta}(\omega)=T_{l}^{\zeta}\left(\omega\right)\delta_{\zeta'\zeta}\delta_{l'l}\delta_{m'm}
+T_{l,m;l',m'}^{\zeta,\zeta'}(\omega)=T_{l}^{\zeta}\left(\omega\right)\delta_{\zeta'\zeta}\delta_{l'l}\delta_{m'm}
 \]
 
 \end_inset
@@ -947,6 +1082,140 @@ key "pustovit_plasmon-mediated_2010"
  and around.
 \end_layout
 
+\begin_layout Section
+Note on transforming T-matrix conventions
+\end_layout
+
+\begin_layout Standard
+T-matrix depends on the used conventions as well.
+ This is not apparent for the Mie case as the T-matrix for a sphere is 
+\begin_inset Quotes sld
+\end_inset
+
+diagonal
+\begin_inset Quotes srd
+\end_inset
+
+.
+ But for other shapes, dipole incoming field can induce also higher-order
+ multipoles in the nanoparticle, etc.
+ The easiest way to determine the transformation properties is to write
+ down the total scattered electric field for both conventions in the form
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{scat}}=\sum_{n'}\sum_{n}T_{n'}^{n}c^{n'}\vect f_{n}=\sum_{n'}\sum_{n}\widetilde{T}_{n'}^{n}\widetilde{c}^{n'}\widetilde{\vect f}_{n}
+\]
+
+\end_inset
+
+where we merged all the indices into single multiindex 
+\begin_inset Formula $n$
+\end_inset
+
+ or 
+\begin_inset Formula $n'$
+\end_inset
+
+.
+ This way of writing immediately suggest how to transform the T-matrix into
+ the new convention if we know the transformation properties of the base
+ waves and expansion coefficients, as it reminds the notation used in geometry
+ – 
+\begin_inset Formula $c^{\alpha}$
+\end_inset
+
+ are 
+\begin_inset Quotes sld
+\end_inset
+
+vector coordinates
+\begin_inset Quotes srd
+\end_inset
+
+, 
+\begin_inset Formula $\vect f_{\alpha}$
+\end_inset
+
+ are 
+\begin_inset Quotes sld
+\end_inset
+
+base vectors
+\begin_inset Quotes srd
+\end_inset
+
+.
+ Obviously, T-matrix is then 
+\begin_inset Quotes sld
+\end_inset
+
+tensor of type (1,1)
+\begin_inset Quotes srd
+\end_inset
+
+, and it transforms as vector coordinates (i.e.
+ wave expansion coefficients) in the 
+\begin_inset Formula $n$
+\end_inset
+
+ (outgoing wave) indices and as form coordinates in the 
+\begin_inset Formula $n'$
+\end_inset
+
+ (regular/illuminating wave) indices.
+ Form coordinates change in the same waves as base vectors
+\end_layout
+
+\begin_layout Subsection
+Kristensson to Taylor
+\end_layout
+
+\begin_layout Standard
+For instance, let us transform between from the Kristensson's to Taylor's
+ convention.
+ We know that the Taylor's base vectors are 
+\begin_inset Quotes sld
+\end_inset
+
+larger
+\begin_inset Quotes srd
+\end_inset
+
+: 
+\begin_inset Formula $\widetilde{\vect N}_{ml}^{(3/1/4)}=\sqrt{l(l+1)}\left(\vect{u/v/w}\right)_{2lm}$
+\end_inset
+
+ etc, so the coefficients must be smaller by the reciprocal factor, e.g.
+ 
+\begin_inset Formula $\tilde{a}_{ml}=f_{2lm}/\sqrt{l(l+1)}$
+\end_inset
+
+ (now we assume that there are no other prefactors in the expansion of the
+ field, they are already included in the coefficients).
+ Then the T-matrix in the Taylor's convention (tilded) can be calculated
+ from the T-matrix in the Kristensson's convention as
+\begin_inset Formula 
+\[
+\underbrace{\widetilde{T}_{\zeta'l'm'}^{\zeta lm}}_{\mbox{Taylor}}=\frac{\sqrt{l'(l'+1)}}{\sqrt{l(l+1)}}\underbrace{T_{\zeta'l'm'}^{\zeta lm}}_{\mbox{Krist.}}\,_{\leftarrow\mbox{illuminating}}^{\leftarrow\mbox{outgoing}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+scuff-tmatrix output
+\end_layout
+
+\begin_layout Standard
+Indices of the outgoing wave (without primes) come first, illuminating regular
+ wave (with primes) second in the output files of scuff-tmatrix.
+ It seems that it at least in the electric part, the output of scuff-tmatrix
+ is equivalent to the Kristensson's convention.
+ Not sure whether it is also true for the E-M cross terms.
+\end_layout
+
 \begin_layout Chapter
 Green's functions
 \end_layout
@@ -970,7 +1239,7 @@ Multiple scattering: nice linear algebra born from all the mess
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "dipdip"
+bibfiles "Electrodynamics"
 options "plain"
 
 \end_inset
