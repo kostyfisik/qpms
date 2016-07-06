@@ -532,7 +532,7 @@ Definition [T](2.40);
 \begin_inset Formula 
 \begin{eqnarray*}
 \widetilde{\vect N}_{mn}^{(j)} & = & \frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\hat{\vect r}\\
- &  & +\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)\\
+ &  & +\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\, z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
 \widetilde{\vect M}_{mn}^{(j)} & = & \left[i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}-\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
 \end{eqnarray*}
 

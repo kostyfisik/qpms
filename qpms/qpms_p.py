@@ -423,7 +423,7 @@ def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
                 +math.lgamma(n+ν+1) - math.lgamma(2*(n+ν)+1))
     presum = math.exp(exponent)
     presum = presum * np.exp(1j*(μ-m)*φlj) * (-1)**m * 1j**(ν+n) / (4*n)
-    qmax = floor(q_max(-m,n,μ,ν)) #nemá tu být +m?
+    qmax = math.floor(q_max(-m,n,μ,ν)) #nemá tu být +m?
     q = np.arange(qmax+1, dtype=int)
     # N.B. -m !!!!!!
     a1q = a_q(-m,n,μ,ν) # there is redundant calc. of qmax
@@ -455,7 +455,7 @@ def B̃(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     presum = math.exp(exponent)
     presum = presum * np.exp(1j*(μ-m)*φlj) * (-1)**m * 1j**(ν+n+1) / (
         (4*n)*(n+1)*(n+m+1))
-    Qmax = floor(q_max(-m,n+1,μ,ν))
+    Qmax = math.floor(q_max(-m,n+1,μ,ν))
     q = np.arange(Qmax+1, dtype=int)
     if (μ == ν): # it would disappear in the sum because of the factor (ν-μ) anyway
         ã2q = 0
