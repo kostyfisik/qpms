@@ -7,6 +7,7 @@ from scipy.special import lpmn, lpmv, sph_jn, sph_yn, poch
 from scipy.misc import factorial
 import math
 import cmath
+import quaternion, spherical_functions as sf # because of the Wigner matrices
 
 
 # Coordinate transforms for arrays of "arbitrary" shape
@@ -758,3 +759,68 @@ def G0_sum_1_slow(source_cart, dest_cart, k, nmax):
 
 
 
+# Transformations of spherical bases
+def WignerD_mm(l, quat):
+    """
+    Calculates Wigner D matrix (as an numpy (2*l+1,2*l+1)-shaped array) 
+    for order l, and a rotation given by quaternion quat.
+    
+    This represents the rotation of spherical vector basis
+    TODO doc
+    """
+    
+    indices = np.array([ [l,i,j] for i in range(-l,l+1) for j in range(-l,l+1)])
+    Delems = sf.Wigner_D_element(quat, indices).reshape(2*l+1,2*l+1)
+    return Delems
+
+def WignerD_mm_fromvector(l, vect):
+    """
+    TODO doc
+    """
+    return WignerD_mm(l, quaternion.from_rotation_vector(vect))
+
+
+def WignerD_yy(lmax, quat):
+    """
+    TODO doc
+    """
+    my, ny = get_mn_y(lmax)
+    Delems = np.zeros((len(my),len(my)),dtype=complex)
+    b_in = 0
+    e_in =  None
+    for l in range(1,lmax+1):
+        e_in = b_in + 2*l+1
+        Delems[b_in:e_in,b_in:e_in] = WignerD_mm(l, quat)
+        b_in = e_in
+    return Delems
+    
+def WignerD_yy_fromvector(lmax, vect):
+    """
+    TODO doc
+    """
+    return WignerD_yy(lmax, quaternion.from_rotation_vector(vect))
+
+def xflip_yy(lmax):
+    """
+    TODO doc
+    """
+    my, ny = get_mn_y(lmax)
+    elems = np.zeros((len(my),len(my)),dtype=int)
+    b_in = 0
+    e_in =  None
+    for l in range(1,lmax+1):
+        e_in = b_in + 2*l+1
+        elems[b_in:e_in,b_in:e_in] = np.eye(2*l+1)[::-1,:]
+        b_in = e_in
+    return elems
+    
+def yflip_yy(lmax):
+    """
+    TODO doc
+    """
+    my, ny = get_mn_y(lmax)
+    elems = xflip_yy(lmax)
+    elems[(my % 2)==1] = elems[(my % 2)==1] * -1 # Obvious sign of tiredness (this is correct but ugly; FIXME)
+    return elems
+
+# BTW parity (xyz-flip) is simply (-1)**ny

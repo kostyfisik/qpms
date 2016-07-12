@@ -15,7 +15,7 @@ setup(name='qpms',
         version = "0.1",
         packages=['qpms'],
 #        setup_requires=['setuptools_cython'],
-        install_requires=['cython>=0.21'],
+        install_requires=['cython>=0.21','quaternion','spherical_functions'],
         ext_modules=[qpms_c],
         cmdclass = {'build_ext': build_ext},
         )
