@@ -838,3 +838,52 @@ def yflip_yy(lmax):
     return elems
 
 # BTW parity (xyz-flip) is simply (-1)**ny
+
+
+
+#----------------------------------------------------#
+# Loading T-matrices from scuff-tmatrix output files #
+#----------------------------------------------------#
+
+# We don't really need this particular function anymore, but...
+def _scuffTMatrixConvert_EM_01(EM):
+    #print(EM)
+    if (EM == b'E'):
+        return 0
+    elif (EM == b'M'):
+        return 1
+    else:
+        return None
+
+def loadScuffTMatrices(fileName):
+    """
+    TODO doc
+    """
+    μm = 1e-6
+    table = np.genfromtxt(fileName, 
+                  converters={1: _scuffTMatrixConvert_EM_01, 4: _scuffTMatrixConvert_EM_01},
+                  dtype=[('freq', '<f8'), ('outc_type', '<i8'), ('outc_l', '<i8'), ('outc_m', '<i8'), 
+                         ('inc_type', '<i8'), ('inc_l', '<i8'), ('inc_m', '<i8'), ('Treal', '<f8'), ('Timag', '<f8')]
+                          )
+    lMax=np.max(table['outc_l'])
+    my,ny = get_mn_y(lMax)
+    nelem = len(ny)
+    TMatrix_sz = nelem**2 * 4 # number of rows for each frequency: nelem * nelem spherical incides, 2 * 2 E/M types
+    freqs_weirdunits = table['freq'][::TMatrix_sz].copy()
+    freqs = freqs_weirdunits * c / μm
+    # The iteration in the TMatrix file goes in this order (the last one iterates fastest, i.e. in the innermost loop):
+    # freq outc_l outc_m outc_type inc_l inc_m inc_type
+    # The l,m mapping is the same as is given by my get_mn_y function, so no need to touch that
+    TMatrices_tmp_real = table['Treal'].reshape(len(freqs), nelem, 2, nelem, 2)
+    TMatrices_tmp_imag = table['Timag'].reshape(len(freqs), nelem, 2, nelem, 2)
+    # There are two přoblems with the previous matrices. First, we want to have the
+    # type indices first, so we want a shape (len(freqs), 2, nelem, 2, nelem) as in the older code.
+    # Second, M-waves come first, so they have now 0-valued index, and E-waves have 1-valued index,
+    # which we want to be inverted.
+    TMatrices = np.empty((len(freqs),2,nelem,2,nelem),dtype=complex)
+    for inc_type in [0,1]:
+        for outc_type in [0,1]:
+            TMatrices[:,1-outc_type,:,1-inc_type,:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
+    # IMPORTANT: now we are going from Reid's/Kristensson's/Jackson's/whoseever convention to Taylor's convention
+    TMatrices[:,:,:,:,:] = TMatrices[:,:,:,:,:] * np.sqrt(ny*(ny+1))[ň,ň,ň,ň,:] / np.sqrt(ny*(ny+1))[ň,ň,:,ň,ň]
+    return (TMatrices, freqs, freqs_weirdunits, lMax)
