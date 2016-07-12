@@ -1717,12 +1717,34 @@ Numerics:
 \end_layout
 
 \begin_layout Section
-TODO
+Misc
 \end_layout
 
 \begin_layout Itemize
-Päivi's suggestion: suppress the dipole and let it interact only with the
- higher multipoles.
+The 
+\begin_inset Quotes eld
+\end_inset
+
+zero limits
+\begin_inset Quotes erd
+\end_inset
+
+ of 
+\begin_inset Formula $\tilde{\pi},\tilde{\tau}$
+\end_inset
+
+ functions in Taylor's normalisation can be expressed as
+\lang finnish
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\lim_{\theta\to0}\tilde{\pi}_{mn}\left(\cos\theta\right) & = & -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}+\delta_{m,-1})\\
+\lim_{\theta\to0}\tilde{\tau}_{mn}\left(\cos\theta\right) & = & -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}-\delta_{m,-1})
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

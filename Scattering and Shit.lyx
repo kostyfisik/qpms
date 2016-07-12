@@ -79,8 +79,21 @@
 
 \begin_body
 
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
+\end_layout
+
 \begin_layout Title
-Electromagnetic multiple scattering, spherical waves and shit
+Electromagnetic multiple scattering, spherical waves and ****
 \end_layout
 
 \begin_layout Author
@@ -95,31 +108,779 @@ Zillion conventions for spherical vector waves
 Legendre polynomials and spherical harmonics: messy from the very beginning
 \end_layout
 
+\begin_layout Standard
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+FIXME check the Condon-Shortley phases.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Associated Legendre polynomial of degree 
+\begin_inset Formula $l\ge0$
+\end_inset
+
+ and order 
+\begin_inset Formula $m,$
+\end_inset
+
+ 
+\begin_inset Formula $l\ge m\ge-l$
+\end_inset
+
+, is given by the recursive relation
+\begin_inset Formula 
+\[
+P_{l}^{-m}=\underbrace{\left(-1\right)^{m}}_{\mbox{Condon-Shortley phase}}\frac{1}{2^{l}l!}\left(1-x^{2}\right)^{m/2}\frac{\ud^{l+m}}{\ud x^{l+m}}\left(x^{2}-1\right)^{l}.
+\]
+
+\end_inset
+
+There is a relation between the positive and negative orders,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P_{l}^{-m}=\underbrace{\left(-1\right)^{m}}_{\mbox{C.-S. p.}}\frac{\left(l-m\right)!}{\left(l+m\right)!}P_{l}^{m}\left(\cos\theta\right),\quad m\ge0.
+\]
+
+\end_inset
+
+The index 
+\begin_inset Formula $l$
+\end_inset
+
+ (in certain notations, it is often 
+\begin_inset Formula $n$
+\end_inset
+
+) is called 
+\emph on
+degree
+\emph default
+, index 
+\begin_inset Formula $m$
+\end_inset
+
+ is the 
+\emph on
+order
+\emph default
+.
+ These two terms are then transitively used for all the object which build
+ on the associated Legendre polynomials, i.e.
+ spherical harmonics, vector spherical harmonics, spherical waves etc.
+\end_layout
+
+\begin_layout Subsection
+Kristensson 
+\end_layout
+
+\begin_layout Standard
+Kristensson uses the Condon-Shortley phase, so (sect.
+ [K]D.2)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Y_{lm}\left(\hat{\vect r}\right)=\left(-1\right)^{m}\sqrt{\frac{2l+1}{4\pi}\frac{\left(l-m\right)!}{\left(l+m\right)!}}P_{l}^{m}\left(\cos\theta\right)e^{im\phi}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Y_{lm}^{\dagger}\left(\hat{\vect r}\right)=Y_{lm}^{*}\left(\hat{\vect r}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Y_{l,-m}\left(\hat{\vect r}\right)=\left(-1\right)^{m}Y_{lm}^{\dagger}\left(\hat{\vect r}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Orthonormality:
+\begin_inset Formula 
+\[
+\int Y_{lm}\left(\hat{\vect r}\right)Y_{l'm'}^{\dagger}\left(\hat{\vect r}\right)\,\ud\Omega=\delta_{ll'}\delta_{mm'}
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-Pi and tau (?), spherical Bessel functions
+Pi and tau
+\end_layout
+
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{\pi}_{mn}\left(\cos\theta\right) & = & \sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}\frac{m}{\sin\theta}P_{n}^{m}\left(\cos\theta\right)\\
+\tilde{\tau}_{mn}\left(\cos\theta\right) & = & \sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}\frac{\ud}{\ud\theta}P_{n}^{m}\left(\cos\theta\right)
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
 Vector spherical harmonics (?)
 \end_layout
 
-\begin_layout Section
-All the conventions
+\begin_layout Subsection
+Kristensson
 \end_layout
 
 \begin_layout Standard
+Original formulation, sect.
+ [K]D.3.3
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect A_{1lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{1}{\sin\theta}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\\
+\vect A_{2lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\\
+\vect A_{3lm}\left(\hat{\vect r}\right) & = & \hat{\vect r}Y_{lm}\left(\hat{\vect r}\right)
+\end{eqnarray*}
+
+\end_inset
+
+Normalisation:
+\begin_inset Formula 
+\[
+\int\vect A_{n}\left(\hat{\vect r}\right)\cdot\vect A_{n'}^{\dagger}\left(\hat{\vect r}\right)\,\ud\Omega=\delta_{nn'}
+\]
+
+\end_inset
+
+Here 
+\begin_inset Formula $\mbox{ }^{\dagger}$
+\end_inset
+
+ means just complex conjugate, apparently (see footnote on p.
+ 89).
+\end_layout
+
+\begin_layout Subsection
+Jackson
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.101)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\vect X_{lm}(\theta,\phi)=\frac{1}{\sqrt{l(l+1)}}\vect LY_{lm}(\theta,\phi)
+\]
+
+\end_inset
+
+where 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.119)"
+key "jackson_classical_1998"
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+\vect L=\frac{1}{i}\left(\vect r\times\vect{\nabla}\right)
+\]
+
+\end_inset
+
+for its expression in spherical coordinates and other properties check Jackson's
+ book around the definitions.
+\end_layout
+
+\begin_layout Standard
+Normalisation 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.120)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\int\vect X_{l'm'}^{*}\cdot\vect X_{lm}\,\ud\Omega=\delta_{ll'}\delta_{mm'}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Local sum rule 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.153)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\sum_{m=-l}^{l}\left|\vect X_{lm}(\theta,\phi)^{2}\right|=\frac{2l+1}{4\pi}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Spherical Bessel functions
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Spherical-Bessel-functions"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cf.
+ [DLMF] §10.47–60.
+\end_layout
+
+\begin_layout Standard
+The radial dependence of spherical vector waves is given by the spherical
+ Bessel functions and their first derivatives.
+ Commonly, the following notation is adopted
+\begin_inset Formula 
+\begin{eqnarray*}
+z_{n}^{(1)}(x) & = & j_{n}(x),\\
+z_{n}^{(2)}(x) & = & y_{n}(x),\\
+z_{n}^{(3)}(x) & = & h_{n}^{(1)}(x)=j_{n}(x)+iy_{n}(x),\\
+z_{n}^{(4)}(x) & = & h_{n}^{(2)}(x)=j_{n}(x)-iy_{n}(x).
+\end{eqnarray*}
+
+\end_inset
+
+Here, 
+\begin_inset Formula $j_{n}$
+\end_inset
+
+ is the spherical Bessel function of first kind (regular), 
+\begin_inset Formula $y_{j}$
+\end_inset
+
+ is the spherical Bessel function of second kind (singular), and 
+\begin_inset Formula $h_{n}^{(1)},h_{n}^{(2)}$
+\end_inset
+
+ are the Hankel functions a.k.a.
+ spherical Bessel functions of third kind.
+ In spherical vector waves, 
+\begin_inset Formula $j_{n}$
+\end_inset
+
+ corresponds to regular waves, 
+\begin_inset Formula $h^{(1)}$
+\end_inset
+
+ corresponds (by the usual convention) to outgoing waves, and 
+\begin_inset Formula $h^{(2)}$
+\end_inset
+
+ corresponds to incoming waves.
+ To describe scattering, we need two sets of waves with two different types
+ of spherical Bessel functions 
+\begin_inset Formula $z_{n}^{(J)}$
+\end_inset
+
+.
+ Most common choice is 
+\begin_inset Formula $J=1,3$
+\end_inset
+
+, because if we decompose the field into spherical waves centered at 
+\begin_inset Formula $\vect r_{0}$
+\end_inset
+
+, the field produced by other sources (e.g.
+ spherical waves from other scatterers or a plane wave) is always regular
+ at 
+\begin_inset Formula $\vect r_{0}$
+\end_inset
+
+.
+ Second choice which makes a bit of sense is 
+\begin_inset Formula $J=3,4$
+\end_inset
+
+ as it leads to a nice expression for the energy transport.
+\end_layout
+
+\begin_layout Subsection
+Limiting Forms
+\end_layout
+
+\begin_layout Standard
+[DLMF] §10.52:
+\end_layout
+
+\begin_layout Subsection
+\begin_inset Formula $z\to0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+j_{n}(z) & \sim & z^{n}/(2n+1)!!\\
+h_{n}^{(1)}(z)\sim iy(z) & \sim & -i\left(2n+1\right)!!/z^{n+1}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Spherical vector waves
+\end_layout
+
+\begin_layout Standard
+TODO 
 \begin_inset Formula $M,N,\psi,\chi,\widetilde{M},\widetilde{N},u,v,w,\dots$
 \end_inset
 
 , sine/cosine convention (B&H), ...
 \end_layout
 
+\begin_layout Standard
+There are two mutually orthogonal types of divergence-free (everywhere except
+ in the origin for singular waves) spherical vector waves, which I call
+ electric and magnetic, given by the type of multipole source to which they
+ correspond.
+ This is another distinction than the regular/singular/ingoing/outgoing
+ waves given by the type of the radial dependence (cf.
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Spherical-Bessel-functions"
+
+\end_inset
+
+).
+ Oscillating electric current in a tiny rod parallel to its axis will generate
+ electric dipole waves (net dipole moment of magnetic current is zero) moment
+ , whereas oscillating electric current in a tiny circular loop will generate
+ magnetic dipole waves (net dipole moment of electric current is zero).
+\end_layout
+
+\begin_layout Standard
+In the usual cases we encounter, the part described by the magnetic waves
+ is pretty small.
+\end_layout
+
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+Definition [T](2.40); 
+\begin_inset Formula $\widetilde{\vect N}_{mn}^{(j)},\widetilde{\vect M}_{mn}^{(j)}$
+\end_inset
+
+ are the electric and magnetic waves, respectively:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\widetilde{\vect N}_{mn}^{(j)} & = & \frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\hat{\vect r}\\
+ &  & +\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\, z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
+\widetilde{\vect M}_{mn}^{(j)} & = & \left[i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}-\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Kristensson
+\end_layout
+
+\begin_layout Standard
+Definition [K](2.4.6); 
+\begin_inset Formula $\vect u_{\tau lm},\vect v_{\tau lm},\vect w_{\tau lm}$
+\end_inset
+
+ are the waves with 
+\begin_inset Formula $j=3,1,4$
+\end_inset
+
+ respectively, i.e.
+ outgoing, regular and incoming waves.
+ The first index distinguishes between the electric (
+\begin_inset Formula $\tau=2$
+\end_inset
+
+) and magnetic (
+\begin_inset Formula $\tau=1$
+\end_inset
+
+).
+ Kristensson uses a multiindex 
+\begin_inset Formula $n\equiv(\tau,l,m)$
+\end_inset
+
+ to simlify the notation.
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\vect{u/v/w}\right)_{2lm} & = & \frac{1}{kr}\frac{\ud\left(kr\, z_{l}^{(j)}\left(kr\right)\right)}{\ud\, kr}\vect A_{2lm}\left(\hat{\vect r}\right)+\sqrt{l\left(l+1\right)}\frac{z_{l}^{(j)}(kr)}{kr}\vect A_{3lm}\left(\hat{\vect r}\right)\\
+\left(\vect{u/v/w}\right)_{1lm} & = & z_{l}^{(j)}\left(kr\right)\vect A_{1lm}\left(\hat{\vect r}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Relation between Kristensson and Taylor
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Kristensson-v-Taylor"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Kristensson's and Taylor's VSWFs seem to differ only by an 
+\begin_inset Formula $l$
+\end_inset
+
+-dependent normalization factor, and notation of course (n.b.
+ the inverse index order)
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\vect{u/v/w}\right)_{2lm} & = & \frac{\widetilde{\vect N}_{ml}^{(3/1/4)}}{\sqrt{l\left(l+1\right)}}\\
+\left(\vect{u/v/w}\right)_{1lm} & = & \frac{\widetilde{\vect M}_{ml}^{(3/1/4)}}{\sqrt{l\left(l+1\right)}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Plane wave expansion
 \end_layout
 
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $x$
+\end_inset
+
+-polarised, 
+\begin_inset Formula $z$
+\end_inset
+
+-propagating plane wave, 
+\begin_inset Formula $\vect E=E_{0}\hat{\vect x}e^{i\vect k\cdot\hat{\vect z}}$
+\end_inset
+
+ (CHECK):
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect E & = & -i\left(p_{mn}\widetilde{\vect N}_{mn}^{(1)}+q_{mn}\widetilde{\vect M}_{mn}^{(1)}\right)\\
+p_{mn} & = & E_{0}\frac{4\pi i^{n}}{n(n+1)}\tilde{\tau}_{mn}(1)\\
+q_{mn} & = & E_{0}\frac{4\pi i^{n}}{n(n+1)}\tilde{\pi}_{mn}(1)
+\end{eqnarray*}
+
+\end_inset
+
+while it can be shown that
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{\pi}_{mn}(1) & = & -\frac{1}{2}\sqrt{\frac{\left(2n+1\right)\left(n\left(n+1\right)\right)}{4\pi}}\left(\delta_{m,1}+\delta_{m,-1}\right)\\
+\tilde{\tau}_{mn}(1) & = & -\frac{1}{2}\sqrt{\frac{\left(2n+1\right)\left(n\left(n+1\right)\right)}{4\pi}}\left(\delta_{m,1}-\delta_{m,-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Kristensson
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $x$
+\end_inset
+
+-polarised, 
+\begin_inset Formula $z$
+\end_inset
+
+-propagating plane wave, 
+\begin_inset Formula $\vect E=E_{0}\hat{\vect x}e^{i\vect k\cdot\hat{\vect z}}$
+\end_inset
+
+ (CHECK, ):
+\begin_inset Formula 
+\[
+\vect E=\sum_{n}a_{n}\vect v_{n}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+a_{1lm} & = & E_{0}i^{l+1}\sqrt{\left(2l+1\right)\pi}\left(\delta_{m,1}+\delta_{m,-1}\right)\\
+a_{2lm} & = & E_{0}i^{l+1}\sqrt{\left(2l+1\right)\pi}\left(\delta_{m,1}+\delta_{m,-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Radiated energy
+\end_layout
+
+\begin_layout Standard
+In this section I summarize the formulae for power 
+\begin_inset Formula $P$
+\end_inset
+
+ radiated from the system.
+ For an absorbing scatterer, this should be negative (n.b.
+ sign conventions can be sometimes confusing).
+ If the system is excited by a plane wave with intensity 
+\begin_inset Formula $E_{0}$
+\end_inset
+
+, this can be used to calculate the absorption cross section (TODO check
+ if it should be multiplied by the 2),
+\begin_inset Formula 
+\[
+\sigma_{\mathrm{abs}}=-\frac{2P}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Kristensson
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Radiated enenergy-Kristensson"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Sect.
+ [K]2.6.2; here this form of expansion is assumed:
+\begin_inset Formula 
+\begin{equation}
+\vect E\left(\vect r,\omega\right)=k\sqrt{\eta_{0}\eta}\sum_{n}\left(a_{n}\vect v_{n}\left(k\vect r\right)+f_{n}\vect u_{n}\left(k\vect r\right)\right).\label{eq:power-Kristensson-E}
+\end{equation}
+
+\end_inset
+
+Here 
+\begin_inset Formula $\eta_{0}=\sqrt{\mu_{0}/\varepsilon_{0}}$
+\end_inset
+
+ is the wave impedance of free space and 
+\begin_inset Formula $\eta=\sqrt{\mu/\varepsilon}$
+\end_inset
+
+ is the relative wave impedance of the medium.
+ 
+\end_layout
+
+\begin_layout Standard
+The radiated power is then (2.28): 
+\begin_inset Formula 
+\[
+P=\frac{1}{2}\sum_{n}\left(\left|f_{n}\right|^{2}+\Re\left(f_{n}a_{n}^{*}\right)\right).
+\]
+
+\end_inset
+
+The first term is obviously the power radiated away by the outgoing waves.
+ The second term must then be minus the power sucked by the scatterer from
+ the exciting wave.
+ If the exciting wave is plane, it gives us the extinction cross section
+\begin_inset Formula 
+\[
+\sigma_{\mathrm{tot}}=-\frac{\sum_{n}\Re\left(f_{n}a_{n}^{*}\right)}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Taylor
+\end_layout
+
+\begin_layout Standard
+Here I derive the radiated power in Taylor's convention by applying the
+ relations from subsection 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Kristensson-v-Taylor"
+
+\end_inset
+
+ to the Kristensson's formulae (sect.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Radiated enenergy-Kristensson"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Assume the external field decomposed as (here I use tildes even for the
+ expansion coefficients in order to avoid confusion with the 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:power-Kristensson-E"
+
+\end_inset
+
+) 
+\begin_inset Formula 
+\[
+\vect E\left(\vect r,\omega\right)=\sum_{mn}\left[-i\left(\tilde{p}_{mn}\vect{\widetilde{N}}_{mn}^{(1)}+\tilde{q}_{mn}\widetilde{\vect M}_{mn}^{(1)}\right)+i\left(\tilde{a}_{mn}\widetilde{\vect N}_{mn}^{(3)}+\tilde{b}_{mn}\widetilde{\vect M}_{mn}^{(3)}\right)\right]
+\]
+
+\end_inset
+
+(there is minus between the regular and outgoing part!).
+ The coefficients are related to those from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:power-Kristensson-E"
+
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+\tilde{p}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{-i\sqrt{n(n+1)}}a_{2nm},\quad\tilde{q}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{-i\sqrt{n(n+1)}}a_{1nm},
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\tilde{a}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{i\sqrt{n(n+1)}}f_{2nm},\quad\tilde{b}_{mn}=\frac{k\sqrt{\eta_{0}\eta}}{i\sqrt{n(n+1)}}f_{1nm}.
+\]
+
+\end_inset
+
+The radiated power is then
+\begin_inset Formula 
+\[
+P=\frac{1}{2}\sum_{m,n}\frac{n\left(n+1\right)}{k^{2}\eta_{0}\eta}\left(\left|a_{mn}\right|^{2}+\left|b_{mn}\right|^{2}-\Re\left(a_{mn}p_{mn}^{*}\right)-\Re\left(b_{mn}q_{mn}^{*}\right)\right).
+\]
+
+\end_inset
+
+If the exciting wave is a plane wave, the extinction cross section is
+\begin_inset Formula 
+\[
+\sigma_{\mathrm{tot}}=\frac{1}{\varepsilon\varepsilon_{0}\left|E_{0}\right|^{2}k^{2}\eta_{0}\eta}\sum_{m,n}n(n+1)\left(\Re\left(a_{mn}p_{mn}^{*}\right)+\Re\left(b_{mn}q_{mn}^{*}\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Jackson
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.155)"
+key "jackson_classical_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+P=\frac{Z_{0}}{2k^{2}}\sum_{l,m}\left[\left|a_{E}(l,m)\right|^{2}+\left|a_{M}(l,m)\right|^{2}\right]
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -139,7 +900,7 @@ key "pustovit_plasmon-mediated_2010"
 
 \end_inset
 
-
+ and Jackson (9.169) and around.
 \end_layout
 
 \begin_layout Subsection
@@ -147,15 +908,166 @@ Near field limit
 \end_layout
 
 \begin_layout Chapter
-Mie Theory
+Single particle scattering and Mie theory
+\end_layout
+
+\begin_layout Standard
+The basic idea is simple.
+ For an exciting spherical wave (usually the regular wave in whatever convention
+) of a given frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+, type 
+\begin_inset Formula $\zeta'$
+\end_inset
+
+ (electric or magnetic), degree 
+\begin_inset Formula $l'$
+\end_inset
+
+ and order 
+\begin_inset Formula $m'$
+\end_inset
+
+, the particle responds with waves from the complementary set (e.g.
+ outgoing waves), with the same frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+, but any type 
+\begin_inset Formula $\zeta$
+\end_inset
+
+, degree 
+\begin_inset Formula $l$
+\end_inset
+
+ and order 
+\begin_inset Formula $m$
+\end_inset
+
+, in a way that the Maxwell's equations are satisfied, with the coefficients
+ 
+\begin_inset Formula $T_{l,m;l',m'}^{\zeta,\zeta'}(\omega)$
+\end_inset
+
+.
+ This yields one row in the scattering matrix (often called the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix) 
+\begin_inset Formula $T(\omega)$
+\end_inset
+
+, which fully characterizes the scattering properties of the particle (in
+ the linear regime, of course).
+ Analytical expression for the matrix is known for spherical scatterer,
+ otherwise it is computed numerically (using DDA, BEM or whatever).
+ So if we have the two sets of spherical wave functions 
+\begin_inset Formula $\vect f_{lm}^{J_{1},\zeta}$
+\end_inset
+
+, 
+\begin_inset Formula $\vect f_{lm}^{J_{2},\zeta}$
+\end_inset
+
+ and the full 
+\begin_inset Quotes sld
+\end_inset
+
+exciting
+\begin_inset Quotes srd
+\end_inset
+
+ wave has electric field given as
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{inc}}=\sum_{\zeta'=\mathrm{E,M}}\sum_{l',m'}c_{l'm'}^{\zeta'}\vect f_{l'm'}^{\zeta'},
+\]
+
+\end_inset
+
+the 
+\begin_inset Quotes sld
+\end_inset
+
+scattered
+\begin_inset Quotes srd
+\end_inset
+
+ field will be
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{scat}}=\sum_{\zeta',l',m'}\sum_{\zeta,l,m}T_{l,m;l',m'}^{\zeta,\zeta'}c_{l'm'}^{\zeta'}\vect f_{lm}^{\zeta},
+\]
+
+\end_inset
+
+and the total field around the scaterer is 
+\begin_inset Formula $\vect E=\vect E_{\mathrm{ext}}+\vect E_{\mathrm{scat}}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
-Full version
+Mie theory – full version
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $T$
+\end_inset
+
+-matrix for a spherical particle is type-, degree- and order- diagonal,
+ that is, 
+\begin_inset Formula $T_{l',m';l,m}^{\zeta',\zeta}(\omega)=0$
+\end_inset
+
+ if 
+\begin_inset Formula $l\ne l'$
+\end_inset
+
+, 
+\begin_inset Formula $m\ne m'$
+\end_inset
+
+ or 
+\begin_inset Formula $\zeta\ne\zeta'$
+\end_inset
+
+.
+ Moreover, it does not depend on 
+\begin_inset Formula $m$
+\end_inset
+
+, so
+\begin_inset Formula 
+\[
+T_{l,m;l',m'}^{\zeta,\zeta'}(\omega)=T_{l}^{\zeta}\left(\omega\right)\delta_{\zeta'\zeta}\delta_{l'l}\delta_{m'm}
+\]
+
+\end_inset
+
+where for the usual choice 
+\begin_inset Formula $J_{1}=1,J_{2}=3$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+T_{l}^{E}\left(\omega\right) & = & TODO,\\
+T_{l}^{M}(\omega) & = & TODO.
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
-Long wave approximation
+Long wave approximation for spherical nanoparticle
 \end_layout
 
 \begin_layout Standard
@@ -168,6 +1080,140 @@ key "pustovit_plasmon-mediated_2010"
 \end_inset
 
  and around.
+\end_layout
+
+\begin_layout Section
+Note on transforming T-matrix conventions
+\end_layout
+
+\begin_layout Standard
+T-matrix depends on the used conventions as well.
+ This is not apparent for the Mie case as the T-matrix for a sphere is 
+\begin_inset Quotes sld
+\end_inset
+
+diagonal
+\begin_inset Quotes srd
+\end_inset
+
+.
+ But for other shapes, dipole incoming field can induce also higher-order
+ multipoles in the nanoparticle, etc.
+ The easiest way to determine the transformation properties is to write
+ down the total scattered electric field for both conventions in the form
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{scat}}=\sum_{n'}\sum_{n}T_{n'}^{n}c^{n'}\vect f_{n}=\sum_{n'}\sum_{n}\widetilde{T}_{n'}^{n}\widetilde{c}^{n'}\widetilde{\vect f}_{n}
+\]
+
+\end_inset
+
+where we merged all the indices into single multiindex 
+\begin_inset Formula $n$
+\end_inset
+
+ or 
+\begin_inset Formula $n'$
+\end_inset
+
+.
+ This way of writing immediately suggest how to transform the T-matrix into
+ the new convention if we know the transformation properties of the base
+ waves and expansion coefficients, as it reminds the notation used in geometry
+ – 
+\begin_inset Formula $c^{\alpha}$
+\end_inset
+
+ are 
+\begin_inset Quotes sld
+\end_inset
+
+vector coordinates
+\begin_inset Quotes srd
+\end_inset
+
+, 
+\begin_inset Formula $\vect f_{\alpha}$
+\end_inset
+
+ are 
+\begin_inset Quotes sld
+\end_inset
+
+base vectors
+\begin_inset Quotes srd
+\end_inset
+
+.
+ Obviously, T-matrix is then 
+\begin_inset Quotes sld
+\end_inset
+
+tensor of type (1,1)
+\begin_inset Quotes srd
+\end_inset
+
+, and it transforms as vector coordinates (i.e.
+ wave expansion coefficients) in the 
+\begin_inset Formula $n$
+\end_inset
+
+ (outgoing wave) indices and as form coordinates in the 
+\begin_inset Formula $n'$
+\end_inset
+
+ (regular/illuminating wave) indices.
+ Form coordinates change in the same waves as base vectors
+\end_layout
+
+\begin_layout Subsection
+Kristensson to Taylor
+\end_layout
+
+\begin_layout Standard
+For instance, let us transform between from the Kristensson's to Taylor's
+ convention.
+ We know that the Taylor's base vectors are 
+\begin_inset Quotes sld
+\end_inset
+
+larger
+\begin_inset Quotes srd
+\end_inset
+
+: 
+\begin_inset Formula $\widetilde{\vect N}_{ml}^{(3/1/4)}=\sqrt{l(l+1)}\left(\vect{u/v/w}\right)_{2lm}$
+\end_inset
+
+ etc, so the coefficients must be smaller by the reciprocal factor, e.g.
+ 
+\begin_inset Formula $\tilde{a}_{ml}=f_{2lm}/\sqrt{l(l+1)}$
+\end_inset
+
+ (now we assume that there are no other prefactors in the expansion of the
+ field, they are already included in the coefficients).
+ Then the T-matrix in the Taylor's convention (tilded) can be calculated
+ from the T-matrix in the Kristensson's convention as
+\begin_inset Formula 
+\[
+\underbrace{\widetilde{T}_{\zeta'l'm'}^{\zeta lm}}_{\mbox{Taylor}}=\frac{\sqrt{l'(l'+1)}}{\sqrt{l(l+1)}}\underbrace{T_{\zeta'l'm'}^{\zeta lm}}_{\mbox{Krist.}}\,_{\leftarrow\mbox{illuminating}}^{\leftarrow\mbox{outgoing}}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+scuff-tmatrix output
+\end_layout
+
+\begin_layout Standard
+Indices of the outgoing wave (without primes) come first, illuminating regular
+ wave (with primes) second in the output files of scuff-tmatrix.
+ It seems that it at least in the electric part, the output of scuff-tmatrix
+ is equivalent to the Kristensson's convention.
+ Not sure whether it is also true for the E-M cross terms.
 \end_layout
 
 \begin_layout Chapter
@@ -183,17 +1229,17 @@ Mie decomposition of Green's function for single nanoparticle
 \end_layout
 
 \begin_layout Chapter
-Translation of spherical waves: shit gets insane
+Translation of spherical waves: getting insane
 \end_layout
 
 \begin_layout Chapter
-Multiple scattering: nice linear algebra born from all the shit
+Multiple scattering: nice linear algebra born from all the mess
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "dipdip"
+bibfiles "Electrodynamics"
 options "plain"
 
 \end_inset

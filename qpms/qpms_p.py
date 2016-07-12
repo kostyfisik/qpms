@@ -215,6 +215,9 @@ def zJn(n, z, J=1):
 
 
 # The following 4 funs have to be refactored, possibly merged
+
+# FIXME: this can be expressed simply as:
+# $$ -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}+\delta_{m,-1}) $$
 def π̃_zerolim(nmax): # seems OK
     """
     lim_{θ→ 0-} π̃(cos θ)
@@ -249,6 +252,8 @@ def π̃_pilim(nmax): # Taky OK, jen to možná není kompatibilní se vzorečky
     π̃_y = prenorm *     π̃_y
     return π̃_y
 
+# FIXME: this can be expressed simply as
+# $$ -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}-\delta_{m,-1}) $$
 def τ̃_zerolim(nmax):
     """
     lim_{θ→ 0-} τ̃(cos θ)
@@ -419,7 +424,7 @@ def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
                 +math.lgamma(n+ν+1) - math.lgamma(2*(n+ν)+1))
     presum = math.exp(exponent)
     presum = presum * np.exp(1j*(μ-m)*φlj) * (-1)**m * 1j**(ν+n) / (4*n)
-    qmax = floor(q_max(-m,n,μ,ν)) #nemá tu být +m?
+    qmax = math.floor(q_max(-m,n,μ,ν)) #nemá tu být +m?
     q = np.arange(qmax+1, dtype=int)
     # N.B. -m !!!!!!
     a1q = a_q(-m,n,μ,ν) # there is redundant calc. of qmax
@@ -451,7 +456,7 @@ def B̃(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     presum = math.exp(exponent)
     presum = presum * np.exp(1j*(μ-m)*φlj) * (-1)**m * 1j**(ν+n+1) / (
         (4*n)*(n+1)*(n+m+1))
-    Qmax = floor(q_max(-m,n+1,μ,ν))
+    Qmax = math.floor(q_max(-m,n+1,μ,ν))
     q = np.arange(Qmax+1, dtype=int)
     if (μ == ν): # it would disappear in the sum because of the factor (ν-μ) anyway
         ã2q = 0
@@ -500,6 +505,7 @@ def mie_coefficients(a, nmax,  #ω, ε_i, ε_e=1, J_ext=1, J_scat=3
 
     FIXME test the magnetic case
     TODO description
+    RH concerns the N ("electric") part, RV the M ("magnetic") part
     #
     
     Parameters
@@ -668,6 +674,14 @@ def G_Mie_scat_cart(source_cart, dest_cart, a, nmax, k_i, k_e, μ_i=1, μ_e=1, J
     """
     RH, RV, TH, TV = mie_coefficients(a=a, nmax=nmax, k_i=k_i, k_e=k_e, μ_i=μ_i, μ_e=μ_e, J_ext=J_ext, J_scat=J_scat)
     return G_Mie_scat_precalc_cart_new(source_cart, dest_cart, RH, RV, a, nmax, k_i, k_e, μ_i, μ_e, J_ext, J_scat)
+
+
+#TODO
+def cross_section_Mie_precalc():
+    pass
+
+def cross_section_Mie(a, nmax, k_i, k_e, μ_i, μ_e,):
+    pass
 
 
 # In[9]:
