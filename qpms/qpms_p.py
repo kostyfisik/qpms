@@ -887,3 +887,218 @@ def loadScuffTMatrices(fileName):
     # IMPORTANT: now we are going from Reid's/Kristensson's/Jackson's/whoseever convention to Taylor's convention
     TMatrices[:,:,:,:,:] = TMatrices[:,:,:,:,:] * np.sqrt(ny*(ny+1))[ň,ň,ň,ň,:] / np.sqrt(ny*(ny+1))[ň,ň,:,ň,ň]
     return (TMatrices, freqs, freqs_weirdunits, lMax)
+
+
+# misc tensor maniputalion
+
+def apply_matrix_left(matrix, tensor, axis):
+    """
+    TODO doc
+    Apply square matrix to a given axis of a tensor, so that the result retains the shape
+    of the original tensor. The summation goes over the second index of the matrix and the
+    given tensor axis.
+    """
+    tmp = np.tensordot(matrix, tensor, axes=(-1,axis))
+    return np.moveaxis(tmp, 0, axis)
+
+
+####################
+# Array simulations
+####################
+
+
+def nelem2lMax(nelem):
+    """
+    Auxiliary inverse function to nelem(lMax) = (lMax + 2) * lMax. Returns 0 if
+    it nelem does not come from positive integer lMax.
+    """
+    lMax = round(math.sqrt(1+nelem) - 1)
+    if ((lMax < 1) or ((lMax + 2) * lMax != nelem)):
+        return 0
+    else:
+        return lMax
+
+def scatter_plane_wave(omega, epsilon_b, positions, Tmatrices, k_dirs, E_0s, #saveto = None
+                      ):
+    """
+    Solves the plane wave linear scattering problem for a structure of "non-touching" particles
+    for one frequency and arbitrary number K of incoming plane waves.
+    
+    Parameters
+    ----------
+    omega : positive number
+        The frequency of the field.
+    epsilon_b : complex number
+        Permittivity of the background medium (which has to be isotropic).
+    positions : (N,3)-shaped real array
+        Cartesian positions of the particles.
+    TMatrices : (N,2,nelem,2,nelem) or compatible
+        The T-matrices in the "Taylor convention" describing the scattering on a single nanoparticle.
+        If all the particles are identical and equally oriented, only one T-matrix can be given.
+        nelems = (lMax + 2) * lMax, where lMax is the highest multipole order to which the scattering
+        is calculated.
+    k_dirs : (K,3)-shaped real array or compatible
+        The direction of the incident field wave vector, normalized to one.
+    E_0s : (K,3)-shaped complex array or compatible
+        The electric intensity amplitude of the incident field.
+        
+    Returns
+    -------
+    ab : (K, N, 2, nelem)-shaped complex array
+        The a (electric wave), b (magnetic wave) coefficients of the outgoing field for each particle
+    # Fuck this, it will be wiser to make separate function to calculate those from ab:
+    # sigma_xxx : TODO (K, 2, nelem)
+    #    TODO partial (TODO which?) cross-section for each type of outgoing waves, summed over all
+    #    nanoparticles (total cross section is given by the sum of this.)
+    """
+    nelem = TMatrices.shape[-1]
+    if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
+        raise ValueError('The T-matrices must be of shape (N, 2, nelem, 2, nelem) but are of shape %s' % (str(TMatrices.shape),))
+    lMax = nelem2lMax(nelem)
+    if not lMax:
+        raise ValueError('The "nelem" dimension of T-matrix has invalid value (%d).' % nelem)
+    # TODO perhaps more checks.
+    raise Error('Not implemented.')
+    pass
+
+
+def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_dirs, E_0s, return_xy = False):
+    """
+    Solves the plane wave linear scattering problem for a rectangular array of particles
+    for one frequency and arbitrary number K of incoming plane waves.
+    
+    Parameters
+    ----------
+    omega : positive number
+        The frequency of the field.
+    epsilon_b : complex number
+        Permittivity of the background medium (which has to be isotropic).
+    xN, yN : positive integers
+        Particle numbers in the x and y dimensions
+    xd, yd : positive numbers
+        Periodicities in the x and y direction
+    TMatrices : (xN, yN,2,nelem,2,nelem) or compatible or (2,nelem,2,nelem)
+        The T-matrices in the "Taylor convention" describing the scattering on a single nanoparticle.
+        If all the particles are identical and equally oriented, only one T-matrix can be given.
+        nelems = (lMax + 2) * lMax, where lMax is the highest multipole order to which the scattering
+        is calculated.
+        Electric wave index is 0, magnetic wave index is 1.
+    k_dirs : (K,3)-shaped real array or compatible
+        The direction of the incident field wave vector, normalized to one.
+    E_0s : (K,3)-shaped complex array or compatible
+        The electric intensity amplitude of the incident field.
+        
+    Returns
+    -------
+    ab : (K, xN, yN, 2, nelem)-shaped complex array
+        The a (electric wave), b (magnetic wave) coefficients of the outgoing field for each particle
+    """
+    nelem = TMatrices.shape[-1]
+    if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
+        raise ValueError('The T-matrices must be of shape (N, 2, nelem, 2, nelem) but are of shape %s' % (str(TMatrices.shape),))
+    lMax = nelem2lMax(nelem)
+    if not lMax:
+        raise ValueError('The "nelem" dimension of T-matrix has invalid value (%d).' % nelem)
+    # TODO perhaps more checks.
+    k_out = omega * math.sqrt(epsilon_b) / c # wave number
+    my, ny = get_mn_y(lMax)
+    N = yN * xN
+    
+    J_scat=3
+    J_ext=1
+    
+    # Do something with this ugly indexing crap
+    xind, yind = np.meshgrid(np.arange(xN),np.arange(yN), indexing='ij')
+    xind = xind.flatten()
+    yind = yind.flatten()
+    xyind = np.stack((xind, yind, np.zeros((xind.shape),dtype=int)),axis=-1)
+    cart_lattice=xyind * np.array([xd, yd, 0])
+    x=cart_lattice[:,0]
+    y=cart_lattice[:,1]
+    xyind = xyind[:,0:2]
+    
+    # Lattice speedup
+    Agrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
+    Bgrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
+    for yl in range(nelem): # source
+        for xij in range(2*xN):
+            for yij in range(2*yN):
+                for yj in range(nelem): #dest
+                  if((yij != yN) or (xij != xN)):
+                    d_l2j = cart2sph(np.array([(xij-xN)*xd, (yij-yN)*yd, 0]))
+                    Agrid[yj, xij, yij, yl] = Ã(my[yj],ny[yj],my[yl],ny[yl],kdlj=d_l2j[0]*k_out,θlj=d_l2j[1],φlj=d_l2j[2],r_ge_d=False,J=J_scat)
+                    Bgrid[yj, xij, yij, yl] = B̃(my[yj],ny[yj],my[yl],ny[yl],kdlj=d_l2j[0]*k_out,θlj=d_l2j[1],φlj=d_l2j[2],r_ge_d=False,J=J_scat)
+
+    # Translation coefficient matrix T
+    transmat = np.zeros((xN* yN, 2, nelem, xN* yN, 2, nelem),dtype=np.complex_)
+    for l in range(N):
+        xil, yil = xyind[l]
+        for j in range(N):
+            xij, yij = xyind[j]
+            if (l!=j):
+                        transmat[j,0,:,l,0,:] = Agrid[:, xij - xil + xN, yij - yil + yN, :]
+                        transmat[j,0,:,l,1,:] = Bgrid[:, xij - xil + xN, yij - yil + yN, :]
+                        transmat[j,1,:,l,0,:] = Bgrid[:, xij - xil + xN, yij - yil + yN, :]
+                        transmat[j,1,:,l,1,:] = Agrid[:, xij - xil + xN, yij - yil + yN, :]
+    Agrid = None
+    Bgrid = None
+
+    # Now we solve a linear problem (1 - M T) A = M P_0 where M is the T-matrix :-)
+    MT = np.empty((N,2,nelem,N,2,nelem),dtype=np.complex_)
+    
+    TMatrices = np.broadcast_to(TMatrices, (xN, yN, 2, nelem, 2, nelem))
+    for j in range(N): # I wonder how this can be done without this loop...
+        xij, yij = xyind[j]
+        MT[j] = np.tensordot(TMatrices[xij, yij],transmat[j],axes=([-2,-1],[0,1]))
+    MT.shape = (N*2*nelem, N*2*nelem)
+    leftmatrix = np.identity(N*2*nelem) - MT
+    MT = None
+
+    if ((1 == k_dirs.ndim) and (1 == E_0s.ndim)):
+        k_cart = k_dirs * k_out # wave vector of the incident plane wave
+        pq_0 = np.zeros((N,2,nelem), dtype=np.complex_)
+        p_y0, q_y0 = plane_pq_y(nmax, k_cart, E_0s)
+        pq_0[:,0,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * p_y0[ň, :]
+        pq_0[:,1,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * q_y0[ň, :]
+
+        MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+        for j in range(N): # I wonder how this can be done without this loop...
+            MP_0[j] = np.tensordot(TMatrices[xij, yij],pq_0[j],axes=([-2,-1],[-2,-1]))
+        MP_0.shape = (N*2*nelem,)
+        
+        ab = np.linalg.solve(leftmatrix, MP_0)
+        ab.shape = (xN, yN, 2, nelem)
+    else:
+        # handle "broadcasting" for k, E
+        if 1 == k_dirs.ndim:
+            k_dirs = k_dirs[ň,:]
+        if 1 == E_0s.ndim:
+            E_0s = E_0s[ň,:]
+        K = max(E_0s.shape[-2], k_dirs.shape[-2])
+        k_dirs = np.broadcast_to(k_dirs,(K,3))
+        E_0s = np.broadcast_to(E_0s, (K,3))
+        
+        # А ну, чики-брики и в дамки!
+        lupiv = scipy.linalg.lu_factor(leftmatrix, overwrite_a=True)
+        leftmatrix = None
+        
+        ab = np.empty((K,N*2*nelem), dtype=complex)
+        for ki in range(K):
+            k_cart = k_dirs[ki] * k_out
+            pq_0 = np.zeros((N,2,nelem), dtype=np.complex_)
+            p_y0, q_y0 = plane_pq_y(nmax, k_cart, E_0s[ki])
+            pq_0[:,0,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * p_y0[ň, :]
+            pq_0[:,1,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * q_y0[ň, :]
+
+            MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+            for j in range(N): # I wonder how this can be done without this loop...
+                MP_0[j] = np.tensordot(TMatrices[xij, yij],pq_0[j],axes=([-2,-1],[-2,-1]))
+            MP_0.shape = (N*2*nelem,)
+
+            ab[ki] = scipy.linalg.lu_solve(lupiv, MP_0)
+        ab.shape = (K, xN, yN, 2, nelem)
+    if (return_xy):
+        return (ab, x, y)
+    else:
+        return ab
+        
