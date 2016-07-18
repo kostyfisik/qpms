@@ -1164,7 +1164,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         ab.shape = (K, xN, yN, 2, nelem)
         if watch_time:
             timec = time.time()
-            print('%.4f: done (elapsed %.2 s)' % (timec, timec-timecold),file = sys.stderr)
+            print('%.4f: done (elapsed %.2f s)' % (timec, timec-timecold),file = sys.stderr)
     if not (return_pq_0 + return_pq + return_xy):
         return ab
     returnlist = [ab]
