@@ -961,8 +961,9 @@ def scatter_plane_wave(omega, epsilon_b, positions, Tmatrices, k_dirs, E_0s, #sa
     raise Error('Not implemented.')
     pass
 
-
-def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_dirs, E_0s, return_xy = False):
+import warnings
+def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_dirs, E_0s, 
+        return_pq_0 = False, return_pq= False, return_xy = False):
     """
     Solves the plane wave linear scattering problem for a rectangular array of particles
     for one frequency and arbitrary number K of incoming plane waves.
@@ -987,11 +988,26 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         The direction of the incident field wave vector, normalized to one.
     E_0s : (K,3)-shaped complex array or compatible
         The electric intensity amplitude of the incident field.
+    return_pq_0 : bool
+        Return also the multipole decomposition coefficients of the incoming plane wave.
+    return_pq : bool NOT IMPLEMENTED
+        Return also the multipole decomposition coefficients of the field incoming to each
+        particle (inc. the field scattered from other particles.
+    return_xy : bool
+        Return also the cartesian x, y positions of the particles. 
         
     Returns
     -------
     ab : (K, xN, yN, 2, nelem)-shaped complex array
-        The a (electric wave), b (magnetic wave) coefficients of the outgoing field for each particle
+        The a (electric wave), b (magnetic wave) coefficients of the outgoing field for each particle.
+        If none of return_pq or return_xy is set, the array is not enclosed in a tuple.
+    pq_0 : (K, xN, yn, 2, nelem)-shaped complex array
+        The p_0 (electric wave), b_0 (magnetic wave) coefficients of the incoming plane wave for each particle.
+    pq : (K, xN, yN, 2, nelem)-shaped complex array NOT IMPLEMENTED
+        The p (electric wave), q (magnetic wave) coefficients of the total exciting field
+        for each particle (including the field scattered from other particles)
+    x, y : (xN, yN)-shaped real array
+        The x,y positions of the nanoparticles.
     """
     nelem = TMatrices.shape[-1]
     if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
@@ -1060,7 +1076,8 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         p_y0, q_y0 = plane_pq_y(nmax, k_cart, E_0s)
         pq_0[:,0,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * p_y0[ň, :]
         pq_0[:,1,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * q_y0[ň, :]
-
+        if (return_pq_0):
+            pq_0_arr = pq_0
         MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
         for j in range(N): # I wonder how this can be done without this loop...
             MP_0[j] = np.tensordot(TMatrices[xij, yij],pq_0[j],axes=([-2,-1],[-2,-1]))
@@ -1082,6 +1099,8 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         lupiv = scipy.linalg.lu_factor(leftmatrix, overwrite_a=True)
         leftmatrix = None
         
+        if (return_pq_0):
+            pq_0_arr = np.zeros((K,N,2,nelem), dtype=np.complex_)
         ab = np.empty((K,N*2*nelem), dtype=complex)
         for ki in range(K):
             k_cart = k_dirs[ki] * k_out
@@ -1089,7 +1108,8 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
             p_y0, q_y0 = plane_pq_y(nmax, k_cart, E_0s[ki])
             pq_0[:,0,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * p_y0[ň, :]
             pq_0[:,1,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * q_y0[ň, :]
-
+            if (return_pq_0):
+                pq_0_arr[ki] = pq_0
             MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
             for j in range(N): # I wonder how this can be done without this loop...
                 MP_0[j] = np.tensordot(TMatrices[xij, yij],pq_0[j],axes=([-2,-1],[-2,-1]))
@@ -1097,8 +1117,15 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
 
             ab[ki] = scipy.linalg.lu_solve(lupiv, MP_0)
         ab.shape = (K, xN, yN, 2, nelem)
-    if (return_xy):
-        return (ab, x, y)
-    else:
+    if not (return_pq_0 + return_pq + return_xy):
         return ab
-        
+    returnlist = [ab]
+    if (return_pq_0):
+        returnlist.append(pq_0_arr)
+    if (return_pq):
+        warnings.warn("return_pq not implemented, ignoring")
+        # returnlist.append(pq_arr)
+    if (return_xy):
+        returnlist.append(x)
+        returnlist.append(y)
+    return tuple(returnlist) 
