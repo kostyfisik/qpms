@@ -1073,7 +1073,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     if ((1 == k_dirs.ndim) and (1 == E_0s.ndim)):
         k_cart = k_dirs * k_out # wave vector of the incident plane wave
         pq_0 = np.zeros((N,2,nelem), dtype=np.complex_)
-        p_y0, q_y0 = plane_pq_y(nmax, k_cart, E_0s)
+        p_y0, q_y0 = plane_pq_y(lMax, k_cart, E_0s)
         pq_0[:,0,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * p_y0[ň, :]
         pq_0[:,1,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * q_y0[ň, :]
         if (return_pq_0):
@@ -1105,7 +1105,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         for ki in range(K):
             k_cart = k_dirs[ki] * k_out
             pq_0 = np.zeros((N,2,nelem), dtype=np.complex_)
-            p_y0, q_y0 = plane_pq_y(nmax, k_cart, E_0s[ki])
+            p_y0, q_y0 = plane_pq_y(lMax, k_cart, E_0s[ki])
             pq_0[:,0,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * p_y0[ň, :]
             pq_0[:,1,:] = np.exp(1j*np.sum(k_cart[ň,:]*cart_lattice,axis=-1))[:, ň] * q_y0[ň, :]
             if (return_pq_0):
