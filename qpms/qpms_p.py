@@ -9,7 +9,7 @@ from scipy.misc import factorial
 import math
 import cmath
 import quaternion, spherical_functions as sf # because of the Wigner matrices
-
+import sys, time
 
 # Coordinate transforms for arrays of "arbitrary" shape
 def cart2sph(cart,axis=-1):
@@ -964,7 +964,7 @@ def scatter_plane_wave(omega, epsilon_b, positions, Tmatrices, k_dirs, E_0s, #sa
 
 import warnings
 def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_dirs, E_0s, 
-        return_pq_0 = False, return_pq= False, return_xy = False):
+        return_pq_0 = False, return_pq= False, return_xy = False, watch_time = False):
     """
     Solves the plane wave linear scattering problem for a rectangular array of particles
     for one frequency and arbitrary number K of incoming plane waves.
@@ -996,6 +996,8 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         particle (inc. the field scattered from other particles.
     return_xy : bool
         Return also the cartesian x, y positions of the particles. 
+    watch_time : bool
+        Inform about the progress on stderr
         
     Returns
     -------
@@ -1010,6 +1012,9 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     x, y : (xN, yN)-shaped real array
         The x,y positions of the nanoparticles.
     """
+    if (watch_time):
+        timec = time.time()
+        print('%.4f: running staccet_plane_wave_rectarray' % timec, file = sys.stderr)
     nelem = TMatrices.shape[-1]
     if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
         raise ValueError('The T-matrices must be of shape (N, 2, nelem, 2, nelem) but are of shape %s' % (str(TMatrices.shape),))
@@ -1035,6 +1040,9 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     xyind = xyind[:,0:2]
     
     # Lattice speedup
+    if (watch_time):
+        timec = time.time()
+        print('%.4f: calculating the %d translation matrix elements' % (timec, 8*nelem*nelem*xN*yN), file = sys.stderr)
     Agrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
     Bgrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
     for yl in range(nelem): # source
@@ -1047,6 +1055,11 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
                     Bgrid[yj, xij, yij, yl] = B̃(my[yj],ny[yj],my[yl],ny[yl],kdlj=d_l2j[0]*k_out,θlj=d_l2j[1],φlj=d_l2j[2],r_ge_d=False,J=J_scat)
 
     # Translation coefficient matrix T
+    if (watch_time):
+        timecold = timec
+        timec = time.time()
+        print('%4f: translation matrix elements calculated (elapsed %.2f s), filling the matrix' 
+                % (timec, timec-timecold), file = sys.stderr)
     transmat = np.zeros((xN* yN, 2, nelem, xN* yN, 2, nelem),dtype=np.complex_)
     for l in range(N):
         xil, yil = xyind[l]
@@ -1059,6 +1072,10 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
                         transmat[j,1,:,l,1,:] = Agrid[:, xij - xil + xN, yij - yil + yN, :]
     Agrid = None
     Bgrid = None
+    if (watch_time):
+        timecold = timec
+        timec = time.time()
+        print('%4f: translation matrix filled (elapsed %.2f s)' % (timec, timec-timecold), file=sys.stderr)
 
     # Now we solve a linear problem (1 - M T) A = M P_0 where M is the T-matrix :-)
     MT = np.empty((N,2,nelem,N,2,nelem),dtype=np.complex_)
@@ -1080,11 +1097,22 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         if (return_pq_0):
             pq_0_arr = pq_0
         MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+        #if (watch_time):
+        #    print('%4f: building the interaction matrix' % time.time(), file=sys.stderr)
+
         for j in range(N): # I wonder how this can be done without this loop...
             MP_0[j] = np.tensordot(TMatrices[xij, yij],pq_0[j],axes=([-2,-1],[-2,-1]))
         MP_0.shape = (N*2*nelem,)
         
+        if (watch_time):
+            timecold = time.time()
+            print('%4f: solving the scattering problem for single incoming wave' % timecold,
+                    file = sys.stderr)
         ab = np.linalg.solve(leftmatrix, MP_0)
+        if watch_time:
+            timec = time.time()
+            print('%4f: solved (elapsed %.2f s)' % (timec, timec-timecold), file=sys.stderr)
+
         ab.shape = (xN, yN, 2, nelem)
     else:
         # handle "broadcasting" for k, E
@@ -1097,8 +1125,18 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         E_0s = np.broadcast_to(E_0s, (K,3))
         
         # А ну, чики-брики и в дамки!
+        if watch_time:
+            timecold = time.time()
+            print('%.4f: factorizing the interaction matrix' % timecold, file=sys.stderr)
         lupiv = scipy.linalg.lu_factor(leftmatrix, overwrite_a=True)
         leftmatrix = None
+        if watch_time:
+            timec = time.time()
+            print('%.4f: factorization complete (elapsed %.2 s)' % (timec, timec-timecold),
+                    file = sys.stderr)
+            print('%.4f: solving the scattering problem for %d incoming waves' % (timec, K),
+                    file=sys.stderr)
+            timecold = timec
         
         if (return_pq_0):
             pq_0_arr = np.zeros((K,N,2,nelem), dtype=np.complex_)
@@ -1118,6 +1156,9 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
 
             ab[ki] = scipy.linalg.lu_solve(lupiv, MP_0)
         ab.shape = (K, xN, yN, 2, nelem)
+        if watch_time:
+            timec = time.time()
+            print('%.4f: done (elapsed %.2 s)' % (timec, timec-timecold),file = sys.stderr)
     if not (return_pq_0 + return_pq + return_xy):
         return ab
     returnlist = [ab]
