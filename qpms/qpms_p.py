@@ -1014,7 +1014,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     """
     if (watch_time):
         timec = time.time()
-        print('%.4f: running staccet_plane_wave_rectarray' % timec, file = sys.stderr)
+        print('%.4f: running scatter_plane_wave_rectarray' % timec, file = sys.stderr)
     nelem = TMatrices.shape[-1]
     if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
         raise ValueError('The T-matrices must be of shape (N, 2, nelem, 2, nelem) but are of shape %s' % (str(TMatrices.shape),))
@@ -1075,7 +1075,8 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     if (watch_time):
         timecold = timec
         timec = time.time()
-        print('%4f: translation matrix filled (elapsed %.2f s)' % (timec, timec-timecold), file=sys.stderr)
+        print('%4f: translation matrix filled (elapsed %.2f s), building the interaction matrix' 
+                % (timec, timec-timecold), file=sys.stderr)
 
     # Now we solve a linear problem (1 - M T) A = M P_0 where M is the T-matrix :-)
     MT = np.empty((N,2,nelem,N,2,nelem),dtype=np.complex_)
@@ -1087,6 +1088,11 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     MT.shape = (N*2*nelem, N*2*nelem)
     leftmatrix = np.identity(N*2*nelem) - MT
     MT = None
+    if (watch_time):
+        timecold = timec
+        timec = time.time()
+        print('%.4f: interaction matrix complete (elapsed %.2f s)' % (timec, timec-timecold),
+                file=sys.stderr)
 
     if ((1 == k_dirs.ndim) and (1 == E_0s.ndim)):
         k_cart = k_dirs * k_out # wave vector of the incident plane wave
@@ -1132,7 +1138,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         leftmatrix = None
         if watch_time:
             timec = time.time()
-            print('%.4f: factorization complete (elapsed %.2 s)' % (timec, timec-timecold),
+            print('%.4f: factorization complete (elapsed %.2f s)' % (timec, timec-timecold),
                     file = sys.stderr)
             print('%.4f: solving the scattering problem for %d incoming waves' % (timec, K),
                     file=sys.stderr)
