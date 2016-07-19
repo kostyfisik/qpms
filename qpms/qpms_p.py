@@ -815,9 +815,13 @@ def WignerD_yy_fromvector(lmax, vect):
     """
     return WignerD_yy(lmax, quaternion.from_rotation_vector(vect))
 
+
+
 def xflip_yy(lmax):
     """
     TODO doc
+    xflip = δ(m + m') δ(l - l')  
+    (i.e. ones on the (m' m) antidiagonal
     """
     my, ny = get_mn_y(lmax)
     elems = np.zeros((len(my),len(my)),dtype=int)
@@ -832,11 +836,36 @@ def xflip_yy(lmax):
 def yflip_yy(lmax):
     """
     TODO doc
+    yflip = rot(z,pi/2) * xflip * rot(z,-pi/2)
+          = δ(m + m') δ(l - l') * (-1)**m
     """
     my, ny = get_mn_y(lmax)
     elems = xflip_yy(lmax)
     elems[(my % 2)==1] = elems[(my % 2)==1] * -1 # Obvious sign of tiredness (this is correct but ugly; FIXME)
     return elems
+
+def zflip_yy(lmax):
+    """
+    TODO doc
+    zflip = (-1)^(l+m)
+    """
+    my, ny = get_mn_y(lmax)
+    elems = np.zeros((len(my), len(my)), dtype=int)
+    b_in = 0
+    e_in = None
+    for l in range(1,lmax+1):
+        e_in = b_in + 2*l+1
+        elems[b_in:e_in,b_in:e_in] = np.diag([(-1)**i for i in range(e_in-b_in)])
+        b_in = e_in
+    return elems
+
+def parity_yy(lmax):
+    """
+    Parity operator (flip in x,y,z)
+    parity = (-1)**l
+    """
+    my, ny = get_mn_y(lmax)
+    return np.diag((-1)**ny)
 
 # BTW parity (xyz-flip) is simply (-1)**ny
 
