@@ -1044,6 +1044,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     if (watch_time):
         timec = time.time()
         print('%.4f: running scatter_plane_wave_rectarray' % timec, file = sys.stderr)
+        sys.stderr.flush()
     nelem = TMatrices.shape[-1]
     if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
         raise ValueError('The T-matrices must be of shape (N, 2, nelem, 2, nelem) but are of shape %s' % (str(TMatrices.shape),))
@@ -1072,6 +1073,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     if (watch_time):
         timec = time.time()
         print('%.4f: calculating the %d translation matrix elements' % (timec, 8*nelem*nelem*xN*yN), file = sys.stderr)
+        sys.stderr.flush()
     Agrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
     Bgrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
     for yl in range(nelem): # source
@@ -1089,6 +1091,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         timec = time.time()
         print('%4f: translation matrix elements calculated (elapsed %.2f s), filling the matrix' 
                 % (timec, timec-timecold), file = sys.stderr)
+        sys.stderr.flush()
     transmat = np.zeros((xN* yN, 2, nelem, xN* yN, 2, nelem),dtype=np.complex_)
     for l in range(N):
         xil, yil = xyind[l]
@@ -1106,6 +1109,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         timec = time.time()
         print('%4f: translation matrix filled (elapsed %.2f s), building the interaction matrix' 
                 % (timec, timec-timecold), file=sys.stderr)
+        sys.stderr.flush()
 
     # Now we solve a linear problem (1 - M T) A = M P_0 where M is the T-matrix :-)
     MT = np.empty((N,2,nelem,N,2,nelem),dtype=np.complex_)
@@ -1122,6 +1126,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         timec = time.time()
         print('%.4f: interaction matrix complete (elapsed %.2f s)' % (timec, timec-timecold),
                 file=sys.stderr)
+        sys.stderr.flush()
 
     if ((1 == k_dirs.ndim) and (1 == E_0s.ndim)):
         k_cart = k_dirs * k_out # wave vector of the incident plane wave
@@ -1143,10 +1148,12 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
             timecold = time.time()
             print('%4f: solving the scattering problem for single incoming wave' % timecold,
                     file = sys.stderr)
+            sys.stderr.flush()
         ab = np.linalg.solve(leftmatrix, MP_0)
         if watch_time:
             timec = time.time()
             print('%4f: solved (elapsed %.2f s)' % (timec, timec-timecold), file=sys.stderr)
+            sys.stderr.flush()
 
         ab.shape = (xN, yN, 2, nelem)
     else:
@@ -1171,6 +1178,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
                     file = sys.stderr)
             print('%.4f: solving the scattering problem for %d incoming waves' % (timec, K),
                     file=sys.stderr)
+            sys.stderr.flush()
             timecold = timec
         
         if (return_pq_0):
@@ -1194,6 +1202,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         if watch_time:
             timec = time.time()
             print('%.4f: done (elapsed %.2f s)' % (timec, timec-timecold),file = sys.stderr)
+            sys.stderr.flush()
     if not (return_pq_0 + return_pq + return_xy):
         return ab
     returnlist = [ab]
