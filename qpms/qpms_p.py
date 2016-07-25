@@ -10,8 +10,10 @@ import math
 import cmath
 import quaternion, spherical_functions as sf # because of the Wigner matrices
 import sys, time
+from numba import jit
 
 # Coordinate transforms for arrays of "arbitrary" shape
+#@jit
 def cart2sph(cart,axis=-1):
     if (cart.shape[axis] != 3):
         raise ValueError("The converted array has to have dimension 3"
@@ -23,6 +25,7 @@ def cart2sph(cart,axis=-1):
     φ = np.arctan2(y,x) # arctan2 handles zeroes correctly itself
     return np.concatenate((r,θ,φ),axis=axis)
 
+#@jit
 def sph2cart(sph, axis=-1):
     if (sph.shape[axis] != 3):
         raise ValueError("The converted array has to have dimension 3"
@@ -34,6 +37,7 @@ def sph2cart(sph, axis=-1):
     z = r * np.cos(θ)
     return np.concatenate((x,y,z),axis=axis)
 
+#@jit
 def sph_loccart2cart(loccart, sph, axis=-1):
     """
     Transformation of vector specified in local orthogonal coordinates 
@@ -83,6 +87,7 @@ def sph_loccart2cart(loccart, sph, axis=-1):
     out=inr̂*r̂+inθ̂*θ̂+inφ̂*φ̂
     return out
 
+#@jit
 def sph_loccart_basis(sph, sphaxis=-1, cartaxis=None):
     """
     Returns the local cartesian basis in terms of global cartesian basis.
@@ -118,6 +123,7 @@ def sph_loccart_basis(sph, sphaxis=-1, cartaxis=None):
     out = np.concatenate((x,y,z),axis=cartaxis)
     return out
 
+@jit
 def lpy(nmax, z):
     """
     Associated legendre function and its derivatative at z in the 'y-indexing'.
@@ -194,14 +200,18 @@ def vswf_yr(pos_sph,nmax,J=1):
     pass
 
 from scipy.special import sph_jn, sph_yn
+@jit
 def _sph_zn_1(n,z):
     return sph_jn(n,z)
+@jit
 def _sph_zn_2(n,z):
     return sph_yn(n,z)
+@jit
 def _sph_zn_3(n,z):
     besj=sph_jn(n,z)
     besy=sph_yn(n,z)
     return (besj[0] + 1j*besy[0],besj[1] + 1j*besy[1])
+@jit
 def _sph_zn_4(n,z):
     besj=sph_jn(n,z)
     besy=sph_yn(n,z)
@@ -294,6 +304,7 @@ def get_π̃τ̃_y1(θ,nmax):
     τ̃_y = prenorm * dPy * (- math.sin(θ))  # TADY BACHA!!!!!!!!!! * (- math.sin(pos_sph[1])) ???
     return (π̃_y,τ̃_y)
     
+#@jit
 def vswf_yr1(pos_sph,nmax,J=1):
     """
     As vswf_yr, but evaluated only at single position (i.e. pos_sph has
@@ -376,6 +387,27 @@ def plane_pq_y(nmax, kdir_cart, E_cart):
     the phase and polarisation state). If E_cart and kdir_cart are
     not orthogonal, the result should correspond to the k-normal part
     of E_cart.
+
+    The Taylor's convention on the expansion is used; therefore,
+    the electric field is expressed as
+    E(r) = E_cart * exp(1j * k ∙ r)
+         = -1j * ∑_y ( p_y * Ñ_y(|k| * r) + q_y * M̃_y(|k| * r))
+    (note the -1j factor).
+
+    Parameters
+    ----------
+    nmax: int
+        The order of the expansion.
+    kdir_cart: (3,)-shaped real array
+        The wave vector (its magnitude does not play a role).
+    E_cart: (3,)-shaped complex array
+        Amplitude of the plane wave
+
+    Returns
+    -------
+    p_y, q_y:
+        The expansion coefficients for the electric (Ñ) and magnetic
+        (M̃) waves, respectively.
     """
     if np.iscomplexobj(kdir_cart):
         warnings.warn("The direction vector for the plane wave coefficients should be real. I am discarding the imaginary part now.")
@@ -419,6 +451,7 @@ def a_q(m,n,μ,ν,q = None):
 
 # All arguments are single numbers (for now)
 # ZDE VYCHÁZEJÍ DIVNÁ ZNAMÉNKA
+#@jit
 def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     exponent=(math.lgamma(2*n+1)-math.lgamma(n+2)+math.lgamma(2*ν+3)-math.lgamma(ν+2) 
                 +math.lgamma(n+ν+m-μ+1)-math.lgamma(n-m+1)-math.lgamma(ν+μ+1)
@@ -450,6 +483,7 @@ def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     return presum * np.sum(summandq)
     
 # ZDE OPĚT JINAK ZNAMÉNKA než v Xu (J. comp. phys 127, 285)
+#@jit
 def B̃(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     exponent=(math.lgamma(2*n+3)-math.lgamma(n+2)+math.lgamma(2*ν+3)-math.lgamma(ν+2) 
                 +math.lgamma(n+ν+m-μ+2)-math.lgamma(n-m+1)-math.lgamma(ν+μ+1)
@@ -579,6 +613,7 @@ def mie_coefficients(a, nmax,  #ω, ε_i, ε_e=1, J_ext=1, J_scat=3
     TH = -(( η_inv_e * že * zs - η_inv_e * ze * žs)/(-η_inv_i * ži * zs + η_inv_e * zi * žs)) 
     return (RH, RV, TH, TV)
 
+#@jit
 def G_Mie_scat_precalc_cart_new(source_cart, dest_cart, RH, RV, a, nmax, k_i, k_e, μ_i=1, μ_e=1, J_ext=1, J_scat=3):
     """
     Implementation according to Kristensson, page 50

@@ -14,3 +14,15 @@ After all dependencies are installed, install qpms to your local python library 
 
 python3 setup.py install --user
 
+
+Easiest installation ever 
+=========================
+(Just skip those you have already installed.)
+
+pip3 install --user numpy
+pip3 install --user scipy
+pip3 install --user cython
+pip3 install --user git+https://github.com/moble/quaternion.git
+pip3 install --user git+https://github.com/moble/spherical_functions.git
+pip3 install --user git+https://github.com/texnokrates/py_gmm.git@standalone_mie
+python3 setup.py install --user
