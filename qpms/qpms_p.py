@@ -470,9 +470,15 @@ def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     J: 1, 2, 3 or 4
         Type of the wave in the old center.
 
-    Returns:
-    --------
+    Returns
+    -------
     TODO
+
+    Bugs
+    ----
+    gevero's gaunt coefficient implementation fails for large m, n (the unsafe territory
+    is somewhere around -72, 80)
+
     """
     exponent=(math.lgamma(2*n+1)-math.lgamma(n+2)+math.lgamma(2*ν+3)-math.lgamma(ν+2) 
                 +math.lgamma(n+ν+m-μ+1)-math.lgamma(n-m+1)-math.lgamma(ν+μ+1)
@@ -1121,6 +1127,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     if (watch_time):
         timec = time.time()
         print('%.4f: running scatter_plane_wave_rectarray' % timec, file = sys.stderr)
+        print('xN = %d, yN = %d' % (xN, yN), file = sys.stderr)
         sys.stderr.flush()
     nelem = TMatrices.shape[-1]
     if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
