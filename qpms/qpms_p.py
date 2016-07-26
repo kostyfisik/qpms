@@ -453,6 +453,27 @@ def a_q(m,n,μ,ν,q = None):
 # ZDE VYCHÁZEJÍ DIVNÁ ZNAMÉNKA
 #@jit
 def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
+    """
+    The Ã translation coefficient for spherical vector waves.
+    
+    Parameters
+    ----------
+    m, n: int
+        The indices (degree and order) of the destination basis.
+    μ, ν: int
+        The indices of the source basis wave.
+    kdlj, θlj, φlj: float
+        The spherical coordinates of the relative position of
+        the new center vs. the old one (R_new - R_old);
+        the distance has to be already multiplied by the wavenumber!
+    r_ge_d: TODO
+    J: 1, 2, 3 or 4
+        Type of the wave in the old center.
+
+    Returns:
+    --------
+    TODO
+    """
     exponent=(math.lgamma(2*n+1)-math.lgamma(n+2)+math.lgamma(2*ν+3)-math.lgamma(ν+2) 
                 +math.lgamma(n+ν+m-μ+1)-math.lgamma(n-m+1)-math.lgamma(ν+μ+1)
                 +math.lgamma(n+ν+1) - math.lgamma(2*(n+ν)+1))
@@ -485,6 +506,27 @@ def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
 # ZDE OPĚT JINAK ZNAMÉNKA než v Xu (J. comp. phys 127, 285)
 #@jit
 def B̃(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
+    """
+    The B̃ translation coefficient for spherical vector waves.
+    
+    Parameters
+    ----------
+    m, n: int
+        The indices (degree and order) of the destination basis.
+    μ, ν: int
+        The indices of the source basis wave.
+    kdlj, θlj, φlj: float
+        The spherical coordinates of the relative position of
+        the new center vs. the old one (R_new - R_old);
+        the distance has to be already multiplied by the wavenumber!
+    r_ge_d: TODO
+    J: 1, 2, 3 or 4
+        Type of the wave in the old center.
+
+    Returns:
+    --------
+    TODO
+    """
     exponent=(math.lgamma(2*n+3)-math.lgamma(n+2)+math.lgamma(2*ν+3)-math.lgamma(ν+2) 
                 +math.lgamma(n+ν+m-μ+2)-math.lgamma(n-m+1)-math.lgamma(ν+μ+1)
                 +math.lgamma(n+ν+2) - math.lgamma(2*(n+ν)+3))
