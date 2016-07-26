@@ -1205,6 +1205,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         if watch_time:
             timecold = time.time()
             print('%.4f: factorizing the interaction matrix' % timecold, file=sys.stderr)
+            sys.stderr.flush()
         lupiv = scipy.linalg.lu_factor(leftmatrix, overwrite_a=True)
         leftmatrix = None
         if watch_time:
