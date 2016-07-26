@@ -1127,7 +1127,6 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     if (watch_time):
         timec = time.time()
         print('%.4f: running scatter_plane_wave_rectarray' % timec, file = sys.stderr)
-        print('xN = %d, yN = %d' % (xN, yN), file = sys.stderr)
         sys.stderr.flush()
     nelem = TMatrices.shape[-1]
     if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
@@ -1135,6 +1134,9 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
     lMax = nelem2lMax(nelem)
     if not lMax:
         raise ValueError('The "nelem" dimension of T-matrix has invalid value (%d).' % nelem)
+    if (watch_time):
+        print('xN = %d, yN = %d, lMax = %d' % (xN, yN, lMax), file = sys.stderr)
+        sys.stderr.flush()
     # TODO perhaps more checks.
     k_out = omega * math.sqrt(epsilon_b) / c # wave number
     my, ny = get_mn_y(lMax)
