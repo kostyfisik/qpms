@@ -915,7 +915,19 @@ def xflip_yy(lmax):
         elems[b_in:e_in,b_in:e_in] = np.eye(2*l+1)[::-1,:]
         b_in = e_in
     return elems
-    
+
+def xflip_tyy(lmax):
+    fl_yy = xflip_yy(lmax)
+    return np.array([fl_yy,-fl_yy])
+
+def xflip_tyty(lmax):
+    fl_yy = xflip_yy(lmax)
+    nelem = fl_yy.shape[0]
+    fl_tyty = np.zeros((2,nelem,2,nelem),dtype=int)
+    fl_tyty[0,:,0,:] = fl_yy
+    fl_tyty[1,:,1,:] = -fl_yy
+    return fl_tyty
+
 def yflip_yy(lmax):
     """
     TODO doc
@@ -926,6 +938,18 @@ def yflip_yy(lmax):
     elems = xflip_yy(lmax)
     elems[(my % 2)==1] = elems[(my % 2)==1] * -1 # Obvious sign of tiredness (this is correct but ugly; FIXME)
     return elems
+
+def yflip_tyy(lmax):
+    fl_yy = yflip_yy(lmax)
+    return np.array([fl_yy,-fl_yy])
+
+def yflip_tyty(lmax):
+    fl_yy = yflip_yy(lmax)
+    nelem = fl_yy.shape[0]
+    fl_tyty = np.zeros((2,nelem,2,nelem),dtype=int)
+    fl_tyty[0,:,0,:] = fl_yy
+    fl_tyty[1,:,1,:] = -fl_yy
+    return fl_tyty
 
 def zflip_yy(lmax):
     """
@@ -941,6 +965,18 @@ def zflip_yy(lmax):
         elems[b_in:e_in,b_in:e_in] = np.diag([(-1)**i for i in range(e_in-b_in)])
         b_in = e_in
     return elems
+
+def zflip_tyy(lmax):
+    fl_yy = zflip_yy(lmax)
+    return np.array([fl_yy,-fl_yy])
+
+def zflip_tyty(lmax):
+    fl_yy = zflip_yy(lmax)
+    nelem = fl_yy.shape[0]
+    fl_tyty = np.zeros((2,nelem,2,nelem),dtype=int)
+    fl_tyty[0,:,0,:] = fl_yy
+    fl_tyty[1,:,1,:] = -fl_yy
+    return fl_tyty
 
 def parity_yy(lmax):
     """
@@ -1294,6 +1330,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         return ab
     returnlist = [ab]
     if (return_pq_0):
+        pq_0_arr.shape = ab.shape
         returnlist.append(pq_0_arr)
     if (return_pq):
         warnings.warn("return_pq not implemented, ignoring")
