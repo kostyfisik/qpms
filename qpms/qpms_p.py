@@ -1050,6 +1050,16 @@ def apply_matrix_left(matrix, tensor, axis):
     tmp = np.tensordot(matrix, tensor, axes=(-1,axis))
     return np.moveaxis(tmp, 0, axis)
 
+def apply_ndmatrix_left(matrix,tensor,axes):
+    """
+    Generalized apply_matrix_left, the matrix can have more (2N) abstract dimensions,
+    like M[i,j,k,...z,i,j,k,...,z]. N axes have to be specified in a tuple, corresponding
+    to the axes 0,1,...N-1 of the matrix
+    """
+    N = len(axes)
+    matrix = np.tensordot(matrix, tensor, axes=([-N+axn for axn in range(N)],axes))
+    matrix = np.moveaxis(matrix, range(N), axes)
+    return matrix
 
 ####################
 # Array simulations
