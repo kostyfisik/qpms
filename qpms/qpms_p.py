@@ -1349,3 +1349,182 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
         returnlist.append(x)
         returnlist.append(y)
     return tuple(returnlist) 
+
+
+import warnings
+def scatter_constmultipole_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, pq_0_c = 1, 
+        return_pq= False, return_xy = False, watch_time = False):
+    """
+    Solves the plane wave linear scattering problem for a rectangular array of particles
+    for one frequency and constant exciting spherical waves throughout the array.
+    
+    Parameters
+    ----------
+    omega : positive number
+        The frequency of the field.
+    epsilon_b : complex number
+        Permittivity of the background medium (which has to be isotropic).
+    xN, yN : positive integers
+        Particle numbers in the x and y dimensions
+    xd, yd : positive numbers
+        Periodicities in the x and y direction
+    TMatrices : (xN, yN,2,nelem,2,nelem) or compatible or (2,nelem,2,nelem)
+        The T-matrices in the "Taylor convention" describing the scattering on a single nanoparticle.
+        If all the particles are identical and equally oriented, only one T-matrix can be given.
+        nelems = (lMax + 2) * lMax, where lMax is the highest multipole order to which the scattering
+        is calculated.
+        Electric wave index is 0, magnetic wave index is 1.
+    pq_0_c : (nelem)-shaped complex array or compatible
+        The initial excitation coefficients for the ("complex") multipole waves, in Taylor's convention.
+    return_pq : bool NOT IMPLEMENTED
+        Return also the multipole decomposition coefficients of the field incoming to each
+        particle (inc. the field scattered from other particles.
+    return_xy : bool
+        Return also the cartesian x, y positions of the particles. 
+    watch_time : bool
+        Inform about the progress on stderr
+        
+    Returns
+    -------
+    ab : (nelem, xN, yN, 2, nelem)-shaped complex array
+        The a (electric wave), b (magnetic wave) coefficients of the outgoing field for each particle.
+        If none of return_pq or return_xy is set, the array is not enclosed in a tuple.
+    pq : (nelem, xN, yN, 2, nelem)-shaped complex array NOT IMPLEMENTED
+        The p (electric wave), q (magnetic wave) coefficients of the total exciting field
+        for each particle (including the field scattered from other particles)
+    x, y : (xN, yN)-shaped real array
+        The x,y positions of the nanoparticles.
+    """
+    if (watch_time):
+        timec = time.time()
+        print('%.4f: running scatter_plane_wave_rectarray' % timec, file = sys.stderr)
+        sys.stderr.flush()
+    nelem = TMatrices.shape[-1]
+    if ((nelem != TMatrices.shape[-3]) or (2 != TMatrices.shape[-2]) or (2 != TMatrices.shape[-4])):
+        raise ValueError('The T-matrices must be of shape (N, 2, nelem, 2, nelem) but are of shape %s' % (str(TMatrices.shape),))
+    lMax = nelem2lMax(nelem)
+    if not lMax:
+        raise ValueError('The "nelem" dimension of T-matrix has invalid value (%d).' % nelem)
+    if (watch_time):
+        print('xN = %d, yN = %d, lMax = %d' % (xN, yN, lMax), file = sys.stderr)
+        sys.stderr.flush()
+    # TODO perhaps more checks.
+    k_out = omega * math.sqrt(epsilon_b) / c # wave number
+    my, ny = get_mn_y(lMax)
+    N = yN * xN
+    
+    J_scat=3
+    J_ext=1
+    
+    # Do something with this ugly indexing crap
+    xind, yind = np.meshgrid(np.arange(xN),np.arange(yN), indexing='ij')
+    xind = xind.flatten()
+    yind = yind.flatten()
+    xyind = np.stack((xind, yind, np.zeros((xind.shape),dtype=int)),axis=-1)
+    cart_lattice=xyind * np.array([xd, yd, 0])
+    x=cart_lattice[:,0]
+    y=cart_lattice[:,1]
+    xyind = xyind[:,0:2]
+    
+    # Lattice speedup
+    if (watch_time):
+        timec = time.time()
+        print('%.4f: calculating the %d translation matrix elements' % (timec, 8*nelem*nelem*xN*yN), file = sys.stderr)
+        sys.stderr.flush()
+    Agrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
+    Bgrid = np.zeros((nelem, 2*xN, 2*yN, nelem),dtype=np.complex_)
+    for yl in range(nelem): # source
+        for xij in range(2*xN):
+            for yij in range(2*yN):
+                for yj in range(nelem): #dest
+                  if((yij != yN) or (xij != xN)):
+                    d_l2j = cart2sph(np.array([(xij-xN)*xd, (yij-yN)*yd, 0]))
+                    Agrid[yj, xij, yij, yl] = Ã(my[yj],ny[yj],my[yl],ny[yl],kdlj=d_l2j[0]*k_out,θlj=d_l2j[1],φlj=d_l2j[2],r_ge_d=False,J=J_scat)
+                    Bgrid[yj, xij, yij, yl] = B̃(my[yj],ny[yj],my[yl],ny[yl],kdlj=d_l2j[0]*k_out,θlj=d_l2j[1],φlj=d_l2j[2],r_ge_d=False,J=J_scat)
+
+    # Translation coefficient matrix T
+    if (watch_time):
+        timecold = timec
+        timec = time.time()
+        print('%4f: translation matrix elements calculated (elapsed %.2f s), filling the matrix' 
+                % (timec, timec-timecold), file = sys.stderr)
+        sys.stderr.flush()
+    transmat = np.zeros((xN* yN, 2, nelem, xN* yN, 2, nelem),dtype=np.complex_)
+    for l in range(N):
+        xil, yil = xyind[l]
+        for j in range(N):
+            xij, yij = xyind[j]
+            if (l!=j):
+                        transmat[j,0,:,l,0,:] = Agrid[:, xij - xil + xN, yij - yil + yN, :]
+                        transmat[j,0,:,l,1,:] = Bgrid[:, xij - xil + xN, yij - yil + yN, :]
+                        transmat[j,1,:,l,0,:] = Bgrid[:, xij - xil + xN, yij - yil + yN, :]
+                        transmat[j,1,:,l,1,:] = Agrid[:, xij - xil + xN, yij - yil + yN, :]
+    Agrid = None
+    Bgrid = None
+    if (watch_time):
+        timecold = timec
+        timec = time.time()
+        print('%4f: translation matrix filled (elapsed %.2f s), building the interaction matrix' 
+                % (timec, timec-timecold), file=sys.stderr)
+        sys.stderr.flush()
+
+    # Now we solve a linear problem (1 - M T) A = M P_0 where M is the T-matrix :-)
+    MT = np.empty((N,2,nelem,N,2,nelem),dtype=np.complex_)
+    
+    TMatrices = np.broadcast_to(TMatrices, (xN, yN, 2, nelem, 2, nelem))
+    for j in range(N): # I wonder how this can be done without this loop...
+        xij, yij = xyind[j]
+        MT[j] = np.tensordot(TMatrices[xij, yij],transmat[j],axes=([-2,-1],[0,1]))
+    MT.shape = (N*2*nelem, N*2*nelem)
+    leftmatrix = np.identity(N*2*nelem) - MT
+    MT = None
+    if (watch_time):
+        timecold = timec
+        timec = time.time()
+        print('%.4f: interaction matrix complete (elapsed %.2f s)' % (timec, timec-timecold),
+                file=sys.stderr)
+        sys.stderr.flush()
+
+    # А ну, чики-брики и в дамки!
+    if watch_time:
+        timecold = time.time()
+        print('%.4f: factorizing the interaction matrix' % timecold, file=sys.stderr)
+        sys.stderr.flush()
+    lupiv = scipy.linalg.lu_factor(leftmatrix, overwrite_a=True)
+    leftmatrix = None
+    if watch_time:
+        timec = time.time()
+        print('%.4f: factorization complete (elapsed %.2f s)' % (timec, timec-timecold),
+                file = sys.stderr)
+        print('%.4f: solving the scattering problem for %d incoming waves' % (timec, K),
+                file=sys.stderr)
+        sys.stderr.flush()
+        timecold = timec
+    
+    ab = np.empty((2,nelem,N*2*nelem), dtype=complex)
+    for N_or_M in range(2):
+      for yy in range(nelem):
+        pq_0 = np.zeros((2,nelem), dtype=np.complex_)
+        pq_0[N_or_M,yy] = pq_0_c[N_or_M,yy]
+        pq_0 = broadcast_to(pq_0, (N, 2, nelem))
+        MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+        for j in range(N): # I wonder how this can be done without this loop...
+            MP_0[j] = np.tensordot(TMatrices[xij, yij],pq_0[j],axes=([-2,-1],[-2,-1]))
+        MP_0.shape = (N*2*nelem,)
+
+        ab[N_or_M, yy] = scipy.linalg.lu_solve(lupiv, MP_0)
+    ab.shape = (nelem, xN, yN, 2, nelem)
+    if watch_time:
+        timec = time.time()
+        print('%.4f: done (elapsed %.2f s)' % (timec, timec-timecold),file = sys.stderr)
+        sys.stderr.flush()
+    if not (return_pq_0 + return_pq + return_xy):
+        return ab
+    returnlist = [ab]
+    if (return_pq):
+        warnings.warn("return_pq not implemented, ignoring")
+        # returnlist.append(pq_arr)
+    if (return_xy):
+        returnlist.append(x)
+        returnlist.append(y)
+    return tuple(returnlist) 
