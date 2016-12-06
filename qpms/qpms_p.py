@@ -29,20 +29,24 @@ except ImportError:
 Accordingly, we define our own jit decorator that handles
 different versions of numba or does nothing if numba is not
 present. Note that functions that include unicode identifiers 
-must be decorated with @jit(u=True)
+must be decorated with @ujit
 '''
-def jit(u=False):
-    def resdec(f):
-        if u and use_jit_utf8:
-            return numba.jit(f)
-        if (not u) and use_jit:
-            return numba.jit(f)
+#def dummywrap(f):
+#    return f
+def jit(f):
+    if use_jit:
+        return numba.jit(f)
+    else:
         return f
-    return resdec
+def ujit(f):
+    if use_jit_utf8:
+        return numba.jit(f)
+    else:
+        return f
 
 
 # Coordinate transforms for arrays of "arbitrary" shape
-@jit(u=True)
+@ujit
 def cart2sph(cart,axis=-1):
     if (cart.shape[axis] != 3):
         raise ValueError("The converted array has to have dimension 3"
@@ -54,7 +58,7 @@ def cart2sph(cart,axis=-1):
     φ = np.arctan2(y,x) # arctan2 handles zeroes correctly itself
     return np.concatenate((r,θ,φ),axis=axis)
 
-@jit(u=True)
+@ujit
 def sph2cart(sph, axis=-1):
     if (sph.shape[axis] != 3):
         raise ValueError("The converted array has to have dimension 3"
@@ -66,7 +70,7 @@ def sph2cart(sph, axis=-1):
     z = r * np.cos(θ)
     return np.concatenate((x,y,z),axis=axis)
 
-@jit(u=True)
+@ujit
 def sph_loccart2cart(loccart, sph, axis=-1):
     """
     Transformation of vector specified in local orthogonal coordinates 
@@ -116,7 +120,7 @@ def sph_loccart2cart(loccart, sph, axis=-1):
     out=inr̂*r̂+inθ̂*θ̂+inφ̂*φ̂
     return out
 
-@jit(u=True)
+@ujit
 def sph_loccart_basis(sph, sphaxis=-1, cartaxis=None):
     """
     Returns the local cartesian basis in terms of global cartesian basis.
@@ -152,7 +156,7 @@ def sph_loccart_basis(sph, sphaxis=-1, cartaxis=None):
     out = np.concatenate((x,y,z),axis=cartaxis)
     return out
 
-@jit(u=False)
+@jit
 def lpy(nmax, z):
     """
     Associated legendre function and its derivatative at z in the 'y-indexing'.
@@ -259,7 +263,7 @@ def zJn(n, z, J=1):
 
 # FIXME: this can be expressed simply as:
 # $$ -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}+\delta_{m,-1}) $$
-@jit(u=True)
+@ujit
 def π̃_zerolim(nmax): # seems OK
     """
     lim_{θ→ 0-} π̃(cos θ)
@@ -277,7 +281,7 @@ def π̃_zerolim(nmax): # seems OK
     π̃_y = prenorm *     π̃_y
     return π̃_y
 
-@jit(u=True)
+@ujit
 def π̃_pilim(nmax): # Taky OK, jen to možná není kompatibilní se vzorečky z mathematiky
     """
     lim_{θ→ π+} π̃(cos θ)
@@ -297,7 +301,7 @@ def π̃_pilim(nmax): # Taky OK, jen to možná není kompatibilní se vzorečky
 
 # FIXME: this can be expressed simply as
 # $$ -\frac{1}{2}\sqrt{\frac{2n+1}{4\pi}n\left(n+1\right)}(\delta_{m,1}-\delta_{m,-1}) $$
-@jit(u=True)
+@ujit
 def τ̃_zerolim(nmax):
     """
     lim_{θ→ 0-} τ̃(cos θ)
@@ -308,7 +312,7 @@ def τ̃_zerolim(nmax):
     p0[minus1mmask] = -p0[minus1mmask]
     return p0
 
-@jit(u=True)
+@ujit
 def τ̃_pilim(nmax):
     """
     lim_{θ→  π+} τ̃(cos θ)
@@ -319,7 +323,7 @@ def τ̃_pilim(nmax):
     t[plus1mmask] = -t[plus1mmask]
     return t
     
-@jit(u=True)
+@ujit
 def get_π̃τ̃_y1(θ,nmax):
     # TODO replace with the limit functions (below) when θ approaches
     # the extreme values at about 1e-6 distance
@@ -339,7 +343,7 @@ def get_π̃τ̃_y1(θ,nmax):
     τ̃_y = prenorm * dPy * (- math.sin(θ))  # TADY BACHA!!!!!!!!!! * (- math.sin(pos_sph[1])) ???
     return (π̃_y,τ̃_y)
     
-@jit(u=True)
+@ujit
 def vswf_yr1(pos_sph,nmax,J=1):
     """
     As vswf_yr, but evaluated only at single position (i.e. pos_sph has
@@ -396,7 +400,7 @@ def vswf_yr1(pos_sph,nmax,J=1):
 #    return 1j**ny * np.sqrt((2*ny+1)*factorial(ny-my) /
 #                            (ny*(ny+1)*factorial(ny+my))
 #    )
-@jit(u=True)
+@ujit
 def zplane_pq_y(nmax, betap = 0):
     """
     The z-propagating plane wave expansion coefficients as in [1, (1.12)]
@@ -415,7 +419,7 @@ def zplane_pq_y(nmax, betap = 0):
     
     
 #import warnings
-@jit(u=True)
+@ujit
 def plane_pq_y(nmax, kdir_cart, E_cart):
     """
     The plane wave expansion coefficients for any direction kdir_cart
@@ -472,13 +476,13 @@ def plane_pq_y(nmax, kdir_cart, E_cart):
 # Functions copied from scattering_xu, additionaly normalized
 from py_gmm.gmm import vec_trans as vc
 
-@jit(u=True)
+@ujit
 def q_max(m,n,μ,ν):
     return min(n,ν,(n+ν-abs(m+μ))/2)
     
 # returns array with indices corresponding to q
 # argument q does nothing for now
-@jit(u=True)
+@ujit
 def a_q(m,n,μ,ν,q = None):
     qm=q_max(m,n,μ,ν)
     res, err= vc.gaunt_xu(m,n,μ,ν,qm)
@@ -489,7 +493,7 @@ def a_q(m,n,μ,ν,q = None):
 
 # All arguments are single numbers (for now)
 # ZDE VYCHÁZEJÍ DIVNÁ ZNAMÉNKA
-@jit(u=True)
+@ujit
 def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     """
     The Ã translation coefficient for spherical vector waves.
@@ -548,7 +552,7 @@ def Ã(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     return presum * np.sum(summandq)
     
 # ZDE OPĚT JINAK ZNAMÉNKA než v Xu (J. comp. phys 127, 285)
-@jit(u=True)
+@ujit
 def B̃(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     """
     The B̃ translation coefficient for spherical vector waves.
@@ -613,7 +617,7 @@ def B̃(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
 # In[7]:
 
 # Material parameters
-@jit(u=True)
+@ujit
 def ε_drude(ε_inf, ω_p, γ_p, ω): # RELATIVE permittivity, of course
     return ε_inf - ω_p*ω_p/(ω*(ω+1j*γ_p))
 
@@ -621,7 +625,7 @@ def ε_drude(ε_inf, ω_p, γ_p, ω): # RELATIVE permittivity, of course
 # In[8]:
 
 # Mie scattering
-@jit(u=True)
+@ujit
 def mie_coefficients(a, nmax,  #ω, ε_i, ε_e=1, J_ext=1, J_scat=3
                                k_i, k_e, μ_i=1, μ_e=1, J_ext=1, J_scat=3):
     """
@@ -701,7 +705,7 @@ def mie_coefficients(a, nmax,  #ω, ε_i, ε_e=1, J_ext=1, J_scat=3
     TH = -(( η_inv_e * že * zs - η_inv_e * ze * žs)/(-η_inv_i * ži * zs + η_inv_e * zi * žs)) 
     return (RH, RV, TH, TV)
 
-@jit(u=True)
+@ujit
 def G_Mie_scat_precalc_cart_new(source_cart, dest_cart, RH, RV, a, nmax, k_i, k_e, μ_i=1, μ_e=1, J_ext=1, J_scat=3):
     """
     Implementation according to Kristensson, page 50
@@ -738,7 +742,7 @@ def G_Mie_scat_precalc_cart_new(source_cart, dest_cart, RH, RV, a, nmax, k_i, k_
            RV[ny][:,ň,ň] * Ñlo_cart_y[:,:,ň].conj() * Ñhi_cart_y[:,ň,:]) / (ny * (ny+1))[:,ň,ň]
     return 1j* k_e*np.sum(G_y,axis=0)
     
-@jit(u=True)
+@ujit
 def G_Mie_scat_precalc_cart(source_cart, dest_cart, RH, RV, a, nmax, k_i, k_e, μ_i=1, μ_e=1, J_ext=1, J_scat=3):
     """
     r1_cart (destination), r2_cart (source) and the result are in cartesian coordinates
@@ -793,7 +797,7 @@ def G_Mie_scat_precalc_cart(source_cart, dest_cart, RH, RV, a, nmax, k_i, k_e, �
     G_source_dest = sph_loccart2cart(G_source_dest, sph=orig2dest_sph, axis=-1)
     return G_source_dest
     
-@jit(u=True)
+@ujit
 def G_Mie_scat_cart(source_cart, dest_cart, a, nmax, k_i, k_e, μ_i=1, μ_e=1, J_ext=1, J_scat=3):
     """
     TODO
@@ -813,7 +817,7 @@ def cross_section_Mie(a, nmax, k_i, k_e, μ_i, μ_e,):
 # In[9]:
 
 # From PRL 112, 253601 (1)
-@jit(u=True)
+@ujit
 def Grr_Delga(nmax, a, r, k, ε_m, ε_b):
     om = k * c
     z = (r-a)/a
@@ -835,7 +839,7 @@ def Grr_Delga(nmax, a, r, k, ε_m, ε_b):
 # Test if the decomposition of plane wave works also for absorbing environment (complex k).
 
 # From PRL 112, 253601 (1)
-@jit(u=True)
+@ujit
 def Grr_Delga(nmax, a, r, k, ε_m, ε_b):
     om = k * c
     z = (r-a)/a
@@ -844,7 +848,7 @@ def Grr_Delga(nmax, a, r, k, ε_m, ε_b):
     s = np.sum( (n+1)**2 * (ε_m-ε_b) / ((1+z)**(2*n+4) * (ε_m + ((n+1)/n)*ε_b)))
     return (g0 + s * c**2/(4*π*om**2*ε_b*a**3))
 
-@jit(u=True)
+@ujit
 def G0_dip_1(r_cart,k):
     """
     Free-space dyadic Green's function in terms of the spherical vector waves.
@@ -861,15 +865,15 @@ def G0_dip_1(r_cart,k):
 
 # Free-space dyadic Green's functions from RMP 70, 2, 447 =: [1]
 # (The numerical value is correct only at the regular part, i.e. r != 0)
-@jit(u=True)
+@ujit
 def _P(z):
     return (1-1/z+1/(z*z))
-@jit(u=True)
+@ujit
 def _Q(z):
     return (-1+3/z-3/(z*z))
 
 # [1, (9)] FIXME The sign here is most likely wrong!!!
-@jit(u=True)
+@ujit
 def G0_analytical(r #cartesian!
                   , k):
     I=np.identity(3)
@@ -883,7 +887,7 @@ def G0_analytical(r #cartesian!
                    ))
 
 # [1, (11)]
-@jit(u=True)
+@ujit
 def G0L_analytical(r, k):
     I=np.identity(3)
     rn = sph_loccart2cart(np.array([1.,0.,0.]), cart2sph(r), axis=-1)
@@ -896,7 +900,7 @@ def G0L_analytical(r, k):
 def G0T_analytical(r, k):
     return G0_analytical(r,k) - G0L_analytical(r,k)
 
-@jit(u=True)
+@ujit
 def G0_sum_1_slow(source_cart, dest_cart, k, nmax):
     my, ny = get_mn_y(nmax)
     nelem = len(my) 
@@ -1067,7 +1071,7 @@ def _scuffTMatrixConvert_EM_01(EM):
     else:
         return None
 
-@jit(u=True)
+@ujit
 def loadScuffTMatrices(fileName):
     """
     TODO doc
@@ -1186,7 +1190,7 @@ def scatter_plane_wave(omega, epsilon_b, positions, Tmatrices, k_dirs, E_0s, #sa
     pass
 
 import warnings
-@jit(u=True)
+@ujit
 def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_dirs, E_0s, 
         return_pq_0 = False, return_pq= False, return_xy = False, watch_time = False):
     """
@@ -1418,7 +1422,7 @@ def scatter_plane_wave_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, k_
 
 
 import warnings
-@jit(u=True)
+@ujit
 def scatter_constmultipole_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices, pq_0_c = 1, 
         return_pq= False, return_xy = False, watch_time = False):
     """
