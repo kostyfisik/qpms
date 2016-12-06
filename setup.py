@@ -12,7 +12,7 @@ qpms_c = Extension('qpms_c',
         sources = ['qpms/qpms_c.pyx'])
 
 setup(name='qpms',
-        version = "0.1.2",
+        version = "0.1.3",
         packages=['qpms'],
 #        setup_requires=['setuptools_cython'],
         install_requires=['cython>=0.21','quaternion','spherical_functions','py_gmm'],
