@@ -5,8 +5,8 @@ import numpy as np
 import time
 import scipy
 import sys
-from qpms_c import * # TODO be explicit about what is imported
-from .qpms_p import nelem2lMax # TODO be explicit about what is imported
+from qpms_c import get_mn_y # TODO be explicit about what is imported
+from .qpms_p import cart2sph, nelem2lMax, Ã, B̃ # TODO be explicit about what is imported
 
 class Scattering(object):
     '''
@@ -39,36 +39,82 @@ class Scattering(object):
         k_0 (float): Wave number for the space between scatterers.
         lMax (int): Absolute maximum l for all scatterers. Depending on implementation,
             lMax can be smaller for some individual scatterers in certain subclasses.
+            FIXME: here it is still implemented as constant lMax for all sites, see #!
         prepared (bool): Keeps information whether the interaction matrix has
             already been built and factorized.
         
 
     '''
-    def __init__(self, positions, TMatrices, k_0, lMax = None, verbose=False):
+
+    def __init__(self, positions, TMatrices, k_0, lMax = None, verbose=False, J_scat=3):
+        self.J_scat = J_scat
         self.positions = positions
-        self.TMatrices = TMatrices
+        self.interaction_matrix = None
+        self.N = positions.shape[0]
         self.k_0 = k_0
-        self.lMax = lMax ? lMax : nelem2lMax(TMatrices.shape[-1])
+        self.lMax = lMax if lMax else nelem2lMax(TMatrices.shape[-1])
+        nelem = lMax * (lMax + 2) #!
+        self.nelem = nelem #!
         self.prepared = False
+        self.TMatrices = np.broadcast_to(TMatrices, (self.N,2,nelem,2,nelem))
 
     def prepare(self, keep_interaction_matrix = False, verbose=False):
         if not self.prepared:
             if not self.interaction_matrix:
                 self.build_interaction_matrix(verbose=verbose)
-            self.lupiv = scipy.linalg_lu_factor(interaction_matrix)
+            self.lupiv = scipy.linalg.lu_factor(self.interaction_matrix,overwrite_a = not keep_interaction_matrix)
             if not keep_interaction_matrix:
                 self.interaction_matrix = None
             self.prepared = True
 
-    def build_interaction_matrix(verbose = False):
-        pass
+    def build_interaction_matrix(self,verbose = False):
+        N = self.N
+        my, ny = get_mn_y(self.lMax)
+        nelem = len(my)
+        leftmatrix = np.zeros((N,2,nelem,N,2,nelem), dtype=complex)
+        for i in range(N):
+            for j in range(N):
+                for yi in range(nelem):
+                    for yj in range(nelem):
+                        if(i != j):
+                            d_i2j = cart2sph(self.positions[j]-self.positions[i])
+                            a = Ã(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*self.k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=self.J_scat)
+                            b = B̃(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*self.k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=self.J_scat)
+                            leftmatrix[j,0,yj,i,0,yi] = a
+                            leftmatrix[j,1,yj,i,1,yi] = a
+                            leftmatrix[j,0,yj,i,1,yi] = b
+                            leftmatrix[j,1,yj,i,0,yi] = b
+        # at this point, leftmatrix is the translation matrix
+        n2id = np.identity(2*nelem)
+        n2id.shape = (2,nelem,2,nelem)
+        for j in range(N):
+            leftmatrix[j] = - np.tensordot(self.TMatrices[j],leftmatrix[j],axes=([-2,-1],[0,1]))
+            # at this point, jth row of leftmatrix is that of -MT
+            leftmatrix[j,:,:,j,:,:] += n2id
+            # now we are done, 1-MT
+        leftmatrix.shape=(N*2*nelem,N*2*nelem)
+        self.interaction_matrix = leftmatrix
 
-    def scatter(pq_0_c, verbose = False):
+    def scatter_constmultipole(self, pq_0_c, verbose = False):
+        N = self.N
         self.prepare(verbose=verbose)
+        nelem = self.nelem
+        if(pq_0_c ==1):
+            pq_0_c = np.full((2,nelem),1)
+        ab = np.empty((2,nelem,N*2*nelem), dtype=complex)
+        for N_or_M in range(2):
+            for yy in range(nelem):
+                pq_0 = np.zeros((2,nelem),dtype=np.complex_)
+                pq_0[N_or_M,yy] = pq_0_c[N_or_M,yy]
+                pq_0 = np.broadcast_to(pq_0, (N,2,nelem))
+                MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+                for j in range(N):
+                    MP_0[j] = np.tensordot(self.TMatrices[j], pq_0[j],axes=([-2,-1],[-2,-1]))
+                MP_0.shape = (N*2*nelem,)
+                a[N_or_M,yy] = scipy.linalg.lu_solve(lupiv,MP_0)
+        ab.shape = (2,nelem,N,2,nelem)
+        return ab
 
-
+class Scattering_lattice(Scattering):
+    def __init__(self):
         pass
-
-
-
-
