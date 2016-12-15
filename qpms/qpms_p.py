@@ -1582,6 +1582,7 @@ def scatter_constmultipole_rectarray(omega, epsilon_b, xN, yN, xd, yd, TMatrices
         pq_0 = np.broadcast_to(pq_0, (N, 2, nelem))
         MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
         for j in range(N): # I wonder how this can be done without this loop...
+            xij, yij = xyind[j]
             MP_0[j] = np.tensordot(TMatrices[xij, yij],pq_0[j],axes=([-2,-1],[-2,-1]))
         MP_0.shape = (N*2*nelem,)
 
