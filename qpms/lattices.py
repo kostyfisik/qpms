@@ -131,8 +131,23 @@ class Scattering(object):
         _time_e(btime, verbose)
 
     def scatter(self, pq_0, verbose = False):
-        pass
-
+        '''
+        pq_0 is (N, nelem, 2)-shaped array 
+        '''
+        btime = _time_b(verbose)
+        self.prepare(verbose=verbose)
+        pq_0 = np.broadcast_to(pq_0, (self.N,2,self.nelem))
+        MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+        for j in range(self.N):
+            MP_0[j] = np.tensordot(self.TMatrices[j], pq_0[j],axes=[-2,-1],[-2,-1])
+        MP_0.shape = (N*2*self.nelem,)
+        solvebtime = _time_b(verbose,step='Solving the linear equation')
+        ab = scipy.linalg.lu_solve(self.lupiv, MP_0)
+        _time_e(solvebtime, verbose, step='Solving the linear equation')
+        ab.shape = (N,2,nelem)
+        _time_e(btime, verbose)
+        return ab
+        
     def scatter_constmultipole(self, pq_0_c, verbose = False):
         btime = _time_b(verbose)
         N = self.N
@@ -155,6 +170,21 @@ class Scattering(object):
         _time_e(btime, verbose)
         return ab
 
-class Scattering_lattice(Scattering):
-    def __init__(self):
-        pass
+class Scattering_2D_lattice(Scattering):
+    def __init__(self, rectcell_dims, rectcell_elem_positions, cellspec, k_0, rectcell_TMatrices = None, TMatrices = None, lMax = None, verbose=False, J_scat=3):
+        '''
+        cellspec: dvojice ve tvaru (seznam_zaplněnosti, seznam_pozic)
+        '''
+        if (rectcell_TMatrices is None) == (TMatrices is None):
+            raise ValueError('Either rectcell_TMatrices or TMatrices has to be given')
+        ###self.positions = ZDE JSEM SKONČIL
+        self.J_scat = J_scat
+        self.positions = positions
+        self.interaction_matrix = None
+        self.N = positions.shape[0]
+        self.k_0 = k_0
+        self.lMax = lMax if lMax else nelem2lMax(TMatrices.shape[-1])
+        nelem = lMax * (lMax + 2) #!
+        self.nelem = nelem #!
+        self.prepared = False
+        self.TMatrices = np.broadcast_to(TMatrices, (self.N,2,nelem,2,nelem))   def __init__(self):
