@@ -2,6 +2,7 @@
 Object oriented approach for the classical multiple scattering problem.
 '''
 import numpy as np
+nx = np.newaxis
 import time
 import scipy
 import sys
@@ -139,7 +140,7 @@ class Scattering(object):
         pq_0 = np.broadcast_to(pq_0, (self.N,2,self.nelem))
         MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
         for j in range(self.N):
-            MP_0[j] = np.tensordot(self.TMatrices[j], pq_0[j],axes=[-2,-1],[-2,-1])
+            MP_0[j] = np.tensordot(self.TMatrices[j], pq_0[j],axes=([-2,-1],[-2,-1]))
         MP_0.shape = (N*2*self.nelem,)
         solvebtime = _time_b(verbose,step='Solving the linear equation')
         ab = scipy.linalg.lu_solve(self.lupiv, MP_0)
@@ -187,4 +188,125 @@ class Scattering_2D_lattice(Scattering):
         nelem = lMax * (lMax + 2) #!
         self.nelem = nelem #!
         self.prepared = False
-        self.TMatrices = np.broadcast_to(TMatrices, (self.N,2,nelem,2,nelem))   def __init__(self):
+        self.TMatrices = np.broadcast_to(TMatrices, (self.N,2,nelem,2,nelem))   
+
+class Scattering_2D_zsym(Scattering):
+    def __init__(self, positions, TMatrices, k_0, lMax = None, verbose=False, J_scat=3):
+        Scattering.__init__(self, positions, TMatrices, k_0, lMax, verbose, J_scat)
+        #TODO some checks on TMatrices symmetry
+        self.TE_yz = np.arange(self.nelem)
+        self.TM_yz = self.TE_yz
+        self.my, self.ny = get_mn_y(self.lMax)
+        self.TE_NMz = (self.my + self.ny) % 2
+        self.TM_NMz = 1 - self.TE_NMz
+        # TODO možnost zadávat T-matice rovnou ve zhuštěné podobě
+        TMatrices_TE = TMatrices[...,TE_NMz[:,nx],TE_yz[:,nx],TE_NMZ[nx,:],TE_yz[nx,:]]
+        TMatrices_TM = TMatrices[...,TM_NMz[:,nx],TM_yz[:,nx],TM_NMZ[nx,:],TM_yz[nx,:]]
+        self.TMatrices_TE = np.broadcast_to(TMatrices_TE, (self.N, self.nelem, self.nelem))
+        self.TMatrices_TM = np.broadcast_to(TMatrices_TM, (self.N, self.nelem, self.nelem))
+        self.prepared_TE = False
+        self.prepared_TM = False
+
+    def prepare_partial(self, TE_or_TM, keep_interaction_matrix = False, verbose=False):
+        '''
+        TE is 0, TM is 1.
+        '''
+        btime = _time_b(verbose)
+        if (TE_or_TM == 0): #TE
+            if not self.prepared_TE:
+                if not self.interaction_matrix_TE:
+                    self.build_interaction_matrix(0, verbose)
+                self.lupiv_TE = scipy.linalg.lu_factor(self.interaction_matrix_TE, overwrite_a = not keep_interaction_matrix)
+                self.prepared_TE = True
+        if (TE_or_TM == 1): #TM
+            in not self.prepared_TM:
+                if not self.interaction_matrix_TM:
+                    self.build_interaction_matrix(1, verbose)
+                self.lupiv_TM = scipy.linalg.lu_factor(self.interaction_matrix_TM, overwrite_a = not keep_interaction_matrix)
+                self.prepared_TM = True
+        _time_e(btime, verbose)
+
+    def prepare(self, keep_interaction_matrix = False, verbose=False):
+        btime = _time_b(verbose)
+        if not self.prepared:
+            self.prepare_partial(0, keep_interaction_matrix, verbose)
+            self.prepare_partial(1, keep_interaction_matrix, verbose)
+            self.prepared = True
+        _time_e(btime, verbose)
+
+    def build_interaction_matrix(self,TE_or_TM = None, verbose = False):
+        #None means both
+        btime = _time_b(verbose)
+        N = self.N
+        my, ny = get_mn_y(self.lMax)
+        nelem = len(my)
+        idm = np.identity(nelem)
+        if (TE_or_TM == 0):
+            EoMl = (0,)
+        elif (TE_or_TM == 1):
+            EoMl = (1,)
+        elif (TE_or_TM is None):
+            EoMl = (0,1)
+        for EoM in EoMl:
+            leftmatrix = np.zeros((N,nelem,N,nelem), dtype=complex)
+            sbtime = _time_b(verbose, step = 'Calculating interparticle translation coefficients, T%s part' % ('M' if EoM else 'E'))
+            for i in range(N):
+                for j in range(i):
+                    for yi in range(nelem):
+                        for yj in range(nelem):
+                            d_i2j = cart2sph(self.positions[j]-self.positions[i])
+                            if ((yi - yj) % 2) == 0:
+                                tr = Ã(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*self.k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=self.J_scat)
+                            else:
+                                tr = B̃(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*self.k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=self.J_scat)
+                            leftmatrix[j,yj,i,yi] = tr
+                            leftmatrix[i,yi,j,yj] = tr if (0 == (my[yj]+my[yi]) % 2) else -tr
+        _   time_e(sbtime, verbose, step = 'Calculating interparticle translation coefficients, T%s part' % ('M' if EoM else 'E'))
+            for j in range(N):
+                leftmatrix = - np.tensordot(self.TMatrices_TM[j] if EoM else self.TMatrices_TE[j],leftmatrix[j],
+                        axes = ([-1],[0]))
+                leftmatrix[j,:,j,:] += idm
+            if EoM == 0:
+                self.interaction_matrix_TE = leftmatrix
+            if EoM == 1:
+                self.interaction_matrix_TM = leftmatrix
+        _time_e(btime, verbose)
+
+    def scatter_partial(self, TE_or_TM, pq_0, verbose = False):
+        '''
+        pq_0 is (N, nelem)-shaped array
+        '''
+        btime = _time_b(verbose)
+        self.prepare_partial(TE_or_TM, verbose = verbose)
+        pq_0 = np.broadcast_to(pq_0, (self.N, self.nelem))
+        MP_0 = np.empty((self.N,self.nelem),dtype=np.complex_)
+        for j in range(self.N):
+            if TE_or_TM: #TM
+                MP_0[j] = np.tensordot(self.TMatrices_TM[j], pq_0[j], axes=([-1],[-1]))
+            else: #TE
+                MP_0[j] = np.tensordot(self.TMatrices_TE[j], pq_0[j], axes=([-1],[-1]))
+        solvebtime = _time_b(verbose,step='Solving the linear equation')
+        ab = scipy.linalg.lu_solve(self.lupiv_TM if TE_or_EM else self.lupiv.TE, MP_0)
+        _time_e(solvebtime, verbose, step='Solving the linear equation')
+        _time_e(btime,verbose)
+        return ab
+
+    def scatter(self, pq_0, verbose = False):
+        '''
+        FI7ME
+        pq_0 is (N, nelem, 2)-shaped array 
+        '''
+        btime = _time_b(verbose)
+        self.prepare(verbose=verbose)
+        pq_0 = np.broadcast_to(pq_0, (self.N,2,self.nelem))
+        MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+        for j in range(self.N):
+            MP_0[j] = np.tensordot(self.TMatrices[j], pq_0[j],axes=([-2,-1],[-2,-1]))
+        MP_0.shape = (N*2*self.nelem,)
+        solvebtime = _time_b(verbose,step='Solving the linear equation')
+        ab = scipy.linalg.lu_solve(self.lupiv, MP_0)
+        _time_e(solvebtime, verbose, step='Solving the linear equation')
+        ab.shape = (N,2,nelem)
+        _time_e(btime, verbose)
+        return ab
+    
