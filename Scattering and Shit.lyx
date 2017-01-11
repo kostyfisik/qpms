@@ -262,11 +262,13 @@ Original formulation, sect.
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{eqnarray*}
-\vect A_{1lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{1}{\sin\theta}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\\
-\vect A_{2lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\\
-\vect A_{3lm}\left(\hat{\vect r}\right) & = & \hat{\vect r}Y_{lm}\left(\hat{\vect r}\right)
-\end{eqnarray*}
+\begin{eqnarray}
+\vect A_{1lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{1}{\sin\theta}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\nonumber \\
+ & = & \frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect rY_{lm}\left(\hat{\vect r}\right)\right)\nonumber \\
+\vect A_{2lm}\left(\hat{\vect r}\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\left(\hat{\vect{\theta}}\frac{\partial}{\partial\phi}Y_{lm}\left(\hat{\vect r}\right)-\hat{\vect{\phi}}\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}Y_{lm}\left(\hat{\vect r}\right)\right)\label{eq:vector spherical harmonics Kristensson}\\
+ & = & \frac{1}{\sqrt{l\left(l+1\right)}}r\nabla Y_{lm}\left(\hat{\vect r}\right)\nonumber \\
+\vect A_{3lm}\left(\hat{\vect r}\right) & = & \hat{\vect r}Y_{lm}\left(\hat{\vect r}\right)\nonumber 
+\end{eqnarray}
 
 \end_inset
 
@@ -1234,6 +1236,10 @@ Translation of spherical waves: getting insane
 
 \begin_layout Chapter
 Multiple scattering: nice linear algebra born from all the mess
+\end_layout
+
+\begin_layout Chapter
+Quantisation of quasistatic modes of a sphere
 \end_layout
 
 \begin_layout Standard

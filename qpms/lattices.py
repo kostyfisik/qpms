@@ -138,14 +138,14 @@ class Scattering(object):
         btime = _time_b(verbose)
         self.prepare(verbose=verbose)
         pq_0 = np.broadcast_to(pq_0, (self.N,2,self.nelem))
-        MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
+        MP_0 = np.empty((self.N,2,self.nelem),dtype=np.complex_)
         for j in range(self.N):
             MP_0[j] = np.tensordot(self.TMatrices[j], pq_0[j],axes=([-2,-1],[-2,-1]))
-        MP_0.shape = (N*2*self.nelem,)
+        MP_0.shape = (self.N*2*self.nelem,)
         solvebtime = _time_b(verbose,step='Solving the linear equation')
         ab = scipy.linalg.lu_solve(self.lupiv, MP_0)
         _time_e(solvebtime, verbose, step='Solving the linear equation')
-        ab.shape = (N,2,nelem)
+        ab.shape = (self.N,2,self.nelem)
         _time_e(btime, verbose)
         return ab
         
@@ -171,7 +171,7 @@ class Scattering(object):
         _time_e(btime, verbose)
         return ab
 
-class Scattering_2D_lattice(Scattering):
+class Scattering_2D_lattice_rectcells(Scattering):
     def __init__(self, rectcell_dims, rectcell_elem_positions, cellspec, k_0, rectcell_TMatrices = None, TMatrices = None, lMax = None, verbose=False, J_scat=3):
         '''
         cellspec: dvojice ve tvaru (seznam_zaplněnosti, seznam_pozic)
