@@ -1,12 +1,12 @@
 import math
 import numpy as np
+nx = None
 
 _s3 = math.sqrt(3)
-_e6 = np.array([[math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6),0] if v3d else [math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6)] for i in range(6)])
-_f6 = np.array([[-math.sin(2*math.pi*i/6),math.cos(2*math.pi*i/6),0] if v3d else [math.sin(2*math.pi*i/6),-math.cos(2*math.pi*i/6)] for i in range(6)])
- 
+
 
 def generate_trianglepoints(maxlayer, include_origin = False, v3d = True, circular = True, sixthindices = False, mirrorindices = False):
+    _e6 = np.array([[math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6),0] if v3d else [math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6)] for i in range(6)])
     points = np.empty((3*maxlayer*(maxlayer+1)+(1 if include_origin else 0), 3 if v3d else 2))
     point_i = 0
     if (include_origin):
@@ -72,6 +72,8 @@ def generate_trianglepoints(maxlayer, include_origin = False, v3d = True, circul
                 'nmi' : nmi if mirrorindices else None}
 
 def generate_trianglepoints_hexcomplement(maxlayer, v3d = True, circular = True, thirdindices = False, mirrorindices=False):
+    _e6 = np.array([[math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6),0] if v3d else [math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6)] for i in range(6)])
+    _f6 = np.array([[-math.sin(2*math.pi*i/6),math.cos(2*math.pi*i/6),0] if v3d else [math.sin(2*math.pi*i/6),-math.cos(2*math.pi*i/6)] for i in range(6)])
     points = np.empty((3*maxlayer*maxlayer, 3 if v3d else 2))
     point_i = 0
     # 3 * layer ** 2 is the basis index for a layer, a layer contains 3 * (2*layer + 1) points
