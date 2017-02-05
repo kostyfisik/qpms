@@ -1,8 +1,12 @@
 import math
 import numpy as np
 
+_s3 = math.sqrt(3)
+_e6 = np.array([[math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6),0] if v3d else [math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6)] for i in range(6)])
+_f6 = np.array([[-math.sin(2*math.pi*i/6),math.cos(2*math.pi*i/6),0] if v3d else [math.sin(2*math.pi*i/6),-math.cos(2*math.pi*i/6)] for i in range(6)])
+ 
+
 def generate_trianglepoints(maxlayer, include_origin = False, v3d = True, circular = True, sixthindices = False, mirrorindices = False):
-    e6 = np.array([[math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6),0] if v3d else [math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6)] for i in range(6)])
     points = np.empty((3*maxlayer*(maxlayer+1)+(1 if include_origin else 0), 3 if v3d else 2))
     point_i = 0
     if (include_origin):
@@ -35,8 +39,8 @@ def generate_trianglepoints(maxlayer, include_origin = False, v3d = True, circul
         
     for layer in range(1,maxlayer+1):
         for i in range(6):
-            base = e6[i]*layer
-            shift = e6[(i+2)%6]
+            base = _e6[i]*layer
+            shift = _e6[(i+2)%6]
             ar = np.arange(layer)
             points[point_i:(point_i+layer)] = base[nx,:] + ar[:,nx] * shift[nx,:]
             if sixthindices:
@@ -68,8 +72,6 @@ def generate_trianglepoints(maxlayer, include_origin = False, v3d = True, circul
                 'nmi' : nmi if mirrorindices else None}
 
 def generate_trianglepoints_hexcomplement(maxlayer, v3d = True, circular = True, thirdindices = False, mirrorindices=False):
-    e6 = np.array([[math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6),0] if v3d else [math.cos(2*math.pi*i/6),math.sin(2*math.pi*i/6)] for i in range(6)])
-    f6 = np.array([[-math.sin(2*math.pi*i/6),math.cos(2*math.pi*i/6),0] if v3d else [math.sin(2*math.pi*i/6),-math.cos(2*math.pi*i/6)] for i in range(6)])
     points = np.empty((3*maxlayer*maxlayer, 3 if v3d else 2))
     point_i = 0
     # 3 * layer ** 2 is the basis index for a layer, a layer contains 3 * (2*layer + 1) points
@@ -95,44 +97,44 @@ def generate_trianglepoints_hexcomplement(maxlayer, v3d = True, circular = True,
     for layer in range(0,maxlayer):
         if (layer % 2): # odd layer
             for i in range(3):
-                base = f6[(2*i-1)%6] * ((0.5 + 1.5 * layer) / s3)
-                shift = e6[(2*i+2)%6]
+                base = _f6[(2*i-1)%6] * ((0.5 + 1.5 * layer) / _s3)
+                shift = _e6[(2*i+2)%6]
                 count = (layer + 1) // 2
                 ar = np.arange(count)
                 points[point_i:point_i+count,:] = base + ar[:,nx]*shift[nx,:]
                 point_i += count
                 
-                base = e6[(2*i+1)%6]*layer + f6[(2*i)%6] / s3
-                shift = e6[(2*i+3)%6]
+                base = _e6[(2*i+1)%6]*layer + _f6[(2*i)%6] / _s3
+                shift = _e6[(2*i+3)%6]
                 count = layer
                 ar = np.arange(count)
                 points[point_i:point_i+count,:] = base + ar[:,nx]*shift[nx,:]
                 point_i += count
 
-                base = e6[(2*i+2)%6]*layer + f6[(2*i)%6] / s3
-                shift = e6[(2*i+4)%6]
+                base = _e6[(2*i+2)%6]*layer + _f6[(2*i)%6] / _s3
+                shift = _e6[(2*i+4)%6]
                 count = (layer + 1) // 2
                 ar = np.arange(count)
                 points[point_i:point_i+count,:] = base + ar[:,nx]*shift[nx,:]
                 point_i += count
         else: # even layer:
             for i in range(3):
-                shift = e6[(2*i+2)%6]
-                base = f6[(2*i-1)%6] * ((0.5 + 1.5 * layer) / s3) + shift / 2
+                shift = _e6[(2*i+2)%6]
+                base = _f6[(2*i-1)%6] * ((0.5 + 1.5 * layer) / _s3) + shift / 2
                 count = layer // 2
                 ar = np.arange(count)
                 points[point_i:point_i+count,:] = base + ar[:,nx]*shift[nx,:]
                 point_i += count
                 
-                base = e6[(2*i+1)%6]*layer + f6[(2*i)%6] / s3
-                shift = e6[(2*i+3)%6]
+                base = _e6[(2*i+1)%6]*layer + _f6[(2*i)%6] / _s3
+                shift = _e6[(2*i+3)%6]
                 count = layer
                 ar = np.arange(count)
                 points[point_i:point_i+count,:] = base + ar[:,nx]*shift[nx,:]
                 point_i += count
                 
-                base = e6[(2*i+2)%6]*layer + f6[(2*i)%6] / s3
-                shift = e6[(2*i+4)%6]
+                base = _e6[(2*i+2)%6]*layer + _f6[(2*i)%6] / _s3
+                shift = _e6[(2*i+4)%6]
                 count = (layer + 2) // 2
                 ar = np.arange(count)
                 points[point_i:point_i+count,:] = base + ar[:,nx]*shift[nx,:]
