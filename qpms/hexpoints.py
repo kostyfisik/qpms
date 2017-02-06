@@ -167,3 +167,82 @@ def generate_trianglepoints_hexcomplement(maxlayer, v3d = True, circular = True,
                 'mi' : mi if mirrorindices else None,
                 'nmi' : nmi if mirrorindices else None
                }
+
+
+from qpms_c import get_mn_y
+from .qpms_p import Ã, B̃, cart2sph
+
+def hexlattice_precalc_AB_save(file, lMax, k_hexside, maxlayer, circular=True, savepointinfo = False, J_scat=3):
+    params = {
+        'lMax' : lMax,
+        'k_hexside' : k_hexside,
+        'maxlayer' : maxlayer,
+        'circular' : circular,
+        'savepointinfo' : savepointinfo,
+        'J_scat' : J_scat
+    }
+    tpdict = generate_trianglepoints(maxlayer, v3d=True, circular=circular, sixthindices=True, mirrorindices=True)
+    tphcdict = generate_trianglepoints_hexcomplement(maxlayer, v3d=True, circular=circular, thirdindices=True, mirrorindices=True)
+    my, ny = get_mn_y(lMax)
+    nelem = len(my)
+    a_self_nm = np.empty((tpdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    b_self_nm = np.empty((tpdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    a_self_m0 = np.empty((tpdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    b_self_m0 = np.empty((tpdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    a_d2u_nm = np.empty((tphcdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    b_d2u_nm = np.empty((tphcdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    a_d2u_m0 = np.empty((tphcdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    b_d2u_m0 = np.empty((tphcdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    
+    k_0 = k_hexside*_s3 # not really a wave vector here because of the normalisation!
+    
+    points = tpdict['points'][tpdict['nmi']]
+    for j in range(points.shape[0]):
+        d_i2j = cart2sph(points[j])
+        for yi in range(nelem):
+            for yj in range(nelem):
+                a_self_nm[j, yj, yi] = Ã(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+                b_self_nm[j, yj, yi] = B̃(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+    points = tpdict['points'][tpdict['mi'][0]]
+    for j in range(points.shape[0]):
+        d_i2j = cart2sph(points[j])
+        for yi in range(nelem):
+            for yj in range(nelem):
+                a_self_m0[j, yj, yi] = Ã(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+                b_self_m0[j, yj, yi] = B̃(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+    points = tphcdict['points'][tphcdict['nmi']]
+    for j in range(points.shape[0]):
+        d_i2j = cart2sph(points[j])
+        for yi in range(nelem):
+            for yj in range(nelem):
+                a_d2u_nm[j, yj, yi] = Ã(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+                b_d2u_nm[j, yj, yi] = B̃(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+    points = tphcdict['points'][tphcdict['mi'][0]]
+    for j in range(points.shape[0]):
+        d_i2j = cart2sph(points[j])
+        for yi in range(nelem):
+            for yj in range(nelem):
+                a_d2u_m0[j, yj, yi] = Ã(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+                b_d2u_m0[j, yj, yi] = B̃(my[yj],ny[yj],my[yi],ny[yi],kdlj=d_i2j[0]*k_0,θlj=d_i2j[1],φlj=d_i2j[2],r_ge_d=False,J=J_scat)
+    tosave = {
+        'a_self_nm' : a_self_nm,
+        'a_self_m0' : a_self_m0,
+        'b_self_nm' : b_self_nm,
+        'b_self_m0' : b_self_m0,
+        'a_d2u_nm' : a_d2u_nm,
+        'a_d2u_m0' : a_d2u_m0,
+        'b_d2u_nm' : b_d2u_nm,
+        'b_d2u_m0' : b_d2u_m0,
+        'precalc_params' : params
+    }
+    if savepointinfo:
+        tosave['tp_points'] = tpdict['points'],
+        tosave['tp_si'] = tpdict['si'],
+        tosave['tp_mi'] = tpdict['mi'],
+        tosave['tp_nmi'] = tpdict['nmi']
+        tosave['tphc_points'] = tphcdict['points'],
+        tosave['tphc_ti'] = tphcdict['ti'],
+        tosave['tphc_mi'] = tphcdict['mi'],
+        tosave['tphc_nmi'] = tphcdict['nmi']
+    np.savez(file, **tosave)
+
