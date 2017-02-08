@@ -246,3 +246,86 @@ def hexlattice_precalc_AB_save(file, lMax, k_hexside, maxlayer, circular=True, s
         tosave['tphc_nmi'] = tphcdict['nmi']
     np.savez(file, **tosave)
 
+def hexlattice_precalc_AB_loadunwrap(file, tpdict = None, tphcdict = None, return_points = False):
+    npz = np.load(file)
+    precalc_params = npz['precalc_params'][()]
+    my, ny = get_mn_y(precalc_params['lMax'])
+    nelem = len(my)
+    # this I should have made more universal...
+    if precalc_params['savepointinfo']:
+        if not tpdict:
+            tpdict = {
+                'points' : npz['tp_points'],
+                'si' : npz['tp_si'],
+                'mi' : npz['tp_mi'],
+                'nmi' : npz['tp_nmi'],
+            }
+        if not tphcdict:
+            tphcdict = {
+                'points' : npz['tphc_points'],
+                'ti' : npz['tphc_ti'],
+                'mi' : npz['tphc_mi'],
+                'nmi' : npz['tphc_nmi']            
+        }
+    else:
+        if not tpdict:
+            tpdict = generate_trianglepoints(maxlayer = precalc_params['maxlayer'], v3d=True, 
+                                             circular=precalc_params['circular'], sixthindices=True, mirrorindices=True)
+        if not tphcdict:
+            tphcdict = generate_trianglepoints_hexcomplement(maxlayer=precalc_params['maxlayer'], v3d=True, 
+                                                             circular=precalc_params['circular'], thirdindices=True, mirrorindices=True)
+        
+    # For some obscure reason, I keep getting trailing single-dimension in the beginning for these arrays
+    for a in (tpdict['points'], tphcdict['points'], tpdict['si'], tpdict['mi'],
+             tphcdict['ti'], tphcdict['mi']):
+        if len(a.shape) > 2:
+            a.shape = a.shape[1::] 
+        
+    self_tr = tpdict['points'] 
+    d2u_tr = tphcdict['points']
+    if len(self_tr.shape)>2:
+        self_tr = np.reshape(self_tr, self_tr.shape[1::])
+    if len(d2u_tr.shape)>2:
+        d2u_tr = np.reshape(d2u_tr, d2u_tr.shape[1::])
+    u2d_tr = -d2u_tr
+    a_self = np.empty((self_tr.shape[0],nelem,nelem), dtype=complex)
+    b_self = np.empty((self_tr.shape[0],nelem,nelem), dtype=complex)
+    a_d2u  = np.empty(( d2u_tr.shape[0],nelem,nelem), dtype=complex)
+    b_d2u  = np.empty(( d2u_tr.shape[0],nelem,nelem), dtype=complex)
+    a_self[tpdict['nmi']]=npz['a_self_nm']
+    a_self[tpdict['mi'][0]]=npz['a_self_m0']
+    b_self[tpdict['nmi']]=npz['b_self_nm']
+    b_self[tpdict['mi'][0]]=npz['b_self_m0']
+    mirrorangles = qpms.cart2sph(self_tr[tpdict['mi'][1]])[:,2] - qpms.cart2sph(self_tr[tpdict['mi'][0]])[:,2]
+    a_self[tpdict['mi'][1],:,:] = a_self[tpdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    b_self[tpdict['mi'][1],:,:] = b_self[tpdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    for i in range(1,6):
+        a_self[tpdict['si'][i],:,:] = a_self[tpdict['si'][0],:,:] * np.exp(1j*math.pi/3*i*(my[nx,:]-my[:,nx]))
+        b_self[tpdict['si'][i],:,:] = b_self[tpdict['si'][0],:,:] * np.exp(1j*math.pi/3*i*(my[nx,:]-my[:,nx]))
+    a_d2u[tphcdict['nmi']]=npz['a_d2u_nm']
+    a_d2u[tphcdict['mi'][0]]=npz['a_d2u_m0']
+    b_d2u[tphcdict['nmi']]=npz['b_d2u_nm']
+    b_d2u[tphcdict['mi'][0]]=npz['b_d2u_m0']
+    mirrorangles = qpms.cart2sph(self_tr[tphcdict['mi'][1]])[:,2] - qpms.cart2sph(self_tr[tphcdict['mi'][0]])[:,2]
+    a_d2u[tphcdict['mi'][1],:,:] = a_d2u[tphcdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    b_d2u[tphcdict['mi'][1],:,:] = b_d2u[tphcdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    for i in (1,-1):
+        a_d2u[tphcdict['ti'][i],:,:] = a_d2u[tphcdict['ti'][0],:,:] * np.exp(i*2j*math.pi/3*(my[nx,:]-my[:,nx]))
+        b_d2u[tphcdict['ti'][i],:,:] = b_d2u[tphcdict['ti'][0],:,:] * np.exp(i*2j*math.pi/3*(my[nx,:]-my[:,nx]))
+    a_u2d = a_d2u * (-1)**(my[nx,:]-my[:,nx])
+    b_u2d = b_d2u * (-1)**(my[nx,:]-my[:,nx])
+    d = {
+        'a_self' : a_self,
+        'b_self' : b_self,
+        'a_d2u'  : a_d2u,
+        'b_d2u'  : b_d2u,
+        'a_u2d'  : a_u2d,
+        'b_u2d'  : b_u2d
+    }
+    if return_points:
+        d['d2u_tr'] = tphcdict['points']
+        d['u2d_tr'] = -tphcdict['points']
+        d['self_tr'] = tpdict['points']
+    return d
+    
+
