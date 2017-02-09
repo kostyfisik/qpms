@@ -296,7 +296,7 @@ def hexlattice_precalc_AB_loadunwrap(file, tpdict = None, tphcdict = None, retur
     a_self[tpdict['mi'][0]]=npz['a_self_m0']
     b_self[tpdict['nmi']]=npz['b_self_nm']
     b_self[tpdict['mi'][0]]=npz['b_self_m0']
-    mirrorangles = qpms.cart2sph(self_tr[tpdict['mi'][1]])[:,2] - qpms.cart2sph(self_tr[tpdict['mi'][0]])[:,2]
+    mirrorangles = cart2sph(self_tr[tpdict['mi'][1]])[:,2] - cart2sph(self_tr[tpdict['mi'][0]])[:,2]
     a_self[tpdict['mi'][1],:,:] = a_self[tpdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
     b_self[tpdict['mi'][1],:,:] = b_self[tpdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
     for i in range(1,6):
@@ -306,7 +306,7 @@ def hexlattice_precalc_AB_loadunwrap(file, tpdict = None, tphcdict = None, retur
     a_d2u[tphcdict['mi'][0]]=npz['a_d2u_m0']
     b_d2u[tphcdict['nmi']]=npz['b_d2u_nm']
     b_d2u[tphcdict['mi'][0]]=npz['b_d2u_m0']
-    mirrorangles = qpms.cart2sph(self_tr[tphcdict['mi'][1]])[:,2] - qpms.cart2sph(self_tr[tphcdict['mi'][0]])[:,2]
+    mirrorangles = cart2sph(self_tr[tphcdict['mi'][1]])[:,2] - cart2sph(self_tr[tphcdict['mi'][0]])[:,2]
     a_d2u[tphcdict['mi'][1],:,:] = a_d2u[tphcdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
     b_d2u[tphcdict['mi'][1],:,:] = b_d2u[tphcdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
     for i in (1,-1):
@@ -320,8 +320,10 @@ def hexlattice_precalc_AB_loadunwrap(file, tpdict = None, tphcdict = None, retur
         'a_d2u'  : a_d2u,
         'b_d2u'  : b_d2u,
         'a_u2d'  : a_u2d,
-        'b_u2d'  : b_u2d
+        'b_u2d'  : b_u2d,
     }
+    for k in precalc_params.keys():
+        d[k] = precalc_params[k]
     if return_points:
         d['d2u_tr'] = tphcdict['points']
         d['u2d_tr'] = -tphcdict['points']
