@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 
-import argparse
+import argparse, re, random
 from scipy.constants import hbar, e as eV, pi, c
-import random
 
 def make_action_sharedlist(opname, listname):
     class opAction(argparse.Action):
@@ -90,9 +89,7 @@ begtime=time.time()
 
 import qpms
 import numpy as np
-import os, sys
-import warnings
-import math
+import os, sys, warnings, math
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy import interpolate
@@ -272,7 +269,7 @@ omegalist = list()
 filecount = 0
 for trfile in os.scandir(translations_dir):
     filecount += 1
-    if (skipfreq and (0 == filecount % skipfreq)):
+    if (skipfreq and filecount % skipfreq):
         continue
     try:
         npz = np.load(trfile.path, mmap_mode='r')
@@ -302,9 +299,9 @@ for trfile in os.scandir(translations_dir):
     u2d_translations = tdic['u2d_tr']*hexside*s3
     d2u_translations = tdic['d2u_tr']*hexside*s3
     if gaussianSigma:
-        unitcell_envelope = np.exp(-np.sum(unitcell_translations**2,axis=-1)/(2*gaussianSigma**2))
-        u2d_envelope = np.exp(-np.sum(u2d_translations**2,axis=-1)/(2*gaussianSigma**2))
-        d2u_envelope = np.exp(-np.sum(d2u_translations**2,axis=-1)/(2*gaussianSigma**2))
+        unitcell_envelope = np.exp(-np.sum(tdic['self_tr']**2,axis=-1)/(2*gaussianSigma**2))
+        u2d_envelope = np.exp(-np.sum(tdic['u2d_tr']**2,axis=-1)/(2*gaussianSigma**2))
+        d2u_envelope = np.exp(-np.sum(tdic['d2u_tr']**2,axis=-1)/(2*gaussianSigma**2))
     
     
     TMatrices_om = TMatrices_interp(omega)
@@ -385,7 +382,6 @@ klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
 
 # In[ ]:
 
-import matplotlib.pyplot as plt
 from matplotlib.path import Path
 import matplotlib.patches as patches
 f, ax = plt.subplots(1, figsize=(20,15))
