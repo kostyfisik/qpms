@@ -1,37 +1,92 @@
+#!/usr/bin/env python3
 
-# coding: utf-8
 
-# In[1]:
+import argparse
+from scipy.constants import hbar, e as eV, pi, c
+import random
 
-translations_dir = '/l/necadam1/translations-precalc/diracpoints-newdata/222'
-TMatrix_file ='/m/home/home4/46/necadam1/unix/tmatrix-experiments/twisted_triangle/silver/twisted_triangle.TMatrix.nonan'
+def make_action_sharedlist(opname, listname):
+    class opAction(argparse.Action):
+        def __call__(self, parser, args, values, option_string=None):
+            if (not hasattr(args, listname)) or getattr(args, listname) is None:
+                setattr(args, listname, list())
+            getattr(args,listname).append((opname, values))
+    return opAction
 
-pdfout = '/m/home/home4/46/necadam1/unix/tmp/pdf_out/inv-2-mag10-10.pdf'
+parser = argparse.ArgumentParser()
+parser.add_argument('--TMatrix', action='store', required=True, help='Path to TMatrix file')
+parser.add_argument('--griddir', action='store', required=True, help='Path to the directory with precalculated translation operators')
+#sizepar = parser.add_mutually_exclusive_group(required=True)
+parser.add_argument('--hexside', action='store', type=float, required=True, help='Lattice hexagon size length')
+parser.add_argument('--output', action='store', help='Path to output PDF')
+parser.add_argument('--background_permittivity', action='store', type=float, default=1., help='Background medium relative permittivity (default 1)')
+parser.add_argument('--sparse', action='store', type=int, help='Skip frequencies for preview')
+parser.add_argument('--eVmax', action='store', help='Skip frequencies above this value')
+parser.add_argument('--eVmin', action='store', help='Skip frequencies below this value')
+parser.add_argument('--kdensity', action='store', type=int, default=66, help='Number of k-points per x-axis segment')
+#TODO some more sophisticated x axis definitions
+parser.add_argument('--gaussian', action='store', type=float, metavar='σ', help='Use a gaussian envelope for weighting the interaction matrix contributions (depending on the distance), measured in unit cell lengths (?) FIxME).')
+parser.add_argument('--tr', dest='ops', action=make_action_sharedlist('tr', 'ops'))
+parser.add_argument('--tr0', dest='ops', action=make_action_sharedlist('tr0', 'ops'))
+parser.add_argument('--tr1', dest='ops', action=make_action_sharedlist('tr1', 'ops'))
+parser.add_argument('--sym', dest='ops', action=make_action_sharedlist('sym', 'ops'))
+parser.add_argument('--sym0', dest='ops', action=make_action_sharedlist('sym0', 'ops'))
+parser.add_argument('--sym1', dest='ops', action=make_action_sharedlist('sym1', 'ops'))
+#parser.add_argument('--mult', dest='ops', nargs='2', action=make_action_sharedlist('mult', 'ops'))
+#parser.add_argument('--mult0', dest='ops', nargs='2', action=make_action_sharedlist('mult0', 'ops'))
+#parser.add_argument('--mult1', dest='ops', nargs='2', action=make_action_sharedlist('mult1', 'ops'))
+parser.add_argument('--frequency_multiplier', action='store', type=float, default=1., help='Multiplies the frequencies in the TMatrix file by a given factor.')
+# TODO enable more flexible per-sublattice specification
+pargs=parser.parse_args()
+print(pargs)
 
-hexside = 375e-9
-epsilon_b = 2.3104
-gaussianSigma = None # hexside * 222 / 7
 
-factor13inc = 10
-factor13scat=10
+translations_dir = pargs.griddir 
+TMatrix_file = pargs.TMatrix
+pdfout = pargs.output if pargs.output else (''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + '.pdf')
+print(pdfout)
 
-ops = (
-    # co, typ operace (symetrizace / transformace / kopie), specifikace (operace nebo zdroj), 
-    # co: 0, 1, (0,1), (0,), (1,), #NI: 'all'
-    # typ operace: sym, tr, copy
-    # specifikace:
-    # sym, tr: 'σ_z', 'σ_y', 'C2'; sym: 'C3', 
-    # copy: 0, 1 (zdroj)
-    ((0,1), 'sym', 'σ_z'),
-    #((0,1), 'sym', 'σ_x'),
-    #((0,1), 'sym', 'σ_y'),
-    ((0,1), 'sym', 'C3'),
-    ((1), 'tr', 'C2'),
+hexside = pargs.hexside #375e-9
+epsilon_b = pargs.background_permittivity #2.3104
+gaussianSigma = pargs.gaussian if pargs.gaussian else None # hexside * 222 / 7
+interpfreqfactor = pargs.frequency_multiplier
+kdensity = pargs.kdensity
+minfreq = pargs.eVmin*eV/hbar if pargs.eVmin else None
+maxfreq = pargs.eVmax*eV/hbar if pargs.eVmax else None
+skipfreq = pargs.sparse if pargs.sparse else None
 
-)
+# TODO multiplier operation definitions and parsing
+#factor13inc = 10
+#factor13scat=10
 
-interpfreqfactor = 0.5
+ops = list()
+opre = re.compile('(tr|sym|copy|mult)(\d*)')
+for oparg in pargs.ops:
+    opm = opre.match(oparg[0])
+    if opm:
+        ops.append(((opm.group(2),) if opm.group(2) else (0,1), opm.group(1), oparg[1]))
+    else:
+        raise # should not happen
+print(ops)
 
+#ops = (
+#    # co, typ operace (symetrizace / transformace / kopie), specifikace (operace nebo zdroj), 
+#    # co: 0, 1, (0,1), (0,), (1,), #NI: 'all'
+#    # typ operace: sym, tr, copy
+#    # specifikace:
+#    # sym, tr: 'σ_z', 'σ_y', 'C2'; sym: 'C3', 
+#    # copy: 0, 1 (zdroj)
+#    ((0,1), 'sym', 'σ_z'),
+#    #((0,1), 'sym', 'σ_x'),
+#    #((0,1), 'sym', 'σ_y'),
+#    ((0,1), 'sym', 'C3'),
+#    ((1), 'tr', 'C2'),
+#
+#)
+
+# -----------------finished basic CLI parsing (except for op arguments) ------------------
+import time
+begtime=time.time()
 
 import qpms
 import numpy as np
@@ -40,22 +95,13 @@ import warnings
 import math
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from scipy.constants import hbar, e as eV, pi, c
 from scipy import interpolate
 nx = None
 s3 = math.sqrt(3)
 
+
+
 pdf = PdfPages(pdfout)
-
-
-# In[2]:
-
-#TODO později
-#import argparse
-#parser = argparse.ArgumentParser()
-#parser.add_argument('--sym', 'mz', 'my', 'mx', 'C3', 'C2' type=str, help='symmetrize both particles')
-#args = parser.parse_args()
-
 
 # In[3]:
 
@@ -82,12 +128,15 @@ TMč = č[(mč+nč+tč) % 2 == 1]
 
 TMatrices = np.array(np.broadcast_to(TMatrices_orig[:,nx,:,:,:,:],(len(freqs_orig),2,2,nelem,2,nelem)) )
 
-TMatrices[:,:,:,:,:,ny==3] *= factor13inc
-TMatrices[:,:,:,ny==3,:,:] *= factor13scat
+#TMatrices[:,:,:,:,:,ny==3] *= factor13inc
+#TMatrices[:,:,:,ny==3,:,:] *= factor13scat
 xfl = qpms.xflip_tyty(lMax)
 yfl = qpms.yflip_tyty(lMax)
 zfl = qpms.zflip_tyty(lMax)
 c2rot = qpms.apply_matrix_left(qpms.yflip_yy(3),qpms.xflip_yy(3),-1)
+
+reCN = re.compile('(\d*)C(\d+)')
+#TODO C nekonečno
 
 for op in ops:
     if op[0] == 'all':
@@ -98,6 +147,7 @@ for op in ops:
         targets = op[0]
         
     if op[1] == 'sym':
+        mCN = reCN.match(op[2]) # Fuck van Rossum for not having assignments inside expressions
         if op[2] == 'σ_z':
             for t in targets:
                 TMatrices[:,t] = (TMatrices[:,t] + qpms.apply_ndmatrix_left(zfl,qpms.apply_ndmatrix_left(zfl, TMatrices[:,t], (-4,-3)),(-2,-1)))/2
@@ -107,8 +157,11 @@ for op in ops:
         elif op[2] == 'σ_x':
             for t in targets:
                 TMatrices[:,t] = (TMatrices[:,t] + qpms.apply_ndmatrix_left(xfl,qpms.apply_ndmatrix_left(xfl, TMatrices[:,t], (-4,-3)),(-2,-1)))/2
-        elif op[2] == 'C3': # FIXME fuj fuj fuj, použij regex!!!
-            rotN = 3
+        elif op[2] == 'C2': # special case of the latter
+            for t in targets:
+                TMatrices[:,t] = (TMatrices[:,t] + qpms.apply_matrix_left(c2rot,qpms.apply_matrix_left(c2rot, TMatrices[:,t], -3),-1))/2                
+        elif mCN:
+            rotN = int(mCN.group(2))
             TMatrix_contribs = np.empty((rotN,TMatrices.shape[0],2,nelem,2,nelem), dtype=np.complex_)
             for t in targets:
                 for i in range(rotN):
@@ -117,12 +170,10 @@ for op in ops:
                     rotinv = qpms.WignerD_yy_fromvector(lMax,np.array([0,0,-rotangle]))
                     TMatrix_contribs[i] = qpms.apply_matrix_left(rot,qpms.apply_matrix_left(rotinv, TMatrices[:,t], -3),-1)
                 TMatrices[:,t] = np.sum(TMatrix_contribs, axis=0) / rotN
-        elif op[2] == 'C2':
-            for t in targets:
-                TMatrices[:,t] = (TMatrices[:,t] + qpms.apply_matrix_left(c2rot,qpms.apply_matrix_left(c2rot, TMatrices[:,t], -3),-1))/2                
         else:
             raise
     elif op[1] == 'tr':
+        mCN = reCN.match(op[2]) # Fuck van Rossum for not having assignments inside expressions
         if op[2] == 'σ_z':
             for t in targets:
                 TMatrices[:,t] = qpms.apply_ndmatrix_left(zfl,qpms.apply_ndmatrix_left(zfl, TMatrices[:,t], (-4,-3)),(-2,-1))
@@ -132,22 +183,24 @@ for op in ops:
         elif op[2] == 'σ_x':
             for t in targets:
                 TMatrices[:,t] = qpms.apply_ndmatrix_left(xfl,qpms.apply_ndmatrix_left(xfl, TMatrices[:,t], (-4,-3)),(-2,-1))
-        elif op[2] == 'C3': # TODO use regex and generalize
-            rotN = 3
-            TMatrix_contribs = np.empty((rotN,TMatrices.shape[0],2,nelem,2,nelem), dtype=np.complex_)
-            for t in targets:
-                for i in range(rotN):
-                    rotangle = 2*np.pi*i / rotN
-                    rot =  qpms.WignerD_yy_fromvector(lMax,np.array([0,0,rotangle]))
-                    rotinv = qpms.WignerD_yy_fromvector(lMax,np.array([0,0,-rotangle]))
-                    TMatrix_contribs[i] = qpms.apply_matrix_left(rot,qpms.apply_matrix_left(rotinv, TMatrices[:,t], -3),-1)
         elif op[2] == 'C2':
             for t in targets:
-                TMatrices[:,t] = qpms.apply_matrix_left(c2rot,qpms.apply_matrix_left(c2rot, TMatrices[:,t], -3),-1)            
+                TMatrices[:,t] = qpms.apply_matrix_left(c2rot,qpms.apply_matrix_left(c2rot, TMatrices[:,t], -3),-1)       
+        elif mCN:
+            rotN = int(mCN.group(2))
+            power = int(mCN.group(1)) if mCN.group(1) else 1
+            TMatrix_contribs = np.empty((rotN,TMatrices.shape[0],2,nelem,2,nelem), dtype=np.complex_)
+            for t in targets:
+                rotangle = 2*np.pi*power/rotN
+                rot = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,rotangle]))
+                rotinv = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,-rotangle]))
+                TMatrices[:,t] = qpms.apply_matrix_left(rot, qpms.apply_matrix_left(rotinv, TMatrices[:,t], -3),-1)
+        else:
+            raise
     elif op[1] == 'copy':
-        raise
+        raise # not implemented
     else:
-        raise
+        raise #unknown operation; should not happen
 
 TMatrices_interp = interpolate.interp1d(freqs_orig*interpfreqfactor, TMatrices, axis=0, kind='linear',fill_value="extrapolate")
 
@@ -159,7 +212,7 @@ om = np.linspace(np.min(freqs_orig), np.max(freqs_orig),100)
 TMatrix0ip = np.reshape(TMatrices_interp(om)[:,0], (len(om), 2*nelem*2*nelem))
 f, axa = plt.subplots(2, 2, figsize=(15,15))
 
-print(TMatrices.shape)
+#print(TMatrices.shape)
 #plt.plot(om, TMatrices[:,0,0,0,0].imag,'r',om, TMatrices[:,0,0,0,0].real,'r--',om, TMatrices[:,0,2,0,2].imag,'b',om, TMatrices[:,0,2,0,2].real,'b--'))
         
 ax = axa[0,0]
@@ -182,21 +235,24 @@ ax2.set_xlim([ax.get_xlim()[0]/eV*hbar,ax.get_xlim()[1]/eV*hbar])
 ax.plot(
          om, np.unwrap(np.angle(TMatrix0ip[:,:]),axis=0),'-'
 )
+
+ax = axa[1,0]
+ax.text(0.5,0.5,str(pargs).replace(',',',\n'),horizontalalignment='center',verticalalignment='center',transform=ax.transAxes)
 pdf.savefig(f)
 
 
 # In[ ]:
 
-kdensity = 66
+#kdensity = 66 #defined from cl arguments
 bz_0 = np.array((0,0,0.,))
 bz_K1 = np.array((1.,0,0))*4*np.pi/3/hexside/s3
 bz_K2 = np.array((1./2.,s3/2,0))*4*np.pi/3/hexside/s3
 bz_M = np.array((3./4, s3/4,0))*4*np.pi/3/hexside/s3
-k0Mlist = bz_0 + (bz_M-bz_0) * np.linspace(0,1,kdensity/5)[:,nx]
+k0Mlist = bz_0 + (bz_M-bz_0) * np.linspace(0,1,kdensity)[:,nx]
 kMK1list = bz_M + (bz_K1-bz_M) * np.linspace(0,1,kdensity)[:,nx]
 kK10list = bz_K1 + (bz_0-bz_K1) * np.linspace(0,1,kdensity)[:,nx]
-k0K2list = bz_0 + (bz_K2-bz_0) * np.linspace(0,1,kdensity/5)[:,nx]
-kK2Mlist = bz_K2 + (bz_M-bz_K2) * np.linspace(0,1,kdensity/5)[:,nx]
+k0K2list = bz_0 + (bz_K2-bz_0) * np.linspace(0,1,kdensity)[:,nx]
+kK2Mlist = bz_K2 + (bz_M-bz_K2) * np.linspace(0,1,kdensity)[:,nx]
 B1 = 2* bz_K1 - bz_K2
 B2 = 2* bz_K2 - bz_K1
 klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
@@ -216,11 +272,13 @@ omegalist = list()
 filecount = 0
 for trfile in os.scandir(translations_dir):
     filecount += 1
+    if (skipfreq and (0 == filecount % skipfreq)):
+        continue
     try:
         npz = np.load(trfile.path, mmap_mode='r')
         k_0 = npz['precalc_params'][()]['k_hexside'] / hexside
         omega = k_0 * c / math.sqrt(epsilon_b)
-        if(omega < 2.4e15 or omega > 2.7e15 ):
+        if((minfreq and omega < minfreq) or (maxfreq and omega > maxfreq)):
             continue
     except:
         print ("Unexpected error, trying to continue with another file:", sys.exc_info()[0])
@@ -314,6 +372,12 @@ for trfile in os.scandir(translations_dir):
 minsvTElistarr = np.array(minsvTElistlist)
 minsvTMlistarr = np.array(minsvTMlistlist)
 omegalist = np.array(omegalist)
+# order to make the scatter plots "nice"
+omegaorder = np.argsort(omegalist)
+omegalist = omegalist[omegaorder]
+minsvTElistarr = minsvTElistarr[omegaorder]
+minsvTMlistarr = minsvTMlistarr[omegaorder]
+
 omlist = np.broadcast_to(omegalist[:,nx], minsvTElistarr.shape)
 kxmlarr = np.broadcast_to(kxmaplist[nx,:], minsvTElistarr.shape)
 klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
@@ -385,19 +449,6 @@ ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
 f.colorbar(sc)
 
 pdf.savefig(f)
-
-
-# In[ ]:
-
 pdf.close()
 
-
-# In[ ]:
-
-unitcell_translations
-
-
-# In[ ]:
-
-
-
+print(time.strftime("%H.%M:%S",time.gmtime(time.time()-begtime)))
