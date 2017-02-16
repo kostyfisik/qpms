@@ -380,11 +380,11 @@ for trfile in os.scandir(translations_dir):
     leftmatrixlist_TM = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TMč,TMč)]
     svarr = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)
     argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
-    minsvTElist[nnlist] = svarr[argsortlist]
+    minsvTElist[nnlist] = svarr[...,argsortlist]
     #minsvTElist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TE, compute_uv=False), axis=-1)
     svarr = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)
     argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
-    minsvTMlist[nnlist] = svarr[argsortlist]
+    minsvTMlist[nnlist] = svarr[...,argsortlist]
     #minsvTMlist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TM, compute_uv=False), axis=-1)
     minsvTMlistlist.append(minsvTMlist)
     minsvTElistlist.append(minsvTElist) 
