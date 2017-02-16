@@ -19,6 +19,7 @@ parser.add_argument('--griddir', action='store', required=True, help='Path to th
 #sizepar = parser.add_mutually_exclusive_group(required=True)
 parser.add_argument('--hexside', action='store', type=float, required=True, help='Lattice hexagon size length')
 parser.add_argument('--output', action='store', help='Path to output PDF')
+parser.add_argument('--nSV', action='store', metavar='N', type=int, default=1, help='Store and draw N minimun singular values')
 parser.add_argument('--background_permittivity', action='store', type=float, default=1., help='Background medium relative permittivity (default 1)')
 parser.add_argument('--sparse', action='store', type=int, help='Skip frequencies for preview')
 parser.add_argument('--eVmax', action='store', help='Skip frequencies above this value')
@@ -58,6 +59,7 @@ kdensity = pargs.kdensity
 minfreq = pargs.eVmin*eV/hbar if pargs.eVmin else None
 maxfreq = pargs.eVmax*eV/hbar if pargs.eVmax else None
 skipfreq = pargs.sparse if pargs.sparse else None
+svn = pargs.nSV
 
 # TODO multiplier operation definitions and parsing
 #factor13inc = 10
@@ -92,6 +94,9 @@ print(ops)
 import time
 begtime=time.time()
 
+from matplotlib.path import Path
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 import qpms
 import numpy as np
 import os, sys, warnings, math
@@ -324,8 +329,8 @@ for trfile in os.scandir(translations_dir):
     
     TMatrices_om = TMatrices_interp(omega)
 
-    minsvTElist = np.full((klist.shape[0]),np.nan)
-    minsvTMlist = np.full((klist.shape[0]),np.nan)
+    minsvTElist = np.full((klist.shape[0], svn),np.nan)
+    minsvTMlist = np.full((klist.shape[0], svn),np.nan)
     leftmatrixlist = np.full((klist.shape[0],2,2,nelem,2,2,nelem),np.nan,dtype=complex)
     isNaNlist = np.zeros((klist.shape[0]), dtype=bool)
     
@@ -373,8 +378,14 @@ for trfile in os.scandir(translations_dir):
     leftmatrixlist_s = np.reshape(leftmatrixlist,(klist.shape[0], 2*2*nelem,2*2*nelem))[nnlist]
     leftmatrixlist_TE = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TEč,TEč)]
     leftmatrixlist_TM = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TMč,TMč)]
-    minsvTElist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TE, compute_uv=False), axis=-1)
-    minsvTMlist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TM, compute_uv=False), axis=-1)
+    svarr = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)
+    argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
+    minsvTElist[nnlist] = svarr[argsortlist]
+    #minsvTElist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TE, compute_uv=False), axis=-1)
+    svarr = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)
+    argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
+    minsvTMlist[nnlist] = svarr[argsortlist]
+    #minsvTMlist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TM, compute_uv=False), axis=-1)
     minsvTMlistlist.append(minsvTMlist)
     minsvTElistlist.append(minsvTElist) 
 
@@ -393,76 +404,71 @@ omegalist = omegalist[omegaorder]
 minsvTElistarr = minsvTElistarr[omegaorder]
 minsvTMlistarr = minsvTMlistarr[omegaorder]
 
-omlist = np.broadcast_to(omegalist[:,nx], minsvTElistarr.shape)
-kxmlarr = np.broadcast_to(kxmaplist[nx,:], minsvTElistarr.shape)
+omlist = np.broadcast_to(omegalist[:,nx], minsvTElistarr[...,0].shape)
+kxmlarr = np.broadcast_to(kxmaplist[nx,:], minsvTElistarr[...,0].shape)
 klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
 
 
 # In[ ]:
-
-from matplotlib.path import Path
-import matplotlib.patches as patches
-f, ax = plt.subplots(1, figsize=(20,15))
-sc = ax.scatter(kxmlarr, omlist/eV*hbar, c = np.sqrt(minsvTMlistarr), s =40, lw=0)
-ax.plot(kxmaplist, np.linalg.norm(klist,axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist+B1, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist+B2, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist-B2, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist-B1, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist+B2-B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-B2+B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-B2-B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist+B2+B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B2, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B2-B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B1-B2, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B1-2*B2, axis=-1)*cdn/eV*hbar, '-',
-#        kxmaplist, np.linalg.norm(klist+2*B2-B1, axis=-1)*cdn, '-',
-#        kxmaplist, np.linalg.norm(klist+2*B1-B2, axis=-1)*cdn, '-',
-       )
-ax.set_xlim([np.min(kxmlarr),np.max(kxmlarr)])
-#ax.set_ylim([2.15,2.30])
-ax.set_ylim([np.min(omlist/eV*hbar),np.max(omlist/eV*hbar)])
-ax.set_xticks([0, kxmaplist[len(k0Mlist)-1], kxmaplist[len(k0Mlist)+len(kMK1list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)+len(kK2Mlist)-1]])
-ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
-f.colorbar(sc)
-
-pdf.savefig(f)
-
-
-# In[ ]:
-
-import matplotlib.pyplot as plt
-from matplotlib.path import Path
-import matplotlib.patches as patches
-f, ax = plt.subplots(1, figsize=(20,15))
-sc = ax.scatter(kxmlarr, omlist/eV*hbar, c = np.sqrt(minsvTElistarr), s =40, lw=0)
-ax.plot(kxmaplist, np.linalg.norm(klist,axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist+B1, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist+B2, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist-B2, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist-B1, axis=-1)*cdn/eV*hbar, '-',
-       kxmaplist, np.linalg.norm(klist+B2-B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-B2+B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-B2-B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist+B2+B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B2, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B2-B1, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B1-B2, axis=-1)*cdn/eV*hbar, '-',
-        kxmaplist, np.linalg.norm(klist-2*B1-2*B2, axis=-1)*cdn/eV*hbar, '-',
-#        kxmaplist, np.linalg.norm(klist+2*B2-B1, axis=-1)*cdn, '-',
-#        kxmaplist, np.linalg.norm(klist+2*B1-B2, axis=-1)*cdn, '-',
-       )
-ax.set_xlim([np.min(kxmlarr),np.max(kxmlarr)])
-#ax.set_ylim([2.15,2.30])
-ax.set_ylim([np.min(omlist/eV*hbar),np.max(omlist/eV*hbar)])
-ax.set_xticks([0, kxmaplist[len(k0Mlist)-1], kxmaplist[len(k0Mlist)+len(kMK1list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)+len(kK2Mlist)-1]])
-ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
-f.colorbar(sc)
-
-pdf.savefig(f)
+for minN in range(svn):
+    f, ax = plt.subplots(1, figsize=(20,15))
+    sc = ax.scatter(kxmlarr, omlist/eV*hbar, c = np.sqrt(minsvTMlistarr[...,minN]), s =40, lw=0)
+    ax.plot(kxmaplist, np.linalg.norm(klist,axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist+B1, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist+B2, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist-B2, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist-B1, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist+B2-B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-B2+B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-B2-B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist+B2+B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B2, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B2-B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B1-B2, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B1-2*B2, axis=-1)*cdn/eV*hbar, '-',
+    #        kxmaplist, np.linalg.norm(klist+2*B2-B1, axis=-1)*cdn, '-',
+    #        kxmaplist, np.linalg.norm(klist+2*B1-B2, axis=-1)*cdn, '-',
+           )
+    ax.set_xlim([np.min(kxmlarr),np.max(kxmlarr)])
+    #ax.set_ylim([2.15,2.30])
+    ax.set_ylim([np.min(omlist/eV*hbar),np.max(omlist/eV*hbar)])
+    ax.set_xticks([0, kxmaplist[len(k0Mlist)-1], kxmaplist[len(k0Mlist)+len(kMK1list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)+len(kK2Mlist)-1]])
+    ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
+    f.colorbar(sc)
+    
+    pdf.savefig(f)
+    
+    
+    # In[ ]:
+    
+    f, ax = plt.subplots(1, figsize=(20,15))
+    sc = ax.scatter(kxmlarr, omlist/eV*hbar, c = np.sqrt(minsvTElistarr[...,minN]), s =40, lw=0)
+    ax.plot(kxmaplist, np.linalg.norm(klist,axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist+B1, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist+B2, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist-B2, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist-B1, axis=-1)*cdn/eV*hbar, '-',
+           kxmaplist, np.linalg.norm(klist+B2-B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-B2+B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-B2-B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist+B2+B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B2, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B2-B1, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B1-B2, axis=-1)*cdn/eV*hbar, '-',
+            kxmaplist, np.linalg.norm(klist-2*B1-2*B2, axis=-1)*cdn/eV*hbar, '-',
+    #        kxmaplist, np.linalg.norm(klist+2*B2-B1, axis=-1)*cdn, '-',
+    #        kxmaplist, np.linalg.norm(klist+2*B1-B2, axis=-1)*cdn, '-',
+           )
+    ax.set_xlim([np.min(kxmlarr),np.max(kxmlarr)])
+    #ax.set_ylim([2.15,2.30])
+    ax.set_ylim([np.min(omlist/eV*hbar),np.max(omlist/eV*hbar)])
+    ax.set_xticks([0, kxmaplist[len(k0Mlist)-1], kxmaplist[len(k0Mlist)+len(kMK1list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)+len(kK2Mlist)-1]])
+    ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
+    f.colorbar(sc)
+    
+    pdf.savefig(f)
 pdf.close()
 
 print(time.strftime("%H.%M:%S",time.gmtime(time.time()-begtime)))
