@@ -412,7 +412,7 @@ klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
 
 
 # In[ ]:
-for minN in range(svn):
+for minN in reversed(range(svn)):
     f, ax = plt.subplots(1, figsize=(20,15))
     sc = ax.scatter(kxmlarr, omlist/eV*hbar, c = np.sqrt(minsvTMlistarr[...,minN]), s =40, lw=0)
     ax.plot(kxmaplist, np.linalg.norm(klist,axis=-1)*cdn/eV*hbar, '-',
