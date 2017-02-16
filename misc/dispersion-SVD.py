@@ -312,6 +312,7 @@ for trfile in os.scandir(translations_dir):
     omega = k_0 * c / math.sqrt(epsilon_b)
     omegalist.append(omega)
     print(filecount, omega/eV*hbar)
+    sys.stdout.flush()
     a_self = tdic['a_self'][:,:nelem,:nelem]
     b_self = tdic['b_self'][:,:nelem,:nelem]
     a_u2d = tdic['a_u2d'][:,:nelem,:nelem]
