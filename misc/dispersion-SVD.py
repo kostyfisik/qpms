@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-import argparse, re, random
+import argparse, re, random, string
 from scipy.constants import hbar, e as eV, pi, c
 
 def make_action_sharedlist(opname, listname):
@@ -13,6 +13,7 @@ def make_action_sharedlist(opname, listname):
     return opAction
 
 parser = argparse.ArgumentParser()
+#TODO? použít type=argparse.FileType('r') ?
 parser.add_argument('--TMatrix', action='store', required=True, help='Path to TMatrix file')
 parser.add_argument('--griddir', action='store', required=True, help='Path to the directory with precalculated translation operators')
 #sizepar = parser.add_mutually_exclusive_group(required=True)
@@ -25,15 +26,19 @@ parser.add_argument('--eVmin', action='store', help='Skip frequencies below this
 parser.add_argument('--kdensity', action='store', type=int, default=66, help='Number of k-points per x-axis segment')
 #TODO some more sophisticated x axis definitions
 parser.add_argument('--gaussian', action='store', type=float, metavar='σ', help='Use a gaussian envelope for weighting the interaction matrix contributions (depending on the distance), measured in unit cell lengths (?) FIxME).')
-parser.add_argument('--tr', dest='ops', action=make_action_sharedlist('tr', 'ops'))
-parser.add_argument('--tr0', dest='ops', action=make_action_sharedlist('tr0', 'ops'))
-parser.add_argument('--tr1', dest='ops', action=make_action_sharedlist('tr1', 'ops'))
-parser.add_argument('--sym', dest='ops', action=make_action_sharedlist('sym', 'ops'))
-parser.add_argument('--sym0', dest='ops', action=make_action_sharedlist('sym0', 'ops'))
-parser.add_argument('--sym1', dest='ops', action=make_action_sharedlist('sym1', 'ops'))
-#parser.add_argument('--mult', dest='ops', nargs='2', action=make_action_sharedlist('mult', 'ops'))
-#parser.add_argument('--mult0', dest='ops', nargs='2', action=make_action_sharedlist('mult0', 'ops'))
-#parser.add_argument('--mult1', dest='ops', nargs='2', action=make_action_sharedlist('mult1', 'ops'))
+popgrp=parser.add_argument_group(title='Operations')
+popgrp.add_argument('--tr', dest='ops', action=make_action_sharedlist('tr', 'ops'), default=list()) # the default value for dest can be set once
+popgrp.add_argument('--tr0', dest='ops', action=make_action_sharedlist('tr0', 'ops'))
+popgrp.add_argument('--tr1', dest='ops', action=make_action_sharedlist('tr1', 'ops'))
+popgrp.add_argument('--sym', dest='ops', action=make_action_sharedlist('sym', 'ops'))
+popgrp.add_argument('--sym0', dest='ops', action=make_action_sharedlist('sym0', 'ops'))
+popgrp.add_argument('--sym1', dest='ops', action=make_action_sharedlist('sym1', 'ops'))
+#popgrp.add_argument('--mult', dest='ops', nargs=3, metavar=('INCSPEC', 'SCATSPEC', 'MULTIPLIER'), action=make_action_sharedlist('mult', 'ops'))
+#popgrp.add_argument('--mult0', dest='ops', nargs=3, metavar=('INCSPEC', 'SCATSPEC', 'MULTIPLIER'), action=make_action_sharedlist('mult0', 'ops'))
+#popgrp.add_argument('--mult1', dest='ops', nargs=3, metavar=('INCSPEC', 'SCATSPEC', 'MULTIPLIER'), action=make_action_sharedlist('mult1', 'ops'))
+popgrp.add_argument('--multl', dest='ops', nargs=3, metavar=('INCL[,INCL,...]', 'SCATL[,SCATL,...]', 'MULTIPLIER'), action=make_action_sharedlist('multl', 'ops'))
+popgrp.add_argument('--multl0', dest='ops', nargs=3, metavar=('INCL[,INCL,...]', 'SCATL[,SCATL,...]', 'MULTIPLIER'), action=make_action_sharedlist('multl0', 'ops'))
+popgrp.add_argument('--multl1', dest='ops', nargs=3, metavar=('INCL[,INCL,...]', 'SCATL[,SCATL,...]', 'MULTIPLIER'), action=make_action_sharedlist('multl1', 'ops'))
 parser.add_argument('--frequency_multiplier', action='store', type=float, default=1., help='Multiplies the frequencies in the TMatrix file by a given factor.')
 # TODO enable more flexible per-sublattice specification
 pargs=parser.parse_args()
@@ -59,7 +64,7 @@ skipfreq = pargs.sparse if pargs.sparse else None
 #factor13scat=10
 
 ops = list()
-opre = re.compile('(tr|sym|copy|mult)(\d*)')
+opre = re.compile('(tr|sym|copy|multl|mult)(\d*)')
 for oparg in pargs.ops:
     opm = opre.match(oparg[0])
     if opm:
@@ -196,6 +201,19 @@ for op in ops:
             raise
     elif op[1] == 'copy':
         raise # not implemented
+    elif op[1] == 'mult':
+        raise # not implemented
+    elif op[1] == 'multl':
+        incy = np.full((nelem,), False, dtype=bool)
+        for incl in op[2][0].split(','):
+            l = int(incl)
+            incy += (l == ny)
+        scaty = np.full((nelem,), False, dtype=bool)
+        for scatl in op[2][1].split(','):
+            l = int(scatl)
+            scaty += (l == ny)
+        for t in targets:
+            TMatrices[:,t,:,scaty,:,incy] *= float(op[2][2])
     else:
         raise #unknown operation; should not happen
 
