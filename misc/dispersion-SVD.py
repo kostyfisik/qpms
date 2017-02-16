@@ -378,14 +378,16 @@ for trfile in os.scandir(translations_dir):
     leftmatrixlist_s = np.reshape(leftmatrixlist,(klist.shape[0], 2*2*nelem,2*2*nelem))[nnlist]
     leftmatrixlist_TE = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TEč,TEč)]
     leftmatrixlist_TM = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TMč,TMč)]
-    svarr = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)
-    argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
-    minsvTElist[nnlist] = svarr[...,argsortlist]
+    #svarr = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)
+    #argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
+    #minsvTElist[nnlist] = svarr[...,argsortlist]
     #minsvTElist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TE, compute_uv=False), axis=-1)
-    svarr = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)
-    argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
-    minsvTMlist[nnlist] = svarr[...,argsortlist]
+    minsvTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)[...,-svn:]
+    #svarr = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)
+    #argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
+    #minsvTMlist[nnlist] = svarr[...,argsortlist]
     #minsvTMlist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TM, compute_uv=False), axis=-1)
+    minsvTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)[...,-svn:]
     minsvTMlistlist.append(minsvTMlist)
     minsvTElistlist.append(minsvTElist) 
 
