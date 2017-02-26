@@ -1097,7 +1097,7 @@ def loadScuffTMatrices(fileName):
     # type indices first, so we want a shape (len(freqs), 2, nelem, 2, nelem) as in the older code.
     # Second, M-waves come first, so they have now 0-valued index, and E-waves have 1-valued index,
     # which we want to be inverted.
-    TMatrices = np.empty((len(freqs),2,nelem,2,nelem),dtype=complex)
+    TMatrices = np.zeros((len(freqs),2,nelem,2,nelem),dtype=complex)
     for inc_type in [0,1]:
         for outc_type in [0,1]:
             TMatrices[:,1-outc_type,:,1-inc_type,:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
