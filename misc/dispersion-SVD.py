@@ -19,6 +19,8 @@ parser.add_argument('--griddir', action='store', required=True, help='Path to th
 #sizepar = parser.add_mutually_exclusive_group(required=True)
 parser.add_argument('--hexside', action='store', type=float, required=True, help='Lattice hexagon size length')
 parser.add_argument('--output', action='store', help='Path to output PDF')
+parser.add_argument('--store_SVD', action='store_true', help='If specified without --SVD_output, it will save the data in a file named as the PDF output, but with .npz extension instead')
+#parser.add_argument('--SVD_output', action='store', help='Path to output singular value decomposition result')
 parser.add_argument('--nSV', action='store', metavar='N', type=int, default=1, help='Store and draw N minimun singular values')
 parser.add_argument('--background_permittivity', action='store', type=float, default=1., help='Background medium relative permittivity (default 1)')
 parser.add_argument('--sparse', action='store', type=int, help='Skip frequencies for preview')
@@ -50,6 +52,14 @@ translations_dir = pargs.griddir
 TMatrix_file = pargs.TMatrix
 pdfout = pargs.output if pargs.output else (''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + '.pdf')
 print(pdfout)
+if(pargs.store_SVD):
+    if re.search('.pdf$', pdfout):
+        svdout = re.sub('.pdf$', r'.npz', pdfout)
+    else:
+        svdout = pdfout + '.npz'
+else:
+     svdout = None
+
 
 hexside = pargs.hexside #375e-9
 epsilon_b = pargs.background_permittivity #2.3104
@@ -218,7 +228,7 @@ for op in ops:
             l = int(scatl)
             scaty += (l == ny)
         for t in targets:
-            TMatrices[:,t,:,scaty,:,incy] *= float(op[2][2])
+            TMatrices[np.ix_(np.arange(TMatrices.shape[0]),np.array([t]),np.array([0,1]),scaty,np.array([0,1]),incy)] *= float(op[2][2])
     else:
         raise #unknown operation; should not happen
 
@@ -287,6 +297,14 @@ extlistlist = list()
 leftmatrixlistlist = list()
 minsvTElistlist=list()
 minsvTMlistlist=list()
+if svdout:
+    svUfullTElistlist = list()
+    svVfullTElistlist = list()
+    svSfullTElistlist = list()
+    svUfullTMlistlist = list()
+    svVfullTMlistlist = list()
+    svSfullTMlistlist = list()
+
 nan = float('nan')
 omegalist = list()
 filecount = 0
@@ -329,7 +347,15 @@ for trfile in os.scandir(translations_dir):
     
     
     TMatrices_om = TMatrices_interp(omega)
+    if svdout:
+        svUfullTElist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
+        svVfullTElist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
+        svSfullTElist = np.full((klist.shape[0], 2*nelem), np.nan, dtype=complex)
+        svUfullTMlist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
+        svVfullTMlist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
+        svSfullTMlist = np.full((klist.shape[0], 2*nelem), np.nan, dtype=complex)
 
+     
     minsvTElist = np.full((klist.shape[0], svn),np.nan)
     minsvTMlist = np.full((klist.shape[0], svn),np.nan)
     leftmatrixlist = np.full((klist.shape[0],2,2,nelem,2,2,nelem),np.nan,dtype=complex)
@@ -383,6 +409,15 @@ for trfile in os.scandir(translations_dir):
     #argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
     #minsvTElist[nnlist] = svarr[...,argsortlist]
     #minsvTElist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TE, compute_uv=False), axis=-1)
+    if svdout:
+        svUfullTElist[nnlist], svSfullTElist[nnlist], svVfullTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=True)
+        svUfullTMlist[nnlist], svSfullTMlist[nnlist], svVfullTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=True)
+        svUfullTElistlist.append(svUfullTElist)
+        svVfullTElistlist.append(svVfullTElist)
+        svSfullTElistlist.append(svSfullTElist)
+        svUfullTMlistlist.append(svUfullTMlist)
+        svVfullTMlistlist.append(svVfullTMlist)
+        svSfullTMlistlist.append(svSfullTMlist)
     minsvTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)[...,-svn:]
     #svarr = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)
     #argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
@@ -392,20 +427,40 @@ for trfile in os.scandir(translations_dir):
     minsvTMlistlist.append(minsvTMlist)
     minsvTElistlist.append(minsvTElist) 
 
-    
-        
-
-
-# In[ ]:
-
 minsvTElistarr = np.array(minsvTElistlist)
 minsvTMlistarr = np.array(minsvTMlistlist)
+del minsvTElistlist, minsvTMlistlist
+if svdout:
+    svUfullTElistarr = np.array(svUfullTElistlist)
+    svVfullTElistarr = np.array(svVfullTElistlist)
+    svSfullTElistarr = np.array(svSfullTElistlist)
+    del svUfullTElistlist, svVfullTElistlist, svSfullTElistlist
+    svUfullTMlistarr = np.array(svUfullTMlistlist)
+    svVfullTMlistarr = np.array(svVfullTMlistlist)
+    svSfullTMlistarr = np.array(svSfullTMlistlist)
+    del svUfullTMlistlist, svVfullTMlistlist, svSfullTMlistlist
 omegalist = np.array(omegalist)
 # order to make the scatter plots "nice"
 omegaorder = np.argsort(omegalist)
 omegalist = omegalist[omegaorder]
 minsvTElistarr = minsvTElistarr[omegaorder]
 minsvTMlistarr = minsvTMlistarr[omegaorder]
+if svdout:
+    svUfullTElistarr = svUfullTElistarr[omegaorder]
+    svVfullTElistarr = svVfullTElistarr[omegaorder]
+    svSfullTElistarr = svSfullTElistarr[omegaorder]
+    svUfullTMlistarr = svUfullTMlistarr[omegaorder]
+    svVfullTMlistarr = svVfullTMlistarr[omegaorder]
+    svSfullTMlistarr = svSfullTMlistarr[omegaorder]
+    np.savez(svdout, omega = omegalist, klist = klist, bzpoints = np.array([bz_0, bz_K1, bz_K2, bz_M, B1, B2]), 
+                     uTE = svUfullTElistarr,
+                     vTE = svVfullTElistarr,
+                     sTE = svSfullTElistarr,
+                     uTM = svUfullTMlistarr,
+                     vTM = svVfullTMlistarr,
+                     sTM = svSfullTMlistarr,
+    )
+                     
 
 omlist = np.broadcast_to(omegalist[:,nx], minsvTElistarr[...,0].shape)
 kxmlarr = np.broadcast_to(kxmaplist[nx,:], minsvTElistarr[...,0].shape)
