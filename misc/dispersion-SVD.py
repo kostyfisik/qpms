@@ -2,6 +2,7 @@
 
 
 import argparse, re, random, string
+import subprocess
 from scipy.constants import hbar, e as eV, pi, c
 
 def make_action_sharedlist(opname, listname):
@@ -22,6 +23,7 @@ parser.add_argument('--output', action='store', help='Path to output PDF')
 parser.add_argument('--store_SVD', action='store_true', help='If specified without --SVD_output, it will save the data in a file named as the PDF output, but with .npz extension instead')
 #parser.add_argument('--SVD_output', action='store', help='Path to output singular value decomposition result')
 parser.add_argument('--nSV', action='store', metavar='N', type=int, default=1, help='Store and draw N minimun singular values')
+parser.add_argument('--scp_to', action='store', metavar='N', type=str, help='SCP the output files to a given destination')
 parser.add_argument('--background_permittivity', action='store', type=float, default=1., help='Background medium relative permittivity (default 1)')
 parser.add_argument('--sparse', action='store', type=int, help='Skip frequencies for preview')
 parser.add_argument('--eVmax', action='store', type=float, help='Skip frequencies above this value')
@@ -65,6 +67,7 @@ hexside = pargs.hexside #375e-9
 epsilon_b = pargs.background_permittivity #2.3104
 gaussianSigma = pargs.gaussian if pargs.gaussian else None # hexside * 222 / 7
 interpfreqfactor = pargs.frequency_multiplier
+scp_dest = pargs.scp_to if pargs.scp_to else None
 kdensity = pargs.kdensity
 minfreq = pargs.eVmin*eV/hbar if pargs.eVmin else None
 maxfreq = pargs.eVmax*eV/hbar if pargs.eVmax else None
@@ -528,5 +531,10 @@ for minN in reversed(range(svn)):
     
     pdf.savefig(f)
 pdf.close()
+
+if scp_dest:
+    subprocess.run(['scp', pdfout, scp_dest])
+    if svdout:
+        subprocess.run(['scp', svdout, scp_dest])
 
 print(time.strftime("%H.%M:%S",time.gmtime(time.time()-begtime)))
