@@ -4,7 +4,7 @@ from qpms_c import *
 import scipy
 from scipy.constants import epsilon_0 as ε_0, c, pi as π, e, hbar as ℏ, mu_0 as μ_0
 eV = e
-from scipy.special import lpmn, lpmv, sph_jn, sph_yn, poch
+from scipy.special import lpmn, lpmv, sph_jn, sph_yn, poch, gammaln
 from scipy.misc import factorial
 import math
 import cmath
@@ -479,7 +479,9 @@ from py_gmm.gmm import vec_trans as vc
 #@ujit
 def q_max(m,n,μ,ν):
     return min(n,ν,(n+ν-abs(m+μ))/2)
-    
+
+q_max_v = np.vectorize(q_max)
+
 # returns array with indices corresponding to q
 # argument q does nothing for now
 #@ujit
@@ -490,6 +492,9 @@ def a_q(m,n,μ,ν,q = None):
         print("m,n,μ,ν,qm = ",m,n,μ,ν,qm)
         raise ValueError('Something bad in the fortran subroutine gaunt_xu happened')
     return res
+
+a_q_v = np.vectorize(a_q)
+
 
 # All arguments are single numbers (for now)
 # ZDE VYCHÁZEJÍ DIVNÁ ZNAMÉNKA
@@ -612,7 +617,128 @@ def B̃(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
     
     return presum * np.sum(summandq)
  
+# vectorised versions - conservative
+# ZDE VYCHÁZEJÍ DIVNÁ ZNAMÉNKA
+#@ujit
+def Ã_v0(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
+    """
+    The Ã translation coefficient for spherical vector waves.
+    
+    Parameters
+    ----------
+    m, n: int
+        The indices (degree and order) of the destination basis.
+    μ, ν: int
+        The indices of the source basis wave.
+    kdlj, θlj, φlj: float
+        The spherical coordinates of the relative position of
+        the new center vs. the old one (R_new - R_old);
+        the distance has to be already multiplied by the wavenumber!
+    r_ge_d: TODO
+    J: 1, 2, 3 or 4
+        Type of the wave in the old center.
 
+    Returns
+    -------
+    TODO
+
+    Bugs
+    ----
+    gevero's gaunt coefficient implementation fails for large m, n (the unsafe territory
+    is somewhere around -72, 80)
+
+    """
+    lMax = max(np.amax(n),np.amax(ν))
+    exponent=(gammaln(2*n+1)-gammaln(n+2)+gammaln(2*ν+3)-gammaln(ν+2) 
+                +gammaln(n+ν+m-μ+1)-gammaln(n-m+1)-gammaln(ν+μ+1)
+                +gammaln(n+ν+1) - gammaln(2*(n+ν)+1))
+    presum = np.exp(exponent)
+    presum = presum * np.exp(1j*(μ-m)*φlj) * (-1)**m * 1j**(ν+n) / (4*n)
+    qmax = np.floor(q_max(-m,n,μ,ν)) #nemá tu být +m?
+    q = np.arange(qmax+1, dtype=int)
+    # N.B. -m !!!!!!
+    a1q = a_q_v(-m,n,μ,ν) # there is redundant calc. of qmax
+    ã1q = a1q / a1q[0]
+    p = n+ν-2*q
+    if(r_ge_d):
+        J = 1
+    zp = zJn(n+ν,kdlj,J)[0][p]
+    Pp = lpmv(μ-m,p,np.cos(θlj))
+    summandq = (n*(n+1) + ν*(ν+1) - p*(p+1)) * (-1)**q * ã1q * zp * Pp
+  
+    # Taylor normalisation v2, proven to be equivalent (NS which is better)
+    prenormratio = 1j**(ν-n) * np.sqrt(((2*ν+1)/(2*n+1))* np.exp(
+        gammaln(n+m+1)-gammaln(n-m+1)+gammaln(ν-μ+1)-gammaln(ν+μ+1)))
+    presum = presum / prenormratio
+    
+    # Taylor normalisation
+    #prenormmn =  math.sqrt((2*n + 1)*math.factorial(n-m)/(4*π*factorial(n+m)))
+    #prenormμν =  math.sqrt((2*ν + 1)*math.factorial(ν-μ)/(4*π*factorial(ν+μ)))
+    #presum = presum * prenormμν / prenormmn
+    
+    return presum * np.sum(summandq)
+    
+# ZDE OPĚT JINAK ZNAMÉNKA než v Xu (J. comp. phys 127, 285)
+#@ujit
+def B̃_v(m,n,μ,ν,kdlj,θlj,φlj,r_ge_d,J):
+    """
+    The B̃ translation coefficient for spherical vector waves.
+    
+    Parameters
+    ----------
+    m, n: int
+        The indices (degree and order) of the destination basis.
+    μ, ν: int
+        The indices of the source basis wave.
+    kdlj, θlj, φlj: float
+        The spherical coordinates of the relative position of
+        the new center vs. the old one (R_new - R_old);
+        the distance has to be already multiplied by the wavenumber!
+    r_ge_d: TODO
+    J: 1, 2, 3 or 4
+        Type of the wave in the old center.
+
+    Returns:
+    --------
+    TODO
+    """
+    exponent=(gammaln(2*n+3)-gammaln(n+2)+gammaln(2*ν+3)-gammaln(ν+2) 
+                +gammaln(n+ν+m-μ+2)-gammaln(n-m+1)-gammaln(ν+μ+1)
+                +gammaln(n+ν+2) - gammaln(2*(n+ν)+3))
+    presum = math.exp(exponent)
+    presum = presum * np.exp(1j*(μ-m)*φlj) * (-1)**m * 1j**(ν+n+1) / (
+        (4*n)*(n+1)*(n+m+1))
+    Qmax = math.floor(q_max(-m,n+1,μ,ν))
+    q = np.arange(Qmax+1, dtype=int)
+    if (μ == ν): # it would disappear in the sum because of the factor (ν-μ) anyway
+        ã2q = 0
+    else:
+        a2q = a_q(-m-1,n+1,μ+1,ν)
+        ã2q = a2q / a2q[0]
+    a3q = a_q(-m,n+1,μ,ν)
+    ã3q = a3q / a3q[0]
+    #print(len(a2q),len(a3q))
+    p = n+ν-2*q
+    if(r_ge_d):
+        J = 1
+    zp_ = zJn(n+1+ν,kdlj,J)[0][p+1] # je ta +1 správně?
+    Pp_ = lpmv(μ-m,p+1,math.cos(θlj))
+    summandq = ((2*(n+1)*(ν-μ)*ã2q
+                 -(-ν*(ν+1) - n*(n+3) - 2*μ*(n+1)+p*(p+3))* ã3q)
+                *(-1)**q * zp_ * Pp_)
+    
+    # Taylor normalisation v2, proven to be equivalent
+    prenormratio = 1j**(ν-n) * math.sqrt(((2*ν+1)/(2*n+1))* math.exp(
+        gammaln(n+m+1)-gammaln(n-m+1)+gammaln(ν-μ+1)-gammaln(ν+μ+1)))
+    presum = presum / prenormratio
+    
+    ## Taylor normalisation
+    #prenormmn =  math.sqrt((2*n + 1)*math.factorial(n-m)/(4*π*factorial(n+m)))
+    #prenormμν =  math.sqrt((2*ν + 1)*math.factorial(ν-μ)/(4*π*factorial(ν+μ)))
+    #presum = presum * prenormμν / prenormmn
+    
+    return presum * np.sum(summandq)
+ 
 
 # In[7]:
 
