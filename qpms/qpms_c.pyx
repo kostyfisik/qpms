@@ -66,3 +66,9 @@ def get_y_mn_unsigned(int nmax):
             ymn_plus[m,n] = i
             i = i + 1
     return(ymn_plus, ymn_minus)
+
+cdef int q_max(int m, int n, int mu, int nu):
+    return min(n,nu,(n+nu-abs(m+mu)//2)
+
+
+#cdef translation_coefficient_A(
