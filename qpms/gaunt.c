@@ -28,11 +28,18 @@ double lnf (double z) {
 }
 
 // logarithm of Pochhammer function (from basicsubs.f90)
+// FIXME replace with standard C99 lgamma functions
 double lpoch(double x, double n) {
 	if(fabs(n) < 1e-5) // ???
 		return 1.;
 	double sum = x+n;
 	return lnf(sum-1.) - lnf(x-1.);
+}
+
+// pochhammer function: substitute for fortran DPOCH
+// gamma(a+x) / gamma(a)
+double poch(double a, double x) { // FIXME replace with standard C99 lgamma functions
+	return exp(lpoch(a,x));
 }
 
 double f_a0 (int m, int n, int mu, int nu) {
@@ -72,10 +79,30 @@ double f_a2norm(int m, int n, int mu, int nu) {
 }
 
 // just for convenience – square of ints
-int isq(int x) {return x * x;}
+static inline int isq(int x) {return x * x;}
 
 double f_alpha(int n, int nu, int p) {
 	return (isq(p) - isq(n-nu))*(isq(p)-isq(n+nu+1)) / (double)(4*isq(p)-1);
+}
+
+
+static inline int min1pow(int pow) { return (pow % 2) ? -1 : 1; }
+
+// starting value of coefficient a(m,n,mu,nu,qmax) for the forward recursion
+double f_aqmax(int m, int n, int mu, int nu, int qmax) {
+	int pmin = n + nu - 2*qmax;
+	// TODO? zde měl int a double varianty téhož – má to nějaký smysl???
+	if (pmin == n-nu) {
+		double logw = lnf(n+m) + lnf(2*pmin+1) - lnf(nu-mu) - lnf(n-nu) - lnf(pmin+m+mu);
+		double logp = lpoch(nu+1, nu) - lpoch(n+1, n+1);
+		return min1pow(mu)*exp(logw+logp);
+	}
+	else if (pmin == nu-n) {
+		logw = lnf(nu+mu) + lnf(2*pmin+1) - lnf(n-m) - lnf(nu-n) - lnf(pmin+m+mu);
+		logp = lpoch(n+1, n) - lpoch(nu+1, nu+1); // ??? nešel by druhý lpoch nahradit něčím rozumnějším?
+		// TODO TODO TODO 
+	
+	
 }
 
 // coeff a(m,n,mu,nu,2) normalizzato per la backward recursion calcolato questa volta per ricorsione
