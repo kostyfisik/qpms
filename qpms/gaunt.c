@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-
+#include <assert.h>
 #define ZERO_THRESHOLD 1.e-8
-
+#define BF_PREC 1.e-14
 //  "Besides, the determined Real Programmer can write FORTRAN programs in any language."
 //  -- Ed Post, Real Programmers Don't Use Pascal, 1982.
 
@@ -96,13 +96,30 @@ double f_aqmax(int m, int n, int mu, int nu, int qmax) {
 		double logw = lnf(n+m) + lnf(2*pmin+1) - lnf(nu-mu) - lnf(n-nu) - lnf(pmin+m+mu);
 		double logp = lpoch(nu+1, nu) - lpoch(n+1, n+1);
 		return min1pow(mu)*exp(logw+logp);
+	} else if (pmin == nu-n) {
+		double logw = lnf(nu+mu) + lnf(2*pmin+1) - lnf(n-m) - lnf(nu-n) - lnf(pmin+m+mu);
+		double logp = lpoch(n+1, n) - lpoch(nu+1, nu+1); // ??? nešel by druhý lpoch nahradit něčím rozumnějším?
+		return min1pow(m)*exp(logw+logp);
+	} else if (pmin == m+mu) {
+        	double logw = lpoch(qmax+1,qmax)+lnf(n+nu-qmax)+lnf(n+m)+lnf(nu+mu) \
+                	-lnf(n-qmax)-lnf(nu-qmax)-lnf(n-m)-lnf(nu-mu)-lnf(n+nu+pmin+1);
+        	return min1pow(n+m-qmax)*(2*pmin+1)*exp(logw);
+	} else if (pmin == -m-mu) {
+	        double logw = lpoch(qmax+1,qmax)+lnf(n+nu-qmax)+lnf(pmin-m-mu) \
+        	        -lnf(n-qmax)-lnf(nu-qmax)-lnf(n+nu+pmin+1);
+		return min1pow(nu+mu-qmax)*(2*pmin+1)*exp(logw);
+	} else if (pmin==m+mu+1) {
+		int Apmin = f_Ap(m,n,mu,nu,pmin);
+		double logw = lpoch(qmax+1,qmax)+lnf(n+nu-qmax)+lnf(n+m)+lnf(nu+mu) \
+	                -lnf(n+nu+pmin+1)-lnf(n-qmax)-lnf(nu-qmax)-lnf(n-m)-lnf(nu-mu)
+        	return min1pow(n+m-qmax)*Apmin*(2*pmin+1)*exp(logw)/(double)(pmin-1);
+	} else if (pmin==-m-mu+1) {
+		int Apmin=f_Ap(m,n,mu,nu,pmin);
+		double logw=lpoch(qmax+1,qmax)+lnf(n+nu-qmax)+lnf(pmin-m-mu) \
+	                -lnf(n+nu+pmin+1)-lnf(n-qmax)-lnf(nu-qmax);
+		return min1pow(nu+mu-qmax)*Apmin*(2*pmin+1)*exp(logw) / (double)(pmin-1);
 	}
-	else if (pmin == nu-n) {
-		logw = lnf(nu+mu) + lnf(2*pmin+1) - lnf(n-m) - lnf(nu-n) - lnf(pmin+m+mu);
-		logp = lpoch(n+1, n) - lpoch(nu+1, nu+1); // ??? nešel by druhý lpoch nahradit něčím rozumnějším?
-		// TODO TODO TODO 
-	
-	
+	assert(0);
 }
 
 // coeff a(m,n,mu,nu,2) normalizzato per la backward recursion calcolato questa volta per ricorsione
@@ -153,6 +170,7 @@ double f_a2normr(int m, int n, int mu, int nu, double a1norm) {
 
 // gaunt_xu from vec_trans.f90
 // btw, what is the difference from gaunt_xu2?
+// FIXME set some sensible return value
 double gaunt_xu2(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) {
 	
 	int v_zero[qmax] = {0};
@@ -188,7 +206,7 @@ double gaunt_xu2(int m, int n, int mu, int nu, int qmax, double *v_aq, int *erro
 					double c1 = f_alpha(n,nu,p+2);
 					v_aq[q] = (c1/c0) * v_aq[q-1];
 				}
-			else if (mu == m && nu == n) {
+			} else if (mu == m && nu == n) {
 				v_aq[0] = f_a0(m,n,mu,nu);
 
 				// backward recursion
@@ -222,11 +240,320 @@ double gaunt_xu2(int m, int n, int mu, int nu, int qmax, double *v_aq, int *erro
 					// recursion
 					v_aq[q] = (c1/c0)*v_aq[q-1] + (c2/c0)*v_aq[q-2];
 				}
-			}  else if  // TODO vec_trans.f90:1233
+				
+				// forward recursion	
+		                // Primo valore per la forward recursion,errore relativo e suo swap
+		                double aq_fwd=f_aqmax(m,n,mu,nu,qmax)
+		                double res=fabs(aq_fwd-v_aq[qmax])/fabs(aq_fwd);
+		
+		                //Se non ho precisione, sostituisco i valori
+		                if (res>BF_PREC) {
+		                        v_aq[qmax]=aq_fwd;
+		                        int qi=1;
+					int zeroswitch = 0; // black magic (gevero's "switch")
+		                        //Entro nel ciclo della sostituzione valori
+		                        for( int q=qmax-1,q>=0,--q) { // tre_f_do
+						switch(qmax-q) {// FIXME switch -> if/else
+							case 1: {// q==qmax-1
+		                                        	//Calcolo v_aq[qmax-1]
+			                                        int p=n+nu-2*(q+2);
+			                                        double c1=4*isq(m)+f_alpha(n,nu,p+2)+f_alpha(n,nu,p+3);
+		                                        	double c2=-f_alpha(n,nu,p+4)
+			                                        double aq_fwd=-(c1/c2)*v_aq[qmax];
+		
+		                                        	//If a secondo che v_aq[qmax-1] sia zero o no
+		                                        	if  (aq_fwd/v_aq[max]<ZERO_THRESHOLD) {
+		                                          	      v_aq[q]=aq_fwd;  //Zero
+		                                              	      zeroswitch=1; 
+		                                              	      continue; // tre_f_do
+								} else
+		                                                	res=fabs(aq_fwd-v_aq[q])/fabs[aq_fwd];//Diverso da zero
+								}
+								break; // case 1
+							default: { //Per tutti gli altri q
+		                                        //Calcolo v_aq[qmax-1]
+		                                        int p=n+nu-2*(q+2);
+		                                        double c0=f_alpha(n,nu,p+1);
+		                                        double c1=4*(m**2)+f_alpha(n,nu,p+2)+f_alpha(n,nu,p+3);
+		                                        double c2=-f_alpha(n,nu,p+4);
+		                                        aq_fwd=-(c1/c2)*v_aq[q+1]+(c0/c2)*v_aq[q+2];
+							switch(zeroswitch}{ //FIXME switch -> if/else
+		                                        	case 1: //Il valore precedente e' zero
+			                                                res=fabs(aq_fwd-v_aq[q])/fabs(aq_fwd);
+									break;
+								case 0: //Il valore precedente e' diverso da zero
+		                                                	//If a secondo che v_aq[q] sia zero o no
+		                                                	if ((aq_fwd/v_aq[q+1])<ZERO_THRESHOLD) {
+		                                                        	v_aq[q]=aq_fwd;  //Zero
+		                                                        	zeroswitch=1;
+										continue; // tre_f_do
+									} else //Diverso da zero
+										res=fabs(aq_fwd-v_aq[q])/fabs(aq_fwd);
+									break;
+								default:
+									assert(0);
+							}
+						}
+		                        	//Adesso se la precisione e' raggiunta esco dal ciclo, 
+						//se no sostituisco e rimango
+		                        	if (res<BF_PREC || q==0) 
+							break; //tre_f_do
+		                        	//Sono nel ciclo, allora sostituisco eaggiorno indice e residuo
+			                        v_aq[q]=aq_fwd;
+		                        	qi=q;
+					}
+		                // Check sul ciclo di sostituzione
+				assert(q);
+				/*
+		                error_if1: IF (q==0) THEN
+		                                        WRITE(*,*)
+		                                        WRITE(*,*) "Si e' verificato un errore nella subroutine gaunt_xu:"
+		                                        WRITE(*,*) "la precisione richiesta per i coefficienti di Gaunt nella backward"
+		                                        WRITE(*,*) "e forward recursion non e' stata raggiunta"
+		                                        WRITE(*,*)
+		                                        error=1
+		                                        RETURN
+		                END IF error_if1
+				*/
+				}
+			} else { // caso generale (4)
+				// backward
+				// Calcolo Ap4 per q=0, se e' uguale a zero chiamo cruzan ed esco dal ciclo
+				int Ap4=f_Ap(m,n,mu,nu,n+nu-qmax+4);
+		
+				if (Ap4==0) { // cz_if1
+					gaunt_cz(m,n,mu,nu,qmax,v_aq,error);
+					return;
+				}
+		
+				// Calcolo direttamente i primi tre valori della ricorsione
+				v_aq[0]=f_a0(m,n,mu,nu);
+				v_aq[1]=v_aq[0]*f_a1norm(m,n,mu,nu);
+		
+				for (int q=2; q <= qmax; ++q) {//gen_b_do: DO q=2,qmax 
+							//Calcolo pre-coeff. : questi li calcoli qui per poter uscire
+							int p=n+nu-2*q;
+							int Ap2=f_Ap(m,n,mu,nu,p+2);
+							if (Ap2==0) break; //Esco dal loop perche non posso fare la fwd recursion
+		
+							//Calcolo pre-coefficienti
+							int p1=p-m-mu;
+							int p2=p+m+mu;
+							double alphap1=f_alpha(n,nu,p+1);
+							double alphap2=f_alpha(n,nu,p+2);
+							double alphap3=f_alpha(n,nu,p+3);
+							double alphap4=f_alpha(n,nu,p+4);
+							int Ap3=f_Ap(m,n,mu,nu,p+3);
+							int Ap4=f_Ap(m,n,mu,nu,p+4);
+		
+							//Calcolo coefficienti ricorsione
+							double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
+							double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ \
+							  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
+							double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+		
+							//Ricorsione
+							v_aq[q]=(c1/c0)*v_aq[q-1]+(c2/c0)*v_aq[q-2];
+				} // END DO gen_b_do
+
+				if (Ap2==0) { //cz_if2
+					gaunt_cz(m,n,mu,nu,qmax,v_aq,error);
+					return;
+				}
+		
+				//!-----------------------------------
+				//!FORWARD
+				//!-----------------------------------
+		
+				//Calcolo pmin,Apmin e la mia variabile logica
+				int pmin=n+nu-2*qmax;
+				int Apmin=f_Ap(m,n,mu,nu,pmin);
+				int test=(Apmin==0) && ((pmin==m+mu+1) || (pmin==-m-mu+1));
+		
+				//!........................................................
+				//!Se la mia variabile logica e' vera, Faccio il mio conto
+				//!........................................................
+				if (test) { //Apmin_if
+					//Il valore per qmax allora e' zero
+					v_aq[qmax]=0;
+		
+					//Calcolo il secondo valore, e se la precisione e' raggiunta esco
+					double aq_fwd=f_aqmax_1(m,n,mu,nu,qmax);
+					double res=fabs(aq_fwd-v_aq(qmax-1))/fabs(aq_fwd);
+					if (res<BF_PREC) 
+						return;
+		
+					// Assegno il secondo valore e faccio il ciclo
+					v_aq[qmax-1]=aq_fwd;
+					int qi=1;
+
+					for (int i=qmax-2; i>=0; --i) { //Apmin_do
+						//Calcolo pre-coefficienti
+						int p=n+nu-2*REALq+2;
+						int p1=p-m-mu;
+						int p2=p+m+mu;
+						double alphap1=f_alpha(n,nu,p+1);
+						double alphap2=f_alpha(n,nu,p+2);
+						double alphap3=f_alpha(n,nu,p+3);
+						double alphap4=f_alpha(n,nu,p+4);
+						int Ap2=f_Ap(m,n,mu,nu,p+2);
+						int Ap3=f_Ap(m,n,mu,nu,p+3);
+						int Ap4=f_Ap(m,n,mu,nu,p+4);
+		
+						//Calcolo coefficienti ricorsione
+						double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
+						double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ \
+						  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
+						double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+		
+						//Ricorsione e residuo
+						double aq_fwd=-(c1/c2)*v_aq(q+1)+(c0/c2)*v_aq(q+2);
+						res=fabs(aq_fwd-v_aq[q])/fabs(aq_fwd);
+						if (res<BF_PREC) 
+							return;
+		
+						v_aq[q]=aq_fwd;
+						qi=q;
+					} // Apmin_do
+		
+					// Check sul ciclo di sostituzione
+					if (qi == 0) //Apmin_error_if1
+						assert(0); 
+					/*
+								WRITE(*,*) "Si e' verificato un errore nella subroutine gaunt_xu, caso generale, Apmin=0:"
+								WRITE(*,*) "la precisione richiesta per i coefficienti di Gaunt nella backward"
+								WRITE(*,*) "e forward recursion non e' stata raggiunta"
+								WRITE(*,*)
+								error=1
+								RETURN
+					END IF Apmin_error_if1
+					*/
+		
+					//Esco dalla subroutine gaunt_xu
+					return
+		
+				} // Apmin_if
+		
+				//!..............................................
+				//!Qui lavoro se la mia variabile logica e' falsa
+				//!Tutto e' identico al caso (3)
+				//!..............................................
+		
+				//!Primo valore per la forward recursion,errore relativo e suo swap
+				double aq_fwd=f_aqmax(m,n,mu,nu,qmax);
+				double res = fabs(aq_fwd-v_aq[qmax])/fabs(aq_fwd);
+				int qi=1;
+		
+				//Se non ho precisione, sostituisco i valori
+				if (res > BF_PREC) { // gen_f_if
+					v_aq[qmax]=aq_fwd;
+
+					int zeroswitch = 0; // black magic
+		
+					//Entro nel ciclo della sostituzione valori
+					for (int q = qmax-1; q >= 0; --q) { //gen_f_do
+						switch(qmax-q) { //gen_q_case
+						case 1: //q=qmax-1
+							//Calcolo aq
+							int p=n+nu-2*(q+2);
+							int p1=p-m-mu;
+							int p2=p+m+mu;
+							double alphap1=f_alpha(n,nu,p+1);
+							double alphap2=f_alpha(n,nu,p+2);
+							double alphap3=f_alpha(n,nu,p+3);
+							double alphap4=f_alpha(n,nu,p+4);
+							int Ap2=f_Ap(m,n,mu,nu,p+2);
+							int Ap3=f_Ap(m,n,mu,nu,p+3);
+							int Ap4=f_Ap(m,n,mu,nu,p+4);
+							double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ \
+							  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
+							double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+							double aq_fwd=-(c1/c2)*v_aq[qmax] //E' qui che lo calcolo
+		
+							//If a secondo che v_aq(qmax-1) sia zero o no
+							if (aq_fwd/v_aq[qmax] < ZERO_THRESHOLD) { // gen_zero1_if
+									v_aq[q]=aq_fwd;	//Zero
+									zeroswitch=1;
+									continue; // gen_f_do
+							} else 
+									res=fabs(aq_fwd-v_aq[q])/fabs(aq_fwd);	//Diverso da zero
+							break;
+						default: // Per tutti gli altri q
+							//Calcolo aq
+							int p=n+nu-2*(q+2);
+							int p1=p-m-mu;
+							int p2=p+m+mu;
+							double alphap1=f_alpha(n,nu,p+1);
+							double alphap2=f_alpha(n,nu,p+2);
+							double alphap3=f_alpha(n,nu,p+3);
+							double alphap4=f_alpha(n,nu,p+4);
+							int Ap2=f_Ap(m,n,mu,nu,p+2);
+							int Ap3=f_Ap(m,n,mu,nu,p+3);
+							int Ap4=f_Ap(m,n,mu,nu,p+4);
+							double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
+							double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ \
+							  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
+							double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+							double aq_fwd=-(c1/c2)*v_aq(q+1)+(c0/c2)*v_aq(q+2);
+		
+							//Case a seconda che il valore appena precedente sia zero o meno
+							switch (zeroswitch) { //gen_switch_case
+								case 1: //Il valore precedente e' zero		
+									res=fabs(aq_fwd-v_aq[q])/fabs(aq_fwd);
+									break;
+								case 0: //Il valore precedente e' diverso da zero
+									//If a secondo che v_aq[q] sia zero o no
+									if (aq_fwd/v_aq[q+1] < ZERO_THRESHOLD/10.) {// gen_zero2_if
+
+										v_aq[q]=aq_fwd;	//Zero
+										switch=1
+										continue; // gen_f_do
+									} else {
+										res=fabs(aq_fwd-v_aq[q])/fabs(aq_fwd); // Diverso da zero
+									} // gen_zero2_if
+									break;
+								default:
+									assert(0);
+							} // gen_switch_case
+						} // END SELECT gen_q_case
+		
+					//Adesso se la precisione e' raggiunta esco dal ciclo, se no sostituisco e rimango
+					if ((res<BF_PREC) || (q == 0))
+						break;
+		
+					//Sono nel ciclo, allora sostituisco eaggiorno indice e residuo
+					v_aq[q]=aq_fwd;
+					qi=q;
+		
+					} // gen_f_do
+		
+					// Check sul ciclo di sostituzione
+					assert(qi);
+					/*
+					gen_error_if1: IF (qi==0) THEN
+								WRITE(*,*)
+								WRITE(*,*) "Si e' verificato un errore nella subroutine gaunt_xu,caso generale:"
+								WRITE(*,*) "la precisione richiesta per i coefficienti di Gaunt nella backward"
+								WRITE(*,*) "e forward recursion non e' stata raggiunta"
+								WRITE(*,*)
+								error=1
+								RETURN
+					END IF gen_error_if1
+					*/
+		
+		
+				}//END IF gen_f_if
+		
+			} // END IF big_if
+	} // END SELECT qmax_case
+}	
+		
+		
+
+
 
 		
 
-			!!!!!!!!!TODO CONTINUE HERE
 
 
 /*
