@@ -49,7 +49,7 @@ double f_a0 (int m, int n, int mu, int nu) {
 }
 
 // coefficient Ap(m,n,mu,nu,p) (from vec_trans.f90)
-int Ap(int m, int n, int mu, int nu, int p) {
+int f_Ap(int m, int n, int mu, int nu, int p) {
 	return p*(p-1)*(m-mu)-(m+mu)*(n-nu)*(n+nu+1);
 }
 
@@ -58,7 +58,7 @@ int Ap(int m, int n, int mu, int nu, int p) {
 double f_a1norm(int m, int n, int mu, int nu) {
 	int n4 = n + nu - m - mu;
 	return ((2.*n + 2.*nu - 3.) / 2.) * (1. - ((2.*n + 2.*nu - 1.) / (n4 * (n4-1.))) 
-			* ((m - n) * (m - n + 1.) / (2.*n - 1.) + (mu-nu) * (mu-nu+1.)/(2.nu-1.)));
+			* ((m - n) * (m - n + 1.) / (2.*n - 1.) + (mu-nu) * (mu-nu+1.)/(2.*nu-1.)));
 }
 
 // coefficient a(m,n,mu,nu,2) normalized by the backward recursion (From vec_trans.f90)
@@ -85,7 +85,6 @@ double f_alpha(int n, int nu, int p) {
 	return (isq(p) - isq(n-nu))*(isq(p)-isq(n+nu+1)) / (double)(4*isq(p)-1);
 }
 
-
 static inline int min1pow(int pow) { return (pow % 2) ? -1 : 1; }
 
 // starting value of coefficient a(m,n,mu,nu,qmax) for the forward recursion
@@ -111,7 +110,7 @@ double f_aqmax(int m, int n, int mu, int nu, int qmax) {
 	} else if (pmin==m+mu+1) {
 		int Apmin = f_Ap(m,n,mu,nu,pmin);
 		double logw = lpoch(qmax+1,qmax)+lnf(n+nu-qmax)+lnf(n+m)+lnf(nu+mu) \
-	                -lnf(n+nu+pmin+1)-lnf(n-qmax)-lnf(nu-qmax)-lnf(n-m)-lnf(nu-mu)
+	                -lnf(n+nu+pmin+1)-lnf(n-qmax)-lnf(nu-qmax)-lnf(n-m)-lnf(nu-mu);
         	return min1pow(n+m-qmax)*Apmin*(2*pmin+1)*exp(logw)/(double)(pmin-1);
 	} else if (pmin==-m-mu+1) {
 		int Apmin=f_Ap(m,n,mu,nu,pmin);
@@ -168,17 +167,166 @@ double f_a2normr(int m, int n, int mu, int nu, double a1norm) {
 	}
 }
 
+#define MAX(x,y) (((x) > (y)) ? (x) : (y))
+
+int j3minimum(int j1, int j2, int m1, int m2) {
+	return MAX(abs(j1-j2), abs(m1+m2));
+}
+
+int nw(int j1, int j2, int m1, int m2) {
+	return j1+j2+1-MAX(abs(j1-j2),abs(m1+m2));
+}
+
+double wdown(int j1, int j2, int m1, int m2) {
+	double logw = .5*(lnf(2.*j1,
+TODO TODO TODO ZDE JSEM SKONČIL
+
+//******************************************************************************
+//7) subroutine Wigner3jm: calcolo il vettore di simboli 3jm
+//******************************************************************************
+
+void  wigner3jm(int j1, int j2, int m1, int m2, int j3min, int j3max, double *v_w3jm){
+	// in the original code, the dimension of v_w3jm is (j3min:j3max).
+	// In C, this means it has length j3max-j3min+1, and we must
+	// always deduct j3min from the indices
+	
+	// Inizializzo gli indici per la downward recursion
+	int j3 = j3max; // we don't use separate j3int as gevero does.
+	
+	// In questo if separo i casi in cui ho un vettore di lunghezza uno da quelli che
+	// necessitano dell'uso della ricorsione
+	if (j3min==j3max) // big_if
+		v_w3jm[j3max-j3min]=wdown0(j1,j2,m1,m2); // Unico termine da calcolare
+	else {
+		// Si inizializza la ricorsione
+		v_w3jm[j3max-j3min]=wdown0(j1,j2,m1,m2);
+		v_w3jm[j3max-1-j3min]=-(dr(j1,j2,j1+j2,m1,m2,-m1-m2)/( (j1+j2+1)*cr(j1,j2,j1+j2,m1,m2,-m1-m2) ))*v_w3jm[j3max-j3min];
+	
+	
+		// Ciclo per il calcolo ricorsivo
+		while(j3-2>=j3min){ // down_do
+	
+				//Primo coeff della ricorsione
+				cd1=dr(j1,j2,j3-1,m1,m2,-m1-m2)/(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2))
+				cd2=((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2))/(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2))
+				//Ricorsione
+				v_w3jm[j3int-2-j3min]=-cd1*v_w3jm[j3int-1-j3min]-cd2*v_w3jm[j3int-j3min]
+	
+				//Aggiorno gli indici
+				--j3;
+		} //END DO down_do
+	
+		// Inizializzo gli indici per la upward recursion
+		j3int=j3min
+		j3=REAL(j3min,dbl)
+	
+		// Calcolo del primo termine di wigner dal basso
+		v_w3jm[j3int-j3min]=wup0(j1,j2,m1,m2)
+	
+		// Calcolo del secondo termine di wigner dal basso
+		// Pongo anche la condizione sul coefficienti nel caso ci sia signolarita'
+		cu3_if: IF (j3min==0) THEN
+				cu3=0
+		ELSE
+				cu3=dr(j1,j2,j3,m1,m2,-m1-m2)/(j3*cr(j1,j2,j3+1,m1,m2,-m1-m2))
+		END IF cu3_if
+	
+		w3jm_temp=-cu3*v_w3jm[j3int-j3min]
+	
+		// If legato alla monotonia della successione
+		up_if: IF (ABS(w3jm_temp)>ABS(v_w3jm[j3min-j3min])) THEN
+	
+				// Aggiorno gli indici e metto nell'array il secondo valore
+				// in questo modo sono pronto per iniziale la upward recursion
+				// a tre termini
+				j3int=j3int+1
+				v_w3jm[j3int-j3min]=w3jm_temp
+	
+				up_do: DO
+						//Aggiorno gli indici
+						j3int=j3int+1
+						j3=REAL(j3int,dbl)
+	
+						IF (j3int-1==j3max) EXIT
+	
+	// 					IF ((INT(-m1)==-1).AND.(INT(j1)==1).AND.(INT(m2)==1).AND.(INT(j2)==2)) THEN
+	// 					WRITE(*,*) "j3-1,cr1,cr2",j3-1,cr(j1,j2,j3,m1,m2,-m1-m2),cr(j1,j2,j3,m1,m2,-m1-m2)
+	// 					END IF
+	
+						//Primo e secondo coeff della ricorsione
+						cu1=dr(j1,j2,j3-1,m1,m2,-m1-m2)/((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2))
+						cu2=(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2))/((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2))
+	
+						//Assegnazione temporanea della ricorsione
+						w3jm_temp=-cu1*v_w3jm[j3int-1-j3min]-cu2*v_w3jm[j3int-2-j3min]
+	
+						IF ((ABS(w3jm_temp)<ABS(v_w3jm[j3int-1-j3min]))  .OR. ((j3int-1)==j3max) ) EXIT // Cond. di uscita
+	
+						v_w3jm[j3int-j3min]=w3jm_temp	//Assegno perche' e' ok
+	
+				END DO up_do
+	
+		END IF up_if
+	
+	} // big_if
+	
+	END SUBROUTINE wigner3jm
+
+void gaunt_cz(int m, int n, int mu, int n, int qmaxa, double *v_aq, int *error) {
+	*error = 0;
+	if (abs(m) > n || abs(mu) > nu) { // error_if
+		*error=1;
+		assert(0);
+		return;
+	}
+
+	// calcolo i bounds dei vettori di wigner
+	int pmin = j3minimum(n,nu,m,mu);
+	int pmax = n+nu;
+	int pmin0 = j3minimum(n,nu,0,0);
+	// Alloco i vettori di wigner e li calcolo
+	ALLOCATE(v_w3jm(pmin:pmax),v_w3jm0(pmin0:pmax),STAT=stat_a)
+	CALL wigner3jm(n,nu,m,mu,pmin,pmax,v_w3jm)
+	CALL wigner3jm(n,nu,0.0D0,0.0D0,pmin0,pmax,v_w3jm0)
+	
+	// Entro nel ciclo per il calcolo dei coefficienti di gaunt
+	gaunt_do: DO q=0,qmaxa
+	
+				// Calcolo dell'indice p, sia reale che intero
+				p=INT(n+nu,lo)-2*q
+				pr=REAL(p,dbl)
+	
+				//Calcolo del fattoriale
+				logw = 0.5D0* (lnf(n+m,r)+lnf(nu+mu,r)+lnf(pr-m-mu,r) - &
+					 		   lnf(n-m,r)-lnf(nu-mu,r)-lnf(pr+m+mu,r))
+				fac= EXP(logw)
+	
+				// Calcolo del coefficiente di gaunt
+				v_aq(q)=((-1.0D0)**INT(m+mu,lo))*(2.0D0*pr+1.0D0)*fac*v_w3jm(p)*v_w3jm0(p)
+	
+	END DO gaunt_do
+	
+	// Disalloco i vettori di wigner a lavoro finito
+	DEALLOCATE(v_w3jm,v_w3jm0)
+	
+	END SUBROUTINE gaunt_cz
+
+
 // gaunt_xu from vec_trans.f90
 // FIXME set some sensible return value
-double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) {
+void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) {
 	
-	int v_zero[qmax] = {0}; // FIXME FAKT TO MÁ BÝT INITIALISOVÁNO NA 0???? KDYŽ SE TOMU NÍŽE PŘIŘAZUJÍ NULY??!!!
 	*error = 0;
+	int v_zero[qmax];
+	for (int i = 0; i < qmax; i++) v_zero[i] = 1;
+	double v_aq_cz[qmax];
+	for (int i = 0; i < qmax; i++) v_aq_cz[i] = 0.;
+	int qi = 0;
 
-	if(abs(m)>n || abs(mu)=nu) {
+	if(abs(m)>n || abs(mu)>nu) {
 		*error = 1;
-		fprintf(stderr, "invalid values for m, n, mu or nu\n")
-		return NAN;
+		fprintf(stderr, "invalid values for m, n, mu or nu\n");
+		return; // FIXME vyřešit chyby
 	}
 
 	switch(qmax) { //qmax_case
@@ -305,7 +453,7 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 				
 				// forward recursion	
 		                // Primo valore per la forward recursion,errore relativo e suo swap
-		                double aq_fwd=f_aqmax(m,n,mu,nu,qmax)
+		                double aq_fwd=f_aqmax(m,n,mu,nu,qmax);
 		                double res=fabs(aq_fwd-v_aq[qmax])/fabs(aq_fwd);
 		
 		                //Se non ho precisione, sostituisco i valori
@@ -314,13 +462,13 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 		                        int qi=1;
 					int zeroswitch = 0; // black magic (gevero's "switch")
 		                        //Entro nel ciclo della sostituzione valori
-		                        for( int q=qmax-1,q>=0,--q) { // tre_f_do
+		                        for( int q=qmax-1;q>=0;--q) { // tre_f_do
 						switch(qmax-q) {// tre_q_case // FIXME switch -> if/else
 							case 1: {// q==qmax-1
 		                                        	//Calcolo v_aq[qmax-1]
 			                                        int p=n+nu-2*(q+2);
 			                                        double c1=4*isq(m)+f_alpha(n,nu,p+2)+f_alpha(n,nu,p+3);
-		                                        	double c2=-f_alpha(n,nu,p+4)
+		                                        	double c2=-f_alpha(n,nu,p+4);
 			                                        double aq_fwd=-(c1/c2)*v_aq[qmax];
 		
 		                                        	switch(v_zero[q]) { // z_3_1_case
@@ -339,7 +487,7 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 		                                       	//Calcolo v_aq[qmax-1]
 		                                        int p=n+nu-2*(q+2);
 		                                        double c0=f_alpha(n,nu,p+1);
-		                                        double c1=4*(m**2)+f_alpha(n,nu,p+2)+f_alpha(n,nu,p+3);
+		                                        double c1=4*isq(m)+f_alpha(n,nu,p+2)+f_alpha(n,nu,p+3);
 		                                        double c2=-f_alpha(n,nu,p+4);
 		                                        aq_fwd=-(c1/c2)*v_aq[q+1]+(c0/c2)*v_aq[q+2];
 
@@ -362,9 +510,10 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 		                        	//Sono nel ciclo, allora sostituisco eaggiorno indice e residuo
 			                        v_aq[q]=aq_fwd;
 		                        	qi=q;
+						assert(q); // assert níže přesunut sem
 					} // tre_f_do
 		                // Check sul ciclo di sostituzione
-				assert(q);
+				//assert(q);
 				/*
 		                error_if1: IF (q==0) THEN
 		                                        WRITE(*,*)
@@ -505,7 +654,7 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 							v_aq[q]=0.;
 							v_zero[q]=0;
 						}
-					} else if ((v_zero[q-1]==0) && (v_zero[q-2]/=0)) {
+					} else if ((v_zero[q-1]==0) && (v_zero[q-2] !=0)) {
 						 if (fabs(v_aq[q]/v_aq[q-2])<ZERO_THRESHOLD) {//zgq_if1:
 							v_aq[q]=0.;
 							v_zero[q]=0;
@@ -534,7 +683,7 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 		
 					//Calcolo il secondo valore, e se la precisione e' raggiunta esco
 					double aq_fwd=f_aqmax_1(m,n,mu,nu,qmax);
-					res=fabs(aq_fwd-v_aq[qmax-1])/fabs(aq_fwd);
+					double res=fabs(aq_fwd-v_aq[qmax-1])/fabs(aq_fwd);
 					if (res<BF_PREC)
 						return;
 		
@@ -542,7 +691,7 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 					v_aq[qmax-1]=aq_fwd;
 					qi=1; //FIXME nepoužitá proměnná
 		
-					for (q = qmax; q >= 2; --q) { //Apmin_do: DO q=qmax,2,-1
+					for (int q = qmax; q >= 2; --q) { //Apmin_do: DO q=qmax,2,-1
 		
 						//Calcolo pre-coefficienti
 						int p=n+nu-2*(q);
@@ -666,8 +815,8 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 											continue; //CYCLE gen_f_do
 											break;
 										case 1:
-											gaunt_cz(m,n,mu,nu,qmax,v_aq_cz(qi),error); // FIXME implementace gaunt_cz
-											aq_fwd=v_aq_cz(qi);
+											gaunt_cz(m,n,mu,nu,qmax,&(v_aq_cz[qi]),error); // FIXME implementace gaunt_cz
+											aq_fwd=(v_aq_cz[qi]);
 											res=fabs(aq_fwd-v_aq[qi])/fabs(aq_fwd);
 											break;
 										default:
@@ -748,7 +897,7 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 										break;
 										case 1:
 										res=fabs(aq_fwd-v_aq[qi])/fabs(aq_fwd);
-										if (res<PREC_BF) { // EXIT gen_f_do
+										if (res<BF_PREC) { // EXIT gen_f_do
 											assert(qi);
 											return;
 										}
@@ -872,7 +1021,7 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 											continue; // CYCLE gen_f_do
 											break;
 											case 1:
-											gaunt_cz(m,n,mu,nu,qmax,&(v_aq_cz[qi]),error);
+											gaunt_cz(m,n,mu,nu,qmax,&(v_aq_cz[qi]),error); // FIXME je potřeba mít v_aq_cz jako pole?
 											aq_fwd=v_aq_cz[qi];
 											res=fabs(aq_fwd-v_aq[qi])/fabs(aq_fwd);
 											break;
@@ -951,56 +1100,4 @@ double gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error
 
 		
 		
-
-
-
-		
-
-
-
-/*
-// gaunt_xu2 from vec_trans.f90
-// btw, what is the difference from gaunt_xu?
-double gaunt_xu2(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) {
-	
-	int v_zero[qmax] = {0};
-	*error = 0;
-
-	if(abs(m)>n || abs(mu)=nu) {
-		*error = 1;
-		fprintf(stderr, "invalid values for m, n, mu or nu\n")
-		return NAN;
-	}
-
-	switch(qmax) {
-		case 0:
-			v_aq[0]  = f_a0(m,n,mu,nu);
-			break;
-		case 1:
-			v_aq[0] = f_a0(m,n,mu,nu);
-			v_aq[1] = v_aq[0] + f_a1norm(m,n,mu,nu);
-
-			// Check for zeros
-			if (fabs(v_aq[1]/v_aq[0]) < ZERO_THRESHOLD) {
-				v_aq[1] = 0.;
-				v_zero[1] = 0.;
-			}
-			break;
-		case 2:
-			v_aq[0] = f_a0(m,n,mu,nu);
-			v_aq[1] = v_aq[0] + f_a1norm(m,n,mu,nu);
-	
-			// Check for zeros
-			if (fabs(v_aq[1]/v_aq[0]) < ZERO_THRESHOLD) {
-				v_aq[1] = 0.;
-				v_zero[1] = 0.;
-			}
-
-			v_aq[2] = v_aq[0] * f_a2norm_
-			break;
-		
-
-			!!!!!!!!!TODO CONTINUE HERE
-*/
-
 
