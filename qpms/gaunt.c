@@ -80,6 +80,7 @@ double f_a2norm(int m, int n, int mu, int nu) {
 
 // just for convenience – square of ints
 static inline int isq(int x) {return x * x;}
+static inline double fsq(float x) {return x * x;}
 
 double f_alpha(int n, int nu, int p) {
 	return (isq(p) - isq(n-nu))*(isq(p)-isq(n+nu+1)) / (double)(4*isq(p)-1);
@@ -120,6 +121,31 @@ double f_aqmax(int m, int n, int mu, int nu, int qmax) {
 	}
 	assert(0);
 }
+
+// starting value of coefficient a(m,n,mu,nu,qmax-1) for the forward recursion
+double f_aqmax_1(int m, int n, int mu, int nu, int qmax) {
+	int pmin=n+nu-2*qmax;
+	//pmin_i=INT(pmin,lo)
+	//qmaxr=REAL(qmax,dbl)
+	int Apmin2=f_Ap(m,n,mu,nu,pmin+2);
+	
+	if (pmin==(m+mu+1)) { // pmin_if
+	        double logw=lpoch(qmax+1,qmax)+lnf(n+nu-qmax)+lnf(n+m)+lnf(nu+mu) 
+	                -lnf(n+nu+pmin)-lnf(n-qmax+1)-lnf(nu-qmax+1)-lnf(n-m)-lnf(nu-mu);
+	        double f1=min1pow(m+n-qmax)*Apmin2*(2.*pmin+3.)*(2.*pmin+5.) /(pmin*(n+nu+pmin+3.));
+	        double f2=(n-qmax)*(nu-qmax)*(2.*qmax+1.)/((pmin+m+mu+1.)*(pmin+m+mu+2.)*(2*qmax-1.));
+	        return f1*f2*exp(logw);
+	} else if (pmin==(-m-mu+1)) {
+	        double logw=lpoch(qmax+1.,qmax+1.)+lnf(n+nu-qmax)+lnf(pmin-m-mu) 
+	                -lnf(n+nu+pmin)-lnf(n-qmax+1.)-lnf(nu-qmax+1.);
+	        double f1=min1pow(nu+mu-qmax)*Apmin2*(2.*pmin+3.)*(2.*pmin+5.)
+      			/(6.*pmin*(n+nu+pmin+3.));
+	        double f2=(n-qmax)*(nu-qmax)/(2.*qmax-1.);
+	        return f1*f2*exp(logw);
+	} // END IF pmin_if
+	assert(0);
+}//END FUNCTION f_aqmax_1
+
 
 // coeff a(m,n,mu,nu,2) normalizzato per la backward recursion calcolato questa volta per ricorsione
 // (from vec_trans.f90)
@@ -177,9 +203,56 @@ int nw(int j1, int j2, int m1, int m2) {
 	return j1+j2+1-MAX(abs(j1-j2),abs(m1+m2));
 }
 
-double wdown(int j1, int j2, int m1, int m2) {
-	double logw = .5*(lnf(2.*j1,
-TODO TODO TODO ZDE JSEM SKONČIL
+// per calcolare il primo termine della backward recursion; vec_trans.f90
+double wdown0(int j1, int j2, int m1, int m2) {
+	double logw=.5*(lnf(2.*j1)+lnf(2.*j2)+lnf(j1+j2-m1-m2)+lnf(j1+j2+m1+m2) - \
+	                       lnf(2.*j1+2.*j2+1.)-lnf(j1-m1)-lnf(j1+m1)-lnf(j2-m2)-lnf(j2+m2));
+	return min1pow(j1+j2+m1+m2)*exp(logw);
+}
+
+// per calcolar il primo termine della upward recursion; vec_trans.f90
+double wup0(int j1, int j2, int m1, int m2) {
+	double logw;
+	if ( ((j1-j2)>=0) && ( abs(j1-j2)>=abs(m1+m2)) ) {
+
+                logw=0.5 * ( lnf(j1-m1)+lnf(j1+m1)+lnf(2.*j1-2.*j2)+lnf(2.*j2) - \
+                 lnf(j2-m2)-lnf(j2+m2)-lnf(j1-j2-m1-m2)-lnf(j1-j2+m1+m2)-lnf(2.*j1+1.) );
+
+                return min1pow(j1+m1)*exp(logw);
+	} else if ( ((j1-j2)<0) && ( abs(j1-j2)>=abs(m1+m2)) ) {
+
+                logw=0.5 * ( lnf(j2-m2)+lnf(j2+m2)+lnf(2.*j2-2.*j1)+lnf(2.*j1) - \
+                 lnf(j1-m1)-lnf(j1+m1)-lnf(j2-j1-m1-m2)-lnf(j2-j1+m1+m2)-lnf(2.*j2+1.) );
+
+                return min1pow(j2+m2)*exp(logw);
+	} else if ( ((m1+m2)>0) && (abs(j1-j2)<abs(m1+m2)) ) {
+
+                logw=0.5 * ( lnf(j1+m1)+lnf(j2+m2)+lnf(j1+j2-m1-m2)+lnf(2.*m1+2.*m2) - \
+                 lnf(j1-m1)-lnf(j2-m2)-lnf(j1-j2+m1+m2)-lnf(j2-j1+m1+m2)-lnf(j1+j2+m1+m2+1.) );
+
+                return min1pow(j2+m2)*exp(logw);
+	} else if ( ((m1+m2)<0) && (abs(j1-j2)<abs(m1+m2)) ) {
+
+                logw=0.5 * ( lnf(j1-m1)+lnf(j2-m2)+lnf(j1+j2+m1+m2)+lnf(-2.*m1-2.*m2) - \
+                 lnf(j1+m1)-lnf(j2+m2)-lnf(j1-j2-m1-m2)-lnf(j2-j1-m1-m2)-lnf(j1+j2-m1-m2+1.) );
+
+                return min1pow(j1+m1)*exp(logw);
+	}
+	assert(0);
+}
+
+// coefficiente per il calcolo ricorsivo
+double cr(double j1, double j2, double j3, double m1, double m2, double m3) {
+	return (fsq(j3)-fsq(j1-j2))*( fsq(j1+j2+1)-fsq(j3) )*( fsq(j3)-fsq(m3) );
+}
+
+
+// coefficiente per il calcolo ricorsivo
+// (nebo raději všude doubly)?
+double dr(double j1, double j2, double j3, double m1, double m2, double m3) {
+	return -(2*j3+1)*( j1*(j1+1)*m3-j2*(j2+1)*m3-j3*(j3+1)*(m2-m1) );
+}
+
 
 //******************************************************************************
 //7) subroutine Wigner3jm: calcolo il vettore di simboli 3jm
@@ -207,75 +280,66 @@ void  wigner3jm(int j1, int j2, int m1, int m2, int j3min, int j3max, double *v_
 		while(j3-2>=j3min){ // down_do
 	
 				//Primo coeff della ricorsione
-				cd1=dr(j1,j2,j3-1,m1,m2,-m1-m2)/(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2))
-				cd2=((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2))/(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2))
+				double cd1=dr(j1,j2,j3-1,m1,m2,-m1-m2)/(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2));
+				double cd2=((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2))/(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2));
 				//Ricorsione
-				v_w3jm[j3int-2-j3min]=-cd1*v_w3jm[j3int-1-j3min]-cd2*v_w3jm[j3int-j3min]
+				v_w3jm[j3-2-j3min]=-cd1*v_w3jm[j3-1-j3min]-cd2*v_w3jm[j3-j3min];
 	
 				//Aggiorno gli indici
 				--j3;
 		} //END DO down_do
 	
 		// Inizializzo gli indici per la upward recursion
-		j3int=j3min
-		j3=REAL(j3min,dbl)
+		j3=j3min;
 	
 		// Calcolo del primo termine di wigner dal basso
-		v_w3jm[j3int-j3min]=wup0(j1,j2,m1,m2)
+		v_w3jm[j3-j3min]=wup0(j1,j2,m1,m2);
 	
 		// Calcolo del secondo termine di wigner dal basso
 		// Pongo anche la condizione sul coefficienti nel caso ci sia signolarita'
-		cu3_if: IF (j3min==0) THEN
-				cu3=0
-		ELSE
-				cu3=dr(j1,j2,j3,m1,m2,-m1-m2)/(j3*cr(j1,j2,j3+1,m1,m2,-m1-m2))
-		END IF cu3_if
+		double cu3 =  (j3min==0) ? 0 : (dr(j1,j2,j3,m1,m2,-m1-m2)/(j3*cr(j1,j2,j3+1,m1,m2,-m1-m2)));
 	
-		w3jm_temp=-cu3*v_w3jm[j3int-j3min]
+		double w3jm_temp=-cu3*v_w3jm[j3-j3min];
 	
 		// If legato alla monotonia della successione
-		up_if: IF (ABS(w3jm_temp)>ABS(v_w3jm[j3min-j3min])) THEN
+		if (fabs(w3jm_temp)>fabs(v_w3jm[j3min-j3min])) { //up_if
 	
 				// Aggiorno gli indici e metto nell'array il secondo valore
 				// in questo modo sono pronto per iniziale la upward recursion
 				// a tre termini
-				j3int=j3int+1
-				v_w3jm[j3int-j3min]=w3jm_temp
-	
-				up_do: DO
+				++j3;
+				v_w3jm[j3-j3min]=w3jm_temp;
+				while(1) { // up_do: DO
 						//Aggiorno gli indici
-						j3int=j3int+1
-						j3=REAL(j3int,dbl)
+						++j3;
 	
-						IF (j3int-1==j3max) EXIT
+						if (j3-1==j3max) break;
 	
 	// 					IF ((INT(-m1)==-1).AND.(INT(j1)==1).AND.(INT(m2)==1).AND.(INT(j2)==2)) THEN
 	// 					WRITE(*,*) "j3-1,cr1,cr2",j3-1,cr(j1,j2,j3,m1,m2,-m1-m2),cr(j1,j2,j3,m1,m2,-m1-m2)
 	// 					END IF
 	
 						//Primo e secondo coeff della ricorsione
-						cu1=dr(j1,j2,j3-1,m1,m2,-m1-m2)/((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2))
-						cu2=(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2))/((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2))
+						double cu1=dr(j1,j2,j3-1,m1,m2,-m1-m2)/((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2));
+						double cu2=(j3*cr(j1,j2,j3-1,m1,m2,-m1-m2))/((j3-1)*cr(j1,j2,j3,m1,m2,-m1-m2));
 	
 						//Assegnazione temporanea della ricorsione
-						w3jm_temp=-cu1*v_w3jm[j3int-1-j3min]-cu2*v_w3jm[j3int-2-j3min]
+						double w3jm_temp=-cu1*v_w3jm[j3-1-j3min]-cu2*v_w3jm[j3-2-j3min];
 	
-						IF ((ABS(w3jm_temp)<ABS(v_w3jm[j3int-1-j3min]))  .OR. ((j3int-1)==j3max) ) EXIT // Cond. di uscita
+						if ((fabs(w3jm_temp)<fabs(v_w3jm[j3-1-j3min]))  || ((j3-1)==j3max) ) break; // Cond. di uscita
 	
-						v_w3jm[j3int-j3min]=w3jm_temp	//Assegno perche' e' ok
-	
-				END DO up_do
-	
-		END IF up_if
-	
+						v_w3jm[j3-j3min]=w3jm_temp;	//Assegno perche' e' ok
+				} // END DO up_do
+		} //END IF up_if
 	} // big_if
-	
-	END SUBROUTINE wigner3jm
+} // END SUBROUTINE wigner3jm
 
-void gaunt_cz(int m, int n, int mu, int n, int qmaxa, double *v_aq, int *error) {
-	*error = 0;
+// calcolo una serie di coefficienti di Gaunt per una data quadrupletta di indici; vec_trans.f90
+void gaunt_cz(int m, int n, int mu, int nu, int qmaxa, double *v_aq, int *error) {
+	// TODO zrušit error a dát místo něj
+	if (error) *error = 0;
 	if (abs(m) > n || abs(mu) > nu) { // error_if
-		*error=1;
+		if (error) *error=1;
 		assert(0);
 		return;
 	}
@@ -285,31 +349,35 @@ void gaunt_cz(int m, int n, int mu, int n, int qmaxa, double *v_aq, int *error) 
 	int pmax = n+nu;
 	int pmin0 = j3minimum(n,nu,0,0);
 	// Alloco i vettori di wigner e li calcolo
-	ALLOCATE(v_w3jm(pmin:pmax),v_w3jm0(pmin0:pmax),STAT=stat_a)
-	CALL wigner3jm(n,nu,m,mu,pmin,pmax,v_w3jm)
-	CALL wigner3jm(n,nu,0.0D0,0.0D0,pmin0,pmax,v_w3jm0)
+	double *v_w3jm = calloc(pmax-pmin+1, sizeof(double));
+	double *v_w3jm0 = calloc(pmax-pmin+1, sizeof(double));
+	assert(v_w3jm);
+	assert(v_w3jm0);
+	//ALLOCATE(v_w3jm(pmin:pmax),v_w3jm0(pmin0:pmax),STAT=stat_a)
+	wigner3jm(n,nu,m,mu,pmin,pmax,v_w3jm); // FIXME error handling, non-void return values
+	wigner3jm(n,nu,0,0,pmin0,pmax,v_w3jm0);
 	
 	// Entro nel ciclo per il calcolo dei coefficienti di gaunt
-	gaunt_do: DO q=0,qmaxa
+	for (int q = 0; q <= qmaxa; ++q) { //gaunt_do: DO q=0,qmaxa
 	
 				// Calcolo dell'indice p, sia reale che intero
-				p=INT(n+nu,lo)-2*q
-				pr=REAL(p,dbl)
+				int p=(n+nu)-2*q;
+				//pr=REAL(p,dbl) // use only integer p
 	
 				//Calcolo del fattoriale
-				logw = 0.5D0* (lnf(n+m,r)+lnf(nu+mu,r)+lnf(pr-m-mu,r) - &
-					 		   lnf(n-m,r)-lnf(nu-mu,r)-lnf(pr+m+mu,r))
-				fac= EXP(logw)
+				double logw = .5 * (lnf(n+m)+lnf(nu+mu)+lnf(p-m-mu) - \
+					 		   lnf(n-m)-lnf(nu-mu)-lnf(p+m+mu));
+				double fac = exp(logw);
 	
 				// Calcolo del coefficiente di gaunt
-				v_aq(q)=((-1.0D0)**INT(m+mu,lo))*(2.0D0*pr+1.0D0)*fac*v_w3jm(p)*v_w3jm0(p)
+				v_aq[q]=min1pow(m+mu)*(2*p+1)*fac*v_w3jm[p]*v_w3jm0[p];
 	
-	END DO gaunt_do
+	} // END DO gaunt_do
 	
 	// Disalloco i vettori di wigner a lavoro finito
-	DEALLOCATE(v_w3jm,v_w3jm0)
-	
-	END SUBROUTINE gaunt_cz
+	free(v_w3jm);
+	free(v_w3jm0);
+} // END SUBROUTINE gaunt_cz
 
 
 // gaunt_xu from vec_trans.f90
@@ -939,7 +1007,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 									int Ap4=f_Ap(m,n,mu,nu,p+4);
 									double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
 									double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ 
-									  &(p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
+									  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
 									double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
 									aq_fwd=(c0/c2)*v_aq[qi+2]-(c1/c2)*v_aq[qi+1]; //E' qui che lo calcolo
 			
@@ -954,7 +1022,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 										res=fabs(aq_fwd-v_aq[qi])/fabs(aq_fwd);
 										break;
 										default:
-										assert(0):
+										assert(0);
 									}
 			
 								} // Ap4_q2_if
