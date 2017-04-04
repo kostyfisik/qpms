@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #define ZERO_THRESHOLD 1.e-8
-#define BF_PREC 1.e-14
+#define BF_PREC 1.e-10
 //  "Besides, the determined Real Programmer can write FORTRAN programs in any language."
 //  -- Ed Post, Real Programmers Don't Use Pascal, 1982.
 
@@ -162,32 +162,32 @@ double f_a2normr(int m, int n, int mu, int nu, double a1norm) {
 	if (!Ap4) {
 		if(!Ap6) {
 	
-	                double c0=(p+2)*(p1+1)*alphap1;
-	                double c1=(p+1)*(p2+2)*alphap2;
+	                double c0=(p+2.)*(p1+1.)*alphap1;
+	                double c1=(p+1.)*(p2+2.)*alphap2;
 	
 	                return (c1/c0)*a1norm;
 		} else /* Ap6 != 0 */ {
-	                int Ap2=f_Ap(m,n,mu,nu,p+2);
-	                int Ap3=f_Ap(m,n,mu,nu,p+3);
-	                int Ap5=f_Ap(m,n,mu,nu,p+5);
+	                double Ap2=f_Ap(m,n,mu,nu,p+2);
+	                double Ap3=f_Ap(m,n,mu,nu,p+3);
+	                double Ap5=f_Ap(m,n,mu,nu,p+5);
 	                double alphap5=f_alpha(n,nu,p+5);
 	
-	                double c0=(p+2)*(p+3)*(p+5)*(p1+1)*(p1+2)*(p1+4)*Ap6*alphap1;
-	                double c1=(p+5)*(p1+4)*Ap6*(Ap2*Ap3+(p+1)*(p+3)*(p1+2)*(p2+2)*alphap2);
-	                double c2=(p+2)*(p2+3)*Ap2*(Ap5*Ap6+(p+4)*(p+6)*(p1+5)*(p2+5)*alphap5);
+	                double c0=(p+2.)*(p+3.)*(p+5.)*(p1+1.)*(p1+2.)*(p1+4.)*Ap6*alphap1;
+	                double c1=(p+5.)*(p1+4.)*Ap6*(Ap2*Ap3+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*alphap2);
+	                double c2=(p+2.)*(p2+3.)*Ap2*(Ap5*Ap6+(p+4.)*(p+6.)*(p1+5.)*(p2+5.)*alphap5);
 	
 	                return (c1/c0)*a1norm+(c2/c0);
 		}
 	} else /* Ap4 != 0 */ {
-	                int Ap2=f_Ap(m,n,mu,nu,p+2);
-	                int Ap3=f_Ap(m,n,mu,nu,p+3);
+	                double Ap2=f_Ap(m,n,mu,nu,p+2);
+	                double Ap3=f_Ap(m,n,mu,nu,p+3);
 	                double alphap3=f_alpha(n,nu,p+3);
 	                double alphap4=f_alpha(n,nu,p+4);
 	
-	                double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
-	                double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2 \
-	                 + (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
-	                double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+	                double c0=(p+2.)*(p+3.)*(p1+1.)*(p1+2.)*Ap4*alphap1;
+	                double c1=Ap2*Ap3*Ap4+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*Ap4*alphap2 \
+	                 + (p+2.)*(p+4.)*(p1+3.)*(p2+3.)*Ap2*alphap3;
+	                double c2=-(p+2.)*(p+3.)*(p2+3.)*(p2+4.)*Ap2*alphap4;
 	                
 			return (c1/c0)*a1norm+(c2/c0);
 	}
@@ -384,6 +384,7 @@ void gaunt_cz(int m, int n, int mu, int nu, int qmaxa, double *v_aq, int *error)
 // FIXME set some sensible return value
 void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) {
 	
+	double alphap1;
 	*error = 0;
 	int v_zero[qmax];
 	for (int i = 0; i < qmax; i++) v_zero[i] = 1;
@@ -403,7 +404,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 			break;
 		case 1:
 			v_aq[0] = f_a0(m,n,mu,nu);
-			v_aq[1] = v_aq[0] + f_a1norm(m,n,mu,nu);
+			v_aq[1] = v_aq[0] * f_a1norm(m,n,mu,nu);
 			// controllo gli zeri
 			if (fabs(v_aq[1]/v_aq[0]) < ZERO_THRESHOLD) {
 				v_aq[1] = 0.;
@@ -413,7 +414,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 		case 2:
 			v_aq[0] = f_a0(m,n,mu,nu);
 			
-			v_aq[1] = v_aq[0] + f_a1norm(m,n,mu,nu);
+			v_aq[1] = v_aq[0] * f_a1norm(m,n,mu,nu);
 			// controllo gli zeri
 			if (fabs(v_aq[1]/v_aq[0]) < ZERO_THRESHOLD) {
 				v_aq[1] = 0.;
@@ -613,24 +614,24 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 				int p=n+nu-2*(2);
 				int p1=p-m-mu;
 				int p2=p+m+mu;
-				double alphap1=f_alpha(n,nu,p+1);
+				alphap1=f_alpha(n,nu,p+1);
 				double alphap2=f_alpha(n,nu,p+2);
-				int Ap2=f_Ap(m,n,mu,nu,p+2);
-				int Ap3=f_Ap(m,n,mu,nu,p+3);
-				int Ap4=f_Ap(m,n,mu,nu,p+4);
+				double Ap2=f_Ap(m,n,mu,nu,p+2);
+				double Ap3=f_Ap(m,n,mu,nu,p+3);
+				double Ap4=f_Ap(m,n,mu,nu,p+4);
 		
 				//Con questo if decido se mi serve la ricorsione a 3 o 4 termini
 				if (Ap4==0) { //Ap4_2_if
 					//Calcolo i restanti valori preliminari
-					int Ap5=f_Ap(m,n,mu,nu,p+5);
-					int Ap6=f_Ap(m,n,mu,nu,p+6);
+					double Ap5=f_Ap(m,n,mu,nu,p+5);
+					double Ap6=f_Ap(m,n,mu,nu,p+6);
 					double alphap5=f_alpha(n,nu,p+5);
 					double alphap6=f_alpha(n,nu,p+6);
 		
 					//Calcolo i coefficienti per la ricorsione ma non c3 perche' qui e solo qui non mi serve
-					double c0=(p+2)*(p+3)*(p+5)*(p1+1)*(p1+2)*(p1+4)*Ap6*alphap1;
-					double c1=(p+5)*(p1+4)*Ap6*(Ap2*Ap3 + (p+1)*(p+3)*(p1+2)*(p2+2)*alphap2);
-					double c2=(p+2)*(p2+3)*Ap2*(Ap5*Ap6 + (p+4)*(p+6)*(p1+5)*(p2+5)*alphap5);
+					double c0=(p+2.)*(p+3.)*(p+5.)*(p1+1.)*(p1+2.)*(p1+4.)*Ap6*alphap1;
+					double c1=(p+5.)*(p1+4.)*Ap6*(Ap2*Ap3 + (p+1.)*(p+3.)*(p1+2.)*(p2+2.)*alphap2);
+					double c2=(p+2.)*(p2+3.)*Ap2*(Ap5*Ap6 + (p+4.)*(p+6.)*(p1+5.)*(p2+5.)*alphap5);
 		
 					//Calcolo il mio coefficiente
 					v_aq[2]=(c1/c0)*v_aq[1]+(c2/c0)*v_aq[0];
@@ -643,10 +644,10 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 					double alphap4=f_alpha(n,nu,p+4);
 		
 					//Calcolo coefficienti ricorsione
-					double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
-					double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ \
-					  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
-					double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+					double c0=(p+2.)*(p+3.)*(p1+1.)*(p1+2.)*Ap4*alphap1;
+					double c1=Ap2*Ap3*Ap4+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*Ap4*alphap2+ \
+					  (p+2.)*(p+4.)*(p1+3.)*(p2+3.)*Ap2*alphap3;
+					double c2=-(p+2.)*(p+3.)*(p2+3.)*(p2+4.)*Ap2*alphap4;
 		
 					//Calcolo il mio coefficiente
 					v_aq[2]=(c1/c0)*v_aq[1]+(c2/c0)*v_aq[0];
@@ -675,26 +676,26 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 					int p=n+nu-2*(q);
 					int p1=p-m-mu;
 					int p2=p+m+mu;
-					double alphap1=f_alpha(n,nu,p+1);
+					alphap1=f_alpha(n,nu,p+1);
 					double alphap2=f_alpha(n,nu,p+2);
-					int Ap2=f_Ap(m,n,mu,nu,p+2);
-					int Ap3=f_Ap(m,n,mu,nu,p+3);
-					int Ap4=f_Ap(m,n,mu,nu,p+4);
+					double Ap2=f_Ap(m,n,mu,nu,p+2);
+					double Ap3=f_Ap(m,n,mu,nu,p+3);
+					double Ap4=f_Ap(m,n,mu,nu,p+4);
 		
 					//Con questo if decido se mi serve la ricorsione a 3 o 4 termini
 					if (Ap4==0) { // Ap4_bwd_if: IF (Ap4==0) THEN
 		
 						//Calcolo i restanti valori preliminari
-						int Ap5=f_Ap(m,n,mu,nu,p+5);
-						int Ap6=f_Ap(m,n,mu,nu,p+6);
+						double Ap5=f_Ap(m,n,mu,nu,p+5);
+						double Ap6=f_Ap(m,n,mu,nu,p+6);
 						double alphap5=f_alpha(n,nu,p+5);
 						double alphap6=f_alpha(n,nu,p+6);
 		
 						//Calcolo i coefficienti per la ricorsione ma non c3 perche' qui e solo qui non mi serve
-						double c0=(p+2)*(p+3)*(p+5)*(p1+1)*(p1+2)*(p1+4)*Ap6*alphap1;
-						double c1=(p+5)*(p1+4)*Ap6*(Ap2*Ap3 + (p+1)*(p+3)*(p1+2)*(p2+2)*alphap2);
-						double c2=(p+2)*(p2+3)*Ap2*(Ap5*Ap6 + (p+4)*(p+6)*(p1+5)*(p2+5)*alphap5);
-						double c3=-(p+2)*(p+4)*(p+5)*(p2+3)*(p2+5)*(p2+6)*Ap2*alphap6;
+						double c0=(p+2.)*(p+3.)*(p+5.)*(p1+1.)*(p1+2.)*(p1+4.)*Ap6*alphap1;
+						double c1=(p+5.)*(p1+4.)*Ap6*(Ap2*Ap3 + (p+1.)*(p+3.)*(p1+2.)*(p2+2.)*alphap2);
+						double c2=(p+2.)*(p2+3.)*Ap2*(Ap5*Ap6 + (p+4.)*(p+6.)*(p1+5.)*(p2+5.)*alphap5);
+						double c3=-(p+2.)*(p+4.)*(p+5.)*(p2+3.)*(p2+5.)*(p2+6.)*Ap2*alphap6;
 		
 						//Calcolo il mio coefficiente
 						v_aq[q]=(c1/c0)*v_aq[q-1]+(c2/c0)*v_aq[q-2]+(c3/c0)*v_aq[q-3];
@@ -707,10 +708,10 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 						double alphap4=f_alpha(n,nu,p+4);
 		
 						//Calcolo coefficienti ricorsione
-						double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
-						double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ \
-						  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
-						double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+						double c0=(p+2.)*(p+3.)*(p1+1.)*(p1+2.)*Ap4*alphap1;
+						double c1=Ap2*Ap3*Ap4+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*Ap4*alphap2+ \
+						  (p+2.)*(p+4.)*(p1+3.)*(p2+3.)*Ap2*alphap3;
+						double c2=-(p+2.)*(p+3.)*(p2+3.)*(p2+4.)*Ap2*alphap4;
 		
 						//Calcolo il mio coefficiente
 						v_aq[q]=(c1/c0)*v_aq[q-1]+(c2/c0)*v_aq[q-2];
@@ -765,19 +766,19 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 						int p=n+nu-2*(q);
 						int p1=p-m-mu;
 						int p2=p+m+mu;
-						double alphap1=f_alpha(n,nu,p+1);
+						alphap1=f_alpha(n,nu,p+1);
 						double alphap2=f_alpha(n,nu,p+2);
 						double alphap3=f_alpha(n,nu,p+3);
 						double alphap4=f_alpha(n,nu,p+4);
-						int Ap2=f_Ap(m,n,mu,nu,p+2);
-						int Ap3=f_Ap(m,n,mu,nu,p+3);
-						int Ap4=f_Ap(m,n,mu,nu,p+4);
+						double Ap2=f_Ap(m,n,mu,nu,p+2);
+						double Ap3=f_Ap(m,n,mu,nu,p+3);
+						double Ap4=f_Ap(m,n,mu,nu,p+4);
 		
 						//Calcolo coefficienti ricorsione
-						double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
-						double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ 
-						  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
-						double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+						double c0=(p+2.)*(p+3.)*(p1+1.)*(p1+2.)*Ap4*alphap1;
+						double c1=Ap2*Ap3*Ap4+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*Ap4*alphap2+ 
+						  (p+2.)*(p+4.)*(p1+3.)*(p2+3.)*Ap2*alphap3;
+						double c2=-(p+2.)*(p+3.)*(p2+3.)*(p2+4.)*Ap2*alphap4;
 		
 						//Ricorsione e residuo
 						aq_fwd=-(c1/c2)*v_aq[q-1]+(c0/c2)*v_aq[q];
@@ -833,7 +834,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 											//$$$$$$$$$$$$$$$$
 								//Calcolo Ap4 per qi+2 per vedere quale schema usare
 								int p=n+nu-2*(qi+2);
-								int Ap4=f_Ap(m,n,mu,nu,p+4);
+								double Ap4=f_Ap(m,n,mu,nu,p+4);
 			
 								//Scelgo la ricorrenza a seconda del valore di Ap4
 								if (Ap4==0) { // Ap4_q1_if
@@ -845,11 +846,11 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 									int p2=p+m+mu;
 									double alphap5=f_alpha(n,nu,p+5);
 									double alphap6=f_alpha(n,nu,p+6);
-									int Ap2=f_Ap(m,n,mu,nu,p+2);
-									int Ap5=f_Ap(m,n,mu,nu,p+5);
-									int Ap6=f_Ap(m,n,mu,nu,p+6);
-									double c2=(p+2)*(p2+3)*Ap2*(Ap5*Ap6 + (p+4)*(p+6)*(p1+5)*(p2+5)*alphap5);
-									double c3=-(p+2)*(p+4)*(p+5)*(p2+3)*(p2+5)*(p2+6)*Ap2*alphap6;
+									double Ap2=f_Ap(m,n,mu,nu,p+2);
+									double Ap5=f_Ap(m,n,mu,nu,p+5);
+									double Ap6=f_Ap(m,n,mu,nu,p+6);
+									double c2=(p+2.)*(p2+3.)*Ap2*(Ap5*Ap6 + (p+4.)*(p+6.)*(p1+5.)*(p2+5.)*alphap5);
+									double c3=-(p+2.)*(p+4.)*(p+5.)*(p2+3.)*(p2+5.)*(p2+6.)*Ap2*alphap6;
 									aq_fwd=-(c2/c3)*v_aq[qi+1];
 			
 									//A seconda che il mio valore sia 0 o meno confronto i valori
@@ -901,12 +902,12 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 									double alphap2=f_alpha(n,nu,p+2);
 									double alphap3=f_alpha(n,nu,p+3);
 									double alphap4=f_alpha(n,nu,p+4);
-									int Ap2=f_Ap(m,n,mu,nu,p+2);
-									int Ap3=f_Ap(m,n,mu,nu,p+3);
-									int Ap4=f_Ap(m,n,mu,nu,p+4);
-									double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ 
-									  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
-									double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+									double Ap2=f_Ap(m,n,mu,nu,p+2);
+									double Ap3=f_Ap(m,n,mu,nu,p+3);
+									double Ap4=f_Ap(m,n,mu,nu,p+4);
+									double c1=Ap2*Ap3*Ap4+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*Ap4*alphap2+ 
+									  (p+2.)*(p+4.)*(p1+3.)*(p2+3.)*Ap2*alphap3;
+									double c2=-(p+2.)*(p+3.)*(p2+3.)*(p2+4.)*Ap2*alphap4;
 									aq_fwd=-(c1/c2)*v_aq[qi+1]; //E' qui che lo calcolo
 			
 									//A seconda che il mio valore sia 0 o meno confronto i valori
@@ -937,7 +938,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 			
 								//Calcolo Ap4 per qi+2 per vedere quale schema usare
 								int p=n+nu-2*(qi+2);
-								int Ap4=f_Ap(m,n,mu,nu,p+4);
+								double Ap4=f_Ap(m,n,mu,nu,p+4);
 			
 								//Scelgo la ricorrenza a seconda del valore di Ap4
 								if (Ap4==0) { // Ap4_q2_if
@@ -949,13 +950,13 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 									double alphap2=f_alpha(n,nu,p+2);
 									double alphap5=f_alpha(n,nu,p+5);
 									double alphap6=f_alpha(n,nu,p+6);
-									int Ap2=f_Ap(m,n,mu,nu,p+2);
-									int Ap3=f_Ap(m,n,mu,nu,p+3);
-									int Ap5=f_Ap(m,n,mu,nu,p+5);
-									int Ap6=f_Ap(m,n,mu,nu,p+6);
-									double c1=(p+5)*(p1+4)*Ap6*(Ap2*Ap3 + (p+1)*(p+3)*(p1+2)*(p2+2)*alphap2);
-									double c2=(p+2)*(p2+3)*Ap2*(Ap5*Ap6 + (p+4)*(p+6)*(p1+5)*(p2+5)*alphap5);
-									double c3=-(p+2)*(p+4)*(p+5)*(p2+3)*(p2+5)*(p2+6)*Ap2*alphap6;
+									double Ap2=f_Ap(m,n,mu,nu,p+2);
+									double Ap3=f_Ap(m,n,mu,nu,p+3);
+									double Ap5=f_Ap(m,n,mu,nu,p+5);
+									double Ap6=f_Ap(m,n,mu,nu,p+6);
+									double c1=(p+5.)*(p1+4.)*Ap6*(Ap2*Ap3 + (p+1.)*(p+3.)*(p1+2.)*(p2+2.)*alphap2);
+									double c2=(p+2.)*(p2+3.)*Ap2*(Ap5*Ap6 + (p+4.)*(p+6.)*(p1+5.)*(p2+5.)*alphap5);
+									double c3=-(p+2.)*(p+4.)*(p+5.)*(p2+3.)*(p2+5.)*(p2+6.)*Ap2*alphap6;
 									aq_fwd=-(c1/c3)*v_aq[qi+2] -(c2/c3)*v_aq[qi+1];
 			
 									//A seconda che il mio valore sia 0 o meno confronto i valori
@@ -1002,13 +1003,13 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 									double alphap2=f_alpha(n,nu,p+2);
 									double alphap3=f_alpha(n,nu,p+3);
 									double alphap4=f_alpha(n,nu,p+4);
-									int Ap2=f_Ap(m,n,mu,nu,p+2);
-									int Ap3=f_Ap(m,n,mu,nu,p+3);
-									int Ap4=f_Ap(m,n,mu,nu,p+4);
-									double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
-									double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ 
-									  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
-									double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+									double Ap2=f_Ap(m,n,mu,nu,p+2);
+									double Ap3=f_Ap(m,n,mu,nu,p+3);
+									double Ap4=f_Ap(m,n,mu,nu,p+4);
+									double c0=(p+2.)*(p+3.)*(p1+1.)*(p1+2.)*Ap4*alphap1;
+									double c1=Ap2*Ap3*Ap4+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*Ap4*alphap2+ 
+									  (p+2.)*(p+4.)*(p1+3.)*(p2+3.)*Ap2*alphap3;
+									double c2=-(p+2.)*(p+3.)*(p2+3.)*(p2+4.)*Ap2*alphap4;
 									aq_fwd=(c0/c2)*v_aq[qi+2]-(c1/c2)*v_aq[qi+1]; //E' qui che lo calcolo
 			
 									//A seconda che il mio valore sia 0 o meno confronto i valori
@@ -1035,7 +1036,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 			
 								//Calcolo Ap4 per qi+2 per vedere quale schema usare
 								int p=n+nu-2*(qi+2);
-								int Ap4=f_Ap(m,n,mu,nu,p+4);
+								double Ap4=f_Ap(m,n,mu,nu,p+4);
 			
 								//Scelgo la ricorrenza a seconda del valore di Ap4
 								if (Ap4==0) { // Ap4_qq_if
@@ -1048,14 +1049,14 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 									double alphap2=f_alpha(n,nu,p+2);
 									double alphap5=f_alpha(n,nu,p+5);
 									double alphap6=f_alpha(n,nu,p+6);
-									int Ap2=f_Ap(m,n,mu,nu,p+2);
-									int Ap3=f_Ap(m,n,mu,nu,p+3);
-									int Ap5=f_Ap(m,n,mu,nu,p+5);
-									int Ap6=f_Ap(m,n,mu,nu,p+6);
-									double c0=(p+2)*(p+3)*(p+5)*(p1+1)*(p1+2)*(p1+4)*Ap6*alphap1;
-									double c1=(p+5)*(p1+4)*Ap6*(Ap2*Ap3 + (p+1)*(p+3)*(p1+2)*(p2+2)*alphap2);
-									double c2=(p+2)*(p2+3)*Ap2*(Ap5*Ap6 + (p+4)*(p+6)*(p1+5)*(p2+5)*alphap5);
-									double c3=-(p+2)*(p+4)*(p+5)*(p2+3)*(p2+5)*(p2+6)*Ap2*alphap6;
+									double Ap2=f_Ap(m,n,mu,nu,p+2);
+									double Ap3=f_Ap(m,n,mu,nu,p+3);
+									double Ap5=f_Ap(m,n,mu,nu,p+5);
+									double Ap6=f_Ap(m,n,mu,nu,p+6);
+									double c0=(p+2.)*(p+3.)*(p+5.)*(p1+1.)*(p1+2.)*(p1+4.)*Ap6*alphap1;
+									double c1=(p+5.)*(p1+4.)*Ap6*(Ap2*Ap3 + (p+1.)*(p+3.)*(p1+2.)*(p2+2.)*alphap2);
+									double c2=(p+2.)*(p2+3.)*Ap2*(Ap5*Ap6 + (p+4.)*(p+6.)*(p1+5.)*(p2+5.)*alphap5);
+									double c3=-(p+2.)*(p+4.)*(p+5.)*(p2+3.)*(p2+5.)*(p2+6.)*Ap2*alphap6;
 									aq_fwd=(c0/c3)*v_aq[qi+3]-(c1/c3)*v_aq[qi+2] -(c2/c3)*v_aq[qi+1];
 			
 									//A seconda che il mio valore sia 0 o meno confronto i valori
@@ -1110,13 +1111,13 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 									double alphap2=f_alpha(n,nu,p+2);
 									double alphap3=f_alpha(n,nu,p+3);
 									double alphap4=f_alpha(n,nu,p+4);
-									int Ap2=f_Ap(m,n,mu,nu,p+2);
-									int Ap3=f_Ap(m,n,mu,nu,p+3);
-									int Ap4=f_Ap(m,n,mu,nu,p+4);
-									double c0=(p+2)*(p+3)*(p1+1)*(p1+2)*Ap4*alphap1;
-									double c1=Ap2*Ap3*Ap4+(p+1)*(p+3)*(p1+2)*(p2+2)*Ap4*alphap2+ 
-									  (p+2)*(p+4)*(p1+3)*(p2+3)*Ap2*alphap3;
-									double c2=-(p+2)*(p+3)*(p2+3)*(p2+4)*Ap2*alphap4;
+									double Ap2=f_Ap(m,n,mu,nu,p+2);
+									double Ap3=f_Ap(m,n,mu,nu,p+3);
+									double Ap4=f_Ap(m,n,mu,nu,p+4);
+									double c0=(p+2.)*(p+3.)*(p1+1.)*(p1+2.)*Ap4*alphap1;
+									double c1=Ap2*Ap3*Ap4+(p+1.)*(p+3.)*(p1+2.)*(p2+2.)*Ap4*alphap2+ 
+									  (p+2.)*(p+4.)*(p1+3.)*(p2+3.)*Ap2*alphap3;
+									double c2=-(p+2.)*(p+3.)*(p2+3.)*(p2+4.)*Ap2*alphap4;
 									aq_fwd=(c0/c2)*v_aq[qi+2]-(c1/c2)*v_aq[qi+1]; //E' qui che lo calcolo
 			
 									//A seconda che il mio valore sia 0 o meno confronto i valori
@@ -1166,6 +1167,38 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 	} // qmax_case
 } // gaunt_xu
 
+#ifdef GAUNTTEST
+#define MIN(x,y) (((x) > (y)) ? (y) : (x))
 		
-		
+static inline int q_max(int m, int n, int mu, int nu) {
+	return MIN(n, MIN(nu,(n+nu-abs(m+mu))/2));
+}
 
+void __vec_trans_MOD_gaunt_xu(const double *m, const double *n, const double *mu, const double *nu, const int *qmax, double *v_aq, int *err);
+int main()
+{
+	int NMAX=20, REPEAT=10;
+	//int scanned;
+	int m, n, mu, nu;
+	for (int r = 0; r < REPEAT; ++r) for (n = 1; n < NMAX; ++n) for (nu = 1 ; nu < NMAX; ++nu)
+		for (mu = -nu; mu <=nu; ++mu) for (m = -n; m <= n; ++m) {
+	//while(EOF != (scanned = scanf("%d %d %d %d", &m, &n, &mu, &nu))) {
+	//	if (scanned != 4) continue;
+	//	printf("%d %d %d %d\n", m, n, mu, nu);
+		double mf = m, nf = n, muf = mu, nuf = nu;
+		int qmax = q_max(m,n,mu,nu);
+		double v_aq_c[qmax+1], v_aq_f[qmax+1];
+		int errc, errf;
+		__vec_trans_MOD_gaunt_xu(&mf, &nf, &muf, &nuf, &qmax, v_aq_f, &errf);
+		gaunt_xu(m,n,mu,nu,qmax,v_aq_c, &errc);
+	//	for(int i = 0; i <= qmax; ++i) printf("%f ", v_aq_c[i]);
+	//	puts("(c)");
+	//	for(int i = 0; i <= qmax; ++i) printf("%f ", v_aq_f[i]);
+	//	puts("(f)");
+	//	for(int i = 0; i <= qmax; ++i) printf("%e ", v_aq_f[i] - v_aq_c[i]);
+	//	puts("(f-c)");
+
+	}
+	return 0;
+}
+#endif //GAUNTTEST
