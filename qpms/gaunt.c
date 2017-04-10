@@ -1167,13 +1167,23 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *error) 
 	} // qmax_case
 } // gaunt_xu
 
-#ifdef GAUNTTEST
+	
 #define MIN(x,y) (((x) > (y)) ? (y) : (x))
-		
 static inline int q_max(int m, int n, int mu, int nu) {
 	return MIN(n, MIN(nu,(n+nu-abs(m+mu))/2));
 }
 
+int gaunt(int m, int n, int mu, int nu, double *v) {
+	int err = 0;
+	int qmax = q_max(m,n,mu,nu);
+	if (!v) v = calloc(qmax+1, sizeof(double));
+	if (!v) return -1;
+	gaunt_xu(m, n, mu, nu, qmax, v, &err);
+	return err;
+}
+
+#ifdef GAUNTTEST
+	
 void __vec_trans_MOD_gaunt_xu(const double *m, const double *n, const double *mu, const double *nu, const int *qmax, double *v_aq, int *err);
 int main()
 {
