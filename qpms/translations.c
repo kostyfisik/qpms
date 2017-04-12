@@ -85,8 +85,9 @@ complex double qpms_trans_single_A_Taylor(int m, int n, int mu, int nu, sph_t kd
     complex double sum = 0;
     for(int q = 0; q <= qmax; ++q) {
 	    int p = n+nu-2*q;
-	    double a1q_n = a1q[q] / a1q0;
 	    int Pp_order = mu-m;
+	    if(p < abs(Pp_order)) continue; // FIXME raději nastav lépe meze
+	    double a1q_n = a1q[q] / a1q0;
 	    double Pp = leg[gsl_sf_legendre_array_index(p, abs(Pp_order))];
 	    if (Pp_order < 0) Pp *= min1pow(mu-m) * exp(lgamma(1+p+Pp_order)-lgamma(1+p-Pp_order));
 	    complex double zp = bes[p];
