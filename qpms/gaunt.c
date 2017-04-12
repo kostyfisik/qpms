@@ -1173,6 +1173,7 @@ static inline int q_max(int m, int n, int mu, int nu) {
 	return MIN(n, MIN(nu,(n+nu-abs(m+mu))/2));
 }
 
+/* THIS THING IS TOTALLY WRONG
 int gaunt(int m, int n, int mu, int nu, double *v) {
 	int err = 0;
 	int qmax = q_max(m,n,mu,nu);
@@ -1181,6 +1182,7 @@ int gaunt(int m, int n, int mu, int nu, double *v) {
 	gaunt_xu(m, n, mu, nu, qmax, v, &err);
 	return err;
 }
+*/
 
 #ifdef GAUNTTEST
 	

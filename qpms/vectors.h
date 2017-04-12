@@ -1,6 +1,7 @@
 #ifndef VECTORS_H
 #define VECTORS_H
 #include <math.h>
+#define M_PI_2 (1.570796326794896619231321691639751442098584699687552910487)
 
 typedef struct {
 	double x, y, z;
@@ -21,7 +22,7 @@ typedef struct {
 
 //static inline double vectors_h_sq(double x) {return x*x;}
 
-static inline cart3norm(cart3_t v) {
+static inline double cart3norm(cart3_t v) {
 	return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
@@ -33,8 +34,8 @@ static inline sph_t cart2sph(cart3_t cart) {
 	return sph;
 }
 
-static inline cart_t sph2cart(sph_t sph) {
-	cart_t cart;
+static inline cart3_t sph2cart(sph_t sph) {
+	cart3_t cart;
 	double sin_th = sin(sph.theta);
 	cart.x = sph.r * sin_th * cos(sph.phi);
 	cart.y = sph.r * sin_th * sin(sph.phi);
