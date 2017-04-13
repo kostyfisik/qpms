@@ -4,7 +4,7 @@
 
 #define _GAUNT_H_MIN(x,y) (((x) > (y)) ? (y) : (x))
 static inline int gaunt_q_max(int m, int n, int mu, int nu) {
-	return _GAUNT_H_MIN(n, _GAUNT_H_MIN(nu, n+nu-abs(m+mu)));
+	return _GAUNT_H_MIN(n, _GAUNT_H_MIN(nu, (n+nu-abs(m+mu))/2));
 }
 #undef _GAUNT_H_MIN
 

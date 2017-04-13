@@ -1,7 +1,18 @@
-#include <stdlib.h>
+#include "gaunt.h"
+#ifdef USE_FORTRAN_GAUNT_XU
+void __vec_trans_MOD_gaunt_xu(const double *m, const double *n, const double *mu, const double *nu, const int *qmax, double *v_aq, int *err);
+
+void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *err) {
+	double mf = m, nf=n, muf=mu,nuf=nu;
+	__vec_trans_MOD_gaunt_xu(&mf,&nf,&muf,&nuf,&qmax,v_aq,err);
+}
+
+#else //!USE_FORTRAN_GAUNT_XU
+//#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 #include <assert.h>
+
 #define ZERO_THRESHOLD 1.e-8
 #define BF_PREC 1.e-10
 //  "Besides, the determined Real Programmer can write FORTRAN programs in any language."
@@ -1214,3 +1225,5 @@ int main()
 	return 0;
 }
 #endif //GAUNTTEST
+
+#endif //USE_FORTRAN_GAUNT_XU
