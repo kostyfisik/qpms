@@ -20,5 +20,7 @@ int qpms_sph_bessel_array(qpms_bessel_t typ, int lmax, double x, complex double 
 complex double qpms_trans_single_A_Taylor(int m, int n, int mu, int nu, sph_t kdlj,
                 bool r_ge_d, qpms_bessel_t J);
 
+complex double qpms_trans_single_B_Taylor(int m, int n, int mu, int nu, sph_t kdlj,
+                bool r_ge_d, qpms_bessel_t J);
 
 #endif // QPMS_TRANSLATIONS_H
