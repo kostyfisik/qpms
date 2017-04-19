@@ -8,11 +8,25 @@ from distutils.extension import Extension
 #        m = sys.modules['setuptools.extension']
 #        m.Extension.__dict__ = m._Extension.__dict__
 
+# TODO CHECK THIS OUT http://stackoverflow.com/questions/4056657/what-is-the-easiest-way-to-make-an-optional-c-extension-for-a-python-package
+# also this: https://docs.python.org/2/extending/building.html
+import os
+
+print("You might want to add additional library path to LD_LIBRARY_PATH (especially if you are not using"
+        " GNU GSL in your system library path) and if import fails. ")
+print(os.environ['LD_LIBRARY_PATH'].split(':'))
+
 qpms_c = Extension('qpms_c',
-        sources = ['qpms/qpms_c.pyx'])
+        sources = ['qpms/qpms_c.pyx','qpms/gaunt.c',#'qpms/gaunt.h','qpms/vectors.h','qpms/translations.h',
+            # FIXME http://stackoverflow.com/questions/4259170/python-setup-script-extensions-how-do-you-include-a-h-file
+            'qpms/translations.c'],
+        extra_compile_args=['-std=c99','-ggdb','-O3'],
+        libraries=['gsl', 'blas'],
+        runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':')
+        )
 
 setup(name='qpms',
-        version = "0.1.9",
+        version = "0.2.0",
         packages=['qpms'],
 #        setup_requires=['setuptools_cython'],
         install_requires=['cython>=0.21','quaternion','spherical_functions','py_gmm'],

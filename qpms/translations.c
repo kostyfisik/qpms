@@ -160,5 +160,14 @@ complex double qpms_trans_single_B_Taylor(int m, int n, int mu, int nu, sph_t kd
     return (presum / prenormratio) * sum;
 }
 
+complex double qpms_trans_single_A_Taylor_ext(int m, int n, int mu, int nu, 
+		double kdlj_r, double kdlj_theta, double kdlj_phi, int r_ge_d, int J) {
+	sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+	return qpms_trans_single_A_Taylor(m,n,mu,nu,kdlj,r_ge_d,J);
+}
 
-
+complex double qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu, 
+		double kdlj_r, double kdlj_theta, double kdlj_phi, int r_ge_d, int J) {
+	sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+	return qpms_trans_single_B_Taylor(m,n,mu,nu,kdlj,r_ge_d,J);
+}
