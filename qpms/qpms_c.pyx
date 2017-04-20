@@ -134,7 +134,7 @@ cdef void loop_D_iiiidddii_As_D_lllldddbl(char **args, np.npy_intp *dims, np.npy
             <int>(<np.npy_bool*>ip7)[0],
             <int>(<np.npy_long*>ip8)[0],
         )
-        (<double *>op0)[0] = <double>ov0
+        (<cdouble *>op0)[0] = <cdouble>ov0
         ip0 += steps[0]
         ip1 += steps[1]
         ip2 += steps[2]

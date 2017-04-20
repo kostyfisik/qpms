@@ -49,9 +49,9 @@ int qpms_sph_bessel_array(qpms_bessel_t typ, int lmax, double x, complex double 
 			if(retval) return retval;
 			retval = gsl_sf_bessel_yl_array(lmax, x, tmparr);
 			if (typ==QPMS_HANKEL_PLUS)
-				for (int l = 0; l <= lmax; ++l) result_array[l] *= I * tmparr[l];
+				for (int l = 0; l <= lmax; ++l) result_array[l] += I * tmparr[l];
 			else 
-				for (int l = 0; l <= lmax; ++l) result_array[l] *=-I * tmparr[l];
+				for (int l = 0; l <= lmax; ++l) result_array[l] +=-I * tmparr[l];
 			return retval;
 			break;
 		default:
@@ -171,3 +171,31 @@ complex double qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu,
 	sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
 	return qpms_trans_single_B_Taylor(m,n,mu,nu,kdlj,r_ge_d,J);
 }
+
+#if 0
+typedef struct qpms_trans_calculator {
+	int lMax;
+	size_t nelem;
+	double **A_coeffs;
+	double **B_coeffs;
+	// TODO enum normalization
+} qpms_trans_calculator;
+
+static inline size_t qpms_mn2y(int m, int n) {
+	return (size_t) n * (n + 1) + m - 1;
+}
+
+static inline size_t qpms_trans_calculator__indexcalc(const qpms_trans_calculator *c,
+		int m, int n, int mu, int nu){
+	return c->nelem * qpms_mn2y(m,n) + qpms_mn2y(mu,nu);
+}
+
+struct qpms_trans_calculator
+*qpms_trans_calculator_init_Taylor (int lMax) {
+	qpms_trans_calculator *c = malloc(sizeof(qpms_trans_calculator));
+	c->lMax = lMax;
+	c->nelem = lMax * (lMax+2);
+	c->A_coeffs = malloc((1+c->nelem) * sizeof(double *));
+	c->B_coeffs = malloc((1+c->nelem) * sizeof(double *));
+
+#endif
