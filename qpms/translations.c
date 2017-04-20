@@ -137,7 +137,8 @@ complex double qpms_trans_single_B_Taylor(int m, int n, int mu, int nu, sph_t kd
 	    double a3q_n = a3q[q]/a3q0;
 	    complex double zp_ = bes[p+1];
 	    int Pp_order_ = mu-m;
-	    if(p+1 < abs(Pp_order_)) continue; // FIXME raději nastav lépe meze
+	    //if(p+1 < abs(Pp_order_)) continue; // FIXME raději nastav lépe meze
+	    assert(p+1 >= abs(Pp_order_));
 	    double Pp_ = leg[gsl_sf_legendre_array_index(p+1, abs(Pp_order_))];
 	    if (Pp_order_ < 0) Pp_ *= min1pow(mu-m) * exp(lgamma(1+1+p+Pp_order_)-lgamma(1+1+p-Pp_order_));
 	    complex double summandq = ((2*(n+1)*(nu-mu)*a2q_n
@@ -172,30 +173,82 @@ complex double qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu,
 	return qpms_trans_single_B_Taylor(m,n,mu,nu,kdlj,r_ge_d,J);
 }
 
-#if 0
-typedef struct qpms_trans_calculator {
-	int lMax;
-	size_t nelem;
-	double **A_coeffs;
-	double **B_coeffs;
-	// TODO enum normalization
-} qpms_trans_calculator;
-
+void qpms_trans_calculator_free(qpms_trans_calculator *c) {
+	free(c->A_multipliers[0]);
+	free(c->A_multipliers);
+	free(c->B_multipliers[0]);
+	free(c->B_multipliers);
+	free(c);
+}
+	
 static inline size_t qpms_mn2y(int m, int n) {
 	return (size_t) n * (n + 1) + m - 1;
 }
 
-static inline size_t qpms_trans_calculator__indexcalc(const qpms_trans_calculator *c,
+static inline int qpms_y2n(size_t y) {
+	return (sqrt(5+y)-2)/2; // the cast will truncate the fractional part, which is what we want
+}
+
+static inline int qpms_yn2m(size_t y, int n) {
+	return y-qpms_mn2y(0,n);
+}
+
+static inline void qpms_y2mn_p(size_t y, int *m, int *n){
+	*m=qpms_yn2m(y,*n=qpms_y2n(y));
+}
+
+static inline size_t qpms_trans_calculator_index_mnmunu(const qpms_trans_calculator *c,
 		int m, int n, int mu, int nu){
 	return c->nelem * qpms_mn2y(m,n) + qpms_mn2y(mu,nu);
 }
 
-struct qpms_trans_calculator
-*qpms_trans_calculator_init_Taylor (int lMax) {
+static inline size_t qpms_trans_calculator_index_yyu(const qpms_trans_calculator *c,
+		size_t y, size_t yu) {
+	return c->nelem * y + yu;
+}
+
+#define SQ(x) ((x)*(x))
+
+qpms_trans_calculator
+*qpms_trans_calculator_init (int lMax, qpms_normalization_t normalization) {
 	qpms_trans_calculator *c = malloc(sizeof(qpms_trans_calculator));
 	c->lMax = lMax;
 	c->nelem = lMax * (lMax+2);
-	c->A_coeffs = malloc((1+c->nelem) * sizeof(double *));
-	c->B_coeffs = malloc((1+c->nelem) * sizeof(double *));
+	c->A_multipliers = malloc((1+SQ(c->nelem)) * sizeof(complex double *));
+	c->B_multipliers = malloc((1+SQ(c->nelem)) * sizeof(complex double *));
+	c->normalization = normalization;
+	size_t *qmaxes = malloc(SQ(c->nelem) * sizeof(size_t));
+	size_t qmaxsum = 0;
+	for(size_t y = 0; y < c->nelem; y++)
+		for(size_t yu = 0; yu < c->nelem; yu++) {
+			int m,n, mu, nu;
+			qpms_y2mn_p(y,&m,&n);
+			qpms_y2mn_p(yu,&mu,&nu);
+			qmaxsum += (qmaxes[qpms_trans_calculator_index_yyu(c,y,yu)] = gaunt_q_max(-m,n,mu,nu));
+		}
+	c->A_multipliers[0] = malloc(qmaxsum * sizeof(complex double));
+	for(size_t i = 0; i < SQ(c->nelem); ++i)
+		c->A_multipliers[i+1] = c->A_multipliers[i] + qmaxes[i];
+	// TODO here comes the filling of A_multipliers
+	
 
-#endif
+
+	qmaxsum = 0;
+	for(size_t y=0; y < c->nelem; y++)
+		for(size_t yu = 0; yu < c->nelem; yu++) {
+			int m, n, mu, nu;
+			qpms_y2mn_p(y,&m,&n);
+			qpms_y2mn_p(yu,&mu,&nu);
+			qmaxsum += (qmaxes[qpms_trans_calculator_index_yyu(c,y,yu)] = gaunt_q_max(-m,n+1,mu,nu));
+		}
+	c->B_multipliers[0] = malloc(qmaxsum * sizeof(complex double));
+	for(size_t i = 0; i < SQ(c->nelem); ++i)
+		c->B_multipliers[i+1] = c->B_multipliers[i] + qmaxes[i];
+
+	// TODO here comes the filling of B_multipliers
+
+	free(qmaxes);
+	return c;
+}
+
+
