@@ -46,4 +46,18 @@ typedef struct qpms_trans_calculator {
 qpms_trans_calculator *qpms_trans_calculator_init(int lMax, qpms_normalization_t nt);
 void qpms_trans_calculator_free(qpms_trans_calculator *);
 
+complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
+		int m, int n, int mu, int nu, sph_t kdlj,
+		bool r_ge_d, qpms_bessel_t J);
+complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
+		int m, int n, int mu, int nu, sph_t kdlj,
+		bool r_ge_d, qpms_bessel_t J);
+#if 0
+int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		int m, int n, int mu, int nu, sph_t kdlj,
+		bool r_ge_d, qpms_bessel_t J);
+#endif
+
+
 #endif // QPMS_TRANSLATIONS_H
