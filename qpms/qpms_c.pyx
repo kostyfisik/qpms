@@ -4,6 +4,7 @@
 import numpy as np
 cimport numpy as np
 cimport cython
+from cython.parallel cimport parallel, prange
 
 ## Auxillary function for retrieving the "meshgrid-like" indices; inc. nmax
 @cython.boundscheck(False)
@@ -162,6 +163,20 @@ cdef extern from "translations.h":
         double r, double th, double ph, int r_ge_d, int J) nogil
     cdouble qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu,
         double r, double th, double ph, int r_ge_d, int J) nogil
+    struct qpms_trans_calculator:
+        pass
+    enum qpms_normalization_t:
+        pass
+    qpms_trans_calculator* qpms_trans_calculator_init(int lMax, int nt) # should be qpms_normalization_t
+    void qpms_trans_calculator_free(qpms_trans_calculator* c)
+    cdouble qpms_trans_calculator_get_A_ext(const qpms_trans_calculator* c,
+            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
+            int r_ge_d, int J)
+    cdouble qpms_trans_calculator_get_B_ext(const qpms_trans_calculator* c,
+            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
+            int r_ge_d, int J)
+
+
 
 # Module initialisation
 # ---------------------
@@ -174,31 +189,53 @@ np.import_ufunc()
 
 # BTW, aren't there anonymous arrays in cython?
 
-cdef np.PyUFuncGenericFunction loop_func[1]
-cdef char input_output_types[10]
-cdef void *elementwise_funcs_A[1]
-cdef void *elementwise_funcs_B[1]
+cdef np.PyUFuncGenericFunction trans_X_taylor_loop_func[1]
+cdef void *trans_A_taylor_elementwise_funcs[1]
+cdef void *trans_B_taylor_elementwise_funcs[1]
 
-loop_func[0] = loop_D_iiiidddii_As_D_lllldddbl
+trans_X_taylor_loop_func[0] = loop_D_iiiidddii_As_D_lllldddbl
 
-input_output_types[0] = np.NPY_LONG
-input_output_types[1] = np.NPY_LONG
-input_output_types[2] = np.NPY_LONG
-input_output_types[3] = np.NPY_LONG
-input_output_types[4] = np.NPY_DOUBLE
-input_output_types[5] = np.NPY_DOUBLE
-input_output_types[6] = np.NPY_DOUBLE
-input_output_types[7] = np.NPY_BOOL
-input_output_types[8] = np.NPY_LONG
-input_output_types[9] = np.NPY_CDOUBLE
+# types to be used for all of the single-type translation 
+# coefficient retrieval ufuncs called like
+# coeff = func(m, n, mu, nu, r, theta, phi, r_ge_d, J)
+# currently supported signatures: (D_lllldddbl)
+cdef char ufunc__get_either_trans_coeff_types[10]
+ufunc__get_either_trans_coeff_types[0] = np.NPY_LONG
+ufunc__get_either_trans_coeff_types[1] = np.NPY_LONG
+ufunc__get_either_trans_coeff_types[2] = np.NPY_LONG
+ufunc__get_either_trans_coeff_types[3] = np.NPY_LONG
+ufunc__get_either_trans_coeff_types[4] = np.NPY_DOUBLE
+ufunc__get_either_trans_coeff_types[5] = np.NPY_DOUBLE
+ufunc__get_either_trans_coeff_types[6] = np.NPY_DOUBLE
+ufunc__get_either_trans_coeff_types[7] = np.NPY_BOOL
+ufunc__get_either_trans_coeff_types[8] = np.NPY_LONG
+ufunc__get_either_trans_coeff_types[9] = np.NPY_CDOUBLE
 
-elementwise_funcs_A[0] = <void*> qpms_trans_single_A_Taylor_ext
-elementwise_funcs_B[0] = <void*> qpms_trans_single_B_Taylor_ext
+# types to be used for all of the both-type translation 
+# coefficient retrieval ufuncs called like
+# errval = func(m, n, mu, nu, r, theta, phi, r_ge_d, J, &A, &B)
+# currently supported signatures: (lllldddbl_DD)
+cdef char ufunc__get_both_coeff_types[11]
+ufunc__get_both_coeff_types[0] = np.NPY_LONG
+ufunc__get_both_coeff_types[1] = np.NPY_LONG
+ufunc__get_both_coeff_types[2] = np.NPY_LONG
+ufunc__get_both_coeff_types[3] = np.NPY_LONG
+ufunc__get_both_coeff_types[4] = np.NPY_DOUBLE
+ufunc__get_both_coeff_types[5] = np.NPY_DOUBLE
+ufunc__get_both_coeff_types[6] = np.NPY_DOUBLE
+ufunc__get_both_coeff_types[7] = np.NPY_BOOL
+ufunc__get_both_coeff_types[8] = np.NPY_LONG
+ufunc__get_both_coeff_types[9] = np.NPY_CDOUBLE
+ufunc__get_both_coeff_types[10] = np.NPY_CDOUBLE
+
+
+trans_A_taylor_elementwise_funcs[0] = <void*> qpms_trans_single_A_Taylor_ext
+trans_B_taylor_elementwise_funcs[0] = <void*> qpms_trans_single_B_Taylor_ext
 
 trans_A_Taylor = np.PyUFunc_FromFuncAndData(
-        loop_func, # func
-        elementwise_funcs_A, #data 
-        input_output_types, # types
+        trans_X_taylor_loop_func, # func
+        trans_A_taylor_elementwise_funcs, #data 
+        ufunc__get_either_trans_coeff_types, # types
         1, # ntypes: number of supported input types
         9, # nin: number of input args
         1, # nout: number of output args
@@ -211,9 +248,9 @@ trans_A_Taylor = np.PyUFunc_FromFuncAndData(
         )
 
 trans_B_Taylor = np.PyUFunc_FromFuncAndData(
-        loop_func,
-        elementwise_funcs_B,
-        input_output_types,
+        trans_X_taylor_loop_func,
+        trans_B_taylor_elementwise_funcs,
+        ufunc__get_either_trans_coeff_types,
         1, # number of supported input types
         9, # number of input args
         1, # number of output args
@@ -224,4 +261,177 @@ trans_B_Taylor = np.PyUFunc_FromFuncAndData(
         """,
         0 # unused
         )
+
+# ---------------------------------------------
+# Wrapper for the qpms_trans_calculator "class"
+# ---------------------------------------------
+ctypedef struct trans_calculator_get_X_data_t:
+    qpms_trans_calculator* c
+    void* cmethod
+
+cdef void trans_calculator_loop_D_Ciiiidddii_As_D_lllldddbl(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+    cdef np.npy_intp i, n = dims[0]
+    cdef void *func = (<trans_calculator_get_X_data_t*>data)[0].cmethod
+    #cdef cdouble (*func)(qpms_trans_calculator*, int, int, int, int, double, double, double, int, int) nogil = (<trans_calculator_get_X_data_t*>data)[0].cmethod
+    cdef qpms_trans_calculator* c = (<trans_calculator_get_X_data_t*>data)[0].c
+    #cdef char *func_name= <char*>(<void**>data)[1] # i am not using this, nor have I saved func_name to data
+    cdef char *ip0 = args[0]
+    cdef char *ip1 = args[1]
+    cdef char *ip2 = args[2]
+    cdef char *ip3 = args[3]
+    cdef char *ip4 = args[4]
+    cdef char *ip5 = args[5]
+    cdef char *ip6 = args[6]
+    cdef char *ip7 = args[7]
+    cdef char *ip8 = args[8]
+    cdef char *op0 = args[9]
+    cdef cdouble ov0
+    for i in range(n): # iterating over dimensions
+        #ov0 = func( 
+        ov0 = (<double complex(*)(qpms_trans_calculator*, int, int, int, int, double, double, double, int, int) nogil>func)(
+            c,
+            <int>(<np.npy_long*>ip0)[0],
+            <int>(<np.npy_long*>ip1)[0],
+            <int>(<np.npy_long*>ip2)[0],
+            <int>(<np.npy_long*>ip3)[0],
+            <double>(<np.npy_double*>ip4)[0],
+            <double>(<np.npy_double*>ip5)[0],
+            <double>(<np.npy_double*>ip6)[0],
+            <int>(<np.npy_bool*>ip7)[0],
+            <int>(<np.npy_long*>ip8)[0],
+        )
+        (<cdouble *>op0)[0] = <cdouble>ov0
+        ip0 += steps[0]
+        ip1 += steps[1]
+        ip2 += steps[2]
+        ip3 += steps[3]
+        ip4 += steps[4]
+        ip5 += steps[5]
+        ip6 += steps[6]
+        ip7 += steps[7]
+        ip8 += steps[8]
+        op0 += steps[9]
+# FIXME ERROR HANDLING!!! requires correct import and different data passed (see scipy's generated ufuncs)
+#    sf_error.check_fpe(func_name)
+
+
+cdef void trans_calculator_loop_E_C_DD_iiiidddii_As_lllldddbl_DD(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+    # E stands for error value (int), C for qpms_trans_calculator*
+    cdef np.npy_intp i, n = dims[0]
+    cdef void *func = (<trans_calculator_get_X_data_t*>data)[0].cmethod
+    #cdef complex double (*func)(qpms_trans_calculator*, double complex *, double complex *, int, int, int, int, double, double, double, int, int) nogil = (<trans_calculator_get_X_data_t*>data)[0].cmethod
+    cdef qpms_trans_calculator* c = (<trans_calculator_get_X_data_t*>data)[0].c
+    #cdef char *func_name= <char*>(<void**>data)[1] # i am not using this, nor have I saved func_name to data
+    cdef char *ip0 = args[0]
+    cdef char *ip1 = args[1]
+    cdef char *ip2 = args[2]
+    cdef char *ip3 = args[3]
+    cdef char *ip4 = args[4]
+    cdef char *ip5 = args[5]
+    cdef char *ip6 = args[6]
+    cdef char *ip7 = args[7]
+    cdef char *ip8 = args[8]
+    cdef char *op0 = args[9]
+    cdef char *op1 = args[10]
+    cdef cdouble ov0
+    cdef int errval
+    for i in range(n): # iterating over dimensions
+        #errval = func( 
+        errval = (<int(*)(qpms_trans_calculator*, double complex *, double complex *, int, int, int, int, double, double, double, int, int) nogil>func)(
+            c,
+            <cdouble *> op0,
+            <cdouble *> op1,
+            <int>(<np.npy_long*>ip0)[0],
+            <int>(<np.npy_long*>ip1)[0],
+            <int>(<np.npy_long*>ip2)[0],
+            <int>(<np.npy_long*>ip3)[0],
+            <double>(<np.npy_double*>ip4)[0],
+            <double>(<np.npy_double*>ip5)[0],
+            <double>(<np.npy_double*>ip6)[0],
+            <int>(<np.npy_bool*>ip7)[0],
+            <int>(<np.npy_long*>ip8)[0],
+        )
+        ip0 += steps[0]
+        ip1 += steps[1]
+        ip2 += steps[2]
+        ip3 += steps[3]
+        ip4 += steps[4]
+        ip5 += steps[5]
+        ip6 += steps[6]
+        ip7 += steps[7]
+        ip8 += steps[8]
+        op0 += steps[9]
+        op1 += steps[10]
+        # TODO if (errval != 0): ...
+# FIXME ERROR HANDLING!!! requires correct import and different data passed (see scipy's generated ufuncs)
+#    sf_error.check_fpe(func_name)
+
+cdef np.PyUFuncGenericFunction trans_calculator_get_X_loop_funcs[1]
+trans_calculator_get_X_loop_funcs[0] = trans_calculator_loop_D_Ciiiidddii_As_D_lllldddbl
+
+#TODO
+#cdef np.PyUFuncGenericFunction trans_calculator_get_AB_loop_funcs[1]
+#trans_calculator_get_AB_loop_funcs[0] = trans_calculator_loop_E_C_DD_iiiidddii_As_lllldddbl_DD
+#cdef void *trans_calculator_get_AB_elementwise_funcs[1]
+#trans_calculator_get_AB_elementwise_funcs[0] = qpms_trans_calculator_get_AB_p_ext
+
+cdef class trans_calculator:
+    cdef qpms_trans_calculator* c
+    cdef trans_calculator_get_X_data_t get_A_data[1]
+    cdef trans_calculator_get_X_data_t* get_A_data_p[1]
+
+    cdef trans_calculator_get_X_data_t get_B_data[1]
+    cdef trans_calculator_get_X_data_t* get_B_data_p[1]
+
+    cdef trans_calculator_get_X_data_t get_AB_data[1]
+    cdef trans_calculator_get_X_data_t* get_AB_data_p[1]
+    cdef public: # TODO CHECK FOR CORRECT REFERENCE COUNTING AND LEAKS
+        object get_A, get_B, #get_AB
+
+    def __cinit__(self, int lMax, int normalization = 1):
+        self.c = qpms_trans_calculator_init(lMax, normalization)
+
+    def __init__(self, int lMax, int normalization = 1):
+        self.get_A_data[0].c = self.c
+        self.get_A_data[0].cmethod = <void *>qpms_trans_calculator_get_A_ext
+        self.get_A_data_p[0] = &(self.get_A_data[0])
+        self.get_A = <object>np.PyUFunc_FromFuncAndData(# TODO CHECK FOR CORRECT REFERENCE COUNTING AND LEAKS
+                trans_calculator_get_X_loop_funcs, # func
+                <void **>self.get_A_data_p, #data
+                ufunc__get_either_trans_coeff_types, #types
+                1, # ntypes: number of supported input types
+                9, # nin: number of input args
+                1, # nout: number of output args
+                0, # identity element, unused
+                "get_A", #name
+                """
+                TODO doc
+                """, # doc
+                0 # unused
+                )
+        self.get_B_data[0].c = self.c
+        self.get_B_data[0].cmethod = <void *>qpms_trans_calculator_get_B_ext
+        self.get_B_data_p[0] = &(self.get_B_data[0])
+        self.get_B = <object>np.PyUFunc_FromFuncAndData(# TODO CHECK FOR CORRECT REFERENCE COUNTING AND LEAKS
+                trans_calculator_get_X_loop_funcs, # func
+                <void **>self.get_B_data_p, #data
+                ufunc__get_either_trans_coeff_types, #types
+                1, # ntypes: number of supported input types
+                9, # nin: number of input args
+                1, # nout: number of output args
+                0, # identity element, unused
+                "get_B", #name
+                """
+                TODO doc
+                """, # doc
+                0 # unused
+                )
+
+    def __dealloc__(self):
+        qpms_trans_calculator_free(self.c)
+
+
+    # TODO make possible to access the attributes (to show normalization etc)
+
+    
 

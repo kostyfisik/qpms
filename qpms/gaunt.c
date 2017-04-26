@@ -11,7 +11,7 @@ void gaunt_xu(int m, int n, int mu, int nu, int qmax, double *v_aq, int *err) {
 //#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-#include <assert.h>
+#include "assert_cython_workaround.h"
 
 #define ZERO_THRESHOLD 1.e-8
 #define BF_PREC 1.e-10

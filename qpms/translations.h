@@ -52,6 +52,15 @@ complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
 complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
 		int m, int n, int mu, int nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
+
+complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
+		int m, int n, int mu, int nu, double kdlj_r,
+		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
+complex double qpms_trans_calculator_get_B_ext(const qpms_trans_calculator *c,
+		int m, int n, int mu, int nu, double kdlj_r,
+		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
+
+
 #if 0
 int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,

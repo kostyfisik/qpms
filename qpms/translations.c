@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <gsl/gsl_sf_legendre.h>
 #include <gsl/gsl_sf_bessel.h>
-#include <assert.h>
+#include "assert_cython_workaround.h"
 
 
 static const double sqrtpi = 1.7724538509055160272981674833411451827975494561223871;
@@ -496,6 +496,22 @@ complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
 	complex double bes[n+nu+2];
 	return qpms_trans_calculator_get_B_buf(c,m,n,mu,nu,kdlj,r_ge_d,J,
 			bes,leg);
+}
+
+complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
+                int m, int n, int mu, int nu,
+	       	double kdlj_r, double kdlj_theta, double kdlj_phi,
+                int r_ge_d, int J) {
+	sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+	return qpms_trans_calculator_get_A(c,m,n,mu,nu,kdlj,r_ge_d,J);
+}
+
+complex double qpms_trans_calculator_get_B_ext(const qpms_trans_calculator *c,
+                int m, int n, int mu, int nu,
+	       	double kdlj_r, double kdlj_theta, double kdlj_phi,
+                int r_ge_d, int J) {
+	sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+	return qpms_trans_calculator_get_B(c,m,n,mu,nu,kdlj,r_ge_d,J);
 }
 
 #if 0

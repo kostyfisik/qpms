@@ -20,7 +20,9 @@ qpms_c = Extension('qpms_c',
         sources = ['qpms/qpms_c.pyx','qpms/gaunt.c',#'qpms/gaunt.h','qpms/vectors.h','qpms/translations.h',
             # FIXME http://stackoverflow.com/questions/4259170/python-setup-script-extensions-how-do-you-include-a-h-file
             'qpms/translations.c'],
-        extra_compile_args=['-std=c99','-ggdb','-O3'],
+        extra_compile_args=['-std=c99','-ggdb','-O3',
+            '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules
+            ],
         libraries=['gsl', 'blas'],
         runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':')
         )
