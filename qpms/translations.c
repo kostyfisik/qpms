@@ -480,6 +480,56 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
 	assert(0);
 }
 
+int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		int m, int n, int mu, int nu, sph_t kdlj,
+		bool r_ge_d, qpms_bessel_t J,
+		complex double *bessel_buf, double *legendre_buf) {
+	if (r_ge_d) J = QPMS_BESSEL_REGULAR;
+	switch(c->normalization) {
+		case QPMS_NORMALIZATION_TAYLOR:
+			{
+				double costheta = cos(kdlj.theta);
+				if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
+																costheta,-1,legendre_buf)) abort();
+				if (qpms_sph_bessel_array(J, n+nu+2, kdlj.r, bessel_buf)) abort();
+				size_t i = qpms_trans_calculator_index_mnmunu(c, m, n, mu, nu);
+				size_t Qmax = c->B_multipliers[i+1] - c->B_multipliers[i] - 1;
+				assert(Qmax == gaunt_q_max(-m,n+1,mu,nu));
+				complex double Bsum = 0;
+				for(int q = 0; q <= Qmax; ++q) {
+					int p = n+nu-2*q;
+					double Pp_ = legendre_buf[gsl_sf_legendre_array_index(p+1, abs(mu-m))];
+					complex double eimf = cexp(I * kdlj.phi);
+					complex double zp_ = bessel_buf[p+1];
+					complex double multiplier = c->B_multipliers[i][q];
+					Bsum += Pp_ * zp_ * multiplier;
+				}
+
+				size_t qmax = c->A_multipliers[i+1] - c->A_multipliers[i] - 1;
+				assert(qmax == gaunt_q_max(-m,n,mu,nu));
+				complex double Asum = 0;
+				for(size_t q = 0; q <= qmax; ++q) {
+					int p = n+nu-2*q;
+					double Pp = legendre_buf[gsl_sf_legendre_array_index(p, abs(mu-m))];
+					complex double zp = bessel_buf[p];
+					complex double multiplier = c->A_multipliers[i][q];
+					Asum += Pp * zp *  multiplier;
+				}
+				complex double eimf =  cexp(I*(mu-m)*kdlj.phi);
+
+				*Adest = Asum * eimf;
+				*Bdest = Bsum * eimf;
+				return 0;
+			}
+			break;
+		default:
+			abort();
+	}
+	assert(0);
+}
+
+
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
                 int m, int n, int mu, int nu, sph_t kdlj,
                 bool r_ge_d, qpms_bessel_t J) {
@@ -495,6 +545,16 @@ complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
 	double leg[gsl_sf_legendre_array_n(n+nu+1)];
 	complex double bes[n+nu+2];
 	return qpms_trans_calculator_get_B_buf(c,m,n,mu,nu,kdlj,r_ge_d,J,
+			bes,leg);
+}
+
+int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+                int m, int n, int mu, int nu, sph_t kdlj,
+                bool r_ge_d, qpms_bessel_t J) {
+	double leg[gsl_sf_legendre_array_n(n+nu+1)];
+	complex double bes[n+nu+2];
+	return qpms_trans_calculator_get_AB_buf_p(c,Adest, Bdest,m,n,mu,nu,kdlj,r_ge_d,J,
 			bes,leg);
 }
 
@@ -514,15 +574,12 @@ complex double qpms_trans_calculator_get_B_ext(const qpms_trans_calculator *c,
 	return qpms_trans_calculator_get_B(c,m,n,mu,nu,kdlj,r_ge_d,J);
 }
 
-#if 0
-int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
-                complex double *Adest, complex double *Bdest,
-                int m, int n, int mu, int nu, sph_t kdlj,
-                bool r_ge_d, qpms_bessel_t J) {
-	double leg[gsl_sf_legendre_array_n(n+nu+1)];
-	complex double bes[n+nu+2];
-	return qpms_trans_calculator_get_AB_buf(c,Adest,Bdest,
-			m,n,mu,nu,kdlj,r_ge_d,J,
-			bes,leg);
+int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+                int m, int n, int mu, int nu,
+	       	double kdlj_r, double kdlj_theta, double kdlj_phi,
+                int r_ge_d, int J) {
+	sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+	return qpms_trans_calculator_get_AB_p(c,Adest,Bdest,m,n,mu,nu,kdlj,r_ge_d,J);
 }
-#endif
+

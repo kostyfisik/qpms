@@ -175,6 +175,11 @@ cdef extern from "translations.h":
     cdouble qpms_trans_calculator_get_B_ext(const qpms_trans_calculator* c,
             int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
             int r_ge_d, int J)
+    int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator* c,
+            cdouble *Adest, cdouble *Bdest,
+            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
+            int r_ge_d, int J)
+
 
 
 
@@ -369,11 +374,10 @@ cdef void trans_calculator_loop_E_C_DD_iiiidddii_As_lllldddbl_DD(char **args, np
 cdef np.PyUFuncGenericFunction trans_calculator_get_X_loop_funcs[1]
 trans_calculator_get_X_loop_funcs[0] = trans_calculator_loop_D_Ciiiidddii_As_D_lllldddbl
 
-#TODO
-#cdef np.PyUFuncGenericFunction trans_calculator_get_AB_loop_funcs[1]
-#trans_calculator_get_AB_loop_funcs[0] = trans_calculator_loop_E_C_DD_iiiidddii_As_lllldddbl_DD
-#cdef void *trans_calculator_get_AB_elementwise_funcs[1]
-#trans_calculator_get_AB_elementwise_funcs[0] = qpms_trans_calculator_get_AB_p_ext
+cdef np.PyUFuncGenericFunction trans_calculator_get_AB_loop_funcs[1]
+trans_calculator_get_AB_loop_funcs[0] = trans_calculator_loop_E_C_DD_iiiidddii_As_lllldddbl_DD
+cdef void *trans_calculator_get_AB_elementwise_funcs[1]
+trans_calculator_get_AB_elementwise_funcs[0] = <void *>qpms_trans_calculator_get_AB_p_ext
 
 cdef class trans_calculator:
     cdef qpms_trans_calculator* c
@@ -386,7 +390,8 @@ cdef class trans_calculator:
     cdef trans_calculator_get_X_data_t get_AB_data[1]
     cdef trans_calculator_get_X_data_t* get_AB_data_p[1]
     cdef public: # TODO CHECK FOR CORRECT REFERENCE COUNTING AND LEAKS
-        object get_A, get_B, #get_AB
+        # have to be cdef public in order that __init__ can set these attributes
+        object get_A, get_B, get_AB
 
     def __cinit__(self, int lMax, int normalization = 1):
         self.c = qpms_trans_calculator_init(lMax, normalization)
@@ -426,9 +431,26 @@ cdef class trans_calculator:
                 """, # doc
                 0 # unused
                 )
-
+        self.get_AB_data[0].c = self.c
+        self.get_AB_data[0].cmethod = <void *>qpms_trans_calculator_get_AB_p_ext
+        self.get_AB_data_p[0] = &(self.get_AB_data[0])
+        self.get_AB = <object>np.PyUFunc_FromFuncAndData(# TODO CHECK FOR CORRECT REFERENCE COUNTING AND LEAKS
+                trans_calculator_get_AB_loop_funcs, # func
+                <void **>self.get_AB_data_p, #data
+                ufunc__get_both_coeff_types, #types
+                1, # ntypes: number of supported input types
+                9, # nin: number of input args
+                2, # nout: number of output args
+                0, # identity element, unused
+                "get_AB", #name
+                """
+                TODO doc
+                """, # doc
+                0 # unused
+                )
     def __dealloc__(self):
         qpms_trans_calculator_free(self.c)
+        # TODO Reference counts to get_A, get_B, get_AB?
 
 
     # TODO make possible to access the attributes (to show normalization etc)
