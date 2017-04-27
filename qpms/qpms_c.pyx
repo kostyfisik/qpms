@@ -5,6 +5,8 @@ import numpy as np
 cimport numpy as np
 cimport cython
 from cython.parallel cimport parallel, prange
+#cimport openmp
+#openmp.omp_set_dynamic(1)
 
 ## Auxillary function for retrieving the "meshgrid-like" indices; inc. nmax
 @cython.boundscheck(False)
@@ -371,10 +373,65 @@ cdef void trans_calculator_loop_E_C_DD_iiiidddii_As_lllldddbl_DD(char **args, np
 # FIXME ERROR HANDLING!!! requires correct import and different data passed (see scipy's generated ufuncs)
 #    sf_error.check_fpe(func_name)
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef void trans_calculator_parallel_loop_E_C_DD_iiiidddii_As_lllldddbl_DD(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
+    # E stands for error value (int), C for qpms_trans_calculator*
+    cdef np.npy_intp i, n = dims[0]
+    cdef void *func = (<trans_calculator_get_X_data_t*>data)[0].cmethod
+    #cdef complex double (*func)(qpms_trans_calculator*, double complex *, double complex *, int, int, int, int, double, double, double, int, int) nogil = (<trans_calculator_get_X_data_t*>data)[0].cmethod
+    cdef qpms_trans_calculator* c = (<trans_calculator_get_X_data_t*>data)[0].c
+    #cdef char *func_name= <char*>(<void**>data)[1] # i am not using this, nor have I saved func_name to data
+
+    cdef char *ip0
+    cdef char *ip1
+    cdef char *ip2
+    cdef char *ip3
+    cdef char *ip4
+    cdef char *ip5
+    cdef char *ip6
+    cdef char *ip7
+    cdef char *ip8
+    cdef char *op0
+    cdef char *op1
+    cdef int errval
+    for i in prange(n): # iterating over dimensions
+        ip0 = args[0] + i * steps[0]
+        ip1 = args[1] + i * steps[1]
+        ip2 = args[2] + i * steps[2]
+        ip3 = args[3] + i * steps[3]
+        ip4 = args[4] + i * steps[4]
+        ip5 = args[5] + i * steps[5]
+        ip6 = args[6] + i * steps[6]
+        ip7 = args[7] + i * steps[7]
+        ip8 = args[8] + i * steps[8]
+        op0 = args[9] + i * steps[9]
+        op1 = args[10] + i * steps[10]
+        #errval = func( 
+        errval = (<int(*)(qpms_trans_calculator*, double complex *, double complex *, int, int, int, int, double, double, double, int, int) nogil>func)(
+            c,
+            <cdouble *> op0,
+            <cdouble *> op1,
+            <int>(<np.npy_long*>ip0)[0],
+            <int>(<np.npy_long*>ip1)[0],
+            <int>(<np.npy_long*>ip2)[0],
+            <int>(<np.npy_long*>ip3)[0],
+            <double>(<np.npy_double*>ip4)[0],
+            <double>(<np.npy_double*>ip5)[0],
+            <double>(<np.npy_double*>ip6)[0],
+            <int>(<np.npy_bool*>ip7)[0],
+            <int>(<np.npy_long*>ip8)[0],
+        )
+       # TODO if (errval != 0): ...
+# FIXME ERROR HANDLING!!! requires correct import and different data passed (see scipy's generated ufuncs)
+#    sf_error.check_fpe(func_name)
+
+
 cdef np.PyUFuncGenericFunction trans_calculator_get_X_loop_funcs[1]
 trans_calculator_get_X_loop_funcs[0] = trans_calculator_loop_D_Ciiiidddii_As_D_lllldddbl
 
 cdef np.PyUFuncGenericFunction trans_calculator_get_AB_loop_funcs[1]
+#trans_calculator_get_AB_loop_funcs[0] = trans_calculator_parallel_loop_E_C_DD_iiiidddii_As_lllldddbl_DD
 trans_calculator_get_AB_loop_funcs[0] = trans_calculator_loop_E_C_DD_iiiidddii_As_lllldddbl_DD
 cdef void *trans_calculator_get_AB_elementwise_funcs[1]
 trans_calculator_get_AB_elementwise_funcs[0] = <void *>qpms_trans_calculator_get_AB_p_ext

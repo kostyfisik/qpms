@@ -419,6 +419,10 @@ complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
 		bool r_ge_d, qpms_bessel_t J,
 		complex double *bessel_buf, double *legendre_buf) {
 	if (r_ge_d) J = QPMS_BESSEL_REGULAR;
+	if (0 == kdlj.r && J != QPMS_BESSEL_REGULAR) 
+		// TODO warn? 
+		return NAN+I*NAN;
+	
 	switch(c->normalization) {
 		case QPMS_NORMALIZATION_TAYLOR:
 			{
@@ -451,6 +455,9 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
 		bool r_ge_d, qpms_bessel_t J,
 		complex double *bessel_buf, double *legendre_buf) {
 	if (r_ge_d) J = QPMS_BESSEL_REGULAR;
+	if (0 == kdlj.r && J != QPMS_BESSEL_REGULAR) 
+		// TODO warn? 
+		return NAN+I*NAN;
 	switch(c->normalization) {
 		case QPMS_NORMALIZATION_TAYLOR:
 			{
@@ -486,6 +493,12 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
 		bool r_ge_d, qpms_bessel_t J,
 		complex double *bessel_buf, double *legendre_buf) {
 	if (r_ge_d) J = QPMS_BESSEL_REGULAR;
+	if (0 == kdlj.r && J != QPMS_BESSEL_REGULAR) {
+		*Adest = NAN+I*NAN;
+		*Bdest = NAN+I*NAN;
+		// TODO warn? different return value?
+		return 0;
+	}
 	switch(c->normalization) {
 		case QPMS_NORMALIZATION_TAYLOR:
 			{

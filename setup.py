@@ -23,7 +23,7 @@ qpms_c = Extension('qpms_c',
         extra_compile_args=['-std=c99','-ggdb','-O3',
             '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules
             ],
-        libraries=['gsl', 'blas'],
+        libraries=['gsl', 'blas', 'omp'],
         runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':')
         )
 

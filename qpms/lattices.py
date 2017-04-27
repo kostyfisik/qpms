@@ -6,7 +6,7 @@ nx = np.newaxis
 import time
 import scipy
 import sys
-from qpms_c import get_mn_y # TODO be explicit about what is imported
+from qpms_c import get_mn_y, trans_calculator # TODO be explicit about what is imported
 from .qpms_p import cart2sph, nelem2lMax, Ã, B̃ # TODO be explicit about what is imported
 
 def _time_b(active = True, name = None, step = None):
@@ -83,6 +83,7 @@ class Scattering(object):
         self.N = positions.shape[0]
         self.k_0 = k_0
         self.lMax = lMax if lMax else nelem2lMax(TMatrices.shape[-1])
+        self.tc = trans_calculator(lMax)
         nelem = lMax * (lMax + 2) #!
         self.nelem = nelem #!
         self.prepared = False
@@ -91,7 +92,7 @@ class Scattering(object):
     def prepare(self, keep_interaction_matrix = False, verbose=False):
         btime = _time_b(verbose)
         if not self.prepared:
-            if not self.interaction_matrix:
+            if self.interaction_matrix is None:
                 self.build_interaction_matrix(verbose=verbose)
             self.lupiv = scipy.linalg.lu_factor(self.interaction_matrix,overwrite_a = not keep_interaction_matrix)
             if not keep_interaction_matrix:
@@ -106,6 +107,7 @@ class Scattering(object):
         nelem = len(my)
         leftmatrix = np.zeros((N,2,nelem,N,2,nelem), dtype=complex)
         sbtime = _time_b(verbose, step = 'Calculating interparticle translation coefficients')
+        """
         for i in range(N):
             for j in range(N):
                 for yi in range(nelem):
@@ -118,6 +120,20 @@ class Scattering(object):
                             leftmatrix[j,1,yj,i,1,yi] = a
                             leftmatrix[j,0,yj,i,1,yi] = b
                             leftmatrix[j,1,yj,i,0,yi] = b
+        """
+        kdji = cart2sph(self.positions[:,nx,:] - self.positions[nx,:,:])
+        kdji[:,:,0] *= self.k_0
+        # get_AB array structure: [j,yj,i,yi]
+        a, b = self.tc.get_AB(my[nx,:,nx,nx],ny[nx,:,nx,nx],my[nx,nx,nx,:],ny[nx,nx,nx,:],
+                (kdji[:,:,0])[:,nx,:,nx], (kdji[:,:,1])[:,nx,:,nx], (kdji[:,:,2])[:,nx,:,nx],
+                False,self.J_scat)
+        mask = np.broadcast_to(np.eye(N,dtype=bool)[:,nx,:,nx],(N,nelem,N,nelem))
+        a[mask] = 0 # no self-translations
+        b[mask] = 0 
+        leftmatrix[:,0,:,:,0,:] = a
+        leftmatrix[:,1,:,:,1,:] = a
+        leftmatrix[:,0,:,:,1,:] = b
+        leftmatrix[:,1,:,:,0,:] = b
         _time_e(sbtime, verbose, step = 'Calculating interparticle translation coefficients')
         # at this point, leftmatrix is the translation matrix
         n2id = np.identity(2*nelem)
@@ -199,6 +215,7 @@ class Scattering_2D_zsym(Scattering):
         self.my, self.ny = get_mn_y(self.lMax)
         self.TE_NMz = (self.my + self.ny) % 2
         self.TM_NMz = 1 - self.TE_NMz
+        self.tc = trans_calculator(lMax)
         # TODO možnost zadávat T-matice rovnou ve zhuštěné podobě
         TMatrices_TE = TMatrices[...,self.TE_NMz[:,nx],self.TE_yz[:,nx],self.TE_NMz[nx,:],self.TE_yz[nx,:]]
         TMatrices_TM = TMatrices[...,self.TM_NMz[:,nx],self.TM_yz[:,nx],self.TM_NMz[nx,:],self.TM_yz[nx,:]]
@@ -216,13 +233,13 @@ class Scattering_2D_zsym(Scattering):
         btime = _time_b(verbose)
         if (TE_or_TM == 0): #TE
             if not self.prepared_TE:
-                if not self.interaction_matrix_TE:
+                if self.interaction_matrix_TE is None:
                     self.build_interaction_matrix(0, verbose)
                 self.lupiv_TE = scipy.linalg.lu_factor(self.interaction_matrix_TE, overwrite_a = not keep_interaction_matrix)
                 self.prepared_TE = True
         if (TE_or_TM == 1): #TM
             if not self.prepared_TM:
-                if not self.interaction_matrix_TM:
+                if self.interaction_matrix_TM is None:
                     self.build_interaction_matrix(1, verbose)
                 self.lupiv_TM = scipy.linalg.lu_factor(self.interaction_matrix_TM, overwrite_a = not keep_interaction_matrix)
                 self.prepared_TM = True
@@ -249,9 +266,29 @@ class Scattering_2D_zsym(Scattering):
             EoMl = (1,)
         elif (TE_or_TM is None):
             EoMl = (0,1)
+        sbtime = _time_b(verbose, step = 'Calculating interparticle translation coefficients')
+        kdji = cart2sph(self.positions[:,nx,:] - self.positions[nx,:,:])
+        kdji[:,:,0] *= self.k_0
+        # get_AB array structure: [j,yj,i,yi]
+        # FIXME I could save some memory by calculating only half of these coefficients
+        a, b = self.tc.get_AB(my[nx,:,nx,nx],ny[nx,:,nx,nx],my[nx,nx,nx,:],ny[nx,nx,nx,:],
+                (kdji[:,:,0])[:,nx,:,nx], (kdji[:,:,1])[:,nx,:,nx], (kdji[:,:,2])[:,nx,:,nx],
+                False,self.J_scat)
+        mask = np.broadcast_to(np.eye(N,dtype=bool)[:,nx,:,nx],(N,nelem,N,nelem))
+        a[mask] = 0 # no self-translations
+        b[mask] = 0
+        print(np.isnan(np.min(a)))
+        _time_e(sbtime, verbose, step = 'Calculating interparticle translation coefficients')
         for EoM in EoMl:
             leftmatrix = np.zeros((N,nelem,N,nelem), dtype=complex)
-            sbtime = _time_b(verbose, step = 'Calculating interparticle translation coefficients, T%s part' % ('M' if EoM else 'E'))
+            y = np.arange(nelem)
+            yi = y[nx,nx,nx,:]
+            yj = y[nx,:,nx,nx]
+            mask = np.broadcast_to((((yi - yj) % 2) == 0),(N,nelem,N,nelem))
+            leftmatrix[mask] = a[mask]
+            mask = np.broadcast_to((((yi - yj) % 2) != 0),(N,nelem,N,nelem))
+            leftmatrix[mask] = b[mask]
+            """ # we use to calculate the AB coefficients here
             for i in range(N):
                 for j in range(i):
                     for yi in range(nelem):
@@ -264,6 +301,7 @@ class Scattering_2D_zsym(Scattering):
                             leftmatrix[j,yj,i,yi] = tr
                             leftmatrix[i,yi,j,yj] = tr if (0 == (my[yj]+my[yi]) % 2) else -tr
             _time_e(sbtime, verbose, step = 'Calculating interparticle translation coefficients, T%s part' % ('M' if EoM else 'E'))
+            """
             for j in range(N):
                 leftmatrix[j] = - np.tensordot(self.TMatrices_TM[j] if EoM else self.TMatrices_TE[j],leftmatrix[j],
                         axes = ([-1],[0]))
@@ -273,6 +311,8 @@ class Scattering_2D_zsym(Scattering):
                 self.interaction_matrix_TE = leftmatrix
             if EoM == 1:
                 self.interaction_matrix_TM = leftmatrix
+        a = None
+        b = None
         _time_e(btime, verbose)
 
     def scatter_partial(self, TE_or_TM, pq_0, verbose = False):
