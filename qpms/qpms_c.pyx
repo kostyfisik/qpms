@@ -166,21 +166,29 @@ cdef extern from "translations.h":
     cdouble qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu,
         double r, double th, double ph, int r_ge_d, int J) nogil
     struct qpms_trans_calculator:
-        pass
+        int lMax
+        size_t nelem
+        cdouble** A_multipliers
+        cdouble** B_multipliers
     enum qpms_normalization_t:
         pass
     qpms_trans_calculator* qpms_trans_calculator_init(int lMax, int nt) # should be qpms_normalization_t
     void qpms_trans_calculator_free(qpms_trans_calculator* c)
     cdouble qpms_trans_calculator_get_A_ext(const qpms_trans_calculator* c,
             int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
-            int r_ge_d, int J)
+            int r_ge_d, int J) nogil
     cdouble qpms_trans_calculator_get_B_ext(const qpms_trans_calculator* c,
             int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
-            int r_ge_d, int J)
+            int r_ge_d, int J) nogil
     int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator* c,
             cdouble *Adest, cdouble *Bdest,
             int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
-            int r_ge_d, int J)
+            int r_ge_d, int J) nogil
+    int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
+            cdouble *Adest, cdouble *Bdest,
+            size_t deststride, size_t srcstride,
+            double kdlj_r, double kdlj_theta, double kdlj_phi,
+            int r_ge_d, int J) nogil
 
 
 
@@ -436,6 +444,20 @@ trans_calculator_get_AB_loop_funcs[0] = trans_calculator_loop_E_C_DD_iiiidddii_A
 cdef void *trans_calculator_get_AB_elementwise_funcs[1]
 trans_calculator_get_AB_elementwise_funcs[0] = <void *>qpms_trans_calculator_get_AB_p_ext
 
+'''
+cdef extern from "numpy/ndarrayobject.h":
+    struct PyArrayInterface:
+        int itemsize
+        np.npy_uintp *shape
+        np.npy_uintp *strides
+        void *data
+'''
+
+
+from libc.stdlib cimport malloc, free, calloc, abort
+
+
+
 cdef class trans_calculator:
     cdef qpms_trans_calculator* c
     cdef trans_calculator_get_X_data_t get_A_data[1]
@@ -508,6 +530,178 @@ cdef class trans_calculator:
     def __dealloc__(self):
         qpms_trans_calculator_free(self.c)
         # TODO Reference counts to get_A, get_B, get_AB?
+
+    def lMax(self):
+        return self.c[0].lMax
+
+    def nelem(self):
+        return self.c[0].nelem
+
+    def get_AB_arrays(self, r, theta, phi, r_ge_d, int J, 
+            destaxis=None, srcaxis=None, expand=True):
+        """
+        Returns arrays of translation coefficients, inserting two new nelem-sized axes
+        (corresponding to the destination and source axes of the translation matrix,
+        respectively).
+
+        By default (expand==True), it inserts the new axes. or it can be provided with
+        the resulting shape (with the corresponding axes dimensions equal to one).
+        The provided axes positions are for the resulting array.
+
+        If none axis positions are provided, destaxis and srcaxis will be the second-to-last
+        and last, respectively.
+        """
+        # TODO CHECK (and try to cast) INPUT ARRAY TYPES (now is done)
+        # BIG FIXME: make skalars valid arguments, now r, theta, phi, r_ge_d have to be ndarrays
+        cdef:
+            int daxis, saxis, smallaxis, bigaxis, reslen, longest_axis, i, j, d, ax, errval
+            np.npy_intp sstride, dstride, longi, longstride
+            int *local_indices
+            int *innerloop_shape
+            char *r_p
+            char *theta_p
+            char *phi_p
+            char *r_ge_d_p
+            char *a_p
+            char *b_p
+        # Process the array shapes
+        baseshape = np.broadcast.shape(r,theta,phi,r_ge_d)
+        if not expand:
+            reslen = len(baseshape)
+            if reslen < 2:
+                raise ValueError('Translation matrix arrays must have at least 2 dimensions!')
+            daxis = (reslen-2) if destaxis is None else destaxis
+            saxis = (reslen-1) if srcaxis is None else srcaxis
+            if daxis < 0:
+                daxis = reslen + daxis
+            if saxis < 0:
+                saxis = reslen + saxis
+            if daxis < 0 or saxis < 0 or daxis >= reslen or saxis >= reslen or daxis == saxis:
+                raise ValueError('invalid axes provided (destaxis = %d, srcaxis = %d, # of axes: %d'
+                        % (daxis, saxis, reslen)) 
+            if baseshape[daxis] != 1 or baseshape[saxis] != 1:
+                raise ValueError('dimension mismatch (input argument dimensions have to be 1 both at'
+                        'destaxis (==%d) and srcaxis (==%d) but are %d and %d' % 
+                        (daxis, saxis, baseshape[daxis], baseshape[saxis]))
+            resultshape = list(baseshape)
+        else:
+            reslen = len(baseshape)+2
+            if destaxis is None:
+                daxis = -2
+            if srcaxis is None:
+                saxis = -1
+            if daxis < 0:
+                daxis = reslen + daxis
+            if saxis < 0:
+                saxis = reslen + saxis
+            if daxis < 0 or saxis < 0 or daxis >= reslen or saxis >= reslen or daxis == saxis:
+                raise ValueError('invalid axes provided') # TODO better error formulation
+            resultshape = list(baseshape)
+            if daxis > saxis:
+                smallaxis = saxis
+                bigaxis = daxis
+            else:
+                smallaxis = daxis
+                bixagis = saxis
+            resultshape.insert(smallaxis,1)
+            resultshape.insert(bigaxis,1)
+            r = np.expand_dims(np.expand_dims(r.astype(np.float_, copy=False), smallaxis), bigaxis)
+            theta = np.expand_dims(np.expand_dims(theta.astype(np.float_, copy=False), smallaxis), bigaxis)
+            phi = np.expand_dims(np.expand_dims(phi.astype(np.float_, copy=False), smallaxis), bigaxis)
+            r_ge_d = np.expand_dims(np.expand_dims(r_ge_d(np.bool_, copy=False), smallaxis), bigaxis)
+
+        longestaxis = 0
+        # FIxME: the whole thing with longest_axis will fail if none is longer than 1
+        for i in range(reslen):
+            if resultshape[i] > resultshape[longest_axis]:
+                longestaxis = i
+        innerloop_shape = <int *> malloc(reslen * sizeof(int))
+        if innerloop_shape == NULL:
+            abort()
+        for i in range(reslen):
+            innerloop_shape[i] = resultshape[i]
+        innerloop_shape[longest_axis] = 1 # longest axis will be iterated in the outer (parallelized) loop. Therefore, longest axis, together with saxis and daxis, will not be iterated in the inner loop
+        resultshape[daxis] = self.c[0].nelem
+        resultshape[saxis] = self.c[0].nelem
+        cdef np.ndarray r_c = np.broadcast_to(r,resultshape)
+        cdef np.ndarray theta_c = np.broadcast_to(theta,resultshape)
+        cdef np.ndarray phi_c = np.broadcast_to(phi,resultshape)
+        cdef np.ndarray r_ge_d_c = np.broadcast_to(r_ge_d, resultshape)
+        cdef np.ndarray a = np.empty(resultshape, dtype=complex)
+        cdef np.ndarray b = np.empty(resultshape, dtype=complex)
+        dstride = a.strides[daxis]
+        sstride = a.strides[saxis]
+        longstride = a.strides[longest_axis]
+        # TODO write this in C (as a function) and parallelize there
+        with nogil: #, parallel(): # FIXME rewrite this part in C
+            local_indices = <int *> calloc(reslen, sizeof(int))
+            if local_indices == NULL: abort()
+            for longi in range(a.shape[longest_axis]): # outer loop (to be parallelized)
+                # this might be done also in the inverse order, but this is more 'c-contiguous' way of incrementing the indices
+                ax = reslen - 1
+                while ax >= 0:
+                    # calculate the correct index/pointer for each array used. This can be further optimized from O(reslen * total size of the result array) to O(total size of the result array), but fick that now
+                    r_p = r_c.data + r_c.strides[longest_axis] * longi
+                    theta_p = theta_c.data + theta_c.strides[longest_axis] * longi
+                    phi_p = phi_c.data + phi_c.strides[longest_axis] * longi
+                    r_ge_d_p = r_ge_d_c.data + r_ge_d_c.strides[longest_axis] * longi
+                    a_p = a.data + a.strides[longest_axis] * longi
+                    b_p = b.data + b.strides[longest_axis] * longi
+                    for i in range(reslen):
+                        if i == longest_axis: continue
+                        r_p += r_c.strides[i] * local_indices[i]
+                        theta_p += theta_c.strides[i] * local_indices[i]
+                        phi_p += phi_c.strides[i] * local_indices[i]
+                        r_ge_d_p += r_ge_d_c.strides[i] * local_indices[i]
+                        if i == saxis or i == daxis: continue
+                        a_p += a.strides[i] * local_indices[i]
+                        b_p += b.strides[i] * local_indices[i]
+
+                    # perform the actual task here
+                    errval = qpms_trans_calculator_get_AB_arrays_ext(self.c,
+                            <cdouble*>a_p, <cdouble*>b_p,
+                            dstride // sizeof(cdouble), sstride // sizeof(cdouble),
+                            (<double*>r_p)[0], (<double*>theta_p)[0], (<double*>phi_p)[0], <int>((<np.npy_bool*>r_ge_d_p)[0]), J)
+                    if errval: abort()
+
+                    # increment the last index 'digit' (ax is now reslen-1; we don't have do-while loop in python)
+                    local_indices[ax] += 1
+                    while (local_indices[ax] == innerloop_shape[ax] and ax >= 0): # overflow to the next digit but stop when we reach below the last one
+                        local_indices[ax] = 0
+                        ax -= 1
+                        local_indices[ax] += 1
+                    if ax >= 0: # did not overflow, get back to the lowest index
+                        ax = reslen - 1
+
+
+
+
+
+
+
+                for ax in range(a.ndim):
+                    if (ax == longest_axis or ax == daxis or ax == saxis):
+                        continue
+            free(local_indices)
+        free(innerloop_shape)
+
+
+                
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
 
 
     # TODO make possible to access the attributes (to show normalization etc)

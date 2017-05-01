@@ -48,6 +48,12 @@ int main() {
 				cabs(B - B2)/((cabs(B2) < cabs(B)) ? cabs(B2) : cabs(B))
 		      );
 	}
+	complex double A,B;
+	// Test of zero R
+	sph_t kdlj = {0, 1, 2};
+	int m = -1, n = 1, mu = -1, nu = 1;
+	qpms_trans_calculator_get_AB_p(c,&A,&B,m,n,mu,nu,kdlj,false,3);
+	printf("A = %.6e+%.6ej, B = %.6e+%.6ej\n", creal(A),cimag(A),creal(B),cimag(B));
 	qpms_trans_calculator_free(c);
 }
 
