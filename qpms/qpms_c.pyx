@@ -554,7 +554,7 @@ cdef class trans_calculator:
         # TODO CHECK (and try to cast) INPUT ARRAY TYPES (now is done)
         # BIG FIXME: make skalars valid arguments, now r, theta, phi, r_ge_d have to be ndarrays
         cdef:
-            int daxis, saxis, smallaxis, bigaxis, reslen, longest_axis, i, j, d, ax, errval
+            int daxis, saxis, smallaxis, bigaxis, resnd, longest_axis, i, j, d, ax, errval
             np.npy_intp sstride, dstride, longi, longstride
             int *local_indices
             int *innerloop_shape
@@ -565,36 +565,54 @@ cdef class trans_calculator:
             char *a_p
             char *b_p
         # Process the array shapes
-        baseshape = np.broadcast.shape(r,theta,phi,r_ge_d)
+        baseshape = np.broadcast(r,theta,phi,r_ge_d).shape # nope, does not work as needed
+        '''
+        cdef int r_orignd = r.ndim if hasattr(r, "ndim") else 0
+        cdef int theta_orignd = theta.ndim if hasattr(theta, "ndim") else 0
+        cdef int phi_orignd = phi.ndim if hasattr(phi, "ndim") else 0
+        cdef int r_ge_d_orignd = r_ge_d.ndim if hasattr(r_ge_d, "__len__") else 0
+        cdef int basend = max(r_orignd, theta_orignd, phi_orignd, r_ge_d_orignd)
+        baseshape = list()
+        for d in range(basend):
+            baseshape.append(max(
+                    r.shape[d+r_orignd-basend] if d+r_orignd-basend >= 0 else 1,
+                    theta.shape[d+theta_orignd-basend] if d+theta_orignd-basend >= 0 else 1,
+                    phi.shape[d+phi_orignd-basend] if d+phi_orignd-basend >= 0 else 1,
+                    r_ge_d.shape[d+r_ge_d_orignd-basend] if d+r_ge_d_orignd-basend >= 0 else 1,
+                    ))
+        baseshape = tuple(baseshape)
+        '''
         if not expand:
-            reslen = len(baseshape)
-            if reslen < 2:
+            resnd = len(baseshape)
+            if resnd < 2:
                 raise ValueError('Translation matrix arrays must have at least 2 dimensions!')
-            daxis = (reslen-2) if destaxis is None else destaxis
-            saxis = (reslen-1) if srcaxis is None else srcaxis
+            daxis = (resnd-2) if destaxis is None else destaxis
+            saxis = (resnd-1) if srcaxis is None else srcaxis
             if daxis < 0:
-                daxis = reslen + daxis
+                daxis = resnd + daxis
             if saxis < 0:
-                saxis = reslen + saxis
-            if daxis < 0 or saxis < 0 or daxis >= reslen or saxis >= reslen or daxis == saxis:
+                saxis = resnd + saxis
+            if daxis < 0 or saxis < 0 or daxis >= resnd or saxis >= resnd or daxis == saxis:
                 raise ValueError('invalid axes provided (destaxis = %d, srcaxis = %d, # of axes: %d'
-                        % (daxis, saxis, reslen)) 
+                        % (daxis, saxis, resnd)) 
             if baseshape[daxis] != 1 or baseshape[saxis] != 1:
                 raise ValueError('dimension mismatch (input argument dimensions have to be 1 both at'
                         'destaxis (==%d) and srcaxis (==%d) but are %d and %d' % 
                         (daxis, saxis, baseshape[daxis], baseshape[saxis]))
             resultshape = list(baseshape)
         else:
-            reslen = len(baseshape)+2
-            if destaxis is None:
-                daxis = -2
-            if srcaxis is None:
-                saxis = -1
+            resnd = len(baseshape)+2
+            daxis = (resnd-2) if destaxis is None else destaxis
+            saxis = (resnd-1) if srcaxis is None else srcaxis
+            print(daxis)
+            print(saxis)
             if daxis < 0:
-                daxis = reslen + daxis
+                daxis = resnd + daxis
+            print(daxis)
             if saxis < 0:
-                saxis = reslen + saxis
-            if daxis < 0 or saxis < 0 or daxis >= reslen or saxis >= reslen or daxis == saxis:
+                saxis = resnd + saxis
+            print(saxis)
+            if daxis < 0 or saxis < 0 or daxis >= resnd or saxis >= resnd or daxis == saxis:
                 raise ValueError('invalid axes provided') # TODO better error formulation
             resultshape = list(baseshape)
             if daxis > saxis:
@@ -602,23 +620,26 @@ cdef class trans_calculator:
                 bigaxis = daxis
             else:
                 smallaxis = daxis
-                bixagis = saxis
+                bigaxis = saxis
             resultshape.insert(smallaxis,1)
             resultshape.insert(bigaxis,1)
             r = np.expand_dims(np.expand_dims(r.astype(np.float_, copy=False), smallaxis), bigaxis)
             theta = np.expand_dims(np.expand_dims(theta.astype(np.float_, copy=False), smallaxis), bigaxis)
             phi = np.expand_dims(np.expand_dims(phi.astype(np.float_, copy=False), smallaxis), bigaxis)
-            r_ge_d = np.expand_dims(np.expand_dims(r_ge_d(np.bool_, copy=False), smallaxis), bigaxis)
+            r_ge_d = np.expand_dims(np.expand_dims(r_ge_d.astype(np.bool_, copy=False), smallaxis), bigaxis)
+            print(baseshape)
+            print(len(baseshape), resnd,smallaxis, bigaxis)
+            print(r.shape, theta.shape,phi.shape,r_ge_d.shape)
 
-        longestaxis = 0
+        longest_axis = 0
         # FIxME: the whole thing with longest_axis will fail if none is longer than 1
-        for i in range(reslen):
+        for i in range(resnd):
             if resultshape[i] > resultshape[longest_axis]:
-                longestaxis = i
-        innerloop_shape = <int *> malloc(reslen * sizeof(int))
+                longest_axis = i
+        innerloop_shape = <int *> malloc(resnd * sizeof(int))
         if innerloop_shape == NULL:
             abort()
-        for i in range(reslen):
+        for i in range(resnd):
             innerloop_shape[i] = resultshape[i]
         innerloop_shape[longest_axis] = 1 # longest axis will be iterated in the outer (parallelized) loop. Therefore, longest axis, together with saxis and daxis, will not be iterated in the inner loop
         resultshape[daxis] = self.c[0].nelem
@@ -634,20 +655,20 @@ cdef class trans_calculator:
         longstride = a.strides[longest_axis]
         # TODO write this in C (as a function) and parallelize there
         with nogil: #, parallel(): # FIXME rewrite this part in C
-            local_indices = <int *> calloc(reslen, sizeof(int))
+            local_indices = <int *> calloc(resnd, sizeof(int))
             if local_indices == NULL: abort()
             for longi in range(a.shape[longest_axis]): # outer loop (to be parallelized)
                 # this might be done also in the inverse order, but this is more 'c-contiguous' way of incrementing the indices
-                ax = reslen - 1
+                ax = resnd - 1
                 while ax >= 0:
-                    # calculate the correct index/pointer for each array used. This can be further optimized from O(reslen * total size of the result array) to O(total size of the result array), but fick that now
+                    # calculate the correct index/pointer for each array used. This can be further optimized from O(resnd * total size of the result array) to O(total size of the result array), but fick that now
                     r_p = r_c.data + r_c.strides[longest_axis] * longi
                     theta_p = theta_c.data + theta_c.strides[longest_axis] * longi
                     phi_p = phi_c.data + phi_c.strides[longest_axis] * longi
                     r_ge_d_p = r_ge_d_c.data + r_ge_d_c.strides[longest_axis] * longi
                     a_p = a.data + a.strides[longest_axis] * longi
                     b_p = b.data + b.strides[longest_axis] * longi
-                    for i in range(reslen):
+                    for i in range(resnd):
                         if i == longest_axis: continue
                         r_p += r_c.strides[i] * local_indices[i]
                         theta_p += theta_c.strides[i] * local_indices[i]
@@ -664,14 +685,14 @@ cdef class trans_calculator:
                             (<double*>r_p)[0], (<double*>theta_p)[0], (<double*>phi_p)[0], <int>((<np.npy_bool*>r_ge_d_p)[0]), J)
                     if errval: abort()
 
-                    # increment the last index 'digit' (ax is now reslen-1; we don't have do-while loop in python)
+                    # increment the last index 'digit' (ax is now resnd-1; we don't have do-while loop in python)
                     local_indices[ax] += 1
                     while (local_indices[ax] == innerloop_shape[ax] and ax >= 0): # overflow to the next digit but stop when we reach below the last one
                         local_indices[ax] = 0
                         ax -= 1
                         local_indices[ax] += 1
                     if ax >= 0: # did not overflow, get back to the lowest index
-                        ax = reslen - 1
+                        ax = resnd - 1
 
 
 
@@ -684,27 +705,5 @@ cdef class trans_calculator:
                         continue
             free(local_indices)
         free(innerloop_shape)
-
-
-                
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
+        return a, b
     # TODO make possible to access the attributes (to show normalization etc)
-
-    
-
