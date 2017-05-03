@@ -682,6 +682,7 @@ int qpms_cython_trans_calculator_get_AB_arrays_loop(
 	for (int ax = 0; ax < resnd; ++ax){
 		assert(A_shape[ax] == B_shape[ax]);
 		assert(A_strides[ax] == B_strides[ax]);
+		if (daxis == ax || saxis == ax) continue;
 		if (A_shape[ax] > A_shape[longest_axis]) longest_axis = ax;
 	}
 	const npy_intp longlen = resultshape[longest_axis];
