@@ -14,7 +14,7 @@ import os
 
 print("You might want to add additional library path to LD_LIBRARY_PATH (especially if you are not using"
         " GNU GSL in your system library path) and if import fails. ")
-if(os.environ.has_key("LD_LIBRARY_PATH")):
+if("LD_LIBRARY_PATH" in os.environ):
     print(os.environ['LD_LIBRARY_PATH'].split(':'))
 
 qpms_c = Extension('qpms_c',
@@ -28,7 +28,7 @@ qpms_c = Extension('qpms_c',
             #'-fopenmp',
             ],
         libraries=['gsl', 'blas', 'omp'],
-        runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':') if os.environ.has_key['LD_LIBRARY_PATH'] else []
+        runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':') if 'LD_LIBRARY_PATH' in os.environ else []
         )
 
 setup(name='qpms',
