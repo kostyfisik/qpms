@@ -189,6 +189,15 @@ cdef extern from "translations.h":
             size_t deststride, size_t srcstride,
             double kdlj_r, double kdlj_theta, double kdlj_phi,
             int r_ge_d, int J) nogil
+    int qpms_cython_trans_calculator_get_AB_arrays_loop(qpms_trans_calculator *c,
+            int J, int resnd,
+            int daxis, int saxis,
+            char *A_data, np.npy_intp *A_shape, np.npy_intp *A_strides,
+            char *B_data, np.npy_intp *B_shape, np.npy_intp *B_strides,
+            char *r_data, np.npy_intp *r_shape, np.npy_intp *r_strides,
+            char *theta_data, np.npy_intp *theta_shape, np.npy_intp *theta_strides,
+            char *phi_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides,
+            char *r_ge_d_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides) nogil
 
 
 
@@ -629,7 +638,7 @@ cdef class trans_calculator:
             print(baseshape)
             print(len(baseshape), resnd,smallaxis, bigaxis)
             print(r.shape, theta.shape,phi.shape,r_ge_d.shape)
-        #'''
+        '''
         cdef int longest_axis = 0
         # FIxME: the whole thing with longest_axis will fail if none is longer than 1
         for i in range(resnd):
@@ -641,7 +650,7 @@ cdef class trans_calculator:
         for i in range(resnd):
             innerloop_shape[i] = resultshape[i]
         innerloop_shape[longest_axis] = 1 # longest axis will be iterated in the outer (parallelized) loop. Therefore, longest axis, together with saxis and daxis, will not be iterated in the inner loop
-        #'''
+        '''
         resultshape[daxis] = self.c[0].nelem
         resultshape[saxis] = self.c[0].nelem
         cdef np.ndarray r_c = np.broadcast_to(r,resultshape)
@@ -652,11 +661,22 @@ cdef class trans_calculator:
         cdef np.ndarray b = np.empty(resultshape, dtype=complex)
         dstride = a.strides[daxis]
         sstride = a.strides[saxis]
-        longstride = a.strides[longest_axis]
-        if innerloop_shape[daxis] != 1: raise
-        if innerloop_shape[saxis] != 1: raise
+        #longstride = a.strides[longest_axis]
+        #if innerloop_shape[daxis] != 1: raise
+        #if innerloop_shape[saxis] != 1: raise
         # TODO write this in C (as a function) and parallelize there
         with nogil: #, parallel(): # FIXME rewrite this part in C
+            errval = qpms_cython_trans_calculator_get_AB_arrays_loop(
+                    self.c, J, resnd,
+                    daxis, saxis,
+                    a.data, a.shape, a.strides,
+                    b.data, b.shape, b.strides,
+                    r_c.data, r_c.shape, r_c.strides,
+                    theta_c.data, theta_c.shape, theta_c.strides,
+                    phi_c.data, phi_c.shape, phi_c.strides,
+                    r_ge_d_c.data, r_ge_d_c.shape, r_ge_d_c.strides
+                    )
+            """
             local_indices = <int *> calloc(resnd, sizeof(int))
             if local_indices == NULL: abort()
             for longi in range(a.shape[longest_axis]): # outer loop (to be parallelized)
@@ -702,5 +722,6 @@ cdef class trans_calculator:
                 '''
             free(local_indices)
         free(innerloop_shape)
+        """
         return a, b
     # TODO make possible to access the attributes (to show normalization etc)

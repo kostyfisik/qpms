@@ -78,6 +78,22 @@ int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
 		size_t deststride, size_t srcstride,
 		double kdlj_r, double kdlj_theta, double kdlj_phi,
 		int r_ge_d, int J);
-	 
+
+#ifdef QPMS_COMPILE_PYTHON_EXTENSIONS
+#include <python3.4m/Python.h>
+#include <numpy/npy_common.h>
+int qpms_cython_trans_calculator_get_AB_arrays_loop(
+                const qpms_trans_calculator *c, qpms_bessel_t J, const int resnd,
+                int daxis, int saxis,
+                char *A_data, const npy_intp *A_shape, const npy_intp *A_strides,
+                char *B_data, const npy_intp *B_shape, const npy_intp *B_strides,
+                const char *r_data, const npy_intp *r_shape, const npy_intp *r_strides,
+                const char *theta_data, const npy_intp *theta_shape, const npy_intp *theta_strides,
+                const char *phi_data, const npy_intp *phi_shape, const npy_intp *phi_strides,
+                const char *r_ge_d_data, const npy_intp *r_ge_d_shape, const npy_intp *r_ge_d_strides);
+
+
+#endif //QPMS_COMPILE_PYTHON_EXTENSIONS
+
 
 #endif // QPMS_TRANSLATIONS_H
