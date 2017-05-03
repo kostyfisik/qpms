@@ -80,7 +80,7 @@ int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
 		int r_ge_d, int J);
 
 #ifdef QPMS_COMPILE_PYTHON_EXTENSIONS
-#include <python3.4m/Python.h>
+#include <Python.h>
 #include <numpy/npy_common.h>
 int qpms_cython_trans_calculator_get_AB_arrays_loop(
                 const qpms_trans_calculator *c, qpms_bessel_t J, const int resnd,

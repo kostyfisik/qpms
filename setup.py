@@ -27,7 +27,8 @@ qpms_c = Extension('qpms_c',
             '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules
             #'-fopenmp',
             ],
-        libraries=['gsl', 'blas', 'omp'],
+        libraries=['gsl', 'blas', #'omp'
+	],
         runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':') if 'LD_LIBRARY_PATH' in os.environ else []
         )
 

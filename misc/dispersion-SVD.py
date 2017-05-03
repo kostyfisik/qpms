@@ -29,6 +29,7 @@ parser.add_argument('--sparse', action='store', type=int, help='Skip frequencies
 parser.add_argument('--eVmax', action='store', type=float, help='Skip frequencies above this value')
 parser.add_argument('--eVmin', action='store', type=float, help='Skip frequencies below this value')
 parser.add_argument('--kdensity', action='store', type=int, default=66, help='Number of k-points per x-axis segment')
+parser.add_argument('--lMax', action='store', type=int, help='Override lMax from the TMatrix file')
 #TODO some more sophisticated x axis definitions
 parser.add_argument('--gaussian', action='store', type=float, metavar='σ', help='Use a gaussian envelope for weighting the interaction matrix contributions (depending on the distance), measured in unit cell lengths (?) FIxME).')
 popgrp=parser.add_argument_group(title='Operations')
@@ -127,9 +128,13 @@ pdf = PdfPages(pdfout)
 
 # specifikace T-matice zde
 cdn = c/ math.sqrt(epsilon_b)
-TMatrices_orig, freqs_orig, freqs_weirdunits_orig, lMax = qpms.loadScuffTMatrices(TMatrix_file)
+TMatrices_orig, freqs_orig, freqs_weirdunits_orig, lMaxTM = qpms.loadScuffTMatrices(TMatrix_file)
+if pargs.lMax:
+    lMax = pargs.lMax if pargs.lMax else lMaxTM    
 my, ny = qpms.get_mn_y(lMax)
 nelem = len(my)
+if pargs.lMax: #force commandline specified lMax
+    TMatrices_orig = TMatrices_orig[...,0:nelem,:,0:nelem]
 
 ž = np.arange(2*nelem)
 tž = ž // nelem
