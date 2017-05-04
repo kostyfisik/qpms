@@ -16,19 +16,20 @@ def make_action_sharedlist(opname, listname):
 parser = argparse.ArgumentParser()
 #TODO? použít type=argparse.FileType('r') ?
 parser.add_argument('--TMatrix', action='store', required=True, help='Path to TMatrix file')
-parser.add_argument('--griddir', action='store', required=True, help='Path to the directory with precalculated translation operators')
+#parser.add_argument('--griddir', action='store', required=True, help='Path to the directory with precalculated translation operators')
+parser.add_argument('--output_prefix', action='store', required=True, help='Prefix to the pdf and/or npz output (will be appended frequency and hexside)')
 #sizepar = parser.add_mutually_exclusive_group(required=True)
 parser.add_argument('--hexside', action='store', type=float, required=True, help='Lattice hexagon size length')
 parser.add_argument('--output', action='store', help='Path to output PDF')
-parser.add_argument('--store_SVD', action='store_true', help='If specified without --SVD_output, it will save the data in a file named as the PDF output, but with .npz extension instead')
+parser.add_argument('--store_SVD', action='store_false', help='If specified without --SVD_output, it will save the data in a file named as the PDF output, but with .npz extension instead')
+parser.add_argument('--plot_TMatrix', action='store_true', help='Visualise TMatrix on the first page of the output')
 #parser.add_argument('--SVD_output', action='store', help='Path to output singular value decomposition result')
 parser.add_argument('--nSV', action='store', metavar='N', type=int, default=1, help='Store and draw N minimun singular values')
+parser.add_argument('--maxlayer', action='store', type=int, default=100, help='How far to sum the lattice points to obtain the dispersion')
 parser.add_argument('--scp_to', action='store', metavar='N', type=str, help='SCP the output files to a given destination')
 parser.add_argument('--background_permittivity', action='store', type=float, default=1., help='Background medium relative permittivity (default 1)')
-parser.add_argument('--sparse', action='store', type=int, help='Skip frequencies for preview')
-parser.add_argument('--eVmax', action='store', type=float, help='Skip frequencies above this value')
-parser.add_argument('--eVmin', action='store', type=float, help='Skip frequencies below this value')
-parser.add_argument('--kdensity', action='store', type=int, default=66, help='Number of k-points per x-axis segment')
+parser.add_argument('--eVfreq', action='store', required=True, type=float, help='Frequency in eV')
+parser.add_argument('--kdensity', action='store', type=int, default=33, help='Number of k-points per x-axis segment')
 parser.add_argument('--lMax', action='store', type=int, help='Override lMax from the TMatrix file')
 #TODO some more sophisticated x axis definitions
 parser.add_argument('--gaussian', action='store', type=float, metavar='σ', help='Use a gaussian envelope for weighting the interaction matrix contributions (depending on the distance), measured in unit cell lengths (?) FIxME).')
@@ -50,10 +51,15 @@ parser.add_argument('--frequency_multiplier', action='store', type=float, defaul
 pargs=parser.parse_args()
 print(pargs)
 
+maxlayer=pargs.maxlayer
+hexside=pargs.hexside
+eVfreq = pargs.eVfreq
+freq = eVfreq*eV/hbar
 
-translations_dir = pargs.griddir 
 TMatrix_file = pargs.TMatrix
-pdfout = pargs.output if pargs.output else (''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + '.pdf')
+pdfout = pargs.output if pargs.output else (
+	'%s_%dnm_%.4f.pdf' % (pargs.output_prefix,hexside/1e-9,eVfreq) if pargs.output_prefix else
+	(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + '.pdf'))
 print(pdfout)
 if(pargs.store_SVD):
     if re.search('.pdf$', pdfout):
@@ -64,15 +70,11 @@ else:
      svdout = None
 
 
-hexside = pargs.hexside #375e-9
 epsilon_b = pargs.background_permittivity #2.3104
 gaussianSigma = pargs.gaussian if pargs.gaussian else None # hexside * 222 / 7
 interpfreqfactor = pargs.frequency_multiplier
 scp_dest = pargs.scp_to if pargs.scp_to else None
 kdensity = pargs.kdensity
-minfreq = pargs.eVmin*eV/hbar if pargs.eVmin else None
-maxfreq = pargs.eVmax*eV/hbar if pargs.eVmax else None
-skipfreq = pargs.sparse if pargs.sparse else None
 svn = pargs.nSV
 
 # TODO multiplier operation definitions and parsing
@@ -129,6 +131,7 @@ pdf = PdfPages(pdfout)
 # specifikace T-matice zde
 cdn = c/ math.sqrt(epsilon_b)
 TMatrices_orig, freqs_orig, freqs_weirdunits_orig, lMaxTM = qpms.loadScuffTMatrices(TMatrix_file)
+lMax = lMaxTM
 if pargs.lMax:
     lMax = pargs.lMax if pargs.lMax else lMaxTM    
 my, ny = qpms.get_mn_y(lMax)
@@ -245,42 +248,43 @@ TMatrices_interp = interpolate.interp1d(freqs_orig*interpfreqfactor, TMatrices, 
 
 
 # In[4]:
+if(pargs.plot_TMatrix):    
+    om = np.linspace(np.min(freqs_orig), np.max(freqs_orig),100)
+    TMatrix0ip = np.reshape(TMatrices_interp(om)[:,0], (len(om), 2*nelem*2*nelem))
+    f, axa = plt.subplots(2, 2, figsize=(15,15))
+    
+    #print(TMatrices.shape)
+    #plt.plot(om, TMatrices[:,0,0,0,0].imag,'r',om, TMatrices[:,0,0,0,0].real,'r--',om, TMatrices[:,0,2,0,2].imag,'b',om, TMatrices[:,0,2,0,2].real,'b--'))
+            
+    ax = axa[0,0]
+    ax2 = ax.twiny()
+    ax2.set_xlim([ax.get_xlim()[0]/eV*hbar,ax.get_xlim()[1]/eV*hbar])
+    ax.plot(
+             om, TMatrix0ip[:,:].imag,'-',om, TMatrix0ip[:,:].real,'--',
+    )
+    ax = axa[0,1]
+    ax2 = ax.twiny()
+    ax2.set_xlim([ax.get_xlim()[0]/eV*hbar,ax.get_xlim()[1]/eV*hbar])
+    ax.plot(
+             om, abs(TMatrix0ip[:,:]),'-'
+    )
+    ax.set_yscale('log')
+    
+    ax = axa[1,1]
+    ax2 = ax.twiny()
+    ax2.set_xlim([ax.get_xlim()[0]/eV*hbar,ax.get_xlim()[1]/eV*hbar])
+    ax.plot(
+             om, np.unwrap(np.angle(TMatrix0ip[:,:]),axis=0),'-'
+    )
 
-om = np.linspace(np.min(freqs_orig), np.max(freqs_orig),100)
-TMatrix0ip = np.reshape(TMatrices_interp(om)[:,0], (len(om), 2*nelem*2*nelem))
-f, axa = plt.subplots(2, 2, figsize=(15,15))
-
-#print(TMatrices.shape)
-#plt.plot(om, TMatrices[:,0,0,0,0].imag,'r',om, TMatrices[:,0,0,0,0].real,'r--',om, TMatrices[:,0,2,0,2].imag,'b',om, TMatrices[:,0,2,0,2].real,'b--'))
-        
-ax = axa[0,0]
-ax2 = ax.twiny()
-ax2.set_xlim([ax.get_xlim()[0]/eV*hbar,ax.get_xlim()[1]/eV*hbar])
-ax.plot(
-         om, TMatrix0ip[:,:].imag,'-',om, TMatrix0ip[:,:].real,'--',
-)
-ax = axa[0,1]
-ax2 = ax.twiny()
-ax2.set_xlim([ax.get_xlim()[0]/eV*hbar,ax.get_xlim()[1]/eV*hbar])
-ax.plot(
-         om, abs(TMatrix0ip[:,:]),'-'
-)
-ax.set_yscale('log')
-
-ax = axa[1,1]
-ax2 = ax.twiny()
-ax2.set_xlim([ax.get_xlim()[0]/eV*hbar,ax.get_xlim()[1]/eV*hbar])
-ax.plot(
-         om, np.unwrap(np.angle(TMatrix0ip[:,:]),axis=0),'-'
-)
-
-ax = axa[1,0]
-ax.text(0.5,0.5,str(pargs).replace(',',',\n'),horizontalalignment='center',verticalalignment='center',transform=ax.transAxes)
-pdf.savefig(f)
+    ax = axa[1,0]
+    ax.text(0.5,0.5,str(pargs).replace(',',',\n'),horizontalalignment='center',verticalalignment='center',transform=ax.transAxes)
+    pdf.savefig(f)
 
 
 # In[ ]:
 
+'''
 #kdensity = 66 #defined from cl arguments
 bz_0 = np.array((0,0,0.,))
 bz_K1 = np.array((1.,0,0))*4*np.pi/3/hexside/s3
@@ -295,50 +299,21 @@ B1 = 2* bz_K1 - bz_K2
 B2 = 2* bz_K2 - bz_K1
 klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
 kxmaplist = np.concatenate((np.array([0]),np.cumsum(np.linalg.norm(np.diff(klist, axis=0), axis=-1))))
-
+'''
+klist = qpms.generate_trianglepoints(kdensity, v3d=True, include_origin=True)*3*math.pi/(3*kdensity*hexside)
 
 # In[ ]:
 
 n2id = np.identity(2*nelem)
 n2id.shape = (2,nelem,2,nelem)
-extlistlist = list()
-leftmatrixlistlist = list()
-minsvTElistlist=list()
-minsvTMlistlist=list()
-if svdout:
-    svUfullTElistlist = list()
-    svVfullTElistlist = list()
-    svSfullTElistlist = list()
-    svUfullTMlistlist = list()
-    svVfullTMlistlist = list()
-    svSfullTMlistlist = list()
-
 nan = float('nan')
-omegalist = list()
 filecount = 0
-for trfile in os.scandir(translations_dir):
-    filecount += 1
-    if (skipfreq and filecount % skipfreq):
-        continue
-    try:
-        npz = np.load(trfile.path, mmap_mode='r')
-        k_0 = npz['precalc_params'][()]['k_hexside'] / hexside
-        omega = k_0 * c / math.sqrt(epsilon_b)
-        if((minfreq and omega < minfreq) or (maxfreq and omega > maxfreq)):
-            continue
-    except:
-        print ("Unexpected error, trying to continue with another file:", sys.exc_info()[0])
-        continue   
-    try:
-        tdic = qpms.hexlattice_precalc_AB_loadunwrap(trfile.path, return_points=True)
-    except:
-        print ("Unexpected error, trying to continue with another file:", sys.exc_info()[0])
-        continue
-    k_0 = tdic['k_hexside'] / hexside
-    omega = k_0 * c / math.sqrt(epsilon_b)
-    omegalist.append(omega)
-    print(filecount, omega/eV*hbar)
-    sys.stdout.flush()
+for one in (1,):
+    omega = freq # from args; k_0 * c / math.sqrt(epsilon_b)
+    k_0 = omega * math.sqrt(epsilon_b) / c
+    tdic = qpms.hexlattice_get_AB(lMax,k_0*hexside,maxlayer)
+    #print(filecount, omega/eV*hbar)
+    #sys.stdout.flush()
     a_self = tdic['a_self'][:,:nelem,:nelem]
     b_self = tdic['b_self'][:,:nelem,:nelem]
     a_u2d = tdic['a_u2d'][:,:nelem,:nelem]
@@ -420,121 +395,113 @@ for trfile in os.scandir(translations_dir):
     if svdout:
         svUfullTElist[nnlist], svSfullTElist[nnlist], svVfullTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=True)
         svUfullTMlist[nnlist], svSfullTMlist[nnlist], svVfullTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=True)
-        svUfullTElistlist.append(svUfullTElist)
-        svVfullTElistlist.append(svVfullTElist)
-        svSfullTElistlist.append(svSfullTElist)
-        svUfullTMlistlist.append(svUfullTMlist)
-        svVfullTMlistlist.append(svVfullTMlist)
-        svSfullTMlistlist.append(svSfullTMlist)
     minsvTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)[...,-svn:]
     #svarr = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)
     #argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
     #minsvTMlist[nnlist] = svarr[...,argsortlist]
     #minsvTMlist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TM, compute_uv=False), axis=-1)
     minsvTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)[...,-svn:]
-    minsvTMlistlist.append(minsvTMlist)
-    minsvTElistlist.append(minsvTElist) 
 
-minsvTElistarr = np.array(minsvTElistlist)
-minsvTMlistarr = np.array(minsvTMlistlist)
-del minsvTElistlist, minsvTMlistlist
-if svdout:
-    svUfullTElistarr = np.array(svUfullTElistlist)
-    svVfullTElistarr = np.array(svVfullTElistlist)
-    svSfullTElistarr = np.array(svSfullTElistlist)
-    del svUfullTElistlist, svVfullTElistlist, svSfullTElistlist
-    svUfullTMlistarr = np.array(svUfullTMlistlist)
-    svVfullTMlistarr = np.array(svVfullTMlistlist)
-    svSfullTMlistarr = np.array(svSfullTMlistlist)
-    del svUfullTMlistlist, svVfullTMlistlist, svSfullTMlistlist
-omegalist = np.array(omegalist)
-# order to make the scatter plots "nice"
-omegaorder = np.argsort(omegalist)
-omegalist = omegalist[omegaorder]
-minsvTElistarr = minsvTElistarr[omegaorder]
-minsvTMlistarr = minsvTMlistarr[omegaorder]
-if svdout:
-    svUfullTElistarr = svUfullTElistarr[omegaorder]
-    svVfullTElistarr = svVfullTElistarr[omegaorder]
-    svSfullTElistarr = svSfullTElistarr[omegaorder]
-    svUfullTMlistarr = svUfullTMlistarr[omegaorder]
-    svVfullTMlistarr = svVfullTMlistarr[omegaorder]
-    svSfullTMlistarr = svSfullTMlistarr[omegaorder]
-    np.savez(svdout, omega = omegalist, klist = klist, bzpoints = np.array([bz_0, bz_K1, bz_K2, bz_M, B1, B2]), 
-                     uTE = svUfullTElistarr,
-                     vTE = svVfullTElistarr,
-                     sTE = svSfullTElistarr,
-                     uTM = svUfullTMlistarr,
-                     vTM = svVfullTMlistarr,
-                     sTM = svSfullTMlistarr,
-    )
-                     
-
+                    
+'''
 omlist = np.broadcast_to(omegalist[:,nx], minsvTElistarr[...,0].shape)
 kxmlarr = np.broadcast_to(kxmaplist[nx,:], minsvTElistarr[...,0].shape)
 klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
+'''
+
+''' The new pretty diffracted order drawing '''
+maxlayer_reciprocal=4 
+cdn = c/ math.sqrt(epsilon_b)
+bz_0 = np.array((0,0,))
+bz_K1 = np.array((1.,0))*4*np.pi/3/hexside/s3
+bz_K2 = np.array((1./2.,s3/2))*4*np.pi/3/hexside/s3
+bz_M = np.array((3./4, s3/4))*4*np.pi/3/hexside/s3
+
+# reciprocal lattice basis
+B1 = 2* bz_K1 - bz_K2
+B2 = 2* bz_K2 - bz_K1
+
+if svdout:
+    np.savez(svdout, omega = freq, klist = klist, bzpoints = np.array([bz_0, bz_K1, bz_K2, bz_M, B1, B2]), 
+                     uTE = svUfullTElist,
+                     vTE = svVfullTElist,
+                     sTE = svSfullTElist,
+                     uTM = svUfullTMlist,
+                     vTM = svVfullTMlist,
+                     sTM = svSfullTMlist,
+    )
+ 
+k2density = 100
+k0Mlist = bz_0 + (bz_M-bz_0) * np.linspace(0,1,k2density)[:,nx]
+kMK1list = bz_M + (bz_K1-bz_M) * np.linspace(0,1,k2density)[:,nx]
+kK10list = bz_K1 + (bz_0-bz_K1) * np.linspace(0,1,k2density)[:,nx]
+k0K2list = bz_0 + (bz_K2-bz_0) * np.linspace(0,1,k2density)[:,nx]
+kK2Mlist = bz_K2 + (bz_M-bz_K2) * np.linspace(0,1,k2density)[:,nx]
+k2list = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
+kxmaplist = np.concatenate((np.array([0]),np.cumsum(np.linalg.norm(np.diff(k2list, axis=0), axis=-1))))
+
+centers2=qpms.generate_trianglepoints(maxlayer_reciprocal, v3d = False, include_origin= True)*4*np.pi/3/hexside
+rot90 = np.array([[0,-1],[1,0]])
+centers2=np.dot(centers2,rot90)
+
+import matplotlib.pyplot as plt
+import matplotlib
+from matplotlib.path import Path
+import matplotlib.patches as patches
+cmap = matplotlib.cm.prism
+colormax = np.amax(np.linalg.norm(centers2,axis=0))
 
 
 # In[ ]:
 for minN in reversed(range(svn)):
-    f, ax = plt.subplots(1, figsize=(20,15))
-    sc = ax.scatter(kxmlarr, omlist/eV*hbar, c = np.sqrt(minsvTMlistarr[...,minN]), s =40, lw=0)
-    ax.plot(kxmaplist, np.linalg.norm(klist,axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist+B1, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist+B2, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist-B2, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist-B1, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist+B2-B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-B2+B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-B2-B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist+B2+B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B2, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B2-B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B1-B2, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B1-2*B2, axis=-1)*cdn/eV*hbar, '-',
-    #        kxmaplist, np.linalg.norm(klist+2*B2-B1, axis=-1)*cdn, '-',
-    #        kxmaplist, np.linalg.norm(klist+2*B1-B2, axis=-1)*cdn, '-',
-           )
-    ax.set_xlim([np.min(kxmlarr),np.max(kxmlarr)])
-    #ax.set_ylim([2.15,2.30])
-    ax.set_ylim([np.min(omlist/eV*hbar),np.max(omlist/eV*hbar)])
-    ax.set_xticks([0, kxmaplist[len(k0Mlist)-1], kxmaplist[len(k0Mlist)+len(kMK1list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)+len(kK2Mlist)-1]])
-    ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
-    f.colorbar(sc)
+    f, axes = plt.subplots(1,3, figsize=(20,4))
+    ax = axes[0]
+    sc = ax.scatter(klist[:,0], klist[:,1], c = np.clip(np.abs(minsvTElist[:,minN]),0,1), lw=0)
+    for center in centers2:
+        circle=plt.Circle((center[0],center[1]),omega/cdn, facecolor='none', edgecolor=cmap(np.linalg.norm(center)/colormax),lw=0.5)
+        ax.add_artist(circle)
+    verts = [(math.cos(math.pi*i/3)*4*np.pi/3/hexside/s3,math.sin(math.pi*i/3)*4*np.pi/3/hexside/s3) for i in range(6 +1)]
+    codes = [Path.MOVETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.CLOSEPOLY,]
+    path = Path(verts, codes)
+    patch = patches.PathPatch(path, facecolor='none', edgecolor='black',  lw=1)
+    ax.add_patch(patch)
+    ax.set_xticks([]) 
+    ax.set_yticks([]) 
+    f.colorbar(sc,ax=ax)
     
+    
+    ax = axes[1]
+    sc = ax.scatter(klist[:,0], klist[:,1], c = np.clip(np.abs(minsvTMlist[:,minN]),0,1), lw=0)
+    for center in centers2:
+        circle=plt.Circle((center[0],center[1]),omega/cdn, facecolor='none', edgecolor=cmap(np.linalg.norm(center)/colormax),lw=0.5)
+        ax.add_artist(circle)
+    verts = [(math.cos(math.pi*i/3)*4*np.pi/3/hexside/s3,math.sin(math.pi*i/3)*4*np.pi/3/hexside/s3) for i in range(6 +1)]
+    codes = [Path.MOVETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.CLOSEPOLY,]
+    path = Path(verts, codes)
+    patch = patches.PathPatch(path, facecolor='none', edgecolor='black',  lw=1)
+    ax.add_patch(patch)
+    ax.set_xticks([]) 
+    ax.set_yticks([])
+    f.colorbar(sc,ax=ax)
+
+    ax = axes[2]
+    for center in centers2:
+        ax.plot(kxmaplist, np.linalg.norm(k2list-center,axis=-1)*cdn, '-', color=cmap(np.linalg.norm(center)/colormax))
+
+    #ax.set_xlim([np.min(kxmlarr),np.max(kxmlarr)])
+    #ax.set_ylim([np.min(omegalist),np.max(omegalist)])
+    xticklist = [0, kxmaplist[len(k0Mlist)-1], kxmaplist[len(k0Mlist)+len(kMK1list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)+len(kK2Mlist)-1]]
+    ax.set_xticks(xticklist)
+    for xt in xticklist:
+        ax.axvline(xt, ls='dotted', lw=0.3,c='k')
+    ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
+    ax.axhline(omega, c='black')
+    ax.set_ylim([0,5e15])
+    ax2 = ax.twinx()
+    ax2.set_ylim([ax.get_ylim()[0]/eV*hbar,ax.get_ylim()[1]/eV*hbar])
+   
     pdf.savefig(f)
     
-    
-    # In[ ]:
-    
-    f, ax = plt.subplots(1, figsize=(20,15))
-    sc = ax.scatter(kxmlarr, omlist/eV*hbar, c = np.sqrt(minsvTElistarr[...,minN]), s =40, lw=0)
-    ax.plot(kxmaplist, np.linalg.norm(klist,axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist+B1, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist+B2, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist-B2, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist-B1, axis=-1)*cdn/eV*hbar, '-',
-           kxmaplist, np.linalg.norm(klist+B2-B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-B2+B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-B2-B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist+B2+B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B2, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B2-B1, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B1-B2, axis=-1)*cdn/eV*hbar, '-',
-            kxmaplist, np.linalg.norm(klist-2*B1-2*B2, axis=-1)*cdn/eV*hbar, '-',
-    #        kxmaplist, np.linalg.norm(klist+2*B2-B1, axis=-1)*cdn, '-',
-    #        kxmaplist, np.linalg.norm(klist+2*B1-B2, axis=-1)*cdn, '-',
-           )
-    ax.set_xlim([np.min(kxmlarr),np.max(kxmlarr)])
-    #ax.set_ylim([2.15,2.30])
-    ax.set_ylim([np.min(omlist/eV*hbar),np.max(omlist/eV*hbar)])
-    ax.set_xticks([0, kxmaplist[len(k0Mlist)-1], kxmaplist[len(k0Mlist)+len(kMK1list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)-1], kxmaplist[len(k0Mlist)+len(kMK1list)+len(kK10list)+len(k0K2list)+len(kK2Mlist)-1]])
-    ax.set_xticklabels(['Γ', 'M', 'K', 'Γ', 'K\'','M'])
-    f.colorbar(sc)
-    
-    pdf.savefig(f)
 pdf.close()
 
 if scp_dest:
