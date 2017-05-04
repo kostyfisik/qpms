@@ -462,4 +462,118 @@ def hexlattice_precalc_AB_loadunwrap(file, tpdict = None, tphcdict = None, retur
         d['self_tr'] = tpdict['points']
     return d
     
+def hexlattice_get_AB(lMax, k_hexside, maxlayer, circular=True, return_points = True, J_scat=3):
+    params = {
+        'lMax' : lMax,
+        'k_hexside' : k_hexside,
+        'maxlayer' : maxlayer,
+        'circular' : circular,
+        'savepointinfo' : return_points, # should I delete this key?
+        'J_scat' : J_scat
+    }
+    tpdict = generate_trianglepoints(maxlayer, v3d=True, circular=circular, sixthindices=True, mirrorindices=True)
+    tphcdict = generate_trianglepoints_hexcomplement(maxlayer, v3d=True, circular=circular, thirdindices=True, mirrorindices=True)
+    my, ny = get_mn_y(lMax)
+    nelem = len(my)
+    a_self_nm = np.empty((tpdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    b_self_nm = np.empty((tpdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    a_self_m0 = np.empty((tpdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    b_self_m0 = np.empty((tpdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    a_d2u_nm = np.empty((tphcdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    b_d2u_nm = np.empty((tphcdict['nmi'].shape[0],nelem,nelem), dtype=complex)
+    a_d2u_m0 = np.empty((tphcdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    b_d2u_m0 = np.empty((tphcdict['mi'].shape[1],nelem,nelem), dtype=complex)
+    
+    k_0 = k_hexside*_s3 # not really a wave vector here because of the normalisation!
+    tc = trans_calculator(lMax)
+    
+    y = np.arange(nelem)
+
+    points = tpdict['points'][tpdict['nmi']]
+    d_i2j = cart2sph(points)
+    a_self_nm, b_self_nm = tc.get_AB_arrays(k_0*d_i2j[:,0],d_i2j[:,1],d_i2j[:,2],np.array([False]),J_scat)
+
+    points = tpdict['points'][tpdict['mi'][0]]
+    d_i2j = cart2sph(points)
+    a_self_m0, b_self_m0 = tc.get_AB_arrays(k_0*d_i2j[:,0],d_i2j[:,1],d_i2j[:,2],np.array([False]),J_scat)
+   
+    points = tphcdict['points'][tphcdict['nmi']]
+    d_i2j = cart2sph(points)
+    a_d2u_nm, b_d2u_nm = tc.get_AB_arrays(k_0*d_i2j[:,0],d_i2j[:,1],d_i2j[:,2],np.array([False]),J_scat)
+  
+    points = tphcdict['points'][tphcdict['mi'][0]]
+    d_i2j = cart2sph(points)
+    a_d2u_m0, b_d2u_m0 = tc.get_AB_arrays(k_0*d_i2j[:,0],d_i2j[:,1],d_i2j[:,2],np.array([False]),J_scat)
+    '''
+    tosave = {
+        'a_self_nm' : a_self_nm,
+        'a_self_m0' : a_self_m0,
+        'b_self_nm' : b_self_nm,
+        'b_self_m0' : b_self_m0,
+        'a_d2u_nm' : a_d2u_nm,
+        'a_d2u_m0' : a_d2u_m0,
+        'b_d2u_nm' : b_d2u_nm,
+        'b_d2u_m0' : b_d2u_m0,
+        'precalc_params' : params
+    }
+    if savepointinfo:
+        tosave['tp_points'] = tpdict['points'],
+        tosave['tp_si'] = tpdict['si'],
+        tosave['tp_mi'] = tpdict['mi'],
+        tosave['tp_nmi'] = tpdict['nmi']
+        tosave['tphc_points'] = tphcdict['points'],
+        tosave['tphc_ti'] = tphcdict['ti'],
+        tosave['tphc_mi'] = tphcdict['mi'],
+        tosave['tphc_nmi'] = tphcdict['nmi']
+    np.savez(file, **tosave)
+    '''
+    self_tr = tpdict['points'] 
+    d2u_tr = tphcdict['points']
+    if len(self_tr.shape)>2:
+        self_tr = np.reshape(self_tr, self_tr.shape[1::])
+    if len(d2u_tr.shape)>2:
+        d2u_tr = np.reshape(d2u_tr, d2u_tr.shape[1::])
+    u2d_tr = -d2u_tr
+    a_self = np.empty((self_tr.shape[0],nelem,nelem), dtype=complex)
+    b_self = np.empty((self_tr.shape[0],nelem,nelem), dtype=complex)
+    a_d2u  = np.empty(( d2u_tr.shape[0],nelem,nelem), dtype=complex)
+    b_d2u  = np.empty(( d2u_tr.shape[0],nelem,nelem), dtype=complex)
+    a_self[tpdict['nmi']]=a_self_nm
+    a_self[tpdict['mi'][0]]=a_self_m0
+    b_self[tpdict['nmi']]=b_self_nm
+    b_self[tpdict['mi'][0]]=b_self_m0
+    mirrorangles = cart2sph(self_tr[tpdict['mi'][1]])[:,2] - cart2sph(self_tr[tpdict['mi'][0]])[:,2]
+    a_self[tpdict['mi'][1],:,:] = a_self[tpdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    b_self[tpdict['mi'][1],:,:] = b_self[tpdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    for i in range(1,6):
+        a_self[tpdict['si'][i],:,:] = a_self[tpdict['si'][0],:,:] * np.exp(1j*math.pi/3*i*(my[nx,:]-my[:,nx]))
+        b_self[tpdict['si'][i],:,:] = b_self[tpdict['si'][0],:,:] * np.exp(1j*math.pi/3*i*(my[nx,:]-my[:,nx]))
+    a_d2u[tphcdict['nmi']]=a_d2u_nm
+    a_d2u[tphcdict['mi'][0]]=a_d2u_m0
+    b_d2u[tphcdict['nmi']]=b_d2u_nm
+    b_d2u[tphcdict['mi'][0]]=b_d2u_m0
+    mirrorangles = cart2sph(self_tr[tphcdict['mi'][1]])[:,2] - cart2sph(self_tr[tphcdict['mi'][0]])[:,2]
+    a_d2u[tphcdict['mi'][1],:,:] = a_d2u[tphcdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    b_d2u[tphcdict['mi'][1],:,:] = b_d2u[tphcdict['mi'][0],:,:] * np.exp(1j*mirrorangles[:,nx,nx]*(my[nx,nx,:]-my[nx,:,nx]))
+    for i in (1,-1):
+        a_d2u[tphcdict['ti'][i],:,:] = a_d2u[tphcdict['ti'][0],:,:] * np.exp(i*2j*math.pi/3*(my[nx,:]-my[:,nx]))
+        b_d2u[tphcdict['ti'][i],:,:] = b_d2u[tphcdict['ti'][0],:,:] * np.exp(i*2j*math.pi/3*(my[nx,:]-my[:,nx]))
+    a_u2d = a_d2u * (-1)**(my[nx,:]-my[:,nx])
+    b_u2d = b_d2u * (-1)**(my[nx,:]-my[:,nx])
+    d = {
+        'a_self' : a_self,
+        'b_self' : b_self,
+        'a_d2u'  : a_d2u,
+        'b_d2u'  : b_d2u,
+        'a_u2d'  : a_u2d,
+        'b_u2d'  : b_u2d,
+    }
+    for k in params.keys():
+        d[k] = params[k]
+    if return_points:
+        d['d2u_tr'] = tphcdict['points']
+        d['u2d_tr'] = -tphcdict['points']
+        d['self_tr'] = tpdict['points']
+    return d
+ 
 
