@@ -31,5 +31,5 @@ k_0 = omega * math.sqrt(epsilon_b) / c
 output_prefix = '/tmp/diracpoints-newdata2/%d/' % maxlayer
 
 os.makedirs(output_prefix, exist_ok=True)
-qpms.hexlattice_precalc_AB_save3(file=output_prefix+str(omega_eV), lMax=lMax, k_hexside=k_0*hexside,
+qpms.hexlattice_precalc_AB_save(file=output_prefix+str(omega_eV), lMax=lMax, k_hexside=k_0*hexside,
         maxlayer=maxlayer, savepointinfo=True)
