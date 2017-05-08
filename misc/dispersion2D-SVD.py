@@ -301,116 +301,17 @@ klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
 kxmaplist = np.concatenate((np.array([0]),np.cumsum(np.linalg.norm(np.diff(klist, axis=0), axis=-1))))
 '''
 klist = qpms.generate_trianglepoints(kdensity, v3d=True, include_origin=True)*3*math.pi/(3*kdensity*hexside)
+TMatrices_om = TMatrices_interp(freq)
 
-# In[ ]:
-
-n2id = np.identity(2*nelem)
-n2id.shape = (2,nelem,2,nelem)
-nan = float('nan')
-filecount = 0
-for one in (1,):
-    omega = freq # from args; k_0 * c / math.sqrt(epsilon_b)
-    k_0 = omega * math.sqrt(epsilon_b) / c
-    tdic = qpms.hexlattice_get_AB(lMax,k_0*hexside,maxlayer)
-    #print(filecount, omega/eV*hbar)
-    #sys.stdout.flush()
-    a_self = tdic['a_self'][:,:nelem,:nelem]
-    b_self = tdic['b_self'][:,:nelem,:nelem]
-    a_u2d = tdic['a_u2d'][:,:nelem,:nelem]
-    b_u2d = tdic['b_u2d'][:,:nelem,:nelem]
-    a_d2u = tdic['a_d2u'][:,:nelem,:nelem]
-    b_d2u = tdic['b_d2u'][:,:nelem,:nelem]
-    unitcell_translations = tdic['self_tr']*hexside*s3
-    u2d_translations = tdic['u2d_tr']*hexside*s3
-    d2u_translations = tdic['d2u_tr']*hexside*s3
-    if gaussianSigma:
-        unitcell_envelope = np.exp(-np.sum(tdic['self_tr']**2,axis=-1)/(2*gaussianSigma**2))
-        u2d_envelope = np.exp(-np.sum(tdic['u2d_tr']**2,axis=-1)/(2*gaussianSigma**2))
-        d2u_envelope = np.exp(-np.sum(tdic['d2u_tr']**2,axis=-1)/(2*gaussianSigma**2))
-    
-    
-    TMatrices_om = TMatrices_interp(omega)
-    if svdout:
-        svUfullTElist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
-        svVfullTElist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
-        svSfullTElist = np.full((klist.shape[0], 2*nelem), np.nan, dtype=complex)
-        svUfullTMlist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
-        svVfullTMlist = np.full((klist.shape[0], 2*nelem, 2*nelem), np.nan, dtype=complex)
-        svSfullTMlist = np.full((klist.shape[0], 2*nelem), np.nan, dtype=complex)
-
-     
-    minsvTElist = np.full((klist.shape[0], svn),np.nan)
-    minsvTMlist = np.full((klist.shape[0], svn),np.nan)
-    leftmatrixlist = np.full((klist.shape[0],2,2,nelem,2,2,nelem),np.nan,dtype=complex)
-    isNaNlist = np.zeros((klist.shape[0]), dtype=bool)
-    
-    # sem nějaká rozumná smyčka
-    for ki in range(klist.shape[0]):
-        k = klist[ki]
-        if (k_0*k_0 - k[0]*k[0] - k[1]*k[1] < 0):
-            isNaNlist[ki] = True
-            continue
-
-        phases_self = np.exp(1j*np.tensordot(k,unitcell_translations,axes=(0,-1)))
-        phases_u2d = np.exp(1j*np.tensordot(k,u2d_translations,axes=(0,-1)))
-        phases_d2u = np.exp(1j*np.tensordot(k,d2u_translations,axes=(0,-1)))
-        if gaussianSigma:
-            phases_self *= unitcell_envelope
-            phases_u2d *= u2d_envelope
-            phases_d2u *= d2u_envelope
-        leftmatrix = np.zeros((2,2,nelem, 2,2,nelem), dtype=complex)
-        #       0: u,E<--u,E
-        #       1: d,M<--d,M
-        leftmatrix[0,0,:,0,0,:] = np.tensordot(a_self,phases_self, axes=(0,-1)) # u2u, E2E
-        leftmatrix[1,0,:,1,0,:] = leftmatrix[0,0,:,0,0,:] # d2d, E2E
-        leftmatrix[0,1,:,0,1,:] = leftmatrix[0,0,:,0,0,:] # u2u, M2M
-        leftmatrix[1,1,:,1,1,:] = leftmatrix[0,0,:,0,0,:] # d2d, M2M
-        leftmatrix[0,0,:,0,1,:] = np.tensordot(b_self,phases_self, axes=(0,-1)) # u2u, M2E
-        leftmatrix[0,1,:,0,0,:] = leftmatrix[0,0,:,0,1,:] # u2u, E2M
-        leftmatrix[1,1,:,1,0,:] = leftmatrix[0,0,:,0,1,:] # d2d, E2M
-        leftmatrix[1,0,:,1,1,:] = leftmatrix[0,0,:,0,1,:] # d2d, M2E
-        leftmatrix[0,0,:,1,0,:] = np.tensordot(a_d2u, phases_d2u,axes=(0,-1)) #d2u,E2E
-        leftmatrix[0,1,:,1,1,:] = leftmatrix[0,0,:,1,0,:] #d2u, M2M
-        leftmatrix[1,0,:,0,0,:] = np.tensordot(a_u2d, phases_u2d,axes=(0,-1)) #u2d,E2E
-        leftmatrix[1,1,:,0,1,:] = leftmatrix[1,0,:,0,0,:] #u2d, M2M
-        leftmatrix[0,0,:,1,1,:] = np.tensordot(b_d2u, phases_d2u,axes=(0,-1)) #d2u,M2E
-        leftmatrix[0,1,:,1,0,:] = leftmatrix[0,0,:,1,1,:] #d2u, E2M
-        leftmatrix[1,0,:,0,1,:] = np.tensordot(b_u2d, phases_u2d,axes=(0,-1)) #u2d,M2E
-        leftmatrix[1,1,:,0,0,:] = leftmatrix[1,0,:,0,1,:] #u2d, E2M
-        #leftmatrix is now the translation matrix T
-        for j in range(2):
-            leftmatrix[j] = -np.tensordot(TMatrices_om[j], leftmatrix[j], axes=([-2,-1],[0,1]))
-            # at this point, jth row of leftmatrix is that of -MT
-            leftmatrix[j,:,:,j,:,:] += n2id
-        #now we are done, 1-MT
-
-        leftmatrixlist[ki] = leftmatrix
+svdres = hexlattice_zsym_getSVD(TMatrices_om=TMatrices_om, epsilon_b=epsilon_b, hexside=hexside, maxlayer=maxlayer,
+        omega=freq, klist=klist, gaussianSigma=gaussianSigma, onlyNmin=(0 if svdout else svn))
+if svdout:
+   ((svUfullTElist, svSfullTElist, svVfullTElist), (svUfullTMlist, svSfullTMlist, svVfullTMlist)) = svdres
+   (minsvElist, minsvTMlist) = (svSfullTElist[...,-svn:], svSfullTMlist[...,-svn:])
+else:
+    minsvTElist, minsvTMlist = svdres
 
 
-    nnlist = np.logical_not(isNaNlist)
-    leftmatrixlist_s = np.reshape(leftmatrixlist,(klist.shape[0], 2*2*nelem,2*2*nelem))[nnlist]
-    leftmatrixlist_TE = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TEč,TEč)]
-    leftmatrixlist_TM = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TMč,TMč)]
-    #svarr = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)
-    #argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
-    #minsvTElist[nnlist] = svarr[...,argsortlist]
-    #minsvTElist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TE, compute_uv=False), axis=-1)
-    if svdout:
-        svUfullTElist[nnlist], svSfullTElist[nnlist], svVfullTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=True)
-        svUfullTMlist[nnlist], svSfullTMlist[nnlist], svVfullTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=True)
-    minsvTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)[...,-svn:]
-    #svarr = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)
-    #argsortlist = np.argsort(svarr, axis=-1)[...,:svn]
-    #minsvTMlist[nnlist] = svarr[...,argsortlist]
-    #minsvTMlist[nnlist] = np.amin(np.linalg.svd(leftmatrixlist_TM, compute_uv=False), axis=-1)
-    minsvTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)[...,-svn:]
-
-                    
-'''
-omlist = np.broadcast_to(omegalist[:,nx], minsvTElistarr[...,0].shape)
-kxmlarr = np.broadcast_to(kxmaplist[nx,:], minsvTElistarr[...,0].shape)
-klist = np.concatenate((k0Mlist,kMK1list,kK10list,k0K2list,kK2Mlist), axis=0)
-'''
 
 ''' The new pretty diffracted order drawing '''
 maxlayer_reciprocal=4 
