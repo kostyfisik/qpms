@@ -7,7 +7,7 @@ import time
 import scipy
 import sys
 from qpms_c import get_mn_y, trans_calculator # TODO be explicit about what is imported
-from .qpms_p import cart2sph, nelem2lMax, Ã, B̃ # TODO be explicit about what is imported
+from .qpms_p import cart2sph, nelem2lMax # TODO be explicit about what is imported
 
 def _time_b(active = True, name = None, step = None):
     '''

@@ -157,6 +157,21 @@ def sph_loccart_basis(sph, sphaxis=-1, cartaxis=None):
     out = np.concatenate((x,y,z),axis=cartaxis)
     return out
 
+
+#@jit
+def nelem2lMax(nelem):
+    """
+    Auxiliary inverse function to nelem(lMax) = (lMax + 2) * lMax. Returns 0 if
+    it nelem does not come from positive integer lMax.
+    """
+    lMax = round(math.sqrt(1+nelem) - 1)
+    if ((lMax < 1) or ((lMax + 2) * lMax != nelem)):
+        return 0
+    else:
+        return lMax
+
+
+
 #@jit
 def lpy(nmax, z):
     """
