@@ -27,13 +27,13 @@ qpms_c = Extension('qpms_c',
             '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules
             #'-fopenmp',
             ],
-        libraries=['gsl', 'blas', #'omp'
+        libraries=['gsl', 'blas', 'gslcblas', #'omp'
 	],
         runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':') if 'LD_LIBRARY_PATH' in os.environ else []
         )
 
 setup(name='qpms',
-        version = "0.2.8",
+        version = "0.2.9",
         packages=['qpms'],
 #        setup_requires=['setuptools_cython'],
         install_requires=['cython>=0.21','quaternion','spherical_functions','py_gmm'],

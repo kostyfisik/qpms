@@ -457,7 +457,7 @@ colormax = np.amax(np.linalg.norm(centers2,axis=0))
 
 # In[ ]:
 for minN in reversed(range(svn)):
-    f, axes = plt.subplots(1,3, figsize=(20,4))
+    f, axes = plt.subplots(1,3, figsize=(20,4.8))
     ax = axes[0]
     sc = ax.scatter(klist[:,0], klist[:,1], c = np.clip(np.abs(minsvTElist[:,minN]),0,1), lw=0)
     for center in centers2:
@@ -470,6 +470,7 @@ for minN in reversed(range(svn)):
     ax.add_patch(patch)
     ax.set_xticks([]) 
     ax.set_yticks([]) 
+    ax.title.set_text('E in-plane ("TE")')
     f.colorbar(sc,ax=ax)
     
     
@@ -485,6 +486,7 @@ for minN in reversed(range(svn)):
     ax.add_patch(patch)
     ax.set_xticks([]) 
     ax.set_yticks([])
+    ax.title.set_text('E perpendicular ("TM")')
     f.colorbar(sc,ax=ax)
 
     ax = axes[2]
