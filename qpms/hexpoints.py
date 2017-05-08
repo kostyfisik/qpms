@@ -434,23 +434,25 @@ def hexlattice_get_AB(lMax, k_hexside, maxlayer, circular=True, return_points = 
         d['u2d_tr'] = -tphcdict['points']
         d['self_tr'] = tpdict['points']
     return d
- 
 
-def hexlattice_zsym_getSVD(TMatrices_om, epsilon_b, hexside, maxlayer, omega, klist, gaussianSigma=False, onlyNmin=0):
+from scipy.constants import c
+
+def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, omega, klist, gaussianSigma=False, onlyNmin=0):
+    nelem = lMax * (lMax + 2)
     n2id = np.identity(2*nelem)
     n2id.shape = (2,nelem,2,nelem)
     nan = float('nan')
     k_0 = omega * math.sqrt(epsilon_b) / c
-    tdic = qpms.hexlattice_get_AB(lMax,k_0*hexside,maxlayer)
+    tdic = hexlattice_get_AB(lMax,k_0*hexside,maxlayer)
     a_self = tdic['a_self'][:,:nelem,:nelem]
     b_self = tdic['b_self'][:,:nelem,:nelem]
     a_u2d = tdic['a_u2d'][:,:nelem,:nelem]
     b_u2d = tdic['b_u2d'][:,:nelem,:nelem]
     a_d2u = tdic['a_d2u'][:,:nelem,:nelem]
     b_d2u = tdic['b_d2u'][:,:nelem,:nelem]
-    unitcell_translations = tdic['self_tr']*hexside*s3
-    u2d_translations = tdic['u2d_tr']*hexside*s3
-    d2u_translations = tdic['d2u_tr']*hexside*s3
+    unitcell_translations = tdic['self_tr']*hexside*_s3
+    u2d_translations = tdic['u2d_tr']*hexside*_s3
+    d2u_translations = tdic['d2u_tr']*hexside*_s3
     
     if gaussianSigma:
         unitcell_envelope = np.exp(-np.sum(tdic['self_tr']**2,axis=-1)/(2*gaussianSigma**2))

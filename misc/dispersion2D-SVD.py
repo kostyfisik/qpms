@@ -303,7 +303,7 @@ kxmaplist = np.concatenate((np.array([0]),np.cumsum(np.linalg.norm(np.diff(klist
 klist = qpms.generate_trianglepoints(kdensity, v3d=True, include_origin=True)*3*math.pi/(3*kdensity*hexside)
 TMatrices_om = TMatrices_interp(freq)
 
-svdres = hexlattice_zsym_getSVD(TMatrices_om=TMatrices_om, epsilon_b=epsilon_b, hexside=hexside, maxlayer=maxlayer,
+svdres = qpms.hexlattice_zsym_getSVD(lMax=lMax, TMatrices_om=TMatrices_om, epsilon_b=epsilon_b, hexside=hexside, maxlayer=maxlayer,
         omega=freq, klist=klist, gaussianSigma=gaussianSigma, onlyNmin=(0 if svdout else svn))
 if svdout:
    ((svUfullTElist, svSfullTElist, svVfullTElist), (svUfullTMlist, svSfullTMlist, svVfullTMlist)) = svdres
