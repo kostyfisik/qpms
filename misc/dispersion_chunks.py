@@ -211,6 +211,7 @@ chunkn = math.ceil(klist_full.shape[0] / chunklen)
 metadata = np.array({
                 'maxlayer' : maxlayer,
                 'gaussianSigma' : gaussianSigma,
+                'epsilon_b' : epsilon_b,
                 'chunkn' : chunkn,
                 'TMatrix_file' : TMatrix_file,
                 'ops' : ops,
