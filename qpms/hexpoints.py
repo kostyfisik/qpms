@@ -436,8 +436,11 @@ def hexlattice_get_AB(lMax, k_hexside, maxlayer, circular=True, return_points = 
     return d
 
 from scipy.constants import c
+from .timetrack import _time_b, _time_e
+from .qpms_p import symz_indexarrays
 
-def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, omega, klist, gaussianSigma=False, onlyNmin=0):
+def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, omega, klist, gaussianSigma=False, onlyNmin=0, verbose=False):
+    btime = _time_b(verbose)
     nelem = lMax * (lMax + 2)
     n2id = np.identity(2*nelem)
     n2id.shape = (2,nelem,2,nelem)
@@ -455,9 +458,11 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
     d2u_translations = tdic['d2u_tr']*hexside*_s3
     
     if gaussianSigma:
+        sbtime = _time_b(verbose, step='Calculating gaussian envelope')
         unitcell_envelope = np.exp(-np.sum(tdic['self_tr']**2,axis=-1)/(2*gaussianSigma**2))
         u2d_envelope = np.exp(-np.sum(tdic['u2d_tr']**2,axis=-1)/(2*gaussianSigma**2))
         d2u_envelope = np.exp(-np.sum(tdic['d2u_tr']**2,axis=-1)/(2*gaussianSigma**2))
+        _time_e(sbtime, verbose, step='Calculating gaussian envelope')
     
     #TMatrices_om = TMatrices_interp(omega)
     if(not onlyNmin):
@@ -473,7 +478,8 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
 
     leftmatrixlist = np.full((klist.shape[0],2,2,nelem,2,2,nelem),np.nan,dtype=complex)
     isNaNlist = np.zeros((klist.shape[0]), dtype=bool)
-    
+
+    sbtime = _time_b(verbose, step='Initializing matrices for SVD for a given list of k\'s.')
     # sem nějaká rozumná smyčka
     for ki in range(klist.shape[0]):
         k = klist[ki]
@@ -516,21 +522,21 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
 
         leftmatrixlist[ki] = leftmatrix
 
-
     nnlist = np.logical_not(isNaNlist)
     leftmatrixlist_s = np.reshape(leftmatrixlist,(klist.shape[0], 2*2*nelem,2*2*nelem))[nnlist]
+    TEč, TMč = symz_indexarrays(lMax, 2)
     leftmatrixlist_TE = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TEč,TEč)]
     leftmatrixlist_TM = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TMč,TMč)]
 
+    _time_e(sbtime, verbose, step='Initializing matrices for SVD for a given list of k\'s.')
+    sbtime = _time_b(verbose, step='Calculating SVDs for a given list of k\'s.')
     if(not onlyNmin):
         svUfullTElist[nnlist], svSfullTElist[nnlist], svVfullTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=True)
         svUfullTMlist[nnlist], svSfullTMlist[nnlist], svVfullTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=True)
+        _time_e(sbtime, verbose, step='Calculating SVDs for a given list of k\'s.')
         return ((svUfullTElist, svSfullTElist, svVfullTElist), (svUfullTMlist, svSfullTMlist, svVfullTMlist))
     else:
         minsvTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)[...,-onlyNmin:]
         minsvTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)[...,-onlyNmin:]
-
-
-
-
-    
+        _time_e(sbtime, verbose, step='Calculating SVDs for a given list of k\'s.')
+        return (minsvTElist, minsvTMlist)

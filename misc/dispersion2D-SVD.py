@@ -139,21 +139,6 @@ nelem = len(my)
 if pargs.lMax: #force commandline specified lMax
     TMatrices_orig = TMatrices_orig[...,0:nelem,:,0:nelem]
 
-ž = np.arange(2*nelem)
-tž = ž // nelem
-mž = my[ž%nelem]
-nž = ny[ž%nelem]
-TEž = ž[(mž+nž+tž) % 2 == 0]
-TMž = ž[(mž+nž+tž) % 2 == 1]
-
-č = np.arange(2*2*nelem)
-žč = č % (2* nelem)
-tč = tž[žč]
-mč = mž[žč]
-nč = nž[žč]
-TEč = č[(mč+nč+tč) % 2 == 0]
-TMč = č[(mč+nč+tč) % 2 == 1]
-
 TMatrices = np.array(np.broadcast_to(TMatrices_orig[:,nx,:,:,:,:],(len(freqs_orig),2,2,nelem,2,nelem)) )
 
 #TMatrices[:,:,:,:,:,ny==3] *= factor13inc

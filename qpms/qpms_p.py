@@ -930,3 +930,41 @@ def apply_ndmatrix_left(matrix,tensor,axes):
     matrix = np.tensordot(matrix, tensor, axes=([-N+axn for axn in range(N)],axes))
     matrix = np.moveaxis(matrix, range(N), axes)
     return matrix
+
+
+def symz_indexarrays(lMax, npart = 1):
+    """
+    Returns indices that are used for separating the in-plane E ('TE' in the photonic crystal
+    jargon) and perpendicular E ('TM' in the photonic crystal jargon) modes
+    in the z-mirror symmetric systems.
+
+    Parameters
+    ----------
+    lMax : int
+        The maximum degree cutoff for the T-matrix to which these indices will be applied.
+
+    npart : int
+        Number of particles (TODO better description)
+
+    Returns
+    -------
+    TEč, TMč : (npart * 2 * nelem)-shaped bool ndarray
+        Mask arrays corresponding to the 'TE' and 'TM' modes, respectively.
+    """
+    nelem = lMax * (lMax + 2)
+    ž = np.arange(2*nelem) # single particle spherical wave indices
+    tž = ž // nelem # tž == 0: electric waves, tž == 1: magnetic waves
+    mž = my[ž%nelem]
+    nž = ny[ž%nelem]
+    TEž = ž[(mž+nž+tž) % 2 == 0]
+    TMž = ž[(mž+nž+tž) % 2 == 1]
+
+    č = np.arange(npart*2*nelem) # spherical wave indices for multiple particles (e.g. in a unit cell)
+    žč = č % (2* nelem)
+    tč = tž[žč]
+    mč = mž[žč]
+    nč = nž[žč]
+    TEč = č[(mč+nč+tč) % 2 == 0]
+    TMč = č[(mč+nč+tč) % 2 == 1]
+    return (TEč, TMč)
+
