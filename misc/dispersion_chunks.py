@@ -31,7 +31,7 @@ parser.add_argument('--chunklen', action='store', type=int, default=1000, help='
 parser.add_argument('--lMax', action='store', type=int, help='Override lMax from the TMatrix file')
 #TODO some more sophisticated x axis definitions
 parser.add_argument('--gaussian', action='store', type=float, metavar='σ', help='Use a gaussian envelope for weighting the interaction matrix contributions (depending on the distance), measured in unit cell lengths (?) FIxME).')
-parser.add_argument('--verbose', '-v', action='count')
+parser.add_argument('--verbose', '-v', action='count', help='Be verbose (about computation times, mostly)')
 popgrp=parser.add_argument_group(title='Operations')
 popgrp.add_argument('--tr', dest='ops', action=make_action_sharedlist('tr', 'ops'), default=list()) # the default value for dest can be set once
 popgrp.add_argument('--tr0', dest='ops', action=make_action_sharedlist('tr0', 'ops'))
@@ -77,8 +77,8 @@ print(ops)
 
 
 # -----------------finished basic CLI parsing (except for op arguments) ------------------
-import time
-begtime=time.time()
+from .timetrack import _time_b, _time_e
+btime=_time_b(verbose)
 
 import qpms
 import numpy as np
@@ -230,4 +230,5 @@ for chunki in range(chunkn):
         if svdout:
             subprocess.run(['scp', svdout, scp_dest])
 
-print(time.strftime("%H.%M:%S",time.gmtime(time.time()-begtime)))
+_time_e(btime, verbose)
+#print(time.strftime("%H.%M:%S",time.gmtime(time.time()-begtime)))
