@@ -77,7 +77,7 @@ print(ops)
 
 
 # -----------------finished basic CLI parsing (except for op arguments) ------------------
-from .timetrack import _time_b, _time_e
+from qpms.timetrack import _time_b, _time_e
 btime=_time_b(verbose)
 
 import qpms
