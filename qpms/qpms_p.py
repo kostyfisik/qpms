@@ -951,7 +951,8 @@ def symz_indexarrays(lMax, npart = 1):
     TEč, TMč : (npart * 2 * nelem)-shaped bool ndarray
         Mask arrays corresponding to the 'TE' and 'TM' modes, respectively.
     """
-    nelem = lMax * (lMax + 2)
+    my, ny = get_mn_y(lMax)
+    nelem = len(my)
     ž = np.arange(2*nelem) # single particle spherical wave indices
     tž = ž // nelem # tž == 0: electric waves, tž == 1: magnetic waves
     mž = my[ž%nelem]
