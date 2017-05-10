@@ -479,7 +479,7 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
     leftmatrixlist = np.full((klist.shape[0],2,2,nelem,2,2,nelem),np.nan,dtype=complex)
     isNaNlist = np.zeros((klist.shape[0]), dtype=bool)
 
-    sbtime = _time_b(verbose, step='Initializing matrices for SVD for a given list of k\'s.')
+    sbtime = _time_b(verbose, step='Initialization of matrices for SVD for a given list of k\'s')
     # sem nějaká rozumná smyčka
     for ki in range(klist.shape[0]):
         k = klist[ki]
@@ -527,16 +527,18 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
     TEč, TMč = symz_indexarrays(lMax, 2)
     leftmatrixlist_TE = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TEč,TEč)]
     leftmatrixlist_TM = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TMč,TMč)]
+    _time_e(sbtime, verbose, step='Initializing matrices for SVD for a given list of k\'s')
 
-    _time_e(sbtime, verbose, step='Initializing matrices for SVD for a given list of k\'s.')
     sbtime = _time_b(verbose, step='Calculating SVDs for a given list of k\'s.')
     if(not onlyNmin):
         svUfullTElist[nnlist], svSfullTElist[nnlist], svVfullTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=True)
         svUfullTMlist[nnlist], svSfullTMlist[nnlist], svVfullTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=True)
         _time_e(sbtime, verbose, step='Calculating SVDs for a given list of k\'s.')
+        _time_e(btime, verbose)
         return ((svUfullTElist, svSfullTElist, svVfullTElist), (svUfullTMlist, svSfullTMlist, svVfullTMlist))
     else:
         minsvTElist[nnlist] = np.linalg.svd(leftmatrixlist_TE, compute_uv=False)[...,-onlyNmin:]
         minsvTMlist[nnlist] = np.linalg.svd(leftmatrixlist_TM, compute_uv=False)[...,-onlyNmin:]
         _time_e(sbtime, verbose, step='Calculating SVDs for a given list of k\'s.')
+        _time_e(btime, verbose)
         return (minsvTElist, minsvTMlist)

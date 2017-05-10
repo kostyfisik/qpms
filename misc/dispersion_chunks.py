@@ -195,6 +195,10 @@ TMatrices_om = TMatrices_interp(freq)
 
 chunkn = math.ceil(klist_full.shape[0] / chunklen)
 
+if verbose:
+    print('Evaluating %d k-points in %d chunks' % (klist_full.shape[0], chunkn), file = sys.stderr)
+    sys.stderr.flush()
+
 metadata = np.array({
                 'maxlayer' : maxlayer,
                 'gaussianSigma' : gaussianSigma,
