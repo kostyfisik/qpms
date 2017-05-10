@@ -31,6 +31,7 @@ parser.add_argument('--chunklen', action='store', type=int, default=1000, help='
 parser.add_argument('--lMax', action='store', type=int, help='Override lMax from the TMatrix file')
 #TODO some more sophisticated x axis definitions
 parser.add_argument('--gaussian', action='store', type=float, metavar='σ', help='Use a gaussian envelope for weighting the interaction matrix contributions (depending on the distance), measured in unit cell lengths (?) FIxME).')
+parser.add_argument('--verbose', '-v', action='count')
 popgrp=parser.add_argument_group(title='Operations')
 popgrp.add_argument('--tr', dest='ops', action=make_action_sharedlist('tr', 'ops'), default=list()) # the default value for dest can be set once
 popgrp.add_argument('--tr0', dest='ops', action=make_action_sharedlist('tr0', 'ops'))
@@ -53,6 +54,7 @@ maxlayer=pargs.maxlayer
 hexside=pargs.hexside
 eVfreq = pargs.eVfreq
 freq = eVfreq*eV/hbar
+verbose=pargs.verbose
 
 TMatrix_file = pargs.TMatrix
 
@@ -96,21 +98,6 @@ my, ny = qpms.get_mn_y(lMax)
 nelem = len(my)
 if pargs.lMax: #force commandline specified lMax
     TMatrices_orig = TMatrices_orig[...,0:nelem,:,0:nelem]
-
-ž = np.arange(2*nelem)
-tž = ž // nelem
-mž = my[ž%nelem]
-nž = ny[ž%nelem]
-TEž = ž[(mž+nž+tž) % 2 == 0]
-TMž = ž[(mž+nž+tž) % 2 == 1]
-
-č = np.arange(2*2*nelem)
-žč = č % (2* nelem)
-tč = tž[žč]
-mč = mž[žč]
-nč = nž[žč]
-TEč = č[(mč+nč+tč) % 2 == 0]
-TMč = č[(mč+nč+tč) % 2 == 1]
 
 TMatrices = np.array(np.broadcast_to(TMatrices_orig[:,nx,:,:,:,:],(len(freqs_orig),2,2,nelem,2,nelem)) )
 
@@ -223,7 +210,7 @@ for chunki in range(chunkn):
     klist = klist_full[chunki * chunklen : (chunki + 1) * chunklen]
 
     svdres = qpms.hexlattice_zsym_getSVD(lMax=lMax, TMatrices_om=TMatrices_om, epsilon_b=epsilon_b, hexside=hexside, maxlayer=maxlayer,
-            omega=freq, klist=klist, gaussianSigma=gaussianSigma, onlyNmin=False)
+            omega=freq, klist=klist, gaussianSigma=gaussianSigma, onlyNmin=False, verbose=verbose)
 
     #((svUfullTElist, svSfullTElist, svVfullTElist), (svUfullTMlist, svSfullTMlist, svVfullTMlist)) = svdres
 
