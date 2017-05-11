@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 import argparse, re, random, string
 import subprocess
 from scipy.constants import hbar, e as eV, pi, c
@@ -200,9 +199,11 @@ if verbose:
     sys.stderr.flush()
 
 metadata = np.array({
+		'lMax' : lMax,
                 'maxlayer' : maxlayer,
                 'gaussianSigma' : gaussianSigma,
                 'epsilon_b' : epsilon_b,
+		'hexside' : hexside,
                 'chunkn' : chunkn,
                 'TMatrix_file' : TMatrix_file,
                 'ops' : ops,
