@@ -497,25 +497,25 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
     leftmatrix = np.zeros((k.shape[0],2,2,nelem, 2,2,nelem), dtype=complex)
     #       0:[u,E<--u,E  ]
     #       1:[d,M<--d,M  ]
-    leftmatrix[:,0,0,:,0,0,:] = np.tensordot(a_self,phases_self, axes=(0,-1)) # u2u, E2E
+    leftmatrix[:,0,0,:,0,0,:] = np.tensordot(phases_self,a_self, axes=(-1,0)) # u2u, E2E
     leftmatrix[:,1,0,:,1,0,:] = leftmatrix[:,0,0,:,0,0,:] # d2d, E2E
     leftmatrix[:,0,1,:,0,1,:] = leftmatrix[:,0,0,:,0,0,:] # u2u, M2M
     leftmatrix[:,1,1,:,1,1,:] = leftmatrix[:,0,0,:,0,0,:] # d2d, M2M
-    leftmatrix[:,0,0,:,0,1,:] = np.tensordot(b_self,phases_self, axes=(0,-1)) # u2u, M2E
+    leftmatrix[:,0,0,:,0,1,:] = np.tensordot(phases_self,b_self, axes=(-1,0)) # u2u, M2E
     leftmatrix[:,0,1,:,0,0,:] = leftmatrix[:,0,0,:,0,1,:] # u2u, E2M
     leftmatrix[:,1,1,:,1,0,:] = leftmatrix[:,0,0,:,0,1,:] # d2d, E2M
     leftmatrix[:,1,0,:,1,1,:] = leftmatrix[:,0,0,:,0,1,:] # d2d, M2E
-    leftmatrix[:,0,0,:,1,0,:] = np.tensordot(a_d2u, phases_d2u,axes=(0,-1)) #d2u,E2E
+    leftmatrix[:,0,0,:,1,0,:] = np.tensordot(phases_d2u, a_d2u,axes=(-1,0)) #d2u,E2E
     leftmatrix[:,0,1,:,1,1,:] = leftmatrix[:,0,0,:,1,0,:] #d2u, M2M
-    leftmatrix[:,1,0,:,0,0,:] = np.tensordot(a_u2d, phases_u2d,axes=(0,-1)) #u2d,E2E
+    leftmatrix[:,1,0,:,0,0,:] = np.tensordot(phases_u2d, a_u2d,axes=(-1,0)) #u2d,E2E
     leftmatrix[:,1,1,:,0,1,:] = leftmatrix[:,1,0,:,0,0,:] #u2d, M2M
-    leftmatrix[:,0,0,:,1,1,:] = np.tensordot(b_d2u, phases_d2u,axes=(0,-1)) #d2u,M2E
+    leftmatrix[:,0,0,:,1,1,:] = np.tensordot(phases_d2u, b_d2u,axes=(-1,0)) #d2u,M2E
     leftmatrix[:,0,1,:,1,0,:] = leftmatrix[:,0,0,:,1,1,:] #d2u, E2M
-    leftmatrix[:,1,0,:,0,1,:] = np.tensordot(b_u2d, phases_u2d,axes=(0,-1)) #u2d,M2E
+    leftmatrix[:,1,0,:,0,1,:] = np.tensordot(phases_u2d, b_u2d,axes=(-1,0)) #u2d,M2E
     leftmatrix[:,1,1,:,0,0,:] = leftmatrix[:,1,0,:,0,1,:] #u2d, E2M
     #leftmatrix is now the translation matrix T
     for j in range(2):
-        leftmatrix[:,j] = -np.tensordot(TMatrices_om[j], leftmatrix[:,j], axes=([-2,-1],[1,2]))
+        leftmatrix[:,j] = np.rollaxis(-np.tensordot(TMatrices_om[j], leftmatrix[:,j], axes=([-2,-1],[1,2])),2)
         # at this point, jth row of leftmatrix is that of -MT
         leftmatrix[:,j,:,:,j,:,:] += n2id
     #now we are done, 1-MT
