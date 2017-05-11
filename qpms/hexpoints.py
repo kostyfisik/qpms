@@ -494,7 +494,7 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
         phases_self *= unitcell_envelope
         phases_u2d *= u2d_envelope
         phases_d2u *= d2u_envelope
-    leftmatrix = np.zeros((len(ki),2,2,nelem, 2,2,nelem), dtype=complex)
+    leftmatrix = np.zeros(k.shape[0],2,2,nelem, 2,2,nelem), dtype=complex)
     #       0:[u,E<--u,E  ]
     #       1:[d,M<--d,M  ]
     leftmatrix[:,0,0,:,0,0,:] = np.tensordot(a_self,phases_self, axes=(0,-1)) # u2u, E2E
