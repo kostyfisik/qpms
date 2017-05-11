@@ -18,7 +18,8 @@ if("LD_LIBRARY_PATH" in os.environ):
     print(os.environ['LD_LIBRARY_PATH'].split(':'))
 
 qpms_c = Extension('qpms_c',
-        sources = ['qpms/qpms_c.pyx','qpms/gaunt.c',#'qpms/gaunt.h','qpms/vectors.h','qpms/translations.h',
+        sources = ['qpms/qpms_c.pyx', #'qpms/hexpoints_c.pyx',
+            'qpms/gaunt.c',#'qpms/gaunt.h','qpms/vectors.h','qpms/translations.h',
             # FIXME http://stackoverflow.com/questions/4259170/python-setup-script-extensions-how-do-you-include-a-h-file
             'qpms/translations.c'],
         extra_compile_args=['-std=c99','-ggdb','-O3',
@@ -33,7 +34,7 @@ qpms_c = Extension('qpms_c',
         )
 
 setup(name='qpms',
-        version = "0.2.9",
+        version = "0.2.10",
         packages=['qpms'],
 #        setup_requires=['setuptools_cython'],
         install_requires=['cython>=0.21','quaternion','spherical_functions','py_gmm'],

@@ -477,9 +477,52 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
         minsvTMlist = np.full((klist.shape[0], onlyNmin),np.nan)
 
     leftmatrixlist = np.full((klist.shape[0],2,2,nelem,2,2,nelem),np.nan,dtype=complex)
-    isNaNlist = np.zeros((klist.shape[0]), dtype=bool)
+    #isNaNlist = np.zeros((klist.shape[0]), dtype=bool)
+    isNaNlist = (k_0*k_0 - klist[:,0]**2 - klist[:,1]**2 < 0)
+    nnlist = np.logical_not(isNaNlist)
 
     sbtime = _time_b(verbose, step='Initialization of matrices for SVD for a given list of k\'s')
+    
+
+    #ki = np.arange(klist.shape[0])[k_0*k_0 - klist[:,0]**2 - klist[:,1]**2 >= 0]
+    k = klist[nnlist]
+    
+    phases_self = np.exp(1j*np.tensordot(k,unitcell_translations,axes=(-1,-1)))
+    phases_u2d = np.exp(1j*np.tensordot(k,u2d_translations,axes=(-1,-1)))
+    phases_d2u = np.exp(1j*np.tensordot(k,d2u_translations,axes=(-1,-1)))
+    if gaussianSigma:
+        phases_self *= unitcell_envelope
+        phases_u2d *= u2d_envelope
+        phases_d2u *= d2u_envelope
+    leftmatrix = np.zeros((len(ki),2,2,nelem, 2,2,nelem), dtype=complex)
+    #       0:[u,E<--u,E  ]
+    #       1:[d,M<--d,M  ]
+    leftmatrix[:,0,0,:,0,0,:] = np.tensordot(a_self,phases_self, axes=(0,-1)) # u2u, E2E
+    leftmatrix[:,1,0,:,1,0,:] = leftmatrix[:,0,0,:,0,0,:] # d2d, E2E
+    leftmatrix[:,0,1,:,0,1,:] = leftmatrix[:,0,0,:,0,0,:] # u2u, M2M
+    leftmatrix[:,1,1,:,1,1,:] = leftmatrix[:,0,0,:,0,0,:] # d2d, M2M
+    leftmatrix[:,0,0,:,0,1,:] = np.tensordot(b_self,phases_self, axes=(0,-1)) # u2u, M2E
+    leftmatrix[:,0,1,:,0,0,:] = leftmatrix[:,0,0,:,0,1,:] # u2u, E2M
+    leftmatrix[:,1,1,:,1,0,:] = leftmatrix[:,0,0,:,0,1,:] # d2d, E2M
+    leftmatrix[:,1,0,:,1,1,:] = leftmatrix[:,0,0,:,0,1,:] # d2d, M2E
+    leftmatrix[:,0,0,:,1,0,:] = np.tensordot(a_d2u, phases_d2u,axes=(0,-1)) #d2u,E2E
+    leftmatrix[:,0,1,:,1,1,:] = leftmatrix[:,0,0,:,1,0,:] #d2u, M2M
+    leftmatrix[:,1,0,:,0,0,:] = np.tensordot(a_u2d, phases_u2d,axes=(0,-1)) #u2d,E2E
+    leftmatrix[:,1,1,:,0,1,:] = leftmatrix[:,1,0,:,0,0,:] #u2d, M2M
+    leftmatrix[:,0,0,:,1,1,:] = np.tensordot(b_d2u, phases_d2u,axes=(0,-1)) #d2u,M2E
+    leftmatrix[:,0,1,:,1,0,:] = leftmatrix[:,0,0,:,1,1,:] #d2u, E2M
+    leftmatrix[:,1,0,:,0,1,:] = np.tensordot(b_u2d, phases_u2d,axes=(0,-1)) #u2d,M2E
+    leftmatrix[:,1,1,:,0,0,:] = leftmatrix[:,1,0,:,0,1,:] #u2d, E2M
+    #leftmatrix is now the translation matrix T
+    for j in range(2):
+        leftmatrix[:,j] = -np.tensordot(TMatrices_om[j], leftmatrix[:,j], axes=([-2,-1],[1,2]))
+        # at this point, jth row of leftmatrix is that of -MT
+        leftmatrix[:,j,:,:,j,:,:] += n2id
+    #now we are done, 1-MT
+
+    leftmatrixlist[nnlist] = leftmatrix
+
+    '''
     # sem nějaká rozumná smyčka
     for ki in range(klist.shape[0]):
         k = klist[ki]
@@ -521,8 +564,8 @@ def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, ome
         #now we are done, 1-MT
 
         leftmatrixlist[ki] = leftmatrix
+    '''
 
-    nnlist = np.logical_not(isNaNlist)
     leftmatrixlist_s = np.reshape(leftmatrixlist,(klist.shape[0], 2*2*nelem,2*2*nelem))[nnlist]
     TEč, TMč = symz_indexarrays(lMax, 2)
     leftmatrixlist_TE = leftmatrixlist_s[np.ix_(np.arange(leftmatrixlist_s.shape[0]),TEč,TEč)]
