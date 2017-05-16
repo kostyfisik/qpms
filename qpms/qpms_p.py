@@ -420,6 +420,8 @@ def vswf_yr1(pos_sph,nmax,J=1):
 def zplane_pq_y(nmax, betap = 0):
     """
     The z-propagating plane wave expansion coefficients as in [1, (1.12)]
+
+    Taylor's normalization
     
     (... TODO)
     """

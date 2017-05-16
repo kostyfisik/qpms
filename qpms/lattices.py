@@ -50,9 +50,9 @@ class Scattering(object):
 
     def __init__(self, positions, TMatrices, k_0, lMax = None, verbose=False, J_scat=3):
         self.J_scat = J_scat
-        self.positions = positions
+        self.positions = positions.reshape((-1, positions.shape[-1]))
         self.interaction_matrix = None
-        self.N = positions.shape[0]
+        self.N = self.positions.shape[0]
         self.k_0 = k_0
         self.lMax = lMax if lMax else nelem2lMax(TMatrices.shape[-1])
         self.tc = trans_calculator(lMax)
@@ -314,6 +314,7 @@ class Scattering_2D_zsym(Scattering):
         pq_0 is (N, nelem, 2)-shaped array 
         '''
         btime = _time_b(verbose)
+        raise Exception('Not yet implemented')
         self.prepare(verbose=verbose)
         pq_0 = np.broadcast_to(pq_0, (self.N,2,self.nelem))
         MP_0 = np.empty((N,2,nelem),dtype=np.complex_)
@@ -326,4 +327,18 @@ class Scattering_2D_zsym(Scattering):
         ab.shape = (N,2,nelem)
         _time_e(btime, verbose)
         return ab
-    
+
+    def forget_matrices(self):
+        '''
+        Free interaction matrices and set the respective flags 
+        (useful when memory is a bottleneck).
+        '''
+        self.interaction_matrix_TE = None
+        self.interaction_matrix_TM = None
+        self.lupiv_TE = None
+        self.lupiv_TM = None
+        self.prepared_TE = False
+        self.prepared_TM = False
+        self.prepared = False
+
+
