@@ -34,7 +34,7 @@ qpms_c = Extension('qpms_c',
         )
 
 setup(name='qpms',
-        version = "0.2.12",
+        version = "0.2.13",
         packages=['qpms'],
 #        setup_requires=['setuptools_cython'],
         install_requires=['cython>=0.21','quaternion','spherical_functions','py_gmm'],

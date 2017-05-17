@@ -209,13 +209,17 @@ class Scattering_2D_zsym(Scattering):
             if not self.prepared_TE:
                 if self.interaction_matrix_TE is None:
                     self.build_interaction_matrix(0, verbose)
+                sbtime = _time_b(verbose, step = 'Calculating LU decomposition of the interaction matrix, TE part')
                 self.lupiv_TE = scipy.linalg.lu_factor(self.interaction_matrix_TE, overwrite_a = not keep_interaction_matrix)
+                _time_e(sbtime, verbose, step = 'Calculating LU decomposition of the interaction matrix, TE part')
                 self.prepared_TE = True
         if (TE_or_TM == 1): #TM
             if not self.prepared_TM:
                 if self.interaction_matrix_TM is None:
                     self.build_interaction_matrix(1, verbose)
+                sbtime = _time_b(verbose, step = 'Calculating LU decomposition of the interaction matrix, TM part')
                 self.lupiv_TM = scipy.linalg.lu_factor(self.interaction_matrix_TM, overwrite_a = not keep_interaction_matrix)
+                _time_e(sbtime, verbose, step = 'Calculating LU decomposition of the interaction matrix, TM part')
                 self.prepared_TM = True
         _time_e(btime, verbose)
 

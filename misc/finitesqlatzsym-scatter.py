@@ -75,7 +75,8 @@ for i in unitcell_indices:
 parser.add_argument('--frequency_multiplier', action='store', type=float, default=1., help='Multiplies the frequencies in the TMatrix file by a given factor.')
 # TODO enable more flexible per-sublattice specification
 pargs=parser.parse_args()
-print(pargs)
+if pargs.verbose:
+    print(pargs, file = sys.stderr)
 
 maxlayer=pargs.maxlayer
 eVfreq = pargs.eVfreq
@@ -104,7 +105,8 @@ for oparg in pargs.ops:
         ops.append(((opm.group(2),) if opm.group(2) else unitcell_indices, opm.group(1), oparg[1]))
     else:
         raise # should not happen
-print(ops)
+if(verbose):
+    print(ops, file = sys.stderr)
 
 
 # -----------------finished basic CLI parsing (except for op arguments) ------------------
@@ -129,12 +131,9 @@ if pargs.lMax:
     lMax = pargs.lMax if pargs.lMax else lMaxTM    
 my, ny = qpms.get_mn_y(lMax)
 nelem = len(my)
-print(TMatrices_orig.shape)
 if pargs.lMax: #force commandline specified lMax
     TMatrices_orig = TMatrices_orig[...,0:nelem,:,0:nelem]
-print(TMatrices_orig.shape)
 TMatrices = np.array(np.broadcast_to(TMatrices_orig[:,nx,:,:,:,:],(len(freqs_orig),unitcell_size,2,nelem,2,nelem)) )
-print(TMatrices.shape)
 xfl = qpms.xflip_tyty(lMax)
 yfl = qpms.yflip_tyty(lMax)
 zfl = qpms.zflip_tyty(lMax)
@@ -221,7 +220,6 @@ for op in ops:
     else:
         raise #unknown operation; should not happen
 
-print(TMatrices.shape)
 TMatrices_interp = interpolate.interp1d(freqs_orig*interpfreqfactor, TMatrices, axis=0, kind='linear',fill_value="extrapolate")
 
 
@@ -241,12 +239,11 @@ kz = np.sqrt(k_0 - (kx ** 2 + ky ** 2))
 
 klist_full = np.stack((kx,ky,kz), axis=-1).reshape((-1,3))
 TMatrices_om = TMatrices_interp(freq)
-print(TMatrices_om.shape)
 
 chunkn = math.ceil(klist_full.size / 3 / chunklen)
 
 if verbose:
-    print('Evaluating %d k-points in %d chunks' % (klist_full.size / 3, chunkn), file = sys.stderr)
+    print('Evaluating %d k-points' % klist_full.size + ('in %d chunks'%chunkn) if chunkn>1 else '' , file = sys.stderr)
     sys.stderr.flush()
 
 try:
