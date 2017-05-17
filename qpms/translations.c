@@ -353,6 +353,7 @@ int qpms_trans_calculator_multipliers_B(qpms_normalization_t norm, complex doubl
 
 qpms_trans_calculator
 *qpms_trans_calculator_init (int lMax, qpms_normalization_t normalization) {
+	assert(lMax > 0);
 	qpms_trans_calculator *c = malloc(sizeof(qpms_trans_calculator));
 	c->lMax = lMax;
 	c->nelem = lMax * (lMax+2);

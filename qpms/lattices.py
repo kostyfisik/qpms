@@ -55,8 +55,8 @@ class Scattering(object):
         self.N = self.positions.shape[0]
         self.k_0 = k_0
         self.lMax = lMax if lMax else nelem2lMax(TMatrices.shape[-1])
-        self.tc = trans_calculator(lMax)
-        nelem = lMax * (lMax + 2) #!
+        self.tc = trans_calculator(self.lMax)
+        nelem = self.lMax * (self.lMax + 2) #!
         self.nelem = nelem #!
         self.prepared = False
         self.TMatrices = np.broadcast_to(TMatrices, (self.N,2,nelem,2,nelem))
@@ -159,6 +159,7 @@ class Scattering(object):
         _time_e(btime, verbose)
         return ab
 
+"""
 class Scattering_2D_lattice_rectcells(Scattering):
     def __init__(self, rectcell_dims, rectcell_elem_positions, cellspec, k_0, rectcell_TMatrices = None, TMatrices = None, lMax = None, verbose=False, J_scat=3):
         '''
@@ -177,6 +178,7 @@ class Scattering_2D_lattice_rectcells(Scattering):
         self.nelem = nelem #!
         self.prepared = False
         self.TMatrices = np.broadcast_to(TMatrices, (self.N,2,nelem,2,nelem))   
+"""
 
 class Scattering_2D_zsym(Scattering):
     def __init__(self, positions, TMatrices, k_0, lMax = None, verbose=False, J_scat=3):
@@ -187,7 +189,7 @@ class Scattering_2D_zsym(Scattering):
         self.my, self.ny = get_mn_y(self.lMax)
         self.TE_NMz = (self.my + self.ny) % 2
         self.TM_NMz = 1 - self.TE_NMz
-        self.tc = trans_calculator(lMax)
+        self.tc = trans_calculator(self.lMax)
         # TODO možnost zadávat T-matice rovnou ve zhuštěné podobě
         TMatrices_TE = TMatrices[...,self.TE_NMz[:,nx],self.TE_yz[:,nx],self.TE_NMz[nx,:],self.TE_yz[nx,:]]
         TMatrices_TM = TMatrices[...,self.TM_NMz[:,nx],self.TM_yz[:,nx],self.TM_NMz[nx,:],self.TM_yz[nx,:]]
@@ -239,7 +241,7 @@ class Scattering_2D_zsym(Scattering):
         elif (TE_or_TM is None):
             EoMl = (0,1)
         sbtime = _time_b(verbose, step = 'Calculating interparticle translation coefficients')
-        kdji = cart2sph(self.positions[:,nx,:] - self.positions[nx,:,:])
+        kdji = cart2sph(self.positions[:,nx,:] - self.positions[nx,:,:], allow2d=True)
         kdji[:,:,0] *= self.k_0
         # get_AB array structure: [j,yj,i,yi]
         # FIXME I could save some memory by calculating only half of these coefficients

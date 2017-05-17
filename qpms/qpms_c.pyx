@@ -482,9 +482,15 @@ cdef class trans_calculator:
         object get_A, get_B, get_AB
 
     def __cinit__(self, int lMax, int normalization = 1):
+        if (lMax <= 0):
+            raise ValueError('lMax has to be greater than 0.')
         self.c = qpms_trans_calculator_init(lMax, normalization)
+        if self.c is NULL:
+            raise MemoryError
 
     def __init__(self, int lMax, int normalization = 1):
+        if self.c is NULL:
+            raise MemoryError()
         self.get_A_data[0].c = self.c
         self.get_A_data[0].cmethod = <void *>qpms_trans_calculator_get_A_ext
         self.get_A_data_p[0] = &(self.get_A_data[0])
@@ -537,7 +543,8 @@ cdef class trans_calculator:
                 0 # unused
                 )
     def __dealloc__(self):
-        qpms_trans_calculator_free(self.c)
+        if self.c is not NULL:
+            qpms_trans_calculator_free(self.c)
         # TODO Reference counts to get_A, get_B, get_AB?
 
     def lMax(self):

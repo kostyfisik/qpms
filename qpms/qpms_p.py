@@ -48,14 +48,22 @@ def ujit(f):
 
 # Coordinate transforms for arrays of "arbitrary" shape
 #@ujit
-def cart2sph(cart,axis=-1):
-    if (cart.shape[axis] != 3):
-        raise ValueError("The converted array has to have dimension 3"
-                         " along the given axis")
-    [x, y, z] = np.split(cart,3,axis=axis)
-    r = np.linalg.norm(cart,axis=axis,keepdims=True)
-    r_zero = np.logical_not(r)
-    θ = np.arccos(z/(r+r_zero))
+def cart2sph(cart,axis=-1, allow2d=False):
+    if cart.shape[axis] == 3:
+        [x, y, z] = np.split(cart,3,axis=axis)    
+        r = np.linalg.norm(cart,axis=axis,keepdims=True)
+        r_zero = np.logical_not(r)
+        θ = np.arccos(z/(r+r_zero))
+    elif cart.shape[axis] == 2 and allow2d:
+        [x, y] = np.split(cart,2,axis=axis)
+        r = np.linalg.norm(cart,axis=axis,keepdims=True)
+        r_zero = np.logical_not(r)
+        θ = np.broadcast_to(np.pi/2, x.shape)
+    else:
+        raise ValueError("The converted array has to have dimension 3 "
+                         "(or 2 if allow2d==True)"
+                         " along the given axis, not %d" % cart.shape[axis])
+
     φ = np.arctan2(y,x) # arctan2 handles zeroes correctly itself
     return np.concatenate((r,θ,φ),axis=axis)
 
