@@ -306,7 +306,7 @@ for action in actions:
             outfile = '%s_%dx%d_%.0fnmx%.0fnm_%.4f%s%s.npz' % (
                     pargs.output_prefix, Nx, Ny, dx/1e-9, dy/1e-9,
                     eVfreq, actionstring,
-                    (".%03d" % cunki) if chunkn > 1 else '')
+                    (".%03d" % chunki) if chunkn > 1 else '')
 
         klist = klist_full[chunki * chunklen : (chunki + 1) * chunklen]
         klist2d = klist_full_2D[chunki * chunklen : (chunki + 1) * chunklen]
