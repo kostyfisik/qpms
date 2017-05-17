@@ -129,11 +129,12 @@ if pargs.lMax:
     lMax = pargs.lMax if pargs.lMax else lMaxTM    
 my, ny = qpms.get_mn_y(lMax)
 nelem = len(my)
+print(TMatrices_orig.shape)
 if pargs.lMax: #force commandline specified lMax
     TMatrices_orig = TMatrices_orig[...,0:nelem,:,0:nelem]
-
-TMatrices = np.array(np.broadcast_to(TMatrices_orig[:,nx,:,:,:,:],(len(freqs_orig),2,2,nelem,2,nelem)) )
-
+print(TMatrices_orig.shape)
+TMatrices = np.array(np.broadcast_to(TMatrices_orig[:,nx,:,:,:,:],(len(freqs_orig),unitcell_size,2,nelem,2,nelem)) )
+print(TMatrices.shape)
 xfl = qpms.xflip_tyty(lMax)
 yfl = qpms.yflip_tyty(lMax)
 zfl = qpms.zflip_tyty(lMax)
@@ -220,6 +221,7 @@ for op in ops:
     else:
         raise #unknown operation; should not happen
 
+print(TMatrices.shape)
 TMatrices_interp = interpolate.interp1d(freqs_orig*interpfreqfactor, TMatrices, axis=0, kind='linear',fill_value="extrapolate")
 
 
@@ -239,6 +241,7 @@ kz = np.sqrt(k_0 - (kx ** 2 + ky ** 2))
 
 klist_full = np.stack((kx,ky,kz), axis=-1).reshape((-1,3))
 TMatrices_om = TMatrices_interp(freq)
+print(TMatrices_om.shape)
 
 chunkn = math.ceil(klist_full.size / 3 / chunklen)
 
@@ -303,7 +306,8 @@ for action in actions:
                     ('.%03d' % chunki) if chunkn > 1 else '')
         else:
             outfile = '%s_%dx%d_%.0fnmx%.0fnm_%.4f%s%s.npz' % (
-                    pargs.output_prefix, hexside/1e-9, eVfreq, actionstring,
+                    pargs.output_prefix, Nx, Ny, dx/1e-9, dy/1e-9,
+                    eVfreq, actionstring,
                     (".%03d" % cunki) if chunkn > 1 else '')
 
         klist = klist_full[chunki * chunklen : (chunki + 1) * chunklen]
@@ -332,13 +336,9 @@ for action in actions:
                 xresult[i] = scat.scatter_partial(0, pq)
                 pq = np.array(qpms.plane_pq_y(lMax, kdir, yu)).ravel()[TEč] * phases[:, nx] 
                 yresult[i] = scat.scatter_partial(0, pq)
-            if action == 1 or action is none:
+            if action == 1 or action is None:
                 pq = np.array(qpms.plane_pq_y(lMax, kdir, xu)).ravel()[TMč] * phases[:, nx] 
                 zresult[i] = scat.scatter_partial(1, pq)
-        svdres = qpms.hexlattice_zsym_getSVD(lMax=lMax, TMatrices_om=TMatrices_om, epsilon_b=epsilon_b, hexside=hexside, maxlayer=maxlayer,
-                omega=freq, klist=klist, gaussianSigma=gaussianSigma, onlyNmin=False, verbose=verbose)
-
-        #((svUfullTElist, svSfullTElist, svVfullTElist), (svUfullTMlist, svSfullTMlist, svVfullTMlist)) = svdres
 
         metadata[()]['chunki'] = chunki
         if action is None:
