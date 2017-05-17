@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse, re, random, string
+import argparse, re, random, string, sys
 import subprocess
 from scipy.constants import hbar, e as eV, pi, c
 
@@ -115,7 +115,7 @@ btime=_time_b(verbose)
 
 import qpms
 import numpy as np
-import os, sys, warnings, math
+import os, warnings, math
 from scipy import interpolate
 nx = None
 s3 = math.sqrt(3)
@@ -298,6 +298,7 @@ for action in actions:
         scat.prepare_partial(action, verbose=verbose)
         actionstring = '.TM' if action else '.TE'
     for chunki in range(chunkn):
+        sbtime = _time_b(verbose, step='Solving the scattering problem, chunk %d'%chunki+actionstring)
         if pargs.nosuffix:
             outfile = pargs.output_prefix + actionstring + (
                     ('.%03d' % chunki) if chunkn > 1 else '')
@@ -336,6 +337,7 @@ for action in actions:
             if action == 1 or action is None:
                 pq = np.array(qpms.plane_pq_y(lMax, kdir, xu)).ravel()[TMč] * phases[:, nx] 
                 zresult[i] = scat.scatter_partial(1, pq)
+        _time_e(sbtime, verbose, step='Solving the scattering problem, chunk %d'%chunki+actionstring)
 
         metadata[()]['chunki'] = chunki
         if action is None:
