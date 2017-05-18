@@ -2,6 +2,7 @@
 
 import argparse, re, random, string, sys
 import subprocess
+import warnings
 from scipy.constants import hbar, e as eV, pi, c
 
 unitcell_size = 1 # rectangular lattice
@@ -326,9 +327,11 @@ for action in actions:
             zresult = np.full((klist.shape[0], N, nelem), np.nan, dtype=complex)
         for i in range(klist.shape[0]):
             if math.isnan(klist[i,2]):
+                if(verbose):
+                    print("%d. momentum %s invalid (k_0=%f), skipping" % (i, str(klist[i]),k_0))
                 continue
             kdir = klistdir[i]
-            phases = np.exp(np.sum(1j * klist2d[i] * positions, axis=-1))
+            phases = np.exp(1j*np.sum(klist2d[i] * positions, axis=-1))
             if action == 0 or action is None:
                 pq = np.array(qpms.plane_pq_y(lMax, kdir, xu)).ravel()[TEč] * phases[:, nx] 
                 xresult[i] = scat.scatter_partial(0, pq)

@@ -6,6 +6,8 @@ nx = np.newaxis
 import time
 import scipy
 import sys
+import warnings
+import math
 from qpms_c import get_mn_y, trans_calculator # TODO be explicit about what is imported
 from .qpms_p import cart2sph, nelem2lMax # TODO be explicit about what is imported
 from .timetrack import _time_b, _time_e
@@ -60,6 +62,14 @@ class Scattering(object):
         self.nelem = nelem #!
         self.prepared = False
         self.TMatrices = np.broadcast_to(TMatrices, (self.N,2,nelem,2,nelem))
+        if np.isnan(np.min(TMatrices)):
+            warnings.warn("Some TMatrices contain NaNs. Expect invalid results")
+        if np.isnan(np.min(positions)):
+            warnings.warn("positions contain NaNs. Expect invalid results")
+        if math.isnan(k_0):
+            warnings.warn("k_0 is NaN. Expect invalid results")
+
+
 
     def prepare(self, keep_interaction_matrix = False, verbose=False):
         btime = _time_b(verbose)
@@ -124,6 +134,8 @@ class Scattering(object):
         pq_0 is (N, nelem, 2)-shaped array 
         '''
         btime = _time_b(verbose)
+        if math.isnan(np.min(pq_0)):
+            warnings.warn("The incident field expansion contains NaNs. Expect invalid results.")
         self.prepare(verbose=verbose)
         pq_0 = np.broadcast_to(pq_0, (self.N,2,self.nelem))
         MP_0 = np.empty((self.N,2,self.nelem),dtype=np.complex_)
@@ -132,6 +144,9 @@ class Scattering(object):
         MP_0.shape = (self.N*2*self.nelem,)
         solvebtime = _time_b(verbose,step='Solving the linear equation')
         ab = scipy.linalg.lu_solve(self.lupiv, MP_0)
+        if math.isnan(np.min(ab)):
+            warnings.warn("Got NaN in the scattering result. Damn.")
+            raise
         _time_e(solvebtime, verbose, step='Solving the linear equation')
         ab.shape = (self.N,2,self.nelem)
         _time_e(btime, verbose)
@@ -212,6 +227,8 @@ class Scattering_2D_zsym(Scattering):
                 sbtime = _time_b(verbose, step = 'Calculating LU decomposition of the interaction matrix, TE part')
                 self.lupiv_TE = scipy.linalg.lu_factor(self.interaction_matrix_TE, overwrite_a = not keep_interaction_matrix)
                 _time_e(sbtime, verbose, step = 'Calculating LU decomposition of the interaction matrix, TE part')
+                if(np.isnan(np.min(self.lupiv_TE[0])) or np.isnan(np.min(self.lupiv_TE[1]))):
+                    warnings.warn("LU factorisation of interaction matrix contains NaNs. Expect invalid results.")
                 self.prepared_TE = True
         if (TE_or_TM == 1): #TM
             if not self.prepared_TM:
@@ -220,6 +237,8 @@ class Scattering_2D_zsym(Scattering):
                 sbtime = _time_b(verbose, step = 'Calculating LU decomposition of the interaction matrix, TM part')
                 self.lupiv_TM = scipy.linalg.lu_factor(self.interaction_matrix_TM, overwrite_a = not keep_interaction_matrix)
                 _time_e(sbtime, verbose, step = 'Calculating LU decomposition of the interaction matrix, TM part')
+                if(np.isnan(np.min(self.lupiv_TM[0])) or np.isnan(np.min(self.lupiv_TM[1]))):
+                    warnings.warn("LU factorisation of interaction matrix contains NaNs. Expect invalid results.")
                 self.prepared_TM = True
         _time_e(btime, verbose)
 
@@ -255,7 +274,8 @@ class Scattering_2D_zsym(Scattering):
         mask = np.broadcast_to(np.eye(N,dtype=bool)[:,nx,:,nx],(N,nelem,N,nelem))
         a[mask] = 0 # no self-translations
         b[mask] = 0
-        print(np.isnan(np.min(a)))
+        if np.isnan(np.min(a)) or np.isnan(np.min(b)):
+            warnings.warn("Some of the translation coefficients is a NaN. Expect invalid results.")
         _time_e(sbtime, verbose, step = 'Calculating interparticle translation coefficients')
         for EoM in EoMl:
             leftmatrix = np.zeros((N,nelem,N,nelem), dtype=complex)
@@ -285,6 +305,8 @@ class Scattering_2D_zsym(Scattering):
                         axes = ([-1],[0]))
                 leftmatrix[j,:,j,:] += idm
             leftmatrix.shape = (self.N*self.nelem, self.N*self.nelem)
+            if np.isnan(np.min(leftmatrix)):
+                warnings.warn("Interaction matrix contains some NaNs. Expect invalid results.")
             if EoM == 0:
                 self.interaction_matrix_TE = leftmatrix
             if EoM == 1:
