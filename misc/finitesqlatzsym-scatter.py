@@ -236,7 +236,7 @@ N = positions.shape[0]
 kx = np.linspace(pargs.kxmin, pargs.kxmax, num=pargs.kxdensity, endpoint=True) * 2*np.pi / dx
 ky = np.linspace(pargs.kymin, pargs.kymax, num=pargs.kydensity, endpoint=True) * 2*np.pi / dy
 kx, ky = np.meshgrid(kx, ky, indexing='ij', copy=False)
-kz = np.sqrt(k_0 - (kx ** 2 + ky ** 2))
+kz = np.sqrt(k_0**2 - (kx ** 2 + ky ** 2))
 
 klist_full = np.stack((kx,ky,kz), axis=-1).reshape((-1,3))
 TMatrices_om = TMatrices_interp(freq)
