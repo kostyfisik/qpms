@@ -335,7 +335,7 @@ for action in actions:
                 pq = np.array(qpms.plane_pq_y(lMax, kdir, yu)).ravel()[TEč] * phases[:, nx] 
                 yresult[i] = scat.scatter_partial(0, pq)
             if action == 1 or action is None:
-                pq = np.array(qpms.plane_pq_y(lMax, kdir, xu)).ravel()[TMč] * phases[:, nx] 
+                pq = np.array(qpms.plane_pq_y(lMax, kdir, zu)).ravel()[TMč] * phases[:, nx] 
                 zresult[i] = scat.scatter_partial(1, pq)
         _time_e(sbtime, verbose, step='Solving the scattering problem, chunk %d'%chunki+actionstring)
 
