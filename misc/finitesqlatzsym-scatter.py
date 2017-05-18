@@ -328,7 +328,7 @@ for action in actions:
             if math.isnan(klist[i,2]):
                 continue
             kdir = klistdir[i]
-            phases = np.exp(np.sum(klist2d[i] * positions, axis=-1))
+            phases = np.exp(np.sum(1j * klist2d[i] * positions, axis=-1))
             if action == 0 or action is None:
                 pq = np.array(qpms.plane_pq_y(lMax, kdir, xu)).ravel()[TEč] * phases[:, nx] 
                 xresult[i] = scat.scatter_partial(0, pq)
