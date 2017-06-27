@@ -77,4 +77,47 @@ def classifyLatticeSingle(b1, b2, tolerance=1e-13):
     else:
         return LatticeType.OBLIQUE
 
+def range2D(maxN, mini=1, minj=0):
+    """
+    "Triangle indices"
+    Generates pairs of non-negative integer indices (i, j) such that
+    i + j ≤ maxN, i ≥ mini, j ≥ minj.
+    TODO doc and possibly different orderings
+    """
+    for maxn in range(min(mini, minj), maxN+1): # i + j == maxn
+        for i in range(mini, maxn + 1):
+            yield (i, maxn - i)
+
+def cellWignerSeitz(b1, b2,):
+    """
+    Given basis vectors, returns the corners of the Wigner-Seitz unit cell
+    (w1, w2, -w1, w2) for rectangular and square lattice or
+    (w1, w2, w3, -w1, -w2, -w3) otherwise
+    """
+    def solveWS(v1, v2):
+        v1x = v1[0]
+        v1y = v1[1]
+        v2x = v2[0]
+        v2y = v2[1]
+        lsm = ((-v1y, v2y), (v1x, -v2x))
+        rs = ((v1x-v2x)/2, (v1y - v2y)/2)
+        t = np.linalg.solve(lsm, rs)
+        return np.array(v1)/2 + t[0]*np.array((v1y, -v1x))
+    b1, b2 = reduceBasisSingle(b1, b2)
+    latticeType = classifyLaticeSingle(b1, b2)
+    if latticeType is LatticeType.RECTANGULAR or latticeType is LatticeType.SQUARE:
+        return np.array( (
+            (+b1+b2),
+            (+b2-b1),
+            (-b1-b2),
+            (-b2+b1),
+        )) / 2
+    else:
+        b3 = b2 - b1
+        bvs = (b1, b2, b3, -b1, -b2, -b3)
+        return np.array([solveWS(bvs[i], bvs[(i+1)%6]] for i in range(6)])
+
+
+
+
 
