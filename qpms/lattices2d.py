@@ -77,14 +77,14 @@ def classifyLatticeSingle(b1, b2, tolerance=1e-13):
     else:
         return LatticeType.OBLIQUE
 
-def range2D(maxN, mini=1, minj=0):
+def range2D(maxN, mini=1, minj=0, minN = 0):
     """
     "Triangle indices"
     Generates pairs of non-negative integer indices (i, j) such that
-    i + j ≤ maxN, i ≥ mini, j ≥ minj.
+    minN ≤ i + j ≤ maxN, i ≥ mini, j ≥ minj.
     TODO doc and possibly different orderings
     """
-    for maxn in range(min(mini, minj), maxN+1): # i + j == maxn
+    for maxn in range(min(mini, minj, minN), maxN+1): # i + j == maxn
         for i in range(mini, maxn + 1):
             yield (i, maxn - i)
 
@@ -118,6 +118,35 @@ def cellWignerSeitz(b1, b2,):
         return np.array([solveWS(bvs[i], bvs[(i+1)%6]] for i in range(6)])
 
 
+"""
+TODO pro všechny rozptylové a modální simulace
 
+Implementovat podporu následujících parametrů (v závorce implicitní hodnota):
+    --bz_coverage (1.): 
+        základní rozsah rovnoběžné části vlnového vektoru relativně k „délce“ 1. BZ. 
+        Ve výchozím nastavení právě 1. BZ (tj. Wignerova-Seitzova 
+        buňka v převráceném prostoru)
+    --k_density (50.):
+        základní počet bodů mezi středem a okrajem 1. BZ
+    --bz_edge_width (0.):
+        poloměr (relativně k vzdáleností mezi okrajem a středem 1. BZ) zhuštěného pásu kolem okraje 1. BZ
+    --bz_edge_factor (8.):
+        relativní hustota zhuštěného pásu (vzhledem k k_density)
+    --bz_corner_width (0.):
+        velikost zhuštěné oblasti kolem vrcholů 1. BZ (relativně k velikosti BZ)
+    --bz_corner_factor (16.):
+        relativní hustota zhuštěné „buněčky“ kolem 1. BZ (vzhledem k k_density)
+    --bz_centre_width (0.):
+        totéž kolem středu BZ
+    --bz_centre_factor (8):
+        totéž kolem středu BZ
+    --bz_edge_twoside (?),
+    --bz_corner_twoside (?):
+        zda s pásem zasahovat přes okraj 1. BZ, nebo jen dovnitř
+
+(nehoří) výhledově pořešit problém „hodně anisotropních“ mřížek (tj. kompensovat
+rozdílné délky základních vektorů).
+
+"""
 
 
