@@ -1,8 +1,22 @@
 #!/usr/bin/env python3
+'''
+Bulk SVD mode computation for compact scatterer 2D lattices
+'''
 
+__TODOs__ = '''
+BIG TODO: Use more efficient way to calculate the interaction sums: perhaps some customized Ewald-type summation?
+
+Small TODOs:
+    - Implement a more user-friendly way to define the lattice base vectors and positions of the particles.
+      cf. https://stackoverflow.com/questions/2371436/evaluating-a-mathematical-expression-in-a-string/2371789
+    - low priority: allow to perform some more custom operations on T-Matrix, using some kind of parsing from the previous point
+    - Autodetect symmetries
+
+'''
 import argparse, re, random, string
 import subprocess
 from scipy.constants import hbar, e as eV, pi, c
+import warnings
 
 def make_action_sharedlist(opname, listname):
     class opAction(argparse.Action):
@@ -14,48 +28,52 @@ def make_action_sharedlist(opname, listname):
 
 parser = argparse.ArgumentParser()
 #TODO? použít type=argparse.FileType('r') ?
-parser.add_argument('--TMatrix', action='store', required=True, help='Path to TMatrix file')
+#TODO create some user-friendlier way to define lattice vectors, cf. https://stackoverflow.com/questions/2371436/evaluating-a-mathematical-expression-in-a-string/2371789
+parser.add_argument('--lattice_base', nargs=4, action='store', type=float, required=True, help='Lattice basis vectors x1, y1, x2, y2')
+parser.add_argument('--particle', '-p', nargs='+', action=make_action_sharedlist('particle', 'particlespec'), help='Particle label, coordinates x,y, and (optionally) path to the T-Matrix.')
+parser.add_argument('--TMatrix', '-t', nargs='+', action=make_action_sharedlist('TMatrix_path', 'particlespec'), help='Path to TMatrix file')
 #parser.add_argument('--griddir', action='store', required=True, help='Path to the directory with precalculated translation operators')
 parser.add_argument('--output_prefix', action='store', required=True, help='Prefix to the npz output (will be appended frequency, hexside and chunkno)')
 #sizepar = parser.add_mutually_exclusive_group(required=True)
-parser.add_argument('--hexside', action='store', type=float, required=True, help='Lattice hexagon size length')
+#DEL parser.add_argument('--hexside', action='store', type=float, required=True, help='Lattice hexagon size length')
 parser.add_argument('--plot_TMatrix', action='store_true', help='Visualise TMatrix on the first page of the output')
 #parser.add_argument('--SVD_output', action='store', help='Path to output singular value decomposition result')
 parser.add_argument('--maxlayer', action='store', type=int, default=100, help='How far to sum the lattice points to obtain the dispersion')
 parser.add_argument('--scp_to', action='store', metavar='N', type=str, help='SCP the output files to a given destination')
 parser.add_argument('--background_permittivity', action='store', type=float, default=1., help='Background medium relative permittivity (default 1)')
 parser.add_argument('--eVfreq', action='store', required=True, type=float, help='Frequency in eV')
-parser.add_argument('--kdensity', action='store', type=int, default=33, help='Number of k-points per x-axis segment')
+parser.add_argument('--kdensity', '--k_density', action='store', type=int, default=33, help='Number of k-points per x-axis segment FIXME DESCRIPTION')
+parser.add_argument('--bz_coverage', action='store', type=float, default=1., help='Brillouin zone coverage in relative length (default 1 for whole 1. BZ)')
+parser.add_argument('--bz_edge_width', action='store', type=float, default=0., help='Width of the more densely covered belt along the 1. BZ edge in relative lengths')
+parser.add_argument('--bz_edge_factor', action='store', type=float, default=8., help='Relative density of the belt along the 1. BZ edge w.r.t. k_density (default==8)')
+parser.add_argument('--bz_edge_twoside', action='store_true', help='Compute also the parts of the densely covered edge belt outside the 1. BZ')
+parser.add_argument('--bz_corner_width', action='store', type=float, default=0., help='Size of the more densely covered subcell along the 1. BZ corners in relative lengths')
+parser.add_argument('--bz_corner_factor', action='store', type=float, default=16., help='Relative density of the subcell along the 1. BZ corner w.r.t. k_density (default==16)')
+parser.add_argument('--bz_corner_twoside', action='store_true', help='Compute also the parts of the densely covered subcell outside the 1. BZ')
+
 parser.add_argument('--chunklen', action='store', type=int, default=1000, help='Number of k-points per output file (default 1000)')
 parser.add_argument('--lMax', action='store', type=int, help='Override lMax from the TMatrix file')
 #TODO some more sophisticated x axis definitions
 parser.add_argument('--gaussian', action='store', type=float, metavar='σ', help='Use a gaussian envelope for weighting the interaction matrix contributions (depending on the distance), measured in unit cell lengths (?) FIxME).')
 parser.add_argument('--verbose', '-v', action='count', help='Be verbose (about computation times, mostly)')
 popgrp=parser.add_argument_group(title='Operations')
-popgrp.add_argument('--tr', dest='ops', action=make_action_sharedlist('tr', 'ops'), default=list()) # the default value for dest can be set once
-popgrp.add_argument('--tr0', dest='ops', action=make_action_sharedlist('tr0', 'ops'))
-popgrp.add_argument('--tr1', dest='ops', action=make_action_sharedlist('tr1', 'ops'))
-popgrp.add_argument('--sym', dest='ops', action=make_action_sharedlist('sym', 'ops'))
-popgrp.add_argument('--sym0', dest='ops', action=make_action_sharedlist('sym0', 'ops'))
-popgrp.add_argument('--sym1', dest='ops', action=make_action_sharedlist('sym1', 'ops'))
+popgrp.add_argument('--tr', dest='ops', nargs='+', action=make_action_sharedlist('tr', 'ops'), default=list()) # the default value for dest can be set once
+popgrp.add_argument('--sym', dest='ops', nargs='+', action=make_action_sharedlist('sym', 'ops'))
 #popgrp.add_argument('--mult', dest='ops', nargs=3, metavar=('INCSPEC', 'SCATSPEC', 'MULTIPLIER'), action=make_action_sharedlist('mult', 'ops'))
-#popgrp.add_argument('--mult0', dest='ops', nargs=3, metavar=('INCSPEC', 'SCATSPEC', 'MULTIPLIER'), action=make_action_sharedlist('mult0', 'ops'))
-#popgrp.add_argument('--mult1', dest='ops', nargs=3, metavar=('INCSPEC', 'SCATSPEC', 'MULTIPLIER'), action=make_action_sharedlist('mult1', 'ops'))
-popgrp.add_argument('--multl', dest='ops', nargs=3, metavar=('INCL[,INCL,...]', 'SCATL[,SCATL,...]', 'MULTIPLIER'), action=make_action_sharedlist('multl', 'ops'))
-popgrp.add_argument('--multl0', dest='ops', nargs=3, metavar=('INCL[,INCL,...]', 'SCATL[,SCATL,...]', 'MULTIPLIER'), action=make_action_sharedlist('multl0', 'ops'))
-popgrp.add_argument('--multl1', dest='ops', nargs=3, metavar=('INCL[,INCL,...]', 'SCATL[,SCATL,...]', 'MULTIPLIER'), action=make_action_sharedlist('multl1', 'ops'))
+#popgrp.add_argument('--multl', dest='ops', nargs=3, metavar=('INCL[,INCL,...]', 'SCATL[,SCATL,...]', 'MULTIPLIER'), action=make_action_sharedlist('multl', 'ops'))
 parser.add_argument('--frequency_multiplier', action='store', type=float, default=1., help='Multiplies the frequencies in the TMatrix file by a given factor.')
-# TODO enable more flexible per-sublattice specification
 pargs=parser.parse_args()
 print(pargs)
 
+exit(0) ###
+
 maxlayer=pargs.maxlayer
-hexside=pargs.hexside
+#DEL hexside=pargs.hexside
 eVfreq = pargs.eVfreq
 freq = eVfreq*eV/hbar
 verbose=pargs.verbose
 
-TMatrix_file = pargs.TMatrix
+#DEL TMatrix_file = pargs.TMatrix
 
 epsilon_b = pargs.background_permittivity #2.3104
 gaussianSigma = pargs.gaussian if pargs.gaussian else None # hexside * 222 / 7
@@ -64,16 +82,76 @@ scp_dest = pargs.scp_to if pargs.scp_to else None
 kdensity = pargs.kdensity
 chunklen = pargs.chunklen
 
-ops = list()
-opre = re.compile('(tr|sym|copy|multl|mult)(\d*)')
-for oparg in pargs.ops:
-    opm = opre.match(oparg[0])
-    if opm:
-        ops.append(((opm.group(2),) if opm.group(2) else (0,1), opm.group(1), oparg[1]))
-    else:
-        raise # should not happen
-print(ops)
+#### Nanoparticle position and T-matrix path parsing ####
+TMatrix_paths = dict()
+default_TMatrix_path = None
+if not any((arg_type == 'particle') in (arg_type, arg_content) for in pargs.particlespec):
+    # no particles positions given: suppose only one per unit cell, in the cell origin
+    positions = {None: (0.0)}
+else:
+    positions = dict()
+for arg_type, arg_content in pargs.particlespec:
+    if arg_type == 'particle' # --particle option
+        if  3 <= len(arg_content) <= 4:
+            try:
+                positions[arg_content[0]] = (float(arg_content[1]), float(arg_content[2]))
+            except ValueError as e:
+                e.args += ("second and third argument of --particle must be valid floats, given: ", arg_content)
+                raise
+            if len(arg_content == 4):
+                if arg_content[0] in TMatrix_paths:
+                    warnings.warn('T-matrix path for particle \'%s\' already specified.' 
+                    'Overriding with the last value.' % arg_content[0], SyntaxWarning)
+                TMatrix_paths[arg_content[0]] = arg_content[3]
 
+        else:
+            raise ValueError("--particle expects 3 or 4 arguments, %d given: " % len(arg_content), arg_content)
+    elif arg_type == 'TMatrix_path': # --TMatrix option
+        if len(arg_content) == 1: # --TMatrix default_path
+            if default_TMatrix_path is not None:
+                warnings.warn('Default T-matrix path already specified. Overriding with the last value.', SyntaxWarning)
+            default_TMatrix_path = arg_content[0]
+        elif len(arg_content) > 1: # --TMatrix label [label2 [...]] path
+            for label in arg_content[:-1]:
+                if label in TMatrix_paths:
+                    warnings.warn('T-matrix path for particle \'%s\' already specified.' 
+                    'Overriding with the last value.' % label, SyntaxWarning)
+                TMatrix_paths[label] = arg_content[-1]
+    else: assert False, 'unknown option type'
+# Check the info from positions and TMatrix_paths
+if not set(TMatrix_paths.keys()) <= set(positions.keys()):
+    raise ValueError("T-Matrix path(s) for particle(s) labeled %s was given, but not their positions" 
+            % str(set(TMatrix_paths.keys()) - set(positions.keys())))
+if (set(TMatrix_paths.keys()) != set(positions.keys())) and default_TMatrix_path is None:
+    raise ValueError("Position(s) of particles(s) labeled %s was given without their T-matrix"
+        " and no default T-matrix was specified" 
+        % str(set(positions.keys()) - set(TMatrix_paths_keys())))
+for path in TMatrix_paths.values():
+    if not os.path.exists(path):
+        raise ValueError("Cannot access T-matrix file %s. Does it exist?" % path)
+
+# Assign (pre-parse) the T-matrix operations to individual particles
+ops = dict()
+for label in positions.keys(): ops[label] = list()
+for optype, arg_content in pargs.ops:
+    # if, no label given, apply to all, otherwise on the specifield particles
+    for label in (positions.keys() if len(arg_content) == 1 else arg_content[:-1]): 
+        try:
+            ops[label].append((optype, arg_content[-1]))
+        except KeyError as e:
+            e.args += 'Specified operation on undefined particle labeled \'%s\'' % label
+            raise
+
+print(sys.stderr, "ops: ", ops) #DEBUG
+
+#### Collect all the info about the particles / their T-matrices ####
+# Enumerate and assign all the _different_ T-matrices (without any intelligent group-theory checking, though)
+TMatrix_specs = dict((spec, number) 
+        for (number, spec) in enumerate(set(
+            (TMatrix_paths[label], tuple(ops[label])) for label in positions.keys()
+        )))
+# particles_specs contains (label, (xpos, ypos), tmspec_index per element)
+particles_specs = [(label, positions(label), TMatrix_specs[(TMatrix_paths[label], tuple(ops[label]))]) for label in positions.keys()]
 
 # -----------------finished basic CLI parsing (except for op arguments) ------------------
 from qpms.timetrack import _time_b, _time_e
