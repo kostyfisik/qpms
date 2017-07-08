@@ -244,7 +244,7 @@ for op in ops:
                     TMatrix_contribs[i] = qpms.apply_matrix_left(rot,qpms.apply_matrix_left(rotinv, TMatrices[:,t], -3),-1)
                 TMatrices[:,t] = np.sum(TMatrix_contribs, axis=0) / rotN
         else:
-            raise
+            raise ValueError('\'%d\' is not an implemented symmetry operation' % op[2])
     elif op[1] == 'tr':
         mCN = reCN.match(op[2]) # Fuck van Rossum for not having assignments inside expressions
         if op[2] == 'σ_z':
@@ -269,7 +269,7 @@ for op in ops:
                 rotinv = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,-rotangle]))
                 TMatrices[:,t] = qpms.apply_matrix_left(rot, qpms.apply_matrix_left(rotinv, TMatrices[:,t], -3),-1)
         else:
-            raise
+            raise ValueError('\'%d\' is not an implemented T-matrix transformation operation' % op[2])
     elif op[1] == 'copy':
         raise # not implemented
     elif op[1] == 'mult':
