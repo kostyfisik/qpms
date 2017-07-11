@@ -88,7 +88,7 @@ def range2D(maxN, mini=1, minj=0, minN = 0):
         for i in range(mini, maxn + 1):
             yield (i, maxn - i)
 
-def cellWignerSeitz(b1, b2,):
+def cellCornersWS(b1, b2,):
     """
     Given basis vectors, returns the corners of the Wigner-Seitz unit cell
     (w1, w2, -w1, w2) for rectangular and square lattice or
