@@ -8,8 +8,7 @@ from scipy.special import lpmn, lpmv, sph_jn, sph_yn, poch, gammaln
 from scipy.misc import factorial
 import math
 import cmath
-import quaternion, spherical_functions as sf # because of the Wigner matrices
-import sys, time
+import quaternion, spherical_functions as sf # because of the Wigner matrices. There imports are SLOW.
 
 """
 '''

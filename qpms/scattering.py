@@ -1,6 +1,15 @@
 '''
 Object oriented approach for the classical multiple scattering problem.
 '''
+
+__TODO__ = '''
+- Implement per-scatterer lMax
+  - This means that Scattering.TMatrices either can not be a single array with a fixed
+    (N, 2, nelem, 2, nelem) shape but rather list of (2, nelem, 2, nelem) with nelem varying
+    per particle or some of its elements have to be unused. Anyways, there has to be some kind of
+    list with the lMaxes.
+'''
+
 import numpy as np
 nx = np.newaxis
 import time
