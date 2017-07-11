@@ -1,5 +1,4 @@
 import numpy as np
-import warnings
 from enum import Enum
 
 nx = None
@@ -51,19 +50,35 @@ def reduceBasisSingle(b1, b2):
         B2 = np.sum(b2*b2, axis=-1, keepdims=True)
     return(b1,b2)
 
-def orderedReducedBasis(b1, b2):
-    ''' blah blab blah
-    |b1| is still the shortest possible basis vector,
-        but if there would be obtuse angle between b1 and b2, b2 - b1 is returned
-        in place of the original b2. In other words, b1, b2 and b2-b1 are 
+def shortestBase3(b1, b2):
+    ''' 
+    returns the "ordered shortest triple" of base vectors (each pair from 
+    the triple is a base) and there may not be obtuse angle between b1, b2
+    and between b2, b3
     '''
     b1, b2 = reduceBasisSingle(b1,b2)
-    
-    if b3s - b2s - b1s > eps: # obtuse angle between b1 and b2
-        pass
-    pass
-    #-------- zde jsem skončil ------------
+    if is_obtuse(b1, b2, tolerance=0):
+        b3 = b2
+        b2 = b2 + b1
+    else:
+        b3 = b2 - b1
+    return (b1, b2, b3)
 
+def shortestBase46(b1, b2, tolerance=1e-13):
+    b1, b2 = reduceBasisSingle(b1,b2)
+    b1s = np.sum(b1 ** 2)
+    b2s = np.sum(b2 ** 2)
+    b3 = b2 - b1
+    b3s = np.sum(b3 ** 2)
+    eps = tolerance * (b2s + b1s)
+    if abs(b3s - b2s - b1s) < eps:
+        return(b1, b2, -b1, -b2)
+    else:
+        if b3s - b2s - b1s > eps: #obtuse
+            b3 = b2
+            b2 = b2 + b1
+        return (b1, b2, b3, -b1, -b2, -b3)
+    
 
 def is_obtuse(b1, b2, tolerance=1e-13):
     b1s = np.sum(b1 ** 2)
@@ -94,7 +109,6 @@ def classifyLatticeSingle(b1, b2, tolerance=1e-13):
         #b3 = b2 - b1
         b2s = np.sum(b2 ** 2)
         b3s = np.sum(b3 ** 2)
-        warnings.warn("obtuse angle between reduced basis vectors, the lattice type identification might is not well tested.")
     if abs(b2s - b1s) < eps or abs(b2s - b3s) < eps: # isoscele
         if abs(b3s - b1s) < eps:
             return LatticeType.EQUILATERAL_TRIANGULAR
@@ -114,28 +128,13 @@ def range2D(maxN, mini=1, minj=0, minN = 0):
     minN ≤ i + j ≤ maxN, i ≥ mini, j ≥ minj.
     TODO doc and possibly different orderings
     """
-    for maxn in range(min(mini, minj, minN), maxN+1): # i + j == maxn
+    for maxn in range(min(mini, minj, minN), floor(maxN+1)): # i + j == maxn
         for i in range(mini, maxn + 1):
             yield (i, maxn - i)
 
             
 def generateLattice(b1, b2, maxlayer=5, include_origin=False, order='leaves'):
-    b1, b2 = reduceBasisSingle(b1, b2)
-    latticeType = classifyLatticeSingle(b1, b2)
-
-
-    if latticeType is LatticeType.RECTANGULAR or latticeType is LatticeType.SQUARE:
-        bvs = (b1, b2, -b1, -b2)
-    else:
-            # Avoid obtuse angle between b1 and b2. TODO This should be yet thoroughly tested.
-        if is_obtuse(b1,b2):
-            b3 = b2
-            b2 = b2 + b1
-            # N. B. now the assumption |b3| >= |b2| is no longer valid
-            warnings.warn("obtuse angle between reduced basis vectors, the lattice generation might is not well tested.")
-        else:
-            b3 = b2 - b1
-        bvs = (b1, b2, b3, -b1, -b2, -b3)
+    bvs = shortestBase46(b1, b2)
     cc = len(bvs) # "corner count"
     
     if order == 'leaves':
@@ -169,7 +168,7 @@ def cellCornersWS(b1, b2,):
         t = np.linalg.solve(lsm, rs)
         return np.array(v1)/2 + t[0]*np.array((v1y, -v1x))
     b1, b2 = reduceBasisSingle(b1, b2)
-    latticeType = classifyLaticeSingle(b1, b2)
+    latticeType = classifyLatticeSingle(b1, b2)
     if latticeType is LatticeType.RECTANGULAR or latticeType is LatticeType.SQUARE:
         return np.array( (
             (+b1+b2),
@@ -178,22 +177,19 @@ def cellCornersWS(b1, b2,):
             (-b2+b1),
         )) / 2
     else:
-        b3 = b2 - b1
-        bvs = (b1, b2, b3, -b1, -b2, -b3)
+        bvs = shortestBase46(b1,b2,tolerance=0)
         return np.array([solveWS(bvs[i], bvs[(i+1)%6]) for i in range(6)])
 
-def cutWS(points, b1, b2, scale=1.):
+def cutWS(points, b1, b2, scale=1., tolerance=1e-13):
     """ 
     From given points, return only those that are inside (or on the edge of)
     the Wigner-Seitz cell of a (scale*b1, scale*b2)-based lattice.
     """
     # TODO check input dimensions?
-    b1, b2 = reduceBasisSingle(b1, b2)
-    b3 = b2 - b1
-    bvs = (b1, b2, b3, -b1, -b2, -b3)
+    bvs = shortestBase46(b1, b2)
     points = np.array(points)
     for b in bvs: 
-        mask = (np.tensordot(points, b, axes=(-1, 0)) <= np.linalg.norm(b, ord=2) * scale/2)
+        mask = (np.tensordot(points, b, axes=(-1, 0)) <=  (scale * (1+tolerance) / 2) *np.linalg.norm(b, ord=2)**2 )
         points = points[mask]
     return points
 
@@ -202,10 +198,42 @@ def filledWS(b1, b2, density=10, scale=1.):
     TODO doc
     TODO more intelligent generation, anisotropy balancing etc.
     """
-    b1, b2 = reduceBasisSingle(b1, b2)
-    pass
+    points = generateLattice(b1,b2,maxlayer=density*scale, include_origin=True)
+    points = cutWS(points/density, np.array(b1)*scale, np.array(b2)*scale)
+    return points
     
     
-
+rot90_ = np.array([[0,1],[-1,0]])
 def reciprocalBasis(a1, a2):
-    pass
+    a1, a2 = reduceBasisSingle(a1,a2) # this can be replaced with the vector version of reduceBasis when it is made
+    prefac = 2*np.pi/np.sum(np.tensordot(a1, rot90_, axes=[-1,0]) * a2, axis=-1)
+    b1 = np.tensordot(rot90_, a2, axes=[-1,-1]) * prefac
+    b2 = np.tensordot(rot90_, a1, axes=[-1,-1]) * prefac
+    return (b1, b2)
+
+
+# TODO fill it with "points from reciprocal space" instead
+def filledWS2(b1,b2, density=10, scale=1.):
+    b1, b2 = reduceBasisSingle(b1,b2)
+    b1r, b2r = reciprocalBasis(b1,b2)
+    b1l = np.linalg.norm(b1, ord=2)
+    b2l = np.linalg.norm(b2, ord=2)
+    b1rl = np.linalg.norm(b1r, ord=2)
+    b2rl = np.linalg.norm(b2r, ord=2)
+    # Black magick. Think later.™ Really. FIXME
+    sicher_ratio = np.maximum(b1rl/b2rl, b2rl/b1rl) * np.maximum(b1l/b2l, b2l/b1l) # This really has to be adjusted
+    points = generateLattice(b1r,b2r,maxlayer=density*scale*sicher_ratio, include_origin=True)
+    points = cutWS(points*b1l/b1rl/density, b1*scale, b2*scale)
+    return points
+
+
+
+"""
+TODO
+====
+
+- DOC!!!!!
+- (nehoří) výhledově pořešit problém „hodně anisotropních“ mřížek (tj. kompensovat
+rozdílné délky základních vektorů).
+
+"""
