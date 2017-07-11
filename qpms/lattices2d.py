@@ -151,6 +151,14 @@ def generateLattice(b1, b2, maxlayer=5, include_origin=False, order='leaves'):
         return np.concatenate(leaves)
     else: 
         raise ValueError('Lattice point order not implemented: ', order)
+        
+def generateLatticeDisk(b1, b2, r, include_origin=False, order='leaves'):
+    b1, b2 = reduceBasisSingle(b1,b2)
+    blen = np.linalg.norm(b1, ord=2)
+    maxlayer = 2*r/blen # FIXME kanon na vrabce? Nestačí odmocnina ze 2?
+    points = generateLattice(b1,b2, maxlayer=maxlayer, include_origin=include_origin, order=order)
+    mask = (np.linalg.norm(points, axis=-1, ord=2) <= r)
+    return points[mask]
 
 def cellCornersWS(b1, b2,):
     """
