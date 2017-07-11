@@ -1,4 +1,13 @@
-import argparse
+#import argparse # Do I need it when calling just parser methods?
+import warnings
+
+__TODOs__ = '''
+    - Implement a more user-friendly way to define the lattice base vectors and positions of the particles.
+      cf. https://stackoverflow.com/questions/2371436/evaluating-a-mathematical-expression-in-a-string/2371789
+    - low priority: allow to perform some more custom operations on T-Matrix, using some kind of parsing from the previous point
+    - Autodetect symmetries
+
+'''
 
 def make_action_sharedlist(opname, listname):
     class opAction(argparse.Action):
@@ -10,7 +19,7 @@ def make_action_sharedlist(opname, listname):
 
 
 def add_argparse_k_output_options(parser):
-    parser.add_argument('--kdensity', '--k_density', action='store', type=int, default=33, help='Number of k-points per x-axis segment FIXME DESCRIPTION')
+    parser.add_argument('--kdensity', '--k_density', action='store', type=int, nargs='+', default=33, help='Number of k-points per x-axis segment FIXME DESCRIPTION')
     parser.add_argument('--bz_coverage', action='store', type=float, default=1., help='Brillouin zone coverage in relative length (default 1 for whole 1. BZ)')
     parser.add_argument('--bz_edge_width', action='store', type=float, default=0., help='Width of the more densely covered belt along the 1. BZ edge in relative lengths')
     parser.add_argument('--bz_edge_factor', action='store', type=float, default=8., help='Relative density of the belt along the 1. BZ edge w.r.t. k_density (default==8)')
@@ -52,14 +61,137 @@ def add_argparse_common_options(parser):
     parser.add_argument('--frequency_multiplier', action='store', type=float, default=1., help='Multiplies the frequencies in the TMatrix file by a given factor.')
 
 
-__TODOs__ = '''
-BIG TODO: Use more efficient way to calculate the interaction sums: perhaps some customized Ewald-type summation?
 
-Small TODOs:
-    - Implement a more user-friendly way to define the lattice base vectors and positions of the particles.
-      cf. https://stackoverflow.com/questions/2371436/evaluating-a-mathematical-expression-in-a-string/2371789
-    - low priority: allow to perform some more custom operations on T-Matrix, using some kind of parsing from the previous point
-    - Autodetect symmetries
+def arg_preprocess_particles(parser, d=None, return_tuple=False):
+    ''' 
+    Nanoparticle position and T-matrix path parsing 
+
+    returns a dictionary d with keys 'particle_specs' and 'TMatrix_specs'
+
+    parser: ArgumentParser on which add_argparse_unitcell_definitions() and whose
+    parse_args() has been called.
+
+    d['TMatrix_specs'] is a list of specs where a spec is a tuple of
+    (lMax_override, TMatrix_path, ops).
+    
+    lMax_override: int or None
+    TMatrix_path: string
+    ops: iterable with operations on the T-Matrix to be processed with perform_ops()
+
+    d['particle_specs'] is an iterable of tuples (label, (xpos, ypos), TMatrix_spec_index)
+    TMatrix_spec_index is an index of the corresponding element of d['TMatrix_specs']
+
+
+    If a dictionary d is provided, the result is written into it; if d is None (default),
+    a new dictionary is created.
+    If return_tuple is true, then a tuple (particle_specs, TMatrix_specs) is returned 
+    instead of the dictionary d.
+    '''
+    TMatrix_paths = dict()
+    lMax_overrides = dict()
+    default_TMatrix_path = None
+    default_lMax_override = None
+    if not any((arg_type == 'particle') in (arg_type, arg_content) for in pargs.particlespec):
+        # no particles positions given: suppose only one per unit cell, in the cell origin
+        positions = {None: (0.0)}
+    else:
+        positions = dict()
+    for arg_type, arg_content in pargs.particlespec:
+        if arg_type == 'particle' # --particle option
+            if  3 <= len(arg_content) <= 4:
+                try:
+                    positions[arg_content[0]] = (float(arg_content[1]), float(arg_content[2]))
+                except ValueError as e:
+                    e.args += ("second and third argument of --particle must be valid floats, given: ", arg_content)
+                    raise
+                if len(arg_content == 4):
+                    if arg_content[0] in TMatrix_paths:
+                        warnings.warn('T-matrix path for particle \'%s\' already specified.' 
+                        'Overriding with the last value.' % arg_content[0], SyntaxWarning)
+                    TMatrix_paths[arg_content[0]] = arg_content[3]
+
+            else:
+                raise ValueError("--particle expects 3 or 4 arguments, %d given: " % len(arg_content), arg_content)
+        elif arg_type == 'TMatrix_path': # --TMatrix option
+            if len(arg_content) == 1: # --TMatrix default_path
+                if default_TMatrix_path is not None:
+                    warnings.warn('Default T-matrix path already specified. Overriding with the last value.', SyntaxWarning)
+                default_TMatrix_path = arg_content[0]
+            elif len(arg_content) > 1: # --TMatrix label [label2 [...]] path
+                for label in arg_content[:-1]:
+                    if label in TMatrix_paths.keys():
+                        warnings.warn('T-matrix path for particle \'%s\' already specified.' 
+                        'Overriding with the last value.' % label, SyntaxWarning)
+                    TMatrix_paths[label] = arg_content[-1]
+        elif arg_type == 'lMax': # --lMax option
+            if len(arg_content) == 1: # --lMax default_lmax_override
+                if default_lMax_override is not None:
+                    warnings.warn('Default lMax override value already specified. Overriding the last value.', SyntaxWarning)
+                default_lMax_override = int(arg_content[-1])
+            else:
+                for label in arg_content[:-1]:
+                    if label in lMax_overrides.keys:
+                        warnings.warn('lMax override for particle \'%s\' already specified.'
+                            'overriding with the last value.' % label, SyntaxWarning)
+                    lMax_overrides[label] = int(arg_content[-1])
+        else: assert False, 'unknown option type'
+    # Check the info from positions and TMatrix_paths and lMax_overrides
+    if not set(TMatrix_paths.keys()) <= set(positions.keys()):
+        raise ValueError("T-Matrix path(s) for particle(s) labeled %s was given, but not their positions" 
+                % str(set(TMatrix_paths.keys()) - set(positions.keys())))
+    if not set(lMax_overrides.keys()) <= set(positions.keys()):
+        raise ValueError("lMax override(s) for particle(s) labeled %s was given, but not their positions"
+                %str(set(lMax_overrides.keys()) - set(positions.keys())))
+    if (set(TMatrix_paths.keys()) != set(positions.keys())) and default_TMatrix_path is None:
+        raise ValueError("Position(s) of particles(s) labeled %s was given without their T-matrix"
+            " and no default T-matrix was specified" 
+            % str(set(positions.keys()) - set(TMatrix_paths_keys())))
+    for path in TMatrix_paths.values():
+        if not os.path.exists(path):
+            raise ValueError("Cannot access T-matrix file %s. Does it exist?" % path)
+
+    # Assign (pre-parse) the T-matrix operations to individual particles
+    ops = dict()
+    for label in positions.keys(): ops[label] = list()
+    for optype, arg_content in pargs.ops:
+        # if, no label given, apply to all, otherwise on the specifield particles
+        for label in (positions.keys() if len(arg_content) == 1 else arg_content[:-1]): 
+            try:
+                ops[label].append((optype, arg_content[-1]))
+            except KeyError as e:
+                e.args += 'Specified operation on undefined particle labeled \'%s\'' % label
+                raise
+
+    print(sys.stderr, "ops: ", ops) #DEBUG
+
+    #### Collect all the info about the particles / their T-matrices into one list ####
+    # Enumerate and assign all the _different_ T-matrices (without any intelligent group-theory checking, though)
+    TMatrix_specs = dict((spec, number) 
+            for (number, spec) in enumerate(set(
+                    (lMax_overrides[label] if label in lMax_overrides.keys() else None, 
+                     TMatrix_paths[label], 
+                     tuple(ops[label])) 
+                for label in positions.keys()
+            )))
+    # particles_specs contains (label, (xpos, ypos), tmspec_index per element)
+    particles_specs = [(label, positions(label), 
+        TMatrix_specs[(lMax_overrides[label] if label in lMax_overrides.keys() else None, 
+                       TMatrix_paths[label], 
+                       tuple(ops[label]))]
+        ) for label in positions.keys()]
+
+    # This converts the TMatrix_specs dict to a list of its ex-keys in the ex-value order
+    TMatrix_specs = dict((v,k) for (k,v) in TMatrix_specs.items()) # invert dict
+    TMatrix_specs = [TMatrix_specs[i] for i in range(len(TMatrix_specs))] # convert to list
+    
+    if d is None: 
+        d = dict()
+    d['particle_specs'] = particle_specs
+    d['TMatrix_specs'] = TMatrix_specs
+    if return_tuple:
+        return (particles_specs, TMatrix_specs)
+    else:
+        return d
 
 '''
 import argparse, re, random, string
@@ -87,100 +219,6 @@ interpfreqfactor = pargs.frequency_multiplier
 scp_dest = pargs.scp_to if pargs.scp_to else None
 kdensity = pargs.kdensity
 chunklen = pargs.chunklen
-
-#### Nanoparticle position and T-matrix path parsing ####
-TMatrix_paths = dict()
-lMax_overrides = dict()
-default_TMatrix_path = None
-default_lMax_override = None
-if not any((arg_type == 'particle') in (arg_type, arg_content) for in pargs.particlespec):
-    # no particles positions given: suppose only one per unit cell, in the cell origin
-    positions = {None: (0.0)}
-else:
-    positions = dict()
-for arg_type, arg_content in pargs.particlespec:
-    if arg_type == 'particle' # --particle option
-        if  3 <= len(arg_content) <= 4:
-            try:
-                positions[arg_content[0]] = (float(arg_content[1]), float(arg_content[2]))
-            except ValueError as e:
-                e.args += ("second and third argument of --particle must be valid floats, given: ", arg_content)
-                raise
-            if len(arg_content == 4):
-                if arg_content[0] in TMatrix_paths:
-                    warnings.warn('T-matrix path for particle \'%s\' already specified.' 
-                    'Overriding with the last value.' % arg_content[0], SyntaxWarning)
-                TMatrix_paths[arg_content[0]] = arg_content[3]
-
-        else:
-            raise ValueError("--particle expects 3 or 4 arguments, %d given: " % len(arg_content), arg_content)
-    elif arg_type == 'TMatrix_path': # --TMatrix option
-        if len(arg_content) == 1: # --TMatrix default_path
-            if default_TMatrix_path is not None:
-                warnings.warn('Default T-matrix path already specified. Overriding with the last value.', SyntaxWarning)
-            default_TMatrix_path = arg_content[0]
-        elif len(arg_content) > 1: # --TMatrix label [label2 [...]] path
-            for label in arg_content[:-1]:
-                if label in TMatrix_paths.keys():
-                    warnings.warn('T-matrix path for particle \'%s\' already specified.' 
-                    'Overriding with the last value.' % label, SyntaxWarning)
-                TMatrix_paths[label] = arg_content[-1]
-    elif arg_type == 'lMax': # --lMax option
-        if len(arg_content) == 1: # --lMax default_lmax_override
-            if default_lMax_override is not None:
-                warnings.warn('Default lMax override value already specified. Overriding the last value.', SyntaxWarning)
-            default_lMax_override = int(arg_content[-1])
-        else:
-            for label in arg_content[:-1]:
-                if label in lMax_overrides.keys:
-                    warnings.warn('lMax override for particle \'%s\' already specified.'
-                        'overriding with the last value.' % label, SyntaxWarning)
-                lMax_overrides[label] = int(arg_content[-1])
-    else: assert False, 'unknown option type'
-# Check the info from positions and TMatrix_paths and lMax_overrides
-if not set(TMatrix_paths.keys()) <= set(positions.keys()):
-    raise ValueError("T-Matrix path(s) for particle(s) labeled %s was given, but not their positions" 
-            % str(set(TMatrix_paths.keys()) - set(positions.keys())))
-if not set(lMax_overrides.keys()) <= set(positions.keys()):
-    raise ValueError("lMax override(s) for particle(s) labeled %s was given, but not their positions"
-            %str(set(lMax_overrides.keys()) - set(positions.keys())))
-if (set(TMatrix_paths.keys()) != set(positions.keys())) and default_TMatrix_path is None:
-    raise ValueError("Position(s) of particles(s) labeled %s was given without their T-matrix"
-        " and no default T-matrix was specified" 
-        % str(set(positions.keys()) - set(TMatrix_paths_keys())))
-for path in TMatrix_paths.values():
-    if not os.path.exists(path):
-        raise ValueError("Cannot access T-matrix file %s. Does it exist?" % path)
-
-# Assign (pre-parse) the T-matrix operations to individual particles
-ops = dict()
-for label in positions.keys(): ops[label] = list()
-for optype, arg_content in pargs.ops:
-    # if, no label given, apply to all, otherwise on the specifield particles
-    for label in (positions.keys() if len(arg_content) == 1 else arg_content[:-1]): 
-        try:
-            ops[label].append((optype, arg_content[-1]))
-        except KeyError as e:
-            e.args += 'Specified operation on undefined particle labeled \'%s\'' % label
-            raise
-
-print(sys.stderr, "ops: ", ops) #DEBUG
-
-#### Collect all the info about the particles / their T-matrices into one list ####
-# Enumerate and assign all the _different_ T-matrices (without any intelligent group-theory checking, though)
-TMatrix_specs = dict((spec, number) 
-        for (number, spec) in enumerate(set(
-                (lMax_overrides[label] if label in lMax_overrides.keys() else None, 
-                 TMatrix_paths[label], 
-                 tuple(ops[label])) 
-            for label in positions.keys()
-        )))
-# particles_specs contains (label, (xpos, ypos), tmspec_index per element)
-particles_specs = [(label, positions(label), 
-    TMatrix_specs[(lMax_overrides[label] if label in lMax_overrides.keys() else None, 
-                   TMatrix_paths[label], 
-                   tuple(ops[label]))]
-    ) for label in positions.keys()]
 
 # -----------------finished basic CLI parsing (except for op arguments) ------------------
 from qpms.timetrack import _time_b, _time_e
@@ -344,3 +382,4 @@ for chunki in range(chunkn):
 
 _time_e(btime, verbose)
 #print(time.strftime("%H.%M:%S",time.gmtime(time.time()-begtime)))
+'''
