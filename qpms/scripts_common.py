@@ -1,7 +1,11 @@
-#import argparse # Do I need it when calling just parser methods?
 import warnings
+import argparse
+#import sys # for debugging purpose, TODO remove in production
+import os # because of path
 
 __TODOs__ = '''
+    - Checking validity of T-matrix ops (the arguments of --tr, --sym or similar) according to what is implemented
+      in tmatrices.py.
     - Implement a more user-friendly way to define the lattice base vectors and positions of the particles.
       cf. https://stackoverflow.com/questions/2371436/evaluating-a-mathematical-expression-in-a-string/2371789
     - low priority: allow to perform some more custom operations on T-Matrix, using some kind of parsing from the previous point
@@ -35,7 +39,7 @@ def add_argparse_unitcell_definitions(parser):
     parser.add_argument('--particle', '-p', nargs='+', action=make_action_sharedlist('particle', 'particlespec'), help='Particle label, coordinates x,y, and (optionally) path to the T-Matrix.')
     parser.add_argument('--TMatrix', '-t', nargs='+', action=make_action_sharedlist('TMatrix_path', 'particlespec'), help='Path to TMatrix file')
     parser.add_argument('--background_permittivity', action='store', type=float, default=1., help='Background medium relative permittivity (default 1)')
-    parser.add_argument('--lMax', action=make_action_sharedlist('lMax', 'particlespec'), nargs=+, help='Override lMax from the TMatrix file')
+    parser.add_argument('--lMax', action=make_action_sharedlist('lMax', 'particlespec'), nargs='+', help='Override lMax from the TMatrix file')
     popgrp=parser.add_argument_group(title='Operations')
     popgrp.add_argument('--tr', dest='ops', nargs='+', action=make_action_sharedlist('tr', 'ops'), default=list()) # the default value for dest can be set once
     popgrp.add_argument('--sym', dest='ops', nargs='+', action=make_action_sharedlist('sym', 'ops'))
@@ -62,7 +66,7 @@ def add_argparse_common_options(parser):
 
 
 
-def arg_preprocess_particles(parser, d=None, return_tuple=False):
+def arg_preprocess_particles(pargs, d=None, return_tuple=False):
     ''' 
     Nanoparticle position and T-matrix path parsing 
 
@@ -91,20 +95,20 @@ def arg_preprocess_particles(parser, d=None, return_tuple=False):
     lMax_overrides = dict()
     default_TMatrix_path = None
     default_lMax_override = None
-    if not any((arg_type == 'particle') in (arg_type, arg_content) for in pargs.particlespec):
+    if not any((arg_type == 'particle') for (arg_type, arg_content) in pargs.particlespec):
         # no particles positions given: suppose only one per unit cell, in the cell origin
         positions = {None: (0.0)}
     else:
         positions = dict()
     for arg_type, arg_content in pargs.particlespec:
-        if arg_type == 'particle' # --particle option
+        if arg_type == 'particle': # --particle option
             if  3 <= len(arg_content) <= 4:
                 try:
                     positions[arg_content[0]] = (float(arg_content[1]), float(arg_content[2]))
                 except ValueError as e:
                     e.args += ("second and third argument of --particle must be valid floats, given: ", arg_content)
                     raise
-                if len(arg_content == 4):
+                if len(arg_content) == 4:
                     if arg_content[0] in TMatrix_paths:
                         warnings.warn('T-matrix path for particle \'%s\' already specified.' 
                         'Overriding with the last value.' % arg_content[0], SyntaxWarning)
@@ -145,7 +149,10 @@ def arg_preprocess_particles(parser, d=None, return_tuple=False):
     if (set(TMatrix_paths.keys()) != set(positions.keys())) and default_TMatrix_path is None:
         raise ValueError("Position(s) of particles(s) labeled %s was given without their T-matrix"
             " and no default T-matrix was specified" 
-            % str(set(positions.keys()) - set(TMatrix_paths_keys())))
+            % str(set(positions.keys()) - set(TMatrix_paths.keys())))
+    # Fill default_TMatrix_path to those that don't have its own
+    for label in (set(positions.keys()) - set(TMatrix_paths.keys())):
+        TMatrix_paths[label] = default_TMatrix_path
     for path in TMatrix_paths.values():
         if not os.path.exists(path):
             raise ValueError("Cannot access T-matrix file %s. Does it exist?" % path)
@@ -162,8 +169,6 @@ def arg_preprocess_particles(parser, d=None, return_tuple=False):
                 e.args += 'Specified operation on undefined particle labeled \'%s\'' % label
                 raise
 
-    print(sys.stderr, "ops: ", ops) #DEBUG
-
     #### Collect all the info about the particles / their T-matrices into one list ####
     # Enumerate and assign all the _different_ T-matrices (without any intelligent group-theory checking, though)
     TMatrix_specs = dict((spec, number) 
@@ -174,7 +179,7 @@ def arg_preprocess_particles(parser, d=None, return_tuple=False):
                 for label in positions.keys()
             )))
     # particles_specs contains (label, (xpos, ypos), tmspec_index per element)
-    particles_specs = [(label, positions(label), 
+    particles_specs = [(label, positions[label], 
         TMatrix_specs[(lMax_overrides[label] if label in lMax_overrides.keys() else None, 
                        TMatrix_paths[label], 
                        tuple(ops[label]))]
@@ -186,7 +191,8 @@ def arg_preprocess_particles(parser, d=None, return_tuple=False):
     
     if d is None: 
         d = dict()
-    d['particle_specs'] = particle_specs
+    # TODO what if I used classes instead?
+    d['particle_specs'] = particles_specs
     d['TMatrix_specs'] = TMatrix_specs
     if return_tuple:
         return (particles_specs, TMatrix_specs)

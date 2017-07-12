@@ -42,6 +42,9 @@ def get_mn_y(int nmax):
             i = i + 1
     return (m_arr, n_arr)
 
+def get_nelem(unsigned int lMax):
+    return lMax * (lMax + 2)
+
 def get_y_mn_unsigned(int nmax): 
     """
     Auxillary function for mapping 'unsigned m', n indices to the flat y-indexing.
