@@ -2,6 +2,16 @@ import warnings
 import argparse
 #import sys # for debugging purpose, TODO remove in production
 import os # because of path
+from .types import TMatrixOp, TMatrixSpec, ParticleSpec, LatticeSpec
+import collections 
+
+''' # REMOVE IN PRODUCTION
+ParticleSpec = collections.namedtuple('ParticleSpec', ['label', 'position', 'tmatrix_spec']) 
+TMatrixOp = collections.namedtuple('TMatrixOp',
+                ['optype', 'content'])
+TMatrixSpec = collections.namedtuple('TMatrixSpec',
+        ['lMax_override', 'tmatrix_path', 'ops'])
+'''
 
 __TODOs__ = '''
     - Checking validity of T-matrix ops (the arguments of --tr, --sym or similar) according to what is implemented
@@ -64,32 +74,14 @@ def add_argparse_common_options(parser):
     parser.add_argument('--verbose', '-v', action='count', help='Be verbose (about computation times, mostly)')
     parser.add_argument('--frequency_multiplier', action='store', type=float, default=1., help='Multiplies the frequencies in the TMatrix file by a given factor.')
 
-
-
 def arg_preprocess_particles(pargs, d=None, return_tuple=False):
     ''' 
     Nanoparticle position and T-matrix path parsing 
 
-    returns a dictionary d with keys 'particle_specs' and 'TMatrix_specs'
-
     parser: ArgumentParser on which add_argparse_unitcell_definitions() and whose
     parse_args() has been called.
 
-    d['TMatrix_specs'] is a list of specs where a spec is a tuple of
-    (lMax_override, TMatrix_path, ops).
-    
-    lMax_override: int or None
-    TMatrix_path: string
-    ops: iterable with operations on the T-Matrix to be processed with perform_ops()
-
-    d['particle_specs'] is an iterable of tuples (label, (xpos, ypos), TMatrix_spec_index)
-    TMatrix_spec_index is an index of the corresponding element of d['TMatrix_specs']
-
-
-    If a dictionary d is provided, the result is written into it; if d is None (default),
-    a new dictionary is created.
-    If return_tuple is true, then a tuple (particle_specs, TMatrix_specs) is returned 
-    instead of the dictionary d.
+    returns a list of ParticleSpec objects
     '''
     TMatrix_paths = dict()
     lMax_overrides = dict()
@@ -164,40 +156,29 @@ def arg_preprocess_particles(pargs, d=None, return_tuple=False):
         # if, no label given, apply to all, otherwise on the specifield particles
         for label in (positions.keys() if len(arg_content) == 1 else arg_content[:-1]): 
             try:
-                ops[label].append((optype, arg_content[-1]))
+                ops[label].append(TMatrixOp(optype, arg_content[-1]))
             except KeyError as e:
                 e.args += 'Specified operation on undefined particle labeled \'%s\'' % label
                 raise
 
     #### Collect all the info about the particles / their T-matrices into one list ####
-    # Enumerate and assign all the _different_ T-matrices (without any intelligent group-theory checking, though)
-    TMatrix_specs = dict((spec, number) 
-            for (number, spec) in enumerate(set(
-                    (lMax_overrides[label] if label in lMax_overrides.keys() else None, 
+    # get rid of the non-unique T-matrix specs (so there is only one instance living
+    # of each different TMatrixSpec, possibly with multiple references to it
+    TMatrix_specs = dict((spec, spec) 
+            for spec in (TMatrixSpec(
+                    lMax_overrides[label] if label in lMax_overrides.keys() else None, 
                      TMatrix_paths[label], 
                      tuple(ops[label])) 
-                for label in positions.keys()
-            )))
-    # particles_specs contains (label, (xpos, ypos), tmspec_index per element)
-    particles_specs = [(label, positions[label], 
+                for label in positions.keys())
+            )
+    # particles_specs contains (label, (xpos, ypos), tmspec per element)
+    particles_specs = [ParticleSpec(label, positions[label], 
         TMatrix_specs[(lMax_overrides[label] if label in lMax_overrides.keys() else None, 
                        TMatrix_paths[label], 
                        tuple(ops[label]))]
         ) for label in positions.keys()]
 
-    # This converts the TMatrix_specs dict to a list of its ex-keys in the ex-value order
-    TMatrix_specs = dict((v,k) for (k,v) in TMatrix_specs.items()) # invert dict
-    TMatrix_specs = [TMatrix_specs[i] for i in range(len(TMatrix_specs))] # convert to list
-    
-    if d is None: 
-        d = dict()
-    # TODO what if I used classes instead?
-    d['particle_specs'] = particles_specs
-    d['TMatrix_specs'] = TMatrix_specs
-    if return_tuple:
-        return (particles_specs, TMatrix_specs)
-    else:
-        return d
+    return particles_specs
 
 '''
 import argparse, re, random, string
