@@ -5,6 +5,21 @@ module.
 """
 
 import collections
+import enum
+
+class NormalizationT(enum.IntEnum):
+    """ Corresponding to the c type qpms_normalization_t from translations.h """
+    TAYLOR=1
+    UNDEF=0
+
+class BesselT(enum.IntEnum):
+    """ Corresponding to the c type qpms_bessel_t from translations.h """
+    BESSEL_REGULAR = 1
+    BESSEL_SINGULAR = 2
+    HANKEL_PLUS = 3
+    HANKEL_MINUS = 4
+    UNDEF = 0
+
 
 '''
 The namedtuples below might become classes or other objects in later versions.
