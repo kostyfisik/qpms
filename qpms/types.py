@@ -70,9 +70,3 @@ of (integer) coordinate tuples indicating which scatterers are to be included
 to the finite sublattice.
 """
 
-
-class TMatrix(object):
-    pass
-
-
-

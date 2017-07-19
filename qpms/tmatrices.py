@@ -3,8 +3,9 @@ import quaternion, spherical_functions as sf # because of the Wigner matrices. T
 import re
 from scipy import interpolate
 from scipy.constants import hbar, e as eV, pi, c
-from qpms_c import get_mn_y#, get_nelem # TODO IMPORT get_nelem INTO THE FINAL MODULE
+from qpms_c import get_mn_y, get_nelem
 ň = np.newaxis
+from .types import NormalizationT
 
 # Transformations of spherical bases
 def WignerD_mm(l, quat):
@@ -335,3 +336,26 @@ def get_TMatrix_fromspec(tmatrix_spec):
         else:
             raise ValueError('not implemented: ', optype)
     return (TMatrices, freqs, lMax)
+
+class TMatrix(object):
+    def __init__(self, tmatrix_spec):
+        self.specification = tmatrix_spec
+        self.tmdata, self.freqs, self.lMax = get_TMatrix_fromspec(tmatrix_spec)
+        self.nelem = get_nelem(self.lMax) 
+        #self._interpolators = dict()
+        self.default_interpolator = interpolate.interp1d(self.freqs, 
+            self.tmdata, axis=0, kind='linear', fill_value='extrapolate')
+        self.normalization = NormalizationT.TAYLOR # TODO others are not supported by the loading functions
+    
+    def atfreq(self, freq):
+        freqarray = np.array(freq, copy=False)
+        if freqarray.shape: # not just a scalar
+            tm_interp = np.empty(freqarray.shape + (2, self.nelem, 2, self.nelem), dtype=np.complex_)
+            for i in np.ndindex(freqarray.shape):
+                tm_interp[i] = self.default_interpolator(freqarray[i])
+            return tm_interp
+        else: # scalar
+            return self.default_interpolator(freq)
+
+    __getitem__ = atfreq # might be changed later, use atfreq to be sure
+
