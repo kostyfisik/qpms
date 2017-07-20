@@ -47,6 +47,7 @@ def ujit(f):
 # Coordinate transforms for arrays of "arbitrary" shape
 #@ujit
 def cart2sph(cart,axis=-1, allow2d=False):
+    cart = np.array(cart, copy=False)
     if cart.shape[axis] == 3:
         [x, y, z] = np.split(cart,3,axis=axis)    
         r = np.linalg.norm(cart,axis=axis,keepdims=True)
@@ -67,6 +68,7 @@ def cart2sph(cart,axis=-1, allow2d=False):
 
 #@ujit
 def sph2cart(sph, axis=-1):
+    sph = np.array(sph, copy=False)
     if (sph.shape[axis] != 3):
         raise ValueError("The converted array has to have dimension 3"
                          " along the given axis")
@@ -99,6 +101,8 @@ def sph_loccart2cart(loccart, sph, axis=-1):
     output: ... TODO
         The coordinates of the vector in global cartesian coordinates
     """
+    loccart = np.array(loccart, copy=False)
+    sph = np.array(sph, copy=False)
     if (loccart.shape[axis] != 3):
         raise ValueError("The converted array has to have dimension 3"
                          " along the given axis")
@@ -462,9 +466,9 @@ def plane_pq_y(nmax, kdir_cart, E_cart):
     ----------
     nmax: int
         The order of the expansion.
-    kdir_cart: (3,)-shaped real array
+    kdir_cart: (...,3)-shaped real array
         The wave vector (its magnitude does not play a role).
-    E_cart: (3,)-shaped complex array
+    E_cart: (...,3)-shaped complex array
         Amplitude of the plane wave
 
     Returns
@@ -476,22 +480,31 @@ def plane_pq_y(nmax, kdir_cart, E_cart):
     if np.iscomplexobj(kdir_cart):
         warnings.warn("The direction vector for the plane wave coefficients should be real. I am discarding the imaginary part now.")
         kdir_cart = kdir_cart.real
-        
+    
+    E_cart = np.array(E_cart, copy=False)
     k_sph = cart2sph(kdir_cart)
-    π̃_y, τ̃_y = get_π̃τ̃_y1(k_sph[1], nmax) 
     my, ny = get_mn_y(nmax)
+    nelem = len(my)
     U_y = 4*π * 1j**ny / (ny * (ny+1))
     θ̂ = sph_loccart2cart(np.array([0,1,0]), k_sph, axis=-1)
     φ̂ = sph_loccart2cart(np.array([0,0,1]), k_sph, axis=-1)
-    p_y = np.sum( U_y[:,ň]
-                  * np.conj(np.exp(1j*my[:,ň]*k_sph[2]) * (
-                     θ̂[ň,:]*τ̃_y[:,ň] + 1j*φ̂[ň,:]*π̃_y[:,ň]))
-                  * E_cart[ň,:],
+    
+    # not properly vectorised part:
+    π̃_y = np.empty(k_sph.shape[:-1] + (nelem,), dtype=np.complex_)
+    τ̃_y = np.empty(π̃_y.shape, dtype=np.complex_)
+    for i in np.ndindex(k_sph.shape[:-1]):
+        π̃_y[i], τ̃_y[i] = get_π̃τ̃_y1(k_sph[i][1], nmax) # this shit is not vectorised
+
+    # last indices of the summands: [...,y,local cartesian component index (of E)]
+    p_y = np.sum( U_y[...,:,ň]
+                  * np.conj(np.exp(1j*my[...,:,ň]*k_sph[...,ň,ň,2]) * (
+                     θ̂[...,ň,:]*τ̃_y[...,:,ň] + 1j*φ̂[...,ň,:]*π̃_y[...,:,ň]))
+                  * E_cart[...,ň,:],
               axis=-1)
-    q_y = np.sum( U_y[:,ň]
-                  * np.conj(np.exp(1j*my[:,ň]*k_sph[2]) * (
-                     θ̂[ň,:]*π̃_y[:,ň] + 1j*φ̂[ň,:]*τ̃_y[:,ň]))
-                  * E_cart[ň,:],
+    q_y = np.sum( U_y[...,:,ň]
+                  * np.conj(np.exp(1j*my[...,:,ň]*k_sph[...,ň,ň,2]) * (
+                     θ̂[...,ň,:]*π̃_y[...,:,ň] + 1j*φ̂[...,ň,:]*τ̃_y[...,:,ň]))
+                  * E_cart[...,ň,:],
           axis=-1)
     return (p_y, q_y)
     
