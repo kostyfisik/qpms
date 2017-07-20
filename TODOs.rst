@@ -7,4 +7,6 @@ LMAXVAR - besides to int, the function should support an iterable for the lMax a
 
 VECTORIZE - add support to process more than one element at once, in general.
 
+TRUEVECTORIZE - remove inner python loops to speed things up
+
 FEATURE - non-urgent general feature to implement

@@ -217,7 +217,7 @@ def lpy(nmax, z):
     dP_y[mn_n_y[mn_minus_mask]] = dpmn_minus[mn_minus_mask]
     return (P_y, dP_y)
 
-def vswf_yr(pos_sph,nmax,J=1):
+def vswf_yr(pos_sph,lMax,J=1):
     """
     Normalized vector spherical wavefunctions $\widetilde{M}_{mn}^{j}$,
     $\widetilde{N}_{mn}^{j}$ as in [1, (2.40)].
@@ -247,16 +247,14 @@ def vswf_yr(pos_sph,nmax,J=1):
     [1] Jonathan M. Taylor. Optical Binding Phenomena: Observations and
     Mechanisms.
     """
-    #mi, ni = mnindex(nmax)
-    #nelems = nmax*nmax + 2*nmax
-    ## TODO Remove these two lines in production:
-    #if(len(mi) != nelems):
-    #    raise ValueError("This is very wrong.")
-    ## Pre-calculate the associated Legendre function
-    #Prmn, dPrmn = lpmn(nmax,nmax,)
-    ## Normalized funs π̃, τ̃
-    #π̃ = 
-    pass
+    # TODO TRUEVECTORIZE
+    pos_sph = np.array(pos_sph, copy = False)
+    nelem = (lMax + 2) * lMax
+    M_y = np.empty(pos_sph.shape[:-1] + (nelem,3), dtype = np.complex_)
+    N_y = np.empty(pos_sph.shape[:-1] + (nelem,3), dtype = np.complex_)
+    for i in np.ndindex(pos_sph.shape[:-1]):
+        M_y[i], N_y[i] = vswf_yr1(pos_sph[i], lMax, J) # non-vectorised function
+    return (M_y, N_y)
 
 from scipy.special import sph_jn, sph_yn
 #@jit
@@ -477,6 +475,7 @@ def plane_pq_y(nmax, kdir_cart, E_cart):
         The expansion coefficients for the electric (Ñ) and magnetic
         (M̃) waves, respectively.
     """
+    # TODO TRUEVECTORIZE
     if np.iscomplexobj(kdir_cart):
         warnings.warn("The direction vector for the plane wave coefficients should be real. I am discarding the imaginary part now.")
         kdir_cart = kdir_cart.real
