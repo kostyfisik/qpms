@@ -245,7 +245,7 @@ def change_basis(srcbasis, destbasis, srccoords, srccoordsaxis=-1, lattice=True)
         trmatrix = np.round(trmatrix)
         if not np.all(np.isclose(trmatrix, otrmatrix)):
             raise ValueError("Given srcbasis and destbasis are not bases" 
-                "of the same lattice", srcbasis, destbasis)
+                "of the same lattice", srcbasis, destbasis, trmatrix-otrmatrix)
     destcoords = np.tensordot(srccoords, trmatrix, axes=(srccoordsaxis, -1))
     return destcoords
 
