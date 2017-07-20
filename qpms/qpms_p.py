@@ -182,8 +182,18 @@ def nelem2lMax(nelem):
 
 
 
-#@jit
 def lpy(nmax, z):
+    # TODO TRUEVECTORIZE
+    # TODO DOC
+    nelem = nmax * (nmax+2)
+    z = np.array(z, copy=False)
+    P_y = np.empty(z.shape + (nelem,), dtype=np.float_)
+    dP_y = np.empty(z.shape + (nelem,), dtype=np.float_)
+    for i in np.ndindex(z.shape):
+        P_y[i], dP_y[i] = lpy1(nmax, z[i])
+    return (P_y, dP_y)
+
+def lpy1(nmax, z):
     """
     Associated legendre function and its derivatative at z in the 'y-indexing'.
     (Without Condon-Shortley phase AFAIK.)
@@ -205,8 +215,8 @@ def lpy(nmax, z):
     pmn_plus, dpmn_plus = lpmn(nmax, nmax, z)
     pmn_minus, dpmn_minus = lpmn(-nmax, nmax, z)
     nelem = nmax * nmax + 2*nmax
-    P_y = np.empty((nelem), dtype=np.float_)
-    dP_y = np.empty((nelem), dtype=np.float_)
+    P_y = np.empty((nelem,), dtype=np.float_)
+    dP_y = np.empty((nelem,), dtype=np.float_)
     mn_p_y, mn_n_y = get_y_mn_unsigned(nmax)
     mn_plus_mask = (mn_p_y >= 0)
     mn_minus_mask = (mn_n_y >= 0)
