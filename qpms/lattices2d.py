@@ -1,5 +1,6 @@
 import numpy as np
 from enum import Enum
+from math import floor
 
 nx = None
 
@@ -235,6 +236,18 @@ def filledWS2(b1,b2, density=10, scale=1.):
     return points
 
 
+def change_basis(srcbasis, destbasis, srccoords, srccoordsaxis=-1, lattice=True):
+    srcbasis = np.array(srcbasis)
+    destbasis = np.array(destbasis)
+    trmatrix = np.dot(np.linalg.inv(np.transpose(destbasis)), np.transpose(srcbasis))
+    if lattice: # if srcbasis and destbasis are two bases of the same lattice, its elements are ints
+        otrmatrix = trmatrix
+        trmatrix = np.round(trmatrix)
+        if not np.all(np.isclose(trmatrix, otrmatrix)):
+            raise ValueError("Given srcbasis and destbasis are not bases" 
+                "of the same lattice", srcbasis, destbasis)
+    destcoords = np.tensordot(srccoords, trmatrix, axes=(srccoordsaxis, -1))
+    return destcoords
 
 """
 TODO
