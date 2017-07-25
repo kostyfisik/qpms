@@ -5,7 +5,7 @@ from scipy import interpolate
 from scipy.constants import hbar, e as eV, pi, c
 from qpms_c import get_mn_y, get_nelem
 ň = np.newaxis
-from .types import NormalizationT
+from .types import NormalizationT, TMatrixSpec
 
 # Transformations of spherical bases
 def WignerD_mm(l, quat):
@@ -337,9 +337,17 @@ def get_TMatrix_fromspec(tmatrix_spec):
             raise ValueError('not implemented: ', optype)
     return (TMatrices, freqs, lMax)
 
-class TMatrix(object):
+class TMatrix(TMatrixSpec):
+    '''
+    TODO doc
+
+    TODO support for different/multiple interpolators
+    '''
     def __init__(self, tmatrix_spec):
-        self.specification = tmatrix_spec
+        #self.specification = tmatrix_spec
+        self.lMax_override = tmatrix_spec.lMax_override
+        self.tmatrix_path = tmatrix_spec.tmatrix_path
+        self.ops = tmatrix_spec.ops
         self.tmdata, self.freqs, self.lMax = get_TMatrix_fromspec(tmatrix_spec)
         self.nelem = get_nelem(self.lMax) 
         #self._interpolators = dict()
