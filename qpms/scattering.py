@@ -183,6 +183,10 @@ class Scattering(object):
         _time_e(btime, verbose)
         return ab
 
+class LatticeScattering(Scattering):
+    def __init__(self, lattice_spec, k_0, zSym = False):
+
+
 """
 class Scattering_2D_lattice_rectcells(Scattering):
     def __init__(self, rectcell_dims, rectcell_elem_positions, cellspec, k_0, rectcell_TMatrices = None, TMatrices = None, lMax = None, verbose=False, J_scat=3):

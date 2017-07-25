@@ -367,3 +367,9 @@ class TMatrix(TMatrixSpec):
 
     __getitem__ = atfreq # might be changed later, use atfreq to be sure
 
+def perform_tmspecs(tmspecs):
+    """Takes a sequence of TMatrixSpec or TMatrix instances and returns
+    a list of corresponding TMatrix instances"""
+    return [(tmspec if hasattr(tmspec, "tmdata") else TMatrix(tmspec))
+                for tmspec in tmspecs]
+     

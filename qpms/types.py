@@ -55,18 +55,17 @@ position: tuple of floats (or similar, such as numpy array).
 tmatrix_spec: TMatrixSpec or TMatrix instance.
 """
 
-LatticeSpec = collections.namedtuple('LatticeSpec', ['basis', 'particle_specs', 'subset'])
+LatticeSpec = collections.namedtuple('LatticeSpec', ['basis', 'particle_set_specs'])
 LatticeSpec.__doc__ = """\
 Specification of a lattice, finite or infinite.
 
 basis: tuple of basic vectors (tuples of floats or similar) (or similar, 
 such as 2d numpy array), preferably of reduced basis.
 
-particle_specs: sequence of ParticleSpecs
-
-subset: For infinite lattices, None. For finite lattices, dictionary whose 
-keys are the sublattice labels from particle_specs and values are sequences 
-of (integer) coordinate tuples indicating which scatterers are to be included
-to the finite sublattice.
+particle_set_specs: sequence of tuples (particle_spec, selection) where
+particle_spec is a ParticleSpec and selection is a sequence of 2d integer
+coordinates/indices indicating which particles (TODO describe better)
+of that type shall be included in a finite lattice. Alternatively, 
+selection can be None for an infinite lattice.
 """
 
