@@ -49,7 +49,7 @@ def reduceBasisSingle(b1, b2):
         mu = np.sum(b1 * b2, axis=-1, keepdims=True) / B1
         b2 = b2 - np.rint(mu) * b1
         B2 = np.sum(b2*b2, axis=-1, keepdims=True)
-    return(b1,b2)
+    return np.array((b1,b2))
 
 def shortestBase3(b1, b2):
     ''' 
@@ -212,13 +212,9 @@ def filledWS(b1, b2, density=10, scale=1.):
     return points
     
     
-rot90_ = np.array([[0,1],[-1,0]])
-def reciprocalBasis1(a1, a2):
-    a1, a2 = reduceBasisSingle(a1,a2) # this can be replaced with the vector version of reduceBasis when it is made
-    prefac = np.sum(np.tensordot(a1, rot90_, axes=[-1,0]) * a2, axis=-1)
-    b1 = np.tensordot(rot90_, a2, axes=[-1,-1]) * prefac
-    b2 = np.tensordot(rot90_, a1, axes=[-1,-1]) * prefac
-    return np.array([b1, b2])
+def reciprocalBasis1(*pargs):
+    a = reduceBasisSingle(*pargs)
+    return np.linalg.inv(a).T
 
 def reciprocalBasis2pi(*pargs):
     return 2*np.pi*reciprocalBasis1(*pargs)
