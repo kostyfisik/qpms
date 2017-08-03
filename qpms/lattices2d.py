@@ -213,18 +213,20 @@ def filledWS(b1, b2, density=10, scale=1.):
     
     
 rot90_ = np.array([[0,1],[-1,0]])
-def reciprocalBasis(a1, a2):
+def reciprocalBasis1(a1, a2):
     a1, a2 = reduceBasisSingle(a1,a2) # this can be replaced with the vector version of reduceBasis when it is made
-    prefac = 2*np.pi/np.sum(np.tensordot(a1, rot90_, axes=[-1,0]) * a2, axis=-1)
+    prefac = np.sum(np.tensordot(a1, rot90_, axes=[-1,0]) * a2, axis=-1)
     b1 = np.tensordot(rot90_, a2, axes=[-1,-1]) * prefac
     b2 = np.tensordot(rot90_, a1, axes=[-1,-1]) * prefac
-    return (b1, b2)
+    return np.array([b1, b2])
 
+def reciprocalBasis2pi(*pargs):
+    return 2*np.pi*reciprocalBasis1(*pargs)
 
 # TODO fill it with "points from reciprocal space" instead
 def filledWS2(b1,b2, density=10, scale=1.):
     b1, b2 = reduceBasisSingle(b1,b2)
-    b1r, b2r = reciprocalBasis(b1,b2)
+    b1r, b2r = reciprocalBasis2pi(b1,b2)
     b1l = np.linalg.norm(b1, ord=2)
     b2l = np.linalg.norm(b2, ord=2)
     b1rl = np.linalg.norm(b1r, ord=2)
