@@ -51,7 +51,7 @@
 \output_sync 0
 \bibtex_command default
 \index_command default
-\paperfontsize default
+\paperfontsize 10
 \spacing single
 \use_hyperref true
 \pdf_title "Accelerating lattice mode calculations with T-matrix method"
@@ -65,8 +65,8 @@
 \pdf_colorlinks false
 \pdf_backref false
 \pdf_pdfusetitle true
-\papersize default
-\use_geometry false
+\papersize a5paper
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -90,6 +90,10 @@
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -236,24 +240,83 @@ Due to the periodicity, we can write
 \begin_inset Formula $S_{\vect aα\leftarrow\vect bβ}=S_{α\leftarrowβ}(\vect b-\vect a)$
 \end_inset
 
+ and 
+\begin_inset Formula $T_{\vect aα}=T_{\alpha}$
+\end_inset
+
 .
  In order to find lattice modes, we search for solutions with zero RHS
 \begin_inset Formula 
 \[
-\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{\vect aα}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=0
+\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=0
 \]
 
 \end_inset
 
 and we assume periodic solution 
-\begin_inset Formula $A_{\vect b\alpha}(\vect k)=A_{\vect a\alpha}e^{i\vect k\cdot\vect r_{\vect b-\vect a}}$
+\begin_inset Formula $A_{\vect b\beta}(\vect k)=A_{\vect a\beta}e^{i\vect k\cdot\vect r_{\vect b-\vect a}}$
 \end_inset
 
-.
+, yielding
+\begin_inset Formula 
+\begin{eqnarray*}
+\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect a\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b-\vect a}} & = & 0,\\
+\sum_{\vect bβ}(\delta_{\vect{0b}}\delta_{αβ}-T_{α}S_{\vect 0α\leftarrow\vect bβ})A_{\vect 0\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b}} & = & 0,\\
+\sum_{β}(\delta_{αβ}-T_{α}\underbrace{\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}}_{W_{\alpha\beta}(\vect k)})A_{\vect 0\beta}\left(\vect k\right) & = & 0,\\
+A_{\vect 0\alpha}\left(\vect k\right)-T_{α}\sum_{\beta}W_{\alpha\beta}\left(\vect k\right)A_{\vect 0\beta}\left(\vect k\right) & = & 0.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore, in order to solve the modes, we need to compute the 
+\begin_inset Quotes eld
+\end_inset
+
+lattice Fourier transform
+\begin_inset Quotes erd
+\end_inset
+
+ of the translation operator,
+\begin_inset Formula 
+\begin{equation}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}.\label{eq:W definition}
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
-Multidimensional Dirac comb
+Computing the Fourier sum of the translation operator
+\end_layout
+
+\begin_layout Standard
+The problem evaluating 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+
+\end_inset
+
+ is the asymptotic behaviour of the translation operator, 
+\begin_inset Formula $S_{\vect 0α\leftarrow\vect bβ}\sim\left|\vect r_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect r_{\vect b}\right|}$
+\end_inset
+
+ that makes the convergence of the sum quite problematic for any 
+\begin_inset Formula $d>1$
+\end_inset
+
+-dimensional lattice.
+ In electrostatics, one can solve this with problem with Ewald summation.
+ Its basic idea is that if what asymptoticaly decays poorly in the direct
+ space, will perhaps decay fast in the Fourier space.
+ I use the same idea here, but things will be somehow harder than in electrostat
+ics.
+\end_layout
+
+\begin_layout Section
+(Appendix) Multidimensional Dirac comb
 \end_layout
 
 \begin_layout Subsection
@@ -286,9 +349,9 @@ Fourier series representation
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-Ш_{T}(t)=\sum_{n=-\infty}^{\infty}e^{2\pi int/T}
-\]
+\begin{equation}
+Ш_{T}(t)=\sum_{n=-\infty}^{\infty}e^{2\pi int/T}\label{eq:1D Dirac comb Fourier series}
+\end{equation}
 
 \end_inset
 
@@ -313,9 +376,9 @@ With unitary ordinary frequency Ft., i.e.
 
 we have 
 \begin_inset Formula 
-\[
-\uoft{Ш_{T}}(f)=\frac{1}{T}Ш_{\frac{1}{T}}(f)=\sum_{n=-\infty}^{\infty}e^{-i2\pi fnT}
-\]
+\begin{equation}
+\uoft{Ш_{T}}(f)=\frac{1}{T}Ш_{\frac{1}{T}}(f)=\sum_{n=-\infty}^{\infty}e^{-i2\pi fnT}\label{eq:1D Dirac comb Ft ordinary freq}
+\end{equation}
 
 \end_inset
 
@@ -439,16 +502,41 @@ From the scaling property of delta function,
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
+From the book:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\dc A(\vect x)=\frac{1}{\left|\det A\right|}\dc{}^{(d)}\left(A^{-1}\vect x\right)
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Applying both sides to a test function that is one at the origin, we get
  
 \begin_inset Formula $c_{\basis u}=\prod_{i=1}^{d}\left\Vert \rec{\vect u_{i}}\right\Vert $
 \end_inset
 
-, and hence
+ SRSLY?, and hence
 \begin_inset Formula 
-\[
-\dc{\basis u}(\vect x)=\prod_{i=1}^{d}\left\Vert \rec{\vect u_{i}}\right\Vert \dc{}\left(\vect x\cdot\rec{\vect u_{i}}\right).
-\]
+\begin{equation}
+\dc{\basis u}(\vect x)=\prod_{i=1}^{d}\left\Vert \rec{\vect u_{i}}\right\Vert \dc{}\left(\vect x\cdot\rec{\vect u_{i}}\right).\label{eq:Dirac comb factorisation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -459,8 +547,102 @@ Applying both sides to a test function that is one at the origin, we get
 Fourier series representation
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Utilising the Fourier series for 1D Dirac comb 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:1D Dirac comb Fourier series"
+
+\end_inset
+
+ and the factorisation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Dirac comb factorisation"
+
+\end_inset
+
+, we get
+\begin_inset Formula 
+\begin{eqnarray*}
+\dc{\basis u}(\vect x) & = & \prod_{j=1}^{d}\left\Vert \rec{\vect u_{j}}\right\Vert \sum_{n_{j}=-\infty}^{\infty}e^{2\pi in_{i}\vect x\cdot\rec{\vect u_{i}}}\\
+ & = & \left(\prod_{j=1}^{d}\left\Vert \rec{\vect u_{j}}\right\Vert \right)\sum_{\vect n\in\mathbb{Z}^{d}}e^{2\pi i\vect x\cdot\sum_{k=1}^{d}n_{k}\rec{\vect u_{k}}}.
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Fourier transform
+\end_layout
+
+\begin_layout Standard
+From the book https://see.stanford.edu/materials/lsoftaee261/chap8.pdf
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\uoft{\dc A}\left(\vect{\xi}\right)=\dc{}^{(d)}\left(A^{T}\vect{\xi}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+So, from the stretch theorem 
+\begin_inset Formula $\uoft{(f(A\vect x))}=\frac{1}{\left|\det A\right|}\uoft{f\left(A^{-T}\vect{\xi}\right)}=\left|\det A^{-T}\right|\uoft{f\left(A^{-T}\vect{\xi}\right)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+From 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Dirac comb factorisation"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:1D Dirac comb Ft ordinary freq"
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\uoft{\dc{\basis u}}(\vect{\xi})=\prod_{i=1}^{d}\left\Vert \rec{\vect u_{i}}\right\Vert \dc{}\left(\vect x\cdot\rec{\vect u_{i}}\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
