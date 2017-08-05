@@ -311,8 +311,28 @@ reference "eq:W definition"
  In electrostatics, one can solve this with problem with Ewald summation.
  Its basic idea is that if what asymptoticaly decays poorly in the direct
  space, will perhaps decay fast in the Fourier space.
- I use the same idea here, but things will be somehow harder than in electrostat
-ics.
+ I use the same idea here, but everything will be somehow harder than in
+ electrostatics.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+(Appendix) Hankel transform
+\end_layout
+
+\begin_layout Standard
+Acording to Wikipedia page on Hankel transform, 
+\begin_inset Formula 
+\[
+\uaft f(\vect k)=
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
