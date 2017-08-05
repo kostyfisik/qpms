@@ -316,6 +316,122 @@ reference "eq:W definition"
 \end_layout
 
 \begin_layout Standard
+Let us re-express the sum in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+
+\end_inset
+
+ in terms of integral with a delta comb
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+W_{\alpha\beta}(\vect k)=\int\ud^{d}\vect r\dc{\basis u}(\vect r)S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})e^{i\vect k\cdot\vect r}.\label{eq:W integral}
+\end{equation}
+
+\end_inset
+
+The translation operator 
+\begin_inset Formula $S$
+\end_inset
+
+ is now a function defined in the whole 3D space; 
+\begin_inset Formula $\vect r_{\alpha},\vect r_{\beta}$
+\end_inset
+
+ are the displacements of scatterers 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta$
+\end_inset
+
+ in a unit cell.
+ The arrow notation 
+\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})$
+\end_inset
+
+ means 
+\begin_inset Quotes eld
+\end_inset
+
+translation operator for spherical waves originating in 
+\begin_inset Formula $\vect r+\vect r_{\beta}$
+\end_inset
+
+ evaluated in 
+\begin_inset Formula $\vect r_{\alpha}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ and obviously 
+\begin_inset Formula $S$
+\end_inset
+
+ is in fact a function of a single 3d argument, 
+\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})=S(\vect 0\leftarrow\vect r+\vect r_{\beta}-\vect r_{\alpha})=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha})$
+\end_inset
+
+.
+ Expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W integral"
+
+\end_inset
+
+ can be rewritten as
+\begin_inset Formula 
+\[
+W_{\alpha\beta}(\vect k)=\left(2\pi\right)^{\frac{d}{2}}\uaft{(\dc{\basis u}S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0))\left(\vect k\right)}
+\]
+
+\end_inset
+
+where changed the sign of 
+\begin_inset Formula $\vect r/\vect{\bullet}$
+\end_inset
+
+ has been swapped under integration, utilising evenness of 
+\begin_inset Formula $\dc{\basis u}$
+\end_inset
+
+.
+ Fourier transform of product is convolution of Fourier transforms, so
+\begin_inset Formula 
+\[
+W_{\alpha\beta}(\vect k)=\left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Factor 
+\begin_inset Formula $\left(2\pi\right)^{\frac{d}{2}}$
+\end_inset
+
+ cancels out with the 
+\begin_inset Formula $\left(2\pi\right)^{-\frac{d}{2}}$
+\end_inset
+
+ factor appearing in the convolution/product formula in the unitary angular
+ momentum convention.
+ 
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -405,7 +521,7 @@ we have
  and with unitary angular frequency Ft., i.e.
 \begin_inset Formula 
 \[
-\uaft f(\vect k)\equiv\frac{1}{\left(2\pi\right)^{n}}\int_{\mathbb{R}^{n}}f(\vect x)e^{-2\pi i\vect x\cdot\vect k}\ud^{n}\vect x
+\uaft f(\vect k)\equiv\frac{1}{\left(2\pi\right)^{n/2}}\int_{\mathbb{R}^{n}}f(\vect x)e^{-i\vect x\cdot\vect k}\ud^{n}\vect x
 \]
 
 \end_inset
@@ -608,13 +724,33 @@ Fourier transform
 \end_layout
 
 \begin_layout Standard
-From the book https://see.stanford.edu/materials/lsoftaee261/chap8.pdf
+From the book https://see.stanford.edu/materials/lsoftaee261/chap8.pdf, p.
+ 379
+\end_layout
+
+\begin_layout Standard
+(CHECK THIS)
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\uoft{\dc A}\left(\vect{\xi}\right)=\dc{}^{(d)}\left(A^{T}\vect{\xi}\right).
+\uoft{\dc A}\left(\vect{\xi}\right)=\left|\det A^{-T}\right|\dc{}^{(d)}\left(A^{-T}\vect{\xi}\right).
+\]
+
+\end_inset
+
+And consequently, for unitary/angular frequency it is
+\end_layout
+
+\begin_layout Standard
+(CHECK THIS)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\uaft{\dc A}\left(\vect{\xi}\right)=\frac{\left|\det A^{-T}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\dc{}^{(d)}\left(\frac{1}{2\pi}A^{-T}\vect{\xi}\right).
 \]
 
 \end_inset
