@@ -406,9 +406,11 @@ where changed the sign of
 .
  Fourier transform of product is convolution of Fourier transforms, so
 \begin_inset Formula 
-\[
-W_{\alpha\beta}(\vect k)=\left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)
-\]
+\begin{eqnarray*}
+W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\rec{\basis u}}^{(d)}\left(\frac{1}{2\pi}\vect{\circ}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)\left(\vect k\right)\quad\mbox{(re-check facs)}\\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}
+\end{eqnarray*}
 
 \end_inset
 
@@ -751,6 +753,22 @@ And consequently, for unitary/angular frequency it is
 \begin_inset Formula 
 \[
 \uaft{\dc A}\left(\vect{\xi}\right)=\frac{\left|\det A^{-T}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\dc{}^{(d)}\left(\frac{1}{2\pi}A^{-T}\vect{\xi}\right).
+\]
+
+\end_inset
+
+Using my own 
+\begin_inset Quotes eld
+\end_inset
+
+basis notation
+\begin_inset Quotes erd
+\end_inset
+
+ TODO 
+\begin_inset Formula 
+\[
+\uoft{\dc{\basis u}}\left(\vect{\xi}\right)=\left|\det\rec{\basis u}\right|\dc{}^{(d)}\left(A^{-T}\vect{\xi}\right).
 \]
 
 \end_inset
