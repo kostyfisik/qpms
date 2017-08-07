@@ -152,6 +152,16 @@
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\ints}{\mathbb{Z}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\reals}{\mathbb{R}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -164,6 +174,24 @@ Accelerating lattice mode calculations with
 
 \begin_layout Author
 Marek Nečada
+\end_layout
+
+\begin_layout Abstract
+The 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix approach is the method of choice for simulating optical response
+ of a reasonably small system of compact linear scatterers on isotropic
+ background.
+ However, its direct utilisation for problems with infinite lattices is
+ problematic due to slowly converging sums over the lattice.
+ Here I develop a way to compute the problematic sums in the reciprocal
+ space, making the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix method very suitable for infinite periodic systems as well.
 \end_layout
 
 \begin_layout Section
@@ -308,7 +336,7 @@ reference "eq:W definition"
 \end_inset
 
 -dimensional lattice.
- In electrostatics, one can solve this with problem with Ewald summation.
+ In electrostatics, one can solve this problem with Ewald summation.
  Its basic idea is that if what asymptoticaly decays poorly in the direct
  space, will perhaps decay fast in the Fourier space.
  I use the same idea here, but everything will be somehow harder than in
@@ -404,13 +432,21 @@ where changed the sign of
 \end_inset
 
 .
- Fourier transform of product is convolution of Fourier transforms, so
+ Fourier transform of product is convolution of Fourier transforms, so (using
+ formula 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Dirac comb uaFt"
+
+\end_inset
+
+ for the Fourier transform of Dirac comb)
 \begin_inset Formula 
-\begin{eqnarray*}
-W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\\
- & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\rec{\basis u}}^{(d)}\left(\frac{1}{2\pi}\vect{\circ}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)\left(\vect k\right)\quad\mbox{(re-check facs)}\\
- & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}
-\end{eqnarray*}
+\begin{eqnarray}
+W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\nonumber \\
+ & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\recb{\basis u}}^{(d)}\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)\left(\vect k\right)\nonumber \\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right).\label{eq:W sum in reciprocal space}
+\end{eqnarray}
 
 \end_inset
 
@@ -434,7 +470,134 @@ Factor
 
 \end_inset
 
+As such, this is not extremely helpful because the the 
+\emph on
+whole
+\emph default
+ translation operator 
+\begin_inset Formula $S$
+\end_inset
 
+ has singularities in origin, hence its Fourier transform 
+\begin_inset Formula $\uaft S$
+\end_inset
+
+ will decay poorly.
+ 
+\end_layout
+
+\begin_layout Standard
+However, Fourier transform is linear, so we can in principle separate 
+\begin_inset Formula $S$
+\end_inset
+
+ in two parts, 
+\begin_inset Formula $S=S^{\textup{L}}+S^{\textup{S}}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $S^{\textup{S}}$
+\end_inset
+
+ is a short-range part that decays sufficiently fast with distance so that
+ its direct-space lattice sum converges well; 
+\begin_inset Formula $S^{\textup{S}}$
+\end_inset
+
+ must as well contain all the singularities of 
+\begin_inset Formula $S$
+\end_inset
+
+ in the origin.
+ The other part, 
+\begin_inset Formula $S^{\textup{L}}$
+\end_inset
+
+, will retain all the slowly decaying terms of 
+\begin_inset Formula $S$
+\end_inset
+
+ but it also has to be smooth enough in the origin, so that its Fourier
+ transform 
+\begin_inset Formula $\uaft{S^{\textup{L}}}$
+\end_inset
+
+ decays fast enough.
+ (The same idea lies behind the Ewald summation in electrostatics.) Using
+ the linearity of Fourier transform and formulae 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W sum in reciprocal space"
+
+\end_inset
+
+, the operator 
+\begin_inset Formula $W_{\alpha\beta}$
+\end_inset
+
+ can then be re-expressed as
+\begin_inset Formula 
+\begin{eqnarray}
+W_{\alpha\beta}\left(\vect k\right) & = & W_{\alpha\beta}^{\textup{S}}\left(\vect k\right)+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right)\nonumber \\
+W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect 0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
+\end{eqnarray}
+
+\end_inset
+
+where both sums should converge nicely.
+\end_layout
+
+\begin_layout Section
+Finding a good decomposition
+\end_layout
+
+\begin_layout Standard
+The remaining challenge is therefore finding a suitable decomposition
+\begin_inset Formula $S^{\textup{L}}+S^{\textup{S}}$
+\end_inset
+
+ such that both 
+\begin_inset Formula $S^{\textup{S}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\uaft{S^{\textup{L}}}$
+\end_inset
+
+ decay fast enough with distance and are expressable analytically.
+ With these requirements, I do not expect to find gaussian asymptotics as
+ in the electrostatic Ewald formula—having 
+\begin_inset Formula $\sim x^{-t}$
+\end_inset
+
+, 
+\begin_inset Formula $t>d$
+\end_inset
+
+ asymptotics would be nice, making the sums in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W Short definition"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W Long definition"
+
+\end_inset
+
+ absolutely convergent.
 \end_layout
 
 \begin_layout Section
@@ -528,7 +691,7 @@ we have
 
 \end_inset
 
-we have
+we have (CHECK)
 \begin_inset Formula 
 \[
 \uaft{Ш_{T}}(\omega)=\frac{\sqrt{2\pi}}{T}Ш_{\frac{2\pi}{T}}(\omega)=\frac{1}{\sqrt{2\pi}}\sum_{n=-\infty}^{\infty}e^{-i\omega nT}
@@ -644,7 +807,8 @@ From the scaling property of delta function,
 \end_layout
 
 \begin_layout Standard
-From the book:
+From the Osgood's book (p.
+ 375):
 \end_layout
 
 \begin_layout Standard
@@ -722,22 +886,19 @@ reference "eq:Dirac comb factorisation"
 \end_layout
 
 \begin_layout Subsubsection
-Fourier transform
+Fourier transform (OK)
 \end_layout
 
 \begin_layout Standard
-From the book https://see.stanford.edu/materials/lsoftaee261/chap8.pdf, p.
+From the Osgood's book https://see.stanford.edu/materials/lsoftaee261/chap8.pdf,
+ p.
  379
-\end_layout
-
-\begin_layout Standard
-(CHECK THIS)
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\uoft{\dc A}\left(\vect{\xi}\right)=\left|\det A^{-T}\right|\dc{}^{(d)}\left(A^{-T}\vect{\xi}\right).
+\uoft{\dc{\basis u}}\left(\vect{\xi}\right)=\left|\det\rec{\basis u}\right|\dc{\rec{\basis u}}^{(d)}\left(\vect{\xi}\right).
 \]
 
 \end_inset
@@ -746,29 +907,48 @@ And consequently, for unitary/angular frequency it is
 \end_layout
 
 \begin_layout Standard
-(CHECK THIS)
+\begin_inset Formula 
+\begin{eqnarray}
+\uaft{\dc{\basis u}}\left(\vect k\right) & = & \frac{1}{\left(2\pi\right)^{\frac{d}{2}}}\uoft{\dc{\basis u}}\left(\frac{\vect k}{2\pi}\right)\nonumber \\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\dc{\rec{\basis u}}^{(d)}\left(\frac{\vect k}{2\pi}\right)\nonumber \\
+ & = & \left(2\pi\right)^{\frac{d}{2}}\left|\det\rec{\basis u}\right|\dc{\recb{\basis u}}\left(\vect k\right)\nonumber \\
+ & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\dc{\recb{\basis u}}\left(\vect k\right).\label{eq:Dirac comb uaFt}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+On the third line, we used the stretch theorem, getting
+\begin_inset Formula 
+\[
+\dc{\recb{\basis u}}\left(\vect k\right)=\dc{2\pi\rec{\basis u}}\left(\vect k\right)=\left(2\pi\right)^{-d}\dc{\rec{\basis u}}\left(\frac{\vect k}{2\pi}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Convolution
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\uaft{\dc A}\left(\vect{\xi}\right)=\frac{\left|\det A^{-T}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\dc{}^{(d)}\left(\frac{1}{2\pi}A^{-T}\vect{\xi}\right).
-\]
-
-\end_inset
-
-Using my own 
-\begin_inset Quotes eld
-\end_inset
-
-basis notation
-\begin_inset Quotes erd
-\end_inset
-
- TODO 
-\begin_inset Formula 
-\[
-\uoft{\dc{\basis u}}\left(\vect{\xi}\right)=\left|\det\rec{\basis u}\right|\dc{}^{(d)}\left(A^{-T}\vect{\xi}\right).
+\left(f\ast\dc{\basis u}\right)(\vect x)=\sum_{\vect t\in\basis u\ints^{d}}f(\vect x-\vect t)
 \]
 
 \end_inset
