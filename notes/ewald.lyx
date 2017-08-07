@@ -336,6 +336,21 @@ reference "eq:W definition"
 \end_inset
 
 -dimensional lattice.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Note that 
+\begin_inset Formula $d$
+\end_inset
+
+ here is dimensionality of the lattice, not the space it lies in, which
+ I for certain reasons assume to be three.
+ (TODO few notes on integration and reciprocal lattices in some appendix)
+\end_layout
+
+\end_inset
+
  In electrostatics, one can solve this problem with Ewald summation.
  Its basic idea is that if what asymptoticaly decays poorly in the direct
  space, will perhaps decay fast in the Fourier space.
@@ -366,7 +381,7 @@ The translation operator
 \begin_inset Formula $S$
 \end_inset
 
- is now a function defined in the whole 3D space; 
+ is now a function defined in the whole 3d space; 
 \begin_inset Formula $\vect r_{\alpha},\vect r_{\beta}$
 \end_inset
 
@@ -561,7 +576,7 @@ Finding a good decomposition
 \end_layout
 
 \begin_layout Standard
-The remaining challenge is therefore finding a suitable decomposition
+The remaining challenge is therefore finding a suitable decomposition 
 \begin_inset Formula $S^{\textup{L}}+S^{\textup{S}}$
 \end_inset
 
@@ -600,12 +615,42 @@ reference "eq:W Long definition"
  absolutely convergent.
 \end_layout
 
+\begin_layout Standard
+The translation operator 
+\begin_inset Formula $S$
+\end_inset
+
+ for compact scatterers in 3d can be expressed as
+\begin_inset Formula 
+\[
+S_{l',m',t'\leftarrow l,m,t}\left(\vect r\leftarrow\vect 0\right)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}Y_{p,m'-m}\left(\theta_{\vect r},\phi_{\vect r}\right)z_{p}^{(J)}\left(\left|\vect r\right|\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $Y_{l,m}\left(\theta,\phi\right)$
+\end_inset
+
+ are the spherical harmonics, 
+\begin_inset Formula $z_{p}^{(J)}\left(r\right)$
+\end_inset
+
+ some of the Bessel or Hankel functions (TODO) and 
+\begin_inset Formula $c_{p}^{l,m,t\leftarrow l',m',t'}$
+\end_inset
+
+ are some ugly but known coefficients (Xu 1996, eqs.
+ 76,77).
+\end_layout
+
 \begin_layout Section
 (Appendix) Hankel transform
 \end_layout
 
 \begin_layout Standard
-Acording to Wikipedia page on Hankel transform, 
+Acording to (Baddour 2010, eq.
+ 13) (CHECK FACTORS) 
 \begin_inset Formula 
 \[
 \uaft f(\vect k)=
