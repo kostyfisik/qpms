@@ -123,6 +123,21 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\usht}[2]{\mathbb{S}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\bsht}[2]{\mathrm{S}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\pht}[2]{\mathfrak{\mathbb{H}}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\vect}[1]{\mathbf{#1}}
 \end_inset
 
@@ -159,6 +174,11 @@
 
 \begin_inset FormulaMacro
 \newcommand{\reals}{\mathbb{R}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ush}[2]{Y_{#1,#2}}
 \end_inset
 
 
@@ -623,7 +643,7 @@ The translation operator
  for compact scatterers in 3d can be expressed as
 \begin_inset Formula 
 \[
-S_{l',m',t'\leftarrow l,m,t}\left(\vect r\leftarrow\vect 0\right)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}Y_{p,m'-m}\left(\theta_{\vect r},\phi_{\vect r}\right)z_{p}^{(J)}\left(\left|\vect r\right|\right)
+S_{l',m',t'\leftarrow l,m,t}\left(\vect r\leftarrow\vect 0\right)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect r},\phi_{\vect r}\right)z_{p}^{(J)}\left(\left|\vect r\right|\right)
 \]
 
 \end_inset
@@ -640,25 +660,146 @@ where
 \begin_inset Formula $c_{p}^{l,m,t\leftarrow l',m',t'}$
 \end_inset
 
- are some ugly but known coefficients (Xu 1996, eqs.
+ are some ugly but known coefficients (REF Xu 1996, eqs.
  76,77).
 \end_layout
 
 \begin_layout Section
-(Appendix) Hankel transform
+(Appendix) Fourier vs.
+ Hankel transform
+\end_layout
+
+\begin_layout Subsection
+Three dimensions
 \end_layout
 
 \begin_layout Standard
-Acording to (Baddour 2010, eq.
- 13) (CHECK FACTORS) 
+Given a nice enough function 
+\begin_inset Formula $f$
+\end_inset
+
+ of a real 3d variable, assume its factorisation into radial and angular
+ parts 
 \begin_inset Formula 
 \[
-\uaft f(\vect k)=
+f(\vect r)=\sum_{l,m}f_{l,m}(\left|\vect r\right|)\ush lm\left(\theta_{\vect r},\phi_{\vect r}\right).
 \]
 
 \end_inset
 
+Acording to (REF Baddour 2010, eqs.
+ 13, 16), its Fourier transform can then be expressed in terms of Hankel
+ transforms (CHECK normalisation of 
+\begin_inset Formula $j_{n}$
+\end_inset
 
+, REF Baddour (1)) 
+\begin_inset Formula 
+\[
+\uaft f(\vect k)=\frac{4\pi}{\left(2\pi\right)^{\frac{3}{2}}}\sum_{l,m}\left(-i\right)^{l}\left(\bsht{f_{l,m}}{}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right)
+\]
+
+\end_inset
+
+where the spherical Hankel transform 
+\begin_inset Formula $\bsht l{}$
+\end_inset
+
+ of degree 
+\begin_inset Formula $l$
+\end_inset
+
+ is defined as (REF Baddour eq.
+ 2)
+\begin_inset Formula 
+\[
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\]
+
+\end_inset
+
+Using this convention, the inverse spherical Hankel transform is given by
+ (REF Baddour eq.
+ 3)
+\begin_inset Formula 
+\[
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+\]
+
+\end_inset
+
+so it is not unitary.
+ 
+\end_layout
+
+\begin_layout Standard
+An unitary convention would look like this:
+\begin_inset Formula 
+\[
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\]
+
+\end_inset
+
+Then 
+\begin_inset Formula $\usht l{}^{-1}=\usht l{}$
+\end_inset
+
+ and the unitary, angular-momentum Fourier transform reads
+\begin_inset Formula 
+\begin{eqnarray*}
+\uaft f(\vect k) & = & \frac{4\pi}{\left(2\pi\right)^{\frac{3}{2}}}\sqrt{\frac{\pi}{2}}\sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right)\\
+ & = & \sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right).
+\end{eqnarray*}
+
+\end_inset
+
+Cool.
+\end_layout
+
+\begin_layout Subsection
+Two dimensions
+\end_layout
+
+\begin_layout Standard
+Similarly in 2d, let the expansion of 
+\begin_inset Formula $f$
+\end_inset
+
+ be 
+\begin_inset Formula 
+\[
+f\left(\vect r\right)=\sum_{m}f_{m}\left(\left|\vect r\right|\right)e^{im\phi_{\vect r}},
+\]
+
+\end_inset
+
+its Fourier transform is then (CHECK this, it is taken from the Wikipedia
+ article on Hankel transform) 
+\begin_inset Formula 
+\[
+\uaft f\left(\vect k\right)=\sum_{m}i^{m}e^{im\theta_{\vect k}}\pht mf\left(\left|\vect k\right|\right)
+\]
+
+\end_inset
+
+where the Hankel transform of order 
+\begin_inset Formula $m$
+\end_inset
+
+ is defined as
+\begin_inset Formula 
+\[
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, J_{m}(kr)r
+\]
+
+\end_inset
+
+which is already self-inverse, 
+\begin_inset Formula $\pht m{}^{-1}=\pht m{}$
+\end_inset
+
+ (hence also unitary).
 \end_layout
 
 \begin_layout Section
