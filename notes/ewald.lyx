@@ -173,6 +173,11 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\nats}{\mathbb{N}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\reals}{\mathbb{R}}
 \end_inset
 
@@ -643,7 +648,7 @@ The translation operator
  for compact scatterers in 3d can be expressed as
 \begin_inset Formula 
 \[
-S_{l',m',t'\leftarrow l,m,t}\left(\vect r\leftarrow\vect 0\right)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect r},\phi_{\vect r}\right)z_{p}^{(J)}\left(\left|\vect r\right|\right)
+S_{l',m',t'\leftarrow l,m,t}\left(\vect r\leftarrow\vect 0\right)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect r},\phi_{\vect r}\right)z_{p}^{(J)}\left(k_{0}\left|\vect r\right|\right)
 \]
 
 \end_inset
@@ -673,14 +678,14 @@ where
 The spherical Hankel functions can be expressed analytically as (REF DLMF
  10.49.6, 10.49.1) 
 \begin_inset Formula 
-\[
-h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\right)!}{2^{k}k!\left(n-k\right)!},
-\]
+\begin{equation}
+h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\right)!}{2^{k}k!\left(n-k\right)!},\label{eq:spherical Hankel function series}
+\end{equation}
 
 \end_inset
 
  so if we find a way to deal with the radial functions 
-\begin_inset Formula $s_{q}(r)=e^{ir}r^{-q}$
+\begin_inset Formula $s_{q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
 \end_inset
 
 , 
@@ -699,18 +704,176 @@ h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\righ
 \end_layout
 
 \begin_layout Standard
+Assume that all scatterers are placed in the plane 
+\begin_inset Formula $\vect z=0$
+\end_inset
 
+, so that the 2d Fourier transform of the long-range part of the translation
+ operator in terms of Hankel transforms, according to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Fourier v. Hankel tf 2d"
+
+\end_inset
+
+, reads
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
+\begin{multline*}
+\uaft{S_{l',m',t'\leftarrow l,m,t}^{\textup{L}}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\\
+\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\frac{\pi}{2},0\right)e^{i(m'-m)\phi}i^{m'-m}\pht{m'-m}{h_{p}^{(1)\textup{L}}\left(k_{0}\vect{\bullet}\right)}\left(\left|\vect k\right|\right)
+\end{multline*}
+
+\end_inset
+
+Here 
+\begin_inset Formula $h_{p}^{(1)\textup{L}}=h_{p}^{(1)}-h_{p}^{(1)\textup{S}}$
+\end_inset
+
+ is a long range part of a given spherical Hankel function which has to
+ be found and which contains all the terms with far-field (
+\begin_inset Formula $r\to\infty$
+\end_inset
+
+) asymptotics proportional to
+\begin_inset Formula $\sim e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
+\end_inset
+
+, 
+\begin_inset Formula $q\le Q$
+\end_inset
+
+ where 
+\begin_inset Formula $Q$
+\end_inset
+
+ is at least two in order to achieve absolute convergence of the direct-space
+ sum, but might be higher in order to speed the convergence up.
+\end_layout
+
+\begin_layout Standard
+Obviously, all the terms 
+\begin_inset Formula $\propto s_{q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
+\end_inset
+
+, 
+\begin_inset Formula $q>Q$
+\end_inset
+
+ of the spherical Hankel function 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:spherical Hankel function series"
+
+\end_inset
+
+ can be kept untouched as part of 
+\begin_inset Formula $h_{p}^{(1)\textup{S}}$
+\end_inset
+
+, as they decay fast enough.
+\end_layout
+
+\begin_layout Standard
+The remaining task is therefore to find a suitable decomposition of 
+\begin_inset Formula $s_{q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
+\end_inset
+
+, 
+\begin_inset Formula $q\le Q$
+\end_inset
+
+ into short-range and long-range parts, 
+\begin_inset Formula $s_{q}(r)=s_{q}^{\textup{S}}(r)+s_{q}^{\textup{L}}(r)$
+\end_inset
+
+, such that 
+\begin_inset Formula $s_{q}^{\textup{L}}(r)$
+\end_inset
+
+ contains all the slowly decaying asymptotics and its Hankel transforms
+ decay desirably fast as well, 
+\begin_inset Formula $\pht n{s_{q}^{\textup{L}}}\left(k\right)=o(z^{-Q})$
+\end_inset
+
+, 
+\begin_inset Formula $z\to\infty$
+\end_inset
+
+.
+ The latter requirement calls for suitable regularisation functions—
+\begin_inset Formula $s_{q}^{\textup{L}}$
+\end_inset
+
+ must be sufficiently smooth in the origin, so that 
+\begin_inset Formula 
+\begin{equation}
+\pht n{s_{q}^{\textup{L}}}\left(k\right)=\int_{0}^{\infty}s_{q}^{\textup{L}}\left(r\right)rJ_{n}\left(kr\right)\ud r=\int_{0}^{\infty}s_{q}\left(r\right)\rho\left(r\right)rJ_{n}\left(kr\right)\ud r\label{eq:2d long range regularisation problem statement}
+\end{equation}
+
+\end_inset
+
+ exists and decays fast enough.
+ 
+\begin_inset Formula $J_{\nu}(r)\sim\left(r/2\right)^{\nu}/\Gamma\left(\nu+1\right)$
+\end_inset
+
+ (REF DLMF 10.7.3) near the origin, so the regularisation function should
+ be 
+\begin_inset Formula $\rho(r)=o(r^{q-n-1})$
+\end_inset
+
+ only to make 
+\begin_inset Formula $\pht n{s_{q}^{\textup{L}}}$
+\end_inset
+
+ converge.
+ The additional decay speed requirement calls for at least 
+\begin_inset Formula $\rho(r)=o(r^{q-n+Q-1})$
+\end_inset
+
+, I guess.
+ At the same time, 
+\begin_inset Formula $\rho(r)$
+\end_inset
+
+ must converge fast enough to one for 
+\begin_inset Formula $r\to\infty$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The electrostatic Ewald summation uses regularisation with 
+\begin_inset Formula $1-e^{-cr^{2}}$
+\end_inset
+
+.
+ However, such choice does not seem to lead to an analytical solution for
+ the current problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:2d long range regularisation problem statement"
+
+\end_inset
+
+.
+ But it turns out that the family of functions
+\begin_inset Formula 
 \[
-\uaft{S_{l',m',t'\leftarrow l,m,t}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\frac{\pi}{2},0\right)e^{i(m'-m)\phi}i^{m'-m}\pht{m'-m}{z_{p}^{(J)}}\left(\left|\vect k\right|\right)
+\rho_{\kappa,c}(r)\equiv\left(1-e^{-cr}\right)^{\text{\kappa}},\quad c>0,\kappa\in\nats
 \]
 
 \end_inset
 
+leads to satisfactory results, as will be shown below.
+\end_layout
 
+\begin_layout Subsubsection
+Hankel transforms of the long-range parts
 \end_layout
 
 \begin_layout Subsection
@@ -719,9 +882,10 @@ h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\righ
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\uaft{S_{l',m',t'\leftarrow l,m,t}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect k},\phi_{\vect k}\right)\left(-i\right)^{p}\usht p{z_{p}^{(J)}}\left(\left|\vect k\right|\right)
-\]
+\begin{multline*}
+\uaft{S_{l',m',t'\leftarrow l,m,t}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\\
+\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect k},\phi_{\vect k}\right)\left(-i\right)^{p}\usht p{z_{p}^{(J)}}\left(\left|\vect k\right|\right)
+\end{multline*}
 
 \end_inset
 
@@ -777,7 +941,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -787,7 +951,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -800,7 +964,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -854,7 +1018,7 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{equation}
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
 \end{equation}
 
 \end_inset
