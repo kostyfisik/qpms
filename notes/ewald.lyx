@@ -656,12 +656,76 @@ where
 \begin_inset Formula $z_{p}^{(J)}\left(r\right)$
 \end_inset
 
- some of the Bessel or Hankel functions (TODO) and 
+ some of the Bessel or Hankel functions (probably 
+\begin_inset Formula $h_{p}^{(1)}$
+\end_inset
+
+ in the meaningful cases; TODO) and 
 \begin_inset Formula $c_{p}^{l,m,t\leftarrow l',m',t'}$
 \end_inset
 
  are some ugly but known coefficients (REF Xu 1996, eqs.
  76,77).
+ 
+\end_layout
+
+\begin_layout Standard
+The spherical Hankel functions can be expressed analytically as (REF DLMF
+ 10.49.6, 10.49.1) 
+\begin_inset Formula 
+\[
+h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\right)!}{2^{k}k!\left(n-k\right)!},
+\]
+
+\end_inset
+
+ so if we find a way to deal with the radial functions 
+\begin_inset Formula $s_{q}(r)=e^{ir}r^{-q}$
+\end_inset
+
+, 
+\begin_inset Formula $q=1,2$
+\end_inset
+
+ in 2d case or 
+\begin_inset Formula $q=1,2,3$
+\end_inset
+
+ in 3d case, we get absolutely convergent summations in the direct space.
+\end_layout
+
+\begin_layout Subsection
+2d
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\uaft{S_{l',m',t'\leftarrow l,m,t}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\frac{\pi}{2},0\right)e^{i(m'-m)\phi}i^{m'-m}\pht{m'-m}{z_{p}^{(J)}}\left(\left|\vect k\right|\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+3d
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\uaft{S_{l',m',t'\leftarrow l,m,t}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect k},\phi_{\vect k}\right)\left(-i\right)^{p}\usht p{z_{p}^{(J)}}\left(\left|\vect k\right|\right)
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -735,9 +799,9 @@ so it is not unitary.
 \begin_layout Standard
 An unitary convention would look like this:
 \begin_inset Formula 
-\[
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
-\]
+\begin{equation}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\end{equation}
 
 \end_inset
 
@@ -747,10 +811,10 @@ Then
 
  and the unitary, angular-momentum Fourier transform reads
 \begin_inset Formula 
-\begin{eqnarray*}
-\uaft f(\vect k) & = & \frac{4\pi}{\left(2\pi\right)^{\frac{3}{2}}}\sqrt{\frac{\pi}{2}}\sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right)\\
- & = & \sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right).
-\end{eqnarray*}
+\begin{eqnarray}
+\uaft f(\vect k) & = & \frac{4\pi}{\left(2\pi\right)^{\frac{3}{2}}}\sqrt{\frac{\pi}{2}}\sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right)\nonumber \\
+ & = & \sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right).\label{eq:Fourier v. Hankel tf 3d}
+\end{eqnarray}
 
 \end_inset
 
@@ -777,9 +841,9 @@ f\left(\vect r\right)=\sum_{m}f_{m}\left(\left|\vect r\right|\right)e^{im\phi_{\
 its Fourier transform is then (CHECK this, it is taken from the Wikipedia
  article on Hankel transform) 
 \begin_inset Formula 
-\[
-\uaft f\left(\vect k\right)=\sum_{m}i^{m}e^{im\theta_{\vect k}}\pht mf\left(\left|\vect k\right|\right)
-\]
+\begin{equation}
+\uaft f\left(\vect k\right)=\sum_{m}i^{m}e^{im\phi_{\vect k}}\pht mf_{m}\left(\left|\vect k\right|\right)\label{eq:Fourier v. Hankel tf 2d}
+\end{equation}
 
 \end_inset
 
@@ -789,9 +853,9 @@ where the Hankel transform of order
 
  is defined as
 \begin_inset Formula 
-\[
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, J_{m}(kr)r
-\]
+\begin{equation}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\end{equation}
 
 \end_inset
 
