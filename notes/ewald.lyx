@@ -187,6 +187,11 @@
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\hgf}[4]{\mathbf{F}\left(#1,#2;#3;#4\right)}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -876,6 +881,40 @@ leads to satisfactory results, as will be shown below.
 Hankel transforms of the long-range parts
 \end_layout
 
+\begin_layout Standard
+From REF DLMF 10.22.49
+\size footnotesize
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+\Xi_{c-ik_{0}}^{q,n}(k) & \equiv & \int_{0}^{\infty}e^{-cr}e^{ik_{0}r}\left(k_{0}r\right)^{-q}J_{n}\left(kr\right)r\,\ud r\\
+ & = & k_{0}^{-q}\int_{0}^{\infty}r^{2-q-1}e^{-(c-ik_{0})r}J_{n}(br)\,\ud r\\
+ & = & k_{0}^{-q}\frac{\left(\frac{k}{2}\right)^{n}}{\left(c-ik_{0}\right)^{2-q+n}}\Gamma\left(2-q+n\right)\hgf{\frac{2-q+n}{2}}{\frac{3-q+n}{2}}{n+1}{-\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}\\
+ &  & \quad\Re\left(2-q+n\right)>0,\Re\left(c-ik_{0}\pm k\right)>0.
+\end{eqnarray*}
+
+\end_inset
+
+
+\size default
+This by itself does not provide too much insight, but fortunately the hypergeome
+tric function has more comprehensive expressions for special arguments (this
+ is from Mathematica):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\Xi_{c-ik_{0}}^{1,n}(k) & = & k_{0}^{-1}k^{n}\frac{\left(1+\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}\right)^{-n}\left(c-ik_{0}\right)^{-1-n}}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\\
+\Xi_{c-ik_{0}}^{2,n}(k) & = & k_{0}^{-2}k^{n}\frac{\left(1+\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}\right)^{-n}\left(c-ik_{0}\right)^{-n}}{n},\quad n>0\\
+\Xi_{c-ik_{0}}^{2,n}(k) & = & k_{0}^{-3}k^{n}\frac{\left(1+\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}\right)^{-n}}{n(n^{2}-1)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 3d
 \end_layout
@@ -941,7 +980,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -951,7 +990,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -964,7 +1003,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -1018,7 +1057,7 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{equation}
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
 \end{equation}
 
 \end_inset
