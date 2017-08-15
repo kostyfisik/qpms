@@ -187,6 +187,16 @@
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\hgfr}{\mathbf{F}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ph}{\mathrm{ph}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -685,7 +695,7 @@ h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\righ
 \end_inset
 
  so if we find a way to deal with the radial functions 
-\begin_inset Formula $s_{q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
+\begin_inset Formula $s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
 \end_inset
 
 , 
@@ -755,7 +765,7 @@ Here
 
 \begin_layout Standard
 Obviously, all the terms 
-\begin_inset Formula $\propto s_{q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
+\begin_inset Formula $\propto s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
 \end_inset
 
 , 
@@ -778,7 +788,7 @@ reference "eq:spherical Hankel function series"
 
 \begin_layout Standard
 The remaining task is therefore to find a suitable decomposition of 
-\begin_inset Formula $s_{q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
+\begin_inset Formula $s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
 \end_inset
 
 , 
@@ -786,16 +796,16 @@ The remaining task is therefore to find a suitable decomposition of
 \end_inset
 
  into short-range and long-range parts, 
-\begin_inset Formula $s_{q}(r)=s_{q}^{\textup{S}}(r)+s_{q}^{\textup{L}}(r)$
+\begin_inset Formula $s_{k_{0},q}(r)=s_{k_{0},q}^{\textup{S}}(r)+s_{k_{0},q}^{\textup{L}}(r)$
 \end_inset
 
 , such that 
-\begin_inset Formula $s_{q}^{\textup{L}}(r)$
+\begin_inset Formula $s_{k_{0},q}^{\textup{L}}(r)$
 \end_inset
 
  contains all the slowly decaying asymptotics and its Hankel transforms
  decay desirably fast as well, 
-\begin_inset Formula $\pht n{s_{q}^{\textup{L}}}\left(k\right)=o(z^{-Q})$
+\begin_inset Formula $\pht n{s_{k_{0},q}^{\textup{L}}}\left(k\right)=o(z^{-Q})$
 \end_inset
 
 , 
@@ -810,7 +820,7 @@ The remaining task is therefore to find a suitable decomposition of
  must be sufficiently smooth in the origin, so that 
 \begin_inset Formula 
 \begin{equation}
-\pht n{s_{q}^{\textup{L}}}\left(k\right)=\int_{0}^{\infty}s_{q}^{\textup{L}}\left(r\right)rJ_{n}\left(kr\right)\ud r=\int_{0}^{\infty}s_{q}\left(r\right)\rho\left(r\right)rJ_{n}\left(kr\right)\ud r\label{eq:2d long range regularisation problem statement}
+\pht n{s_{k_{0},q}^{\textup{L}}}\left(k\right)=\int_{0}^{\infty}s_{k_{0},q}^{\textup{L}}\left(r\right)rJ_{n}\left(kr\right)\ud r=\int_{0}^{\infty}s_{k_{0},q}\left(r\right)\rho\left(r\right)rJ_{n}\left(kr\right)\ud r\label{eq:2d long range regularisation problem statement}
 \end{equation}
 
 \end_inset
@@ -852,8 +862,9 @@ The electrostatic Ewald summation uses regularisation with
 \end_inset
 
 .
- However, such choice does not seem to lead to an analytical solution for
- the current problem 
+ However, such choice does not seem to lead to an analytical solution (really?
+ could not something be dug out of DLMF 10.22.54?) for the current problem
+ 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:2d long range regularisation problem statement"
@@ -874,6 +885,165 @@ leads to satisfactory results, as will be shown below.
 
 \begin_layout Subsubsection
 Hankel transforms of the long-range parts
+\end_layout
+
+\begin_layout Standard
+Let
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & \equiv & \int_{0}^{\infty}\frac{e^{ik_{0}r}}{\left(k_{0}r\right)^{q}}J_{n}\left(kr\right)\left(1-e^{-cr}\right)^{\kappa}r\,\ud r\nonumber \\
+ & = & k_{0}^{-q}\int_{0}^{\infty}r^{1-q}J_{n}\left(kr\right)\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}e^{-(\sigma c-ik_{0})r}\ud r\nonumber \\
+ & \underset{\equiv}{\textup{form.}} & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\pht n{s_{q,k_{0}}^{\textup{L}1,\sigma c}}\left(k\right).\label{eq:2D Hankel transform of regularized outgoing wave, decomposition}
+\end{eqnarray}
+
+\end_inset
+
+From [REF DLMF 10.22.49] one digs 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu & \leftarrow & 2-q\\
+\nu & \leftarrow & n\\
+b & \leftarrow & k\\
+a & \leftarrow & c-ik_{0}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline}
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}Γ\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\hgfr\left(\frac{2-q+n}{2},\frac{3-q+n}{2};1+n;\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right),\\
+\Re\left(2-q+n\right)>0,\Re(c-ik_{0}\pm k)\ge0,\label{eq:2D Hankel transform of exponentially suppressed outgoing wave as 2F1}
+\end{multline}
+
+\end_inset
+
+and from [REF DLMF 15.9.17]
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+a & \leftarrow & \frac{2-q+n}{2}\\
+c & \leftarrow & 1+n\\
+z & \leftarrow & \frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right) & = & \frac{k^{n}Γ\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}2^{n}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1-\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)\right)^{-\frac{2-q+n}{2}+\frac{n}{2}}P_{2-q+n-(1+n)}^{1-(1+n)}\left(\frac{1}{\sqrt{1-\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)}}\right)\\
+ & = & \frac{k^{n}Γ\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{1-q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\left|\ph\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right|<\pi,\quad\left|\ph\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)\right|<\pi
+\]
+
+\end_inset
+
+in other words, neither 
+\begin_inset Formula $-k^{2}/\left(c-ik_{0}\right)^{2}$
+\end_inset
+
+ nor 
+\begin_inset Formula $1+k^{2}/\left(c-ik_{0}\right)^{2}$
+\end_inset
+
+ can be non-positive real number.
+ For assumed positive 
+\begin_inset Formula $k_{0}$
+\end_inset
+
+ and non-negative 
+\begin_inset Formula $c$
+\end_inset
+
+ and 
+\begin_inset Formula $k$
+\end_inset
+
+, the former case can happen only if 
+\begin_inset Formula $k=0$
+\end_inset
+
+ and the latter only if 
+\begin_inset Formula $c=0\wedge k_{0}=k$
+\end_inset
+
+.
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+\left|\ph\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right|<\pi & \Leftrightarrow & \left|\ph\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right|\neq\pi\\
+\varphi & \equiv & \ph\left(c-ik_{0}\right)<0,\\
+\ph k & \equiv & 0\\
+\ph\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}} & = & 2\varphi\\
+\rightsquigarrow\left|\varphi\right| & \neq & \pi/2\\
+\rightsquigarrow c & \neq & k_{0}\\
+\left|\ph\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)\right| & = & \left|-2\varphi+\ph\left(\left(c-ik_{0}\right)^{2}+k^{2}\right)\right|
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline}
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}Γ\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{1-q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right),\\
+k>0\wedge k_{0}>0\wedge c\ge0\wedge\lnot\left(c=0\wedge k_{0}=k\right)\label{eq:2D Hankel transform of exponentially suppressed outgoing wave expanded}
+\end{multline}
+
+\end_inset
+
+with principal branches of the hypergeometric functions, associated Legendre
+ functions, and fractional powers.
+ The conditions from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:2D Hankel transform of exponentially suppressed outgoing wave as 2F1"
+
+\end_inset
+
+ should hold, but we will use 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:2D Hankel transform of exponentially suppressed outgoing wave expanded"
+
+\end_inset
+
+ formally even if they are violated, with the hope that the divergences
+ eventually cancel in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:2D Hankel transform of regularized outgoing wave, decomposition"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
