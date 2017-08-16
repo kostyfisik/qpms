@@ -197,6 +197,11 @@
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\kor}[1]{\underline{#1}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -896,7 +901,7 @@ Let
 \begin{eqnarray}
 \pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & \equiv & \int_{0}^{\infty}\frac{e^{ik_{0}r}}{\left(k_{0}r\right)^{q}}J_{n}\left(kr\right)\left(1-e^{-cr}\right)^{\kappa}r\,\ud r\nonumber \\
  & = & k_{0}^{-q}\int_{0}^{\infty}r^{1-q}J_{n}\left(kr\right)\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}e^{-(\sigma c-ik_{0})r}\ud r\nonumber \\
- & \underset{\equiv}{\textup{form.}} & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\pht n{s_{q,k_{0}}^{\textup{L}1,\sigma c}}\left(k\right).\label{eq:2D Hankel transform of regularized outgoing wave, decomposition}
+ & \underset{\equiv}{\textup{form.}} & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\pht n{s_{q,k_{0}}^{\textup{L}1,\sigma c}}\left(k\right).\label{eq:2D Hankel transform of regularized outgoing wave, decomposition}
 \end{eqnarray}
 
 \end_inset
@@ -930,7 +935,98 @@ a & \leftarrow & c-ik_{0}
 
 \end_inset
 
-and from [REF DLMF 15.9.17]
+and using [REF DLMF 15.9.17] and 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $P_{\nu}^{\mu}=P_{-\nu-1}^{\mu}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ [REF DLMF 14.9.5]
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\hgfr\left(\frac{2-q+n}{2},\frac{3-q+n}{2};1+n;\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)\\
+\mbox{(D15.2.2)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}Γ\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\sum_{s=0}^{\infty}\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{3-q+n}{2}\right)_{s}}{Γ(1+n+s)s!}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{s},\quad\left|\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right|<1\\
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\hgfr\left(\frac{2-q+n}{2},\frac{3-q+n}{2};1+n;\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)\\
+\mbox{(D15.8.2)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}(\\
+ &  & \pi\frac{\left(\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{2-q+n}{2}}}{Γ\left(\frac{3-q+n}{2}\right)\text{Γ}\left(1+n-\frac{2-q+n}{2}\right)}\hgfr\left(\begin{array}{c}
+\frac{2-q+n}{2},\frac{2-q+n}{2}-\left(1+n\right)+1\\
+1/2
+\end{array};-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right)\\
+ & - & \pi\frac{\left(\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{3-q+n}{2}}}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(1+n-\frac{3-q+n}{2}\right)}\hgfr\left(\begin{array}{c}
+\frac{3-q+n}{2},\frac{3-q+n}{2}-\left(1+n\right)+1\\
+3/2
+\end{array};-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right))\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\pi(\\
+ &  & \frac{\left(\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{2-q+n}{2}}}{\text{Γ}\left(\frac{3-q+n}{2}\right)\text{Γ}\left(\frac{q+n}{2}\right)}\hgfr\left(\begin{array}{c}
+\frac{2-q+n}{2},\frac{2-q-n}{2}\\
+1/2
+\end{array};-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right)\\
+ & - & \frac{\left(\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{3-q+n}{2}}}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{q+n-1}{2}\right)}\hgfr\left(\begin{array}{c}
+\frac{3-q+n}{2},\frac{3-q-n}{2}\\
+3/2
+\end{array};-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right))\\
+\mbox{(D15.2.2)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\pi\sum_{s=0}^{\infty}(\\
+ &  & \frac{\left(\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{2-q+n}{2}}}{\text{Γ}\left(\frac{3-q+n}{2}\right)\text{Γ}\left(\frac{q+n}{2}\right)}\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{1}{2}+s\right)s!}\left(-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right)^{s}\\
+ & - & \frac{\left(\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{3-q+n}{2}}}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{q+n-1}{2}\right)}\frac{\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{3}{2}+s\right)s!}\left(-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right)^{s})\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\kor{k^{n}}\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}\kor{\left(\sigma c-ik_{0}\right)^{2-q+n}}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}(\\
+ &  & \frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{3-q+n}{2}\right)\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}k^{-2+q\kor{-n}-2s}\left(\sigma c-ik_{0}\right)^{\kor{2-q+n}+2s}\\
+ & - & \frac{\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}k^{-3+q\kor{-n}-2s}\left(\sigma c-ik_{0}\right)^{\kor{3-q+n}+2s})\\
+\mbox{} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}(\\
+ &  & \frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{3-q+n}{2}\right)\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}\kor{k^{-2+q-2s}}\kor{\left(\sigma c-ik_{0}\right)^{2s}}\\
+ & - & \frac{\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\kor{k^{-3+q-2s}}\kor{\left(\sigma c-ik_{0}\right)^{1+2s}})\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\\
+ &  & \times\left(\underbrace{\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{3-q+n}{2}\right)\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}}_{\equiv c_{q,n,s}}-\underbrace{\frac{\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}}_{č_{q,n,s}}\frac{\left(\sigma c-ik_{0}\right)}{k}\right)\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\kor{\left(\sigma c-ik_{0}\right)^{2s}}c_{q,n,s}-\frac{\left(\sigma c-ik_{0}\right)^{2s+1}}{k}č_{q,n,s}\right)\\
+\mbox{(binom.)} & = & \kor{\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(c_{q,n,s}\sum_{t=0}^{2s}\binom{2s}{t}\left(\kor{\sigma}c\right)^{t}\left(-ik_{0}\right)^{2s-t}-č_{q,n,s}\sum_{t=0}^{2s}\binom{2s+1}{t}\left(\kor{\sigma}c\right)^{t}\left(-ik_{0}\right)^{2s+1-t}k^{-1}\right)\\
+\mbox{(conds?)} & = & \frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\kappa!\left(-1\right)^{\kappa}\left(c_{q,n,s}\sum_{t=0}^{2s}\binom{2s}{t}\begin{Bmatrix}t\\
+\kappa
+\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s-t}-č_{q,n,s}\sum_{t=0}^{2s}\binom{2s+1}{t}\begin{Bmatrix}t\\
+\kappa
+\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s+1-t}k^{-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+now the Stirling number of the 2nd kind 
+\begin_inset Formula $\begin{Bmatrix}t\\
+\kappa
+\end{Bmatrix}=0$
+\end_inset
+
+ if 
+\begin_inset Formula $\kappa>t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
@@ -1005,6 +1101,33 @@ in other words, neither
 
 \end_inset
 
+Finally, swapping the first two arguments of 
+\begin_inset Formula $\hgfr$
+\end_inset
+
+ in the hypergeometric represenation [REF DLMF 14.3.6] (note [REF DLMF §14.21(iii)]
+ that this also holds for complex arguments) of Legendre functions gives
+ 
+\begin_inset Formula $P_{\nu}^{\mu}=P_{-\nu-1}^{\mu}$
+\end_inset
+
+, so the above result can be written 
+\begin_inset Formula 
+\[
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}\text{Γ}\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right).
+\]
+
+\end_inset
+
+Let's polish it a bit more
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right) & = & \frac{Γ\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q}}\left(-1\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right)\\
+ & = & \frac{\text{Γ}\left(2-q+n\right)}{k_{0}^{q}}\left(-1\right)^{-\frac{n}{2}}\left(\left(c-ik_{0}\right)^{2}+k^{2}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right).
+\end{eqnarray*}
+
+\end_inset
+
 
 \end_layout
 
@@ -1013,7 +1136,7 @@ in other words, neither
 
 \begin_inset Formula 
 \begin{multline}
-\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}Γ\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{1-q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right),\\
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}Γ\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right),\\
 k>0\wedge k_{0}>0\wedge c\ge0\wedge\lnot\left(c=0\wedge k_{0}=k\right)\label{eq:2D Hankel transform of exponentially suppressed outgoing wave expanded}
 \end{multline}
 
@@ -1044,6 +1167,85 @@ reference "eq:2D Hankel transform of regularized outgoing wave, decomposition"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+Let's do it.
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}}}\right)\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+From Wikipedia page on binomial coefficient, eq.
+ (10) and around:
+\end_layout
+
+\begin_layout Plain Layout
+When 
+\begin_inset Formula $P(x)$
+\end_inset
+
+ is of degree less than or equal to 
+\begin_inset Formula $n$
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+\sum_{j=0}^{n}(-1)^{j}\binom{n}{j}P(n-j)=n!a_{n}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+ is the coefficient of degree 
+\begin_inset Formula $n$
+\end_inset
+
+ in 
+\begin_inset Formula $P(x)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+More generally,
+\begin_inset Formula 
+\[
+\sum_{j=0}^{n}(-1)^{j}\binom{n}{j}P(m+(n-j)d)=d^{n}n!a_{n}
+\]
+
+\end_inset
+
+ where 
+\begin_inset Formula $m$
+\end_inset
+
+ and 
+\begin_inset Formula $d$
+\end_inset
+
+ are complex numbers.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
