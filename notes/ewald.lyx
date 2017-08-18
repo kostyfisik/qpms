@@ -193,12 +193,22 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\hgf}{F}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\ph}{\mathrm{ph}}
 \end_inset
 
 
 \begin_inset FormulaMacro
 \newcommand{\kor}[1]{\underline{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\koru}[1]{\utilde{#1}}
 \end_inset
 
 
@@ -1001,10 +1011,10 @@ status open
  & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\\
  &  & \times\left(\underbrace{\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{3-q+n}{2}\right)\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}}_{\equiv c_{q,n,s}}-\underbrace{\frac{\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}}_{č_{q,n,s}}\frac{\left(\sigma c-ik_{0}\right)}{k}\right)\\
  & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\kor{\left(\sigma c-ik_{0}\right)^{2s}}c_{q,n,s}-\frac{\left(\sigma c-ik_{0}\right)^{2s+1}}{k}č_{q,n,s}\right)\\
-\mbox{(binom.)} & = & \kor{\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(c_{q,n,s}\sum_{t=0}^{2s}\binom{2s}{t}\left(\kor{\sigma}c\right)^{t}\left(-ik_{0}\right)^{2s-t}-č_{q,n,s}\sum_{t=0}^{2s}\binom{2s+1}{t}\left(\kor{\sigma}c\right)^{t}\left(-ik_{0}\right)^{2s+1-t}k^{-1}\right)\\
+\mbox{(binom.)} & = & \kor{\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}}\frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(c_{q,n,s}\sum_{t=0}^{2s}\binom{2s}{t}\left(\kor{\sigma}c\right)^{t}\left(-ik_{0}\right)^{2s-t}-č_{q,n,s}\sum_{t=0}^{2s+1}\binom{2s+1}{t}\left(\kor{\sigma}c\right)^{t}\left(-ik_{0}\right)^{2s+1-t}k^{-1}\right)\\
 \mbox{(conds?)} & = & \frac{\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}}\pi\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\kappa!\left(-1\right)^{\kappa}\left(c_{q,n,s}\sum_{t=0}^{2s}\binom{2s}{t}\begin{Bmatrix}t\\
 \kappa
-\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s-t}-č_{q,n,s}\sum_{t=0}^{2s}\binom{2s+1}{t}\begin{Bmatrix}t\\
+\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s-t}-č_{q,n,s}\sum_{t=0}^{2s+1}\binom{2s+1}{t}\begin{Bmatrix}t\\
 \kappa
 \end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s+1-t}k^{-1}\right)
 \end{eqnarray*}
@@ -1114,6 +1124,198 @@ Pár kroků zpět:
 \begin{eqnarray*}
 \pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\kor{\text{Γ}\left(2-q+n\right)}}{\kor{2^{n}}k_{0}^{q}}\kor{\pi}\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\times\left(\underbrace{\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\kor{\text{Γ}\left(\frac{3-q+n}{2}\right)}\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}}_{\equiv c_{q,n,s}}-\underbrace{\frac{\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\kor{\text{Γ}\left(\frac{2-q+n}{2}\right)}\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}}_{č_{q,n,s}}\frac{\left(\sigma c-ik_{0}\right)}{k}\right)\\
  & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\times\left(\frac{\text{Γ}\left(\frac{2-q+n}{2}\right)\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}-\frac{\text{Γ}\left(\frac{3-q+n}{2}\right)\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+If 
+\begin_inset Formula $q+n$
+\end_inset
+
+ is even and 
+\begin_inset Formula $2-q+n\le0$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\kor{\hgfr}\left(\frac{2-q+n}{2},\frac{3-q+n}{2};1+n;\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)\\
+\mbox{(D15.1.2)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)\koru{\text{Γ}(1+n)}}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\koru{\hgf}\left(\frac{2-q+n}{2},\kor{\frac{3-q+n}{2};1+n;\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}}\right)\\
+\mbox{(D15.8.6)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\kor{k^{n}}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\kor{\left(\sigma c-ik_{0}\right)^{2-q+n}}}\koru{\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\kor{\left(\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{2-q+n}{2}}}}\hgf\left(\begin{array}{c}
+\frac{2-q+n}{2},\koru{\kor{1-\left(1+n\right)+\frac{2-q+n}{2}}}\\
+\koru{\kor{1-\frac{3-q+n}{2}+\frac{2-q+n}{2}}}
+\end{array};\koru{\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}}\right)\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\koru{k^{q-2}}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\koru{\frac{3}{2}\left(2-q+n\right)}}}\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\kor{\hgf\left(\begin{array}{c}
+\frac{2-q+n}{2},\koru{\frac{2-q-n}{2}}\\
+\koru{1/2}
+\end{array};\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)}\\
+\mbox{(D15.2.1)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\kor{\text{Γ}\left(2-q+n\right)}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\koru{\sum_{s=0}^{\infty}\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\left(\frac{1}{2}\right)_{s}s!}\left(\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)^{s}}\\
+\mbox{(D5.5.5)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{\kor{2^{n}}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\koru{\frac{2^{1-q\kor{+n}}}{\sqrt{\pi}}\kor{\text{Γ}\left(\frac{2-q+n}{2}\right)}\text{Γ}\left(\frac{3-q+n}{2}\right)}\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\sum_{s=0}^{\infty}\frac{\kor{\left(\frac{2-q+n}{2}\right)_{s}}\left(\frac{2-q-n}{2}\right)_{s}}{\left(\frac{1}{2}\right)_{s}s!}\left(\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)^{s}\\
+\mbox{(D5.2.5)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\koru{2^{1-q}}}{\sqrt{\pi}}\text{Γ}\left(\frac{3-q+n}{2}\right)\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\sum_{s=0}^{\infty}\frac{\koru{\text{Γ}\left(\frac{2-q+n}{2}+s\right)}\left(\frac{2-q-n}{2}\right)_{s}}{\left(\frac{1}{2}\right)_{s}s!}\left(\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)^{s}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{2^{1-q}}{\sqrt{\pi}}\text{Γ}\left(\frac{3-q+n}{2}\right)\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\sum_{s=0}^{\frac{q+n}{2}}\frac{\text{Γ}\left(\frac{2-q+n}{2}+s\right)\left(\frac{2-q-n}{2}\right)_{s}}{\left(\frac{1}{2}\right)_{s}s!}\left(\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)^{s}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{2^{1-q}}{\sqrt{\pi}}\text{Γ}\left(\frac{3-q+n}{2}\right)\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\sum_{s=0}^{\frac{q+n}{2}}\frac{\text{Γ}\left(\frac{2-q+n}{2}+s\right)\left(\frac{2-q-n}{2}\right)_{s}}{\left(\frac{1}{2}\right)_{s}s!}\left(\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)^{s}
+\end{eqnarray*}
+
+\end_inset
+
+now 
+\begin_inset Formula $\left(\frac{2-q-n}{2}\right)_{s}=0$
+\end_inset
+
+ whenever 
+\begin_inset Formula $s\ge\frac{q+n}{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\text{Γ}\left(\frac{2-q+n}{2}+s\right)$
+\end_inset
+
+ is singular whenever 
+\begin_inset Formula $s\le-\frac{2-q+n}{2}$
+\end_inset
+
+, so we are no less fucked than before.
+ Maybe let's try the other variable transformation.
+ Or what about (D15.8.27)?
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\kor{\hgf\left(\begin{array}{c}
+\frac{2-q+n}{2},\frac{2-q-n}{2}\\
+1/2
+\end{array};\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)}\\
+\mbox{(D15.8.27)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\kor{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\koru{\frac{\kor{Γ\left(\frac{3-q+n}{2}\right)}Γ\left(\frac{3-q-n}{2}\right)}{2Γ\left(\frac{1}{2}\right)Γ\left(2-q+\frac{1}{2}\right)}\left(\hgf\left(\begin{array}{c}
+2-q+n,2-q-n\\
+2-q+\frac{1}{2}
+\end{array};\frac{1}{2}-\frac{\sigma c-ik_{0}}{ik}\right)+\hgf\left(\begin{array}{c}
+2-q+n,2-q-n\\
+2-q+\frac{1}{2}
+\end{array};\frac{1}{2}+\frac{\sigma c-ik_{0}}{ik}\right)\right)}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\kor{\text{Γ}\koru{\left(\frac{3-q+n}{2}-\frac{2-q+n}{2}\right)}}\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\kor{\text{Γ}\left(\frac{1}{2}\right)}\text{Γ}\left(2-q+\frac{1}{2}\right)}\left(\hgf\left(\begin{array}{c}
+2-q+n,2-q-n\\
+2-q+\frac{1}{2}
+\end{array};\frac{1}{2}-\frac{\sigma c-ik_{0}}{ik}\right)+\hgf\left(\begin{array}{c}
+2-q+n,2-q-n\\
+2-q+\frac{1}{2}
+\end{array};\frac{1}{2}+\frac{\sigma c-ik_{0}}{ik}\right)\right)\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\kor{\left(\hgf\left(\begin{array}{c}
+2-q+n,2-q-n\\
+2-q+\frac{1}{2}
+\end{array};\frac{1}{2}-\frac{\sigma c-ik_{0}}{ik}\right)+\hgf\left(\begin{array}{c}
+2-q+n,2-q-n\\
+2-q+\frac{1}{2}
+\end{array};\frac{1}{2}+\frac{\sigma c-ik_{0}}{ik}\right)\right)}\\
+\mbox{(D15.2.1)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\koru{\sum_{s=0}^{\infty}\left(\frac{\left(2-q+n\right)_{s}\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\kor{\left(\left(\frac{1}{2}-\frac{\sigma c-ik_{0}}{ik}\right)^{s}+\left(\frac{1}{2}+\frac{\sigma c-ik_{0}}{ik}\right)^{s}\right)}\right)}\\
+\mbox{(binom)} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\kor{\left(2-q+n\right)_{s}}\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\koru{\sum_{r=0}^{s}\binom{s}{r}\left(\frac{\sigma c-ik_{0}}{ik}\right)^{r}2^{r-s}\left(\left(-1\right)^{r}+1\right)}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\kor{\left(1+n\right)_{-\frac{2-q+n}{2}}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\koru{\text{Γ}\left(2-q+n+s\right)}\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(\frac{\sigma c-ik_{0}}{ik}\right)^{r}2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\kor{\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}}\frac{\koru{\text{Γ}\left(1+n\right)}\text{Γ}\left(\frac{3-q-n}{2}\right)}{\koru{\text{Γ}\left(\frac{q+n}{2}\right)}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\kor{\left(\frac{\sigma c-ik_{0}}{ik}\right)^{r}}2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{Γ\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\koru{\left(ik\right)^{-r}}\koru{\kor{\left(\sigma c-ik_{0}\right)^{r-\frac{3}{2}\left(2-q+n\right)}}}2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+(bionm) & = & \kor{\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\koru{\sum_{w=0}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)}2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+ & = & \koru{\kappa!\left(-1\right)^{\kappa}}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=\kor 0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=\kor 0}^{s}\binom{\kor s}{\kor r}\left(ik\right)^{-r}\sum_{w=\kor 0}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{\kor w}\koru{\kor{\begin{Bmatrix}w\\
+\kappa
+\end{Bmatrix}}}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+ & = & \kappa!\left(-1\right)^{\kappa}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=\koru{\kappa}}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=\koru{\kappa}}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=\koru{\kappa}}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\begin{Bmatrix}w\\
+\kappa
+\end{Bmatrix}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+ & = & \kappa!\left(-1\right)^{\kappa}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=\kappa}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=\kappa}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=\kappa}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\begin{Bmatrix}w\\
+\kappa
+\end{Bmatrix}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+The previous things are valid only if 
+\begin_inset Formula $q$
+\end_inset
+
+ has a small non-integer part, 
+\begin_inset Formula $q=q'+\varepsilon$
+\end_inset
+
+.
+ They might still play a role in the series (especially in the infinite
+ ones) when taking the limit 
+\begin_inset Formula $\varepsilon\to0$
+\end_inset
+
+.
+ However, we got rid of the singularities in 
+\begin_inset Formula $\text{Γ}\left(2-q+n+s\right)$
+\end_inset
+
+ if 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ is large enough.
+\end_layout
+
+\begin_layout Plain Layout
+and we get same shit as before due to the singular 
+\begin_inset Formula $\text{Γ}\left(2-q+n+s\right)$
+\end_inset
+
+.
+ However, 
+\begin_inset Formula 
+\begin{eqnarray*}
+(...) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(\frac{\sigma c-ik_{0}}{ik}\right)^{r}2^{r-s}\kor{\left(\left(-1\right)^{r}+1\right)}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{\koru{floor(s/2)}}\binom{s}{\koru{2r}}\left(\frac{\sigma c-ik_{0}}{ik}\right)^{\koru{2r}}2^{\koru{2r}-s}\left(\left(-1\right)^{\koru{2r}}+1\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+(...) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\kor{\left(\frac{\sigma c-ik_{0}}{ik}\right)^{r}}2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+binom & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\left(1+n\right)_{-\frac{2-q+n}{2}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\koru{\left(ik\right)^{-r}\sum_{b=0}^{r}\binom{r}{b}\sigma^{b}c^{b}\left(-ik_{0}\right)^{r-b}}2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+ & =
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+aaah.
+ Let's assume that 
+\begin_inset Formula $q$
+\end_inset
+
+ is not exactly
+\begin_inset Formula 
+\begin{eqnarray*}
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\kor{\text{Γ}\left(2-q+n\right)}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\sum_{s=0}^{\infty}\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\left(\frac{1}{2}\right)_{s}s!}\left(\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)^{s}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}\left(2-q+n\right)\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\left(\frac{3-q+n}{2}\right)_{-\frac{2-q+n}{2}}}{\left(1+n\right)_{-\frac{2-q+n}{2}}}\sum_{s=0}^{\infty}k^{-2s}\frac{\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\left(\frac{1}{2}\right)_{s}s!}\left(\frac{\left(\sigma c-ik_{0}\right)^{2}}{-k^{2}}\right)^{s}
+\end{eqnarray*}
+
+\end_inset
+
+zpět
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+ & = & \frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\kappa!\left(-1\right)^{\kappa}\left(\frac{\text{Γ}\left(\frac{2-q+n}{2}\right)\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}\sum_{t=0}^{2s}\binom{2s}{t}\begin{Bmatrix}t\\
+\kappa
+\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s-t}-\frac{\text{Γ}\left(\frac{3-q+n}{2}\right)\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\sum_{t=0}^{2s+1}\binom{2s+1}{t}\begin{Bmatrix}t\\
+\kappa
+\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s+1-t}k^{-1}\right)\\
+ & = & \frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\kappa!\left(-1\right)^{\kappa}\left(\frac{\text{Γ}\left(\frac{2-q+n}{2}\right)\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)\text{Γ}\left(1+s\right)}\sum_{t=0}^{2s}\binom{2s}{t}\begin{Bmatrix}t\\
+\kappa
+\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s-t}-\frac{\text{Γ}\left(\frac{3-q+n}{2}\right)\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)\text{Γ}\left(1+s\right)}\sum_{t=0}^{2s+1}\binom{2s+1}{t}\begin{Bmatrix}t\\
+\kappa
+\end{Bmatrix}c^{t}\left(-ik_{0}\right)^{2s+1-t}k^{-1}\right)
 \end{eqnarray*}
 
 \end_inset
@@ -1410,7 +1612,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -1420,7 +1622,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -1433,7 +1635,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -1487,7 +1689,7 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{equation}
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
 \end{equation}
 
 \end_inset
