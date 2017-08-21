@@ -1547,6 +1547,31 @@ More generally,
 
 \end_layout
 
+\begin_layout Subsubsection
+Alternative regularisation with 
+\begin_inset Formula $e^{-p/x^{2}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From [REF Прудников, том 2, 2.12.9.14]
+\begin_inset Formula 
+\begin{multline*}
+\int_{0}^{\infty}x^{\alpha-1}e^{-p/x^{2}}J_{\nu}\left(cx\right)\,\ud x=\frac{2^{\alpha-1}}{c^{\alpha}}Γ\begin{bmatrix}\left(\alpha+\nu\right)/2\\
+1+\left(\nu-\alpha\right)/2
+\end{bmatrix}{}_{0}F_{2}\left(1-\frac{\nu+\alpha}{2},1+\frac{\nu-\alpha}{2};\frac{c^{2}p}{4}\right)\\
++\frac{c^{\nu}p^{\left(\alpha+\nu\right)/2}}{2^{\nu+1}}\text{Γ}\begin{bmatrix}\left(\alpha+\nu\right)/2\\
+\nu+1
+\end{bmatrix}{}_{0}F_{2}\left(1+\frac{\nu+\alpha}{2},\nu+1;\frac{c^{2}p}{4}\right),\qquad[c,\Re p>0;\Re\alpha<3/2].
+\end{multline*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 3d
 \end_layout
