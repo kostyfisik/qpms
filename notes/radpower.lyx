@@ -1,0 +1,414 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\begin_modules
+theorems-ams
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 10
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1cm
+\topmargin 5mm
+\rightmargin 1cm
+\bottommargin 1cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\uoft}[1]{\mathfrak{F}#1}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\uaft}[1]{\mathfrak{\mathbb{F}}#1}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\usht}[2]{\mathbb{S}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\bsht}[2]{\mathrm{S}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\pht}[2]{\mathfrak{\mathbb{H}}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\basis}[1]{\mathfrak{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\dc}[1]{Ш_{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rec}[1]{#1^{-1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\recb}[1]{#1^{\widehat{-1}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ints}{\mathbb{Z}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\nats}{\mathbb{N}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\reals}{\mathbb{R}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ush}[2]{Y_{#1,#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\hgfr}{\mathbf{F}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ph}{\mathrm{ph}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\kor}[1]{\underline{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\koru}[1]{\overline{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\hgf}{F}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Radiation power balance in nanoparticles
+\end_layout
+
+\begin_layout Author
+Marek Nečada
+\end_layout
+
+\begin_layout Abstract
+This memo deals with the formulae for radiation transfer, absorption, extinction
+ for single particle and composite system of several nanoparticles.
+ I also derive some natural conditions on 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix elements.
+\end_layout
+
+\begin_layout Section*
+Conventions
+\end_layout
+
+\begin_layout Standard
+If not stated otherwise, Kristensson's notation and normalisation conventions
+ are used in this memo.
+\end_layout
+
+\begin_layout Section
+Single particle
+\end_layout
+
+\begin_layout Subsection
+Power transfer formula, absorption
+\end_layout
+
+\begin_layout Standard
+The power radiated away by a linear scatterer at fixed harmonic frequency
+ is according to [Kris (2.28)]
+\begin_inset Formula 
+\[
+P=\frac{1}{2}\sum_{n}\left(\left|f_{n}\right|^{2}+\Re\left(f_{n}a_{n}^{*}\right)\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $n$
+\end_inset
+
+ is a multiindex describing the type (E/M) and multipole degree and order
+ of the wave, 
+\begin_inset Formula $f_{n}$
+\end_inset
+
+ is the coefficient corresponding to 
+\series bold
+outgoing
+\series default
+ (Hankel function based) and 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+ to 
+\series bold
+regular
+\series default
+ (first-order Bessel function based) waves.
+\end_layout
+
+\begin_layout Standard
+This is minus the power absorbed by the nanoparticle, and unless the particle
+ has some gain mechanism, this cannot be positive.
+ The basic condition for a physical nanoparticle therefore reads
+\begin_inset Formula 
+\begin{equation}
+P=\frac{1}{2}\sum_{n}\left(\left|f_{n}\right|^{2}+\Re\left(f_{n}a_{n}^{*}\right)\right)\le0.\label{eq:Absorption is never negative}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Conditions on the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix
+\end_layout
+
+\begin_layout Standard
+For a linear scatterer, the outgoing and regular wave coefficients are connected
+ via the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix
+\begin_inset Formula 
+\begin{equation}
+f_{n}=\sum_{n'}T_{nn'}a_{n'}.\label{eq:T-matrix definition}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inequality 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative"
+
+\end_inset
+
+ enables us to derive some conditions on the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix.
+ Let the particle be driven by a wave of a single type 
+\begin_inset Formula $m$
+\end_inset
+
+ only so the coefficients of all other components of the driving field are
+ zero, 
+\begin_inset Formula $a_{n}=\delta_{nm}$
+\end_inset
+
+.
+ From 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix definition"
+
+\end_inset
+
+ we get
+\begin_inset Formula 
+\begin{eqnarray}
+P & = & \frac{1}{2}\sum_{n}\left(\left|\sum_{n'}T_{nn'}a_{n'}\right|^{2}+\Re\left(\sum_{n'}T_{nn'}a_{n'}a_{n}^{*}\right)\right)\nonumber \\
+ & = & \frac{1}{2}\sum_{n}\left(\left|\sum_{n'}T_{nn'}\delta_{n'm}\right|^{2}+\Re\left(\sum_{n'}T_{nn'}\delta_{n'm}\delta_{nm}\right)\right)\nonumber \\
+ & = & \frac{1}{2}\left(\left|\sum_{n}T_{nm}\right|^{2}+\Re T_{mm}\right)\le0\qquad\forall m,\label{eq:Absorption is never negative for single wave type}
+\end{eqnarray}
+
+\end_inset
+
+a condition that should be checked e.g.
+ for the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices generated by SCUFF-EM.
+\end_layout
+
+\begin_layout Remark
+For a particle of spherical symmetry 
+\begin_inset Formula $T_{nm}\propto\delta_{nm}$
+\end_inset
+
+, so 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative for single wave type"
+
+\end_inset
+
+ gives 
+\begin_inset Formula $-\Re T_{mm}\ge\left|T_{mm}\right|^{2}$
+\end_inset
+
+ which in turn implies 
+\begin_inset Formula $\left|T_{mm}\right|<1$
+\end_inset
+
+.
+ (Any similar conclusion for the general case?)
+\end_layout
+
+\begin_layout Problem
+Obviously, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative for single wave type"
+
+\end_inset
+
+ is the consequence of the condition 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative"
+
+\end_inset
+
+.
+ But is 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative"
+
+\end_inset
+
+ always true if 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative for single wave type"
+
+\end_inset
+
+ satisfied?
+\end_layout
+
+\end_body
+\end_document
