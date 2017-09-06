@@ -188,6 +188,21 @@ theorems-ams
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\bra}[1]{\left\langle #1\right|}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ket}[1]{\left|#1\right\rangle }
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\sci}[1]{\mathfrak{#1}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -201,7 +216,7 @@ Marek Nečada
 \begin_layout Abstract
 This memo deals with the formulae for radiation transfer, absorption, extinction
  for single particle and composite system of several nanoparticles.
- I also derive some natural conditions on 
+ I also derive some natural conditions on the 
 \begin_inset Formula $T$
 \end_inset
 
@@ -215,6 +230,16 @@ Conventions
 \begin_layout Standard
 If not stated otherwise, Kristensson's notation and normalisation conventions
  are used in this memo.
+ That means, among other things, that the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix is dimensionless and the expansion coefficients of spherical waves
+ have units of 
+\begin_inset Formula $\sqrt{\mbox{power}}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -338,14 +363,14 @@ reference "eq:T-matrix definition"
  we get
 \begin_inset Formula 
 \begin{eqnarray}
-P & = & \frac{1}{2}\sum_{n}\left(\left|\sum_{n'}T_{nn'}a_{n'}\right|^{2}+\Re\left(\sum_{n'}T_{nn'}a_{n'}a_{n}^{*}\right)\right)\nonumber \\
+P & = & \frac{1}{2}\sum_{n}\left(\left|\sum_{n'}T_{nn'}a_{n'}\right|^{2}+\Re\left(\sum_{n'}T_{nn'}a_{n'}a_{n}^{*}\right)\right)\label{eq:Absorption is never negative with T}\\
  & = & \frac{1}{2}\sum_{n}\left(\left|\sum_{n'}T_{nn'}\delta_{n'm}\right|^{2}+\Re\left(\sum_{n'}T_{nn'}\delta_{n'm}\delta_{nm}\right)\right)\nonumber \\
  & = & \frac{1}{2}\left(\left|\sum_{n}T_{nm}\right|^{2}+\Re T_{mm}\right)\le0\qquad\forall m,\label{eq:Absorption is never negative for single wave type}
 \end{eqnarray}
 
 \end_inset
 
-a condition that should be checked e.g.
+a condition that should be ensured to be true e.g.
  for the 
 \begin_inset Formula $T$
 \end_inset
@@ -408,6 +433,140 @@ reference "eq:Absorption is never negative for single wave type"
 \end_inset
 
  satisfied?
+\end_layout
+
+\begin_layout Standard
+Let me rewrite the expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative with T"
+
+\end_inset
+
+ (without any assumptions about the values of the coefficients 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+) in Dirac notation where the ket 
+\begin_inset Formula $\ket a$
+\end_inset
+
+ is the vector of all the exciting wave coefficients 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+.
+ Furthemore, 
+\begin_inset Formula $\ket{e_{m}}$
+\end_inset
+
+ is the unit vector containing one for the wave indexed by 
+\begin_inset Formula $m$
+\end_inset
+
+ and zeros for the rest, so that 
+\begin_inset Formula $T_{mn}=\bra{e_{m}}T\ket{e_{n}}$
+\end_inset
+
+.
+ The general expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative with T"
+
+\end_inset
+
+ and condition 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative"
+
+\end_inset
+
+ then reads
+\begin_inset Formula 
+\begin{eqnarray}
+P & = & \frac{1}{2}\left(\sum_{n}\left|\bra{e_{n}}T\ket a\right|^{2}+\Re\bra aT\ket a\right)\nonumber \\
+ & = & \frac{1}{2}\left(\sum_{n}\bra aT^{\dagger}\ket{e_{n}}\bra{e_{n}}T\ket a+\frac{1}{2}\left(\bra aT\ket a+\bra aT\ket a^{*}\right)\right)\nonumber \\
+ & = & \frac{1}{2}\bra aT^{\dagger}T\ket a+\frac{1}{4}\bra a\left(T+T^{\dagger}\right)\ket a\le0\qquad\forall\ket a,\label{eq:Absorption is never negative in Dirac notation}
+\end{eqnarray}
+
+\end_inset
+
+giving the following condition on the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix:
+\end_layout
+
+\begin_layout Proposition
+A 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix 
+\begin_inset Formula $T$
+\end_inset
+
+ is unphysical unless the matrix
+\begin_inset Formula 
+\begin{equation}
+W\equiv\frac{T^{\dagger}T}{2}+\frac{T+T^{\dagger}}{4}\label{eq:Definition of the power matrix}
+\end{equation}
+
+\end_inset
+
+ is negative (semi)definite.
+\end_layout
+
+\begin_layout Standard
+Obviously, matrix 
+\begin_inset Formula $W$
+\end_inset
+
+ is self-adjoint and it has a clear interpretation given by 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Absorption is never negative in Dirac notation"
+
+\end_inset
+
+ – for an exciting field given by its expansion coefficient vector 
+\begin_inset Formula $\ket a$
+\end_inset
+
+, 
+\begin_inset Formula $-P=-\bra aW\ket a$
+\end_inset
+
+ is the power absorbed by the scatterer.
+\end_layout
+
+\begin_layout Section
+Multiple scattering
+\end_layout
+
+\begin_layout Standard
+The purpose of this section is to clarify the formulae for absorption and
+ extinction in a system of multiple scatterers.
+ Let the scatterers be indexed by fraktur letters, so the power 
+\begin_inset Quotes eld
+\end_inset
+
+generated
+\begin_inset Quotes erd
+\end_inset
+
+ by nanoparticle 
+\begin_inset Formula $\sci k$
+\end_inset
+
+ will be denoted as 
+\begin_inset Formula $P^{\sci k}$
+\end_inset
+
+.
 \end_layout
 
 \end_body
