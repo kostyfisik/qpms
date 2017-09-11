@@ -152,7 +152,7 @@ def _scuffTMatrixConvert_EM_01(EM):
     else:
         return None
 
-def loadScuffTMatrices(fileName):
+def loadScuffTMatrices(fileName, normalisation = 1):
     """
     TODO doc
     """
@@ -182,7 +182,10 @@ def loadScuffTMatrices(fileName):
         for outc_type in [0,1]:
             TMatrices[:,1-outc_type,:,1-inc_type,:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
     # IMPORTANT: now we are going from Reid's/Kristensson's/Jackson's/whoseever convention to Taylor's convention
-    TMatrices[:,:,:,:,:] = TMatrices[:,:,:,:,:] * np.sqrt(ny*(ny+1))[ň,ň,ň,ň,:] / np.sqrt(ny*(ny+1))[ň,ň,:,ň,ň]
+    if normalisation == 1:
+        TMatrices[:,:,:,:,:] = TMatrices[:,:,:,:,:] * np.sqrt(ny*(ny+1))[ň,ň,ň,ň,:] / np.sqrt(ny*(ny+1))[ň,ň,:,ň,ň]
+    elif normalisation == 2: # Kristensson?
+        pass
     return (TMatrices, freqs, freqs_weirdunits, lMax)
 
 
