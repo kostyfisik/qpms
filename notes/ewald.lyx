@@ -1489,6 +1489,8 @@ Let's polish it a bit more
 \end_inset
 
 
+\size footnotesize
+
 \begin_inset Formula 
 \begin{multline}
 \pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}Γ\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right),\\
@@ -1497,6 +1499,8 @@ k>0\wedge k_{0}>0\wedge c\ge0\wedge\lnot\left(c=0\wedge k_{0}=k\right)\label{eq:
 
 \end_inset
 
+
+\size default
 with principal branches of the hypergeometric functions, associated Legendre
  functions, and fractional powers.
  The conditions from 
@@ -1525,12 +1529,21 @@ reference "eq:2D Hankel transform of regularized outgoing wave, decomposition"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 Let's do it.
 \begin_inset Formula 
 \begin{eqnarray*}
 \pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}}}\right)\\
  & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}\text{Γ}\left(2-q+n\right)}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}}}\right)
 \end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1561,6 +1574,76 @@ polynomial
 \end_inset
 
 .
+ In other cases, different expressions can be obtained from 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:2D Hankel transform of exponentially suppressed outgoing wave as 2F1"
+
+\end_inset
+
+ using various transformation formulae from either DLMF or 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{russian}
+\end_layout
+
+\end_inset
+
+Прудников
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{russian}
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In fact, Mathematica is usually able to calculate the transforms for specific
+ values of 
+\begin_inset Formula $\kappa,q,n$
+\end_inset
+
+, but it did not find any general formula for me.
+ The resulting expressions are finite sums of algebraic functions, Table
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Asymptotical-behaviour-Mathematica"
+
+\end_inset
+
+ shows how fast they decay with growing 
+\begin_inset Formula $k$
+\end_inset
+
+ for some parameters.
+ The only case where Mathematica did not help at all is 
+\begin_inset Formula $q=2,n=0$
+\end_inset
+
+, which is unfortunately important.
+ But if I have not made some mistake, the expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:2D Hankel transform of exponentially suppressed outgoing wave expanded"
+
+\end_inset
+
+ is applicable for this case.
 \end_layout
 
 \begin_layout Standard
@@ -2713,6 +2796,41 @@ reference "eq:prudnikov2 eq 2.12.9.14"
 \end_layout
 
 \begin_layout Section
+Major TODOs and open questions
+\end_layout
+
+\begin_layout Itemize
+Check if 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:2D Hankel transform of exponentially suppressed outgoing wave expanded"
+
+\end_inset
+
+ gives a satisfactory result for the case 
+\begin_inset Formula $q=2,n=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Analyse the behaviour 
+\begin_inset Formula $k\to k_{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Find a general algorithm for generating the expressions of the Hankel transforms.
+\end_layout
+
+\begin_layout Itemize
+Three-dimensional case.
+\end_layout
+
+\begin_layout Section
 (Appendix) Fourier vs.
  Hankel transform
 \end_layout
@@ -2761,7 +2879,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -2771,7 +2889,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -2784,7 +2902,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -2838,7 +2956,7 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{equation}
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
 \end{equation}
 
 \end_inset
