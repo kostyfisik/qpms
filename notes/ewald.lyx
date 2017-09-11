@@ -1551,16 +1551,16 @@ One problematic element here is the gamma function
 \begin_inset Formula $\text{Γ}\left(2-q+n\right)$
 \end_inset
 
- which is singular if the arguments are negative integers, i.e.
+ which is singular if the argument is zero or negative integer, i.e.
  if 
-\begin_inset Formula $q-n\ge3$
+\begin_inset Formula $q-n\ge2$
 \end_inset
 
-; but at least the necessary minimum of 
-\begin_inset Formula $q=1,2$
+; which is painful especially because of the case 
+\begin_inset Formula $q=2,n=0$
 \end_inset
 
- would be covered this way.
+.
  The associated Legendre function can be expressed as a finite 
 \begin_inset Quotes eld
 \end_inset
@@ -1636,14 +1636,7 @@ reference "tab:Asymptotical-behaviour-Mathematica"
 \end_inset
 
 , which is unfortunately important.
- But if I have not made some mistake, the expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:2D Hankel transform of exponentially suppressed outgoing wave expanded"
-
-\end_inset
-
- is applicable for this case.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -2879,7 +2872,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -2889,7 +2882,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -2902,7 +2895,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -2956,7 +2949,7 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{equation}
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
 \end{equation}
 
 \end_inset
