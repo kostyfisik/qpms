@@ -204,6 +204,16 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\ghgf}[2]{\mbox{}_{#1}F_{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ghgfr}[2]{\mbox{}_{#1}\mathbf{F}_{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\ph}{\mathrm{ph}}
 \end_inset
 
@@ -1631,7 +1641,7 @@ reference "tab:Asymptotical-behaviour-Mathematica"
 \end_inset
 
  for some parameters.
- The only case where Mathematica did not help at all is 
+ One particular case where Mathematica did not help at all is 
 \begin_inset Formula $q=2,n=0$
 \end_inset
 
@@ -2608,6 +2618,109 @@ name "tab:Asymptotical-behaviour-Mathematica"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Paragraph
+Case 
+\begin_inset Formula $n=0,q=2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+[REF 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{russian}
+\end_layout
+
+\end_inset
+
+Прудников, том 2
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{russian}
+\end_layout
+
+\end_inset
+
+, 2.12.10.2] provides the following integral
+\begin_inset Formula 
+\begin{multline*}
+\int_{0}^{\infty}\frac{1}{x^{2}}e^{-px-b/x}J_{0}(cx)\,\ud x=2c\left[z_{+}^{-1}J_{1}\left(z_{-}\right)K_{0}\left(z_{+}\right)+z_{-}^{-1}J_{0}\left(z_{-}\right)K_{1}\left(z_{+}\right)\right]\\
+\left[z_{\pm}=\sqrt{2b}\left(\sqrt{p^{2}+c^{2}}\pm p\right)^{1/2};\Re p>\left|\Im c\right|;\Re b>0\right]
+\end{multline*}
+
+\end_inset
+
+where [REF 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{russian}
+\end_layout
+
+\end_inset
+
+Прудников, том 2
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{russian}
+\end_layout
+
+\end_inset
+
+, p.659] 
+\begin_inset Formula $K_{\nu}(z)$
+\end_inset
+
+ is the Macdonald's function (modified Bessel function of 3rd kind) 
+\begin_inset Formula 
+\[
+K_{\nu}\left(z\right)=\frac{\pi\left[I_{-\nu}\left(z\right)-I_{\nu}\left(z\right)\right]}{2\sin\nu\pi}\quad\left[\nu\notin\ints\right],\quad K_{n}\left(z\right)=\lim_{\nu\to n}K_{\nu}\left(z\right)\quad\left[n\in\ints\right],
+\]
+
+\end_inset
+
+and 
+\begin_inset Formula $I_{\nu}\left(z\right)$
+\end_inset
+
+ is the modified Bessel function of 1st kind
+\begin_inset Formula 
+\[
+I_{\nu}\left(z\right)=\frac{1}{\Gamma\left(\nu+1\right)}\left(\frac{z}{2}\right)^{\nu}\ghgf 01\left(\nu+1;\frac{z^{2}}{4}\right)=e^{-\nu\pi i/2}J_{\nu}\left(e^{\pi i/2}z\right).
+\]
+
+\end_inset
+
+The problem of this approach is the insufficiently slow decay 
+\begin_inset Formula $\propto k^{-1}$
+\end_inset
+
+, so it is in fact better to compute the sum in the real space.
+ I have to look further.
+ 
 \end_layout
 
 \begin_layout Standard
