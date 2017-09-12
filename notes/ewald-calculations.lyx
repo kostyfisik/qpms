@@ -455,16 +455,16 @@ now
  & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}\frac{\text{Γ}\left(\frac{3-q-n}{2}\right)}{\kor{\left(1+n\right)_{-\frac{2-q+n}{2}}}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\koru{\text{Γ}\left(2-q+n+s\right)}\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(\frac{\sigma c-ik_{0}}{ik}\right)^{r}2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber \\
  & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}\kor{\left(\sigma c-ik_{0}\right)^{\frac{3}{2}\left(2-q+n\right)}}}\frac{\koru{\text{Γ}\left(1+n\right)}\text{Γ}\left(\frac{3-q-n}{2}\right)}{\koru{\text{Γ}\left(\frac{q+n}{2}\right)}2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\kor{\left(\frac{\sigma c-ik_{0}}{ik}\right)^{r}}2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber \\
  & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{Γ\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\koru{\left(ik\right)^{-r}}\koru{\kor{\left(\sigma c-ik_{0}\right)^{r-\frac{3}{2}\left(2-q+n\right)}}}2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber \\
-(bionm) & = & \kor{\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\koru{\sum_{w=0}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)}2^{r-s}\left(\left(-1\right)^{r}+1\right)\label{eq:ugliness withous singularities}\\
+(bionm) & = & \kor{\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\koru{\sum_{w=0}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}\right)^{r-\frac{3}{2}\left(2-q+n\right)-w}}2^{r-s}\left(\left(-1\right)^{r}+1\right)\label{eq:ugliness withous singularities}\\
  & = & \koru{\kappa!\left(-1\right)^{\kappa}}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=\kor 0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=\kor 0}^{s}\binom{\kor s}{\kor r}\left(ik\right)^{-r}\sum_{w=\kor 0}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{\kor w}\koru{\kor{\begin{Bmatrix}w\\
 \kappa
-\end{Bmatrix}}}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber \\
+\end{Bmatrix}}}c^{w}\left(-ik_{0}\right)^{r-\frac{3}{2}\left(2-q+n\right)-w}2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber \\
  & = & \kappa!\left(-1\right)^{\kappa}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=\koru{\kappa}}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=\koru{\kappa}}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=\koru{\kappa}}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\begin{Bmatrix}w\\
 \kappa
-\end{Bmatrix}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber \\
+\end{Bmatrix}c^{w}\left(-ik_{0}\right)^{r-\frac{3}{2}\left(2-q+n\right)-w}2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber \\
  & = & \kappa!\left(-1\right)^{\kappa}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=\kappa}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=\kappa}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=\kappa}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\begin{Bmatrix}w\\
 \kappa
-\end{Bmatrix}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber 
+\end{Bmatrix}c^{w}\left(-ik_{0}\right)^{r-\frac{3}{2}\left(2-q+n\right)-w}2^{r-s}\left(\left(-1\right)^{r}+1\right)\nonumber 
 \end{eqnarray}
 
 \end_inset
@@ -596,8 +596,8 @@ reference "eq:ugliness withous singularities"
 
 \begin_inset Formula 
 \begin{eqnarray*}
-\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=0}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}^{r-\frac{3}{2}\left(2-q+n\right)-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
-\pht 0{s_{2+\epsilon,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(s-\epsilon\right)\left(-\epsilon\right)_{s}}{\left(\epsilon+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=0}^{\infty}\binom{r+\frac{3}{2}\epsilon}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}^{r+\frac{3}{2}\epsilon-w}\right)2^{r-s}\left(\left(-1\right)^{r}+1\right)
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{q-2}\text{Γ}(1+n)}{2^{n}k_{0}^{q}}\frac{\text{Γ}\left(1+n\right)\text{Γ}\left(\frac{3-q-n}{2}\right)}{\text{Γ}\left(\frac{q+n}{2}\right)2\text{Γ}\left(2-q+\frac{1}{2}\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(2-q+n+s\right)\left(2-q-n\right)_{s}}{\left(2-q+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=0}^{\infty|r-\frac{3}{2}\left(2-q+n\right)}\binom{r-\frac{3}{2}\left(2-q+n\right)}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}\right)^{r-\frac{3}{2}\left(2-q+n\right)-w}2^{r-s}\left(\left(-1\right)^{r}+1\right)\\
+\pht 0{s_{2+\epsilon,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(s-\epsilon\right)\left(-\epsilon\right)_{s}}{\left(\epsilon+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=0}^{\infty}\binom{r+\frac{3}{2}\epsilon}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}\right)^{r+\frac{3}{2}\epsilon-w}2^{r-s}\left(\left(-1\right)^{r}+1\right)
 \end{eqnarray*}
 
 \end_inset
@@ -618,9 +618,9 @@ There is one problematic factor on the previous line,
  Let us analyse the problematic term.
 \begin_inset Formula 
 \begin{eqnarray*}
-\mbox{problem} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\frac{\text{Γ}\left(-\epsilon\right)\kor{\left(-\epsilon\right)_{0}}}{\kor{\left(\epsilon+\frac{1}{2}\right)_{0}0!}}\kor{\sum_{r=0}^{0}\binom{0}{r}\left(ik\right)^{-r}}\sum_{w=0}^{\infty}\binom{\kor r+\frac{3}{2}\epsilon}{w}\sigma^{w}c^{w}\left(-ik_{0}^{\kor r+\frac{3}{2}\epsilon-w}\right)2^{\kor r-0}\kor{\left(\left(-1\right)^{r}+1\right)}\\
- & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\text{Γ}\left(-\epsilon\right)\sum_{w=0}^{\infty}\kor{\binom{\frac{3}{2}\epsilon}{w}}\sigma^{w}c^{w}\left(-ik_{0}^{\frac{3}{2}\epsilon-w}\right)2\\
- & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\text{Γ}\left(-\epsilon\right)\sum_{w=0}^{\infty}\frac{\Gamma\left(1+\frac{3}{2}\epsilon\right)}{\Gamma\left(w+1\right)\Gamma\left(1+\frac{3}{2}\epsilon-w\right)}\sigma^{w}c^{w}\left(-ik_{0}^{\frac{3}{2}\epsilon-w}\right)2.
+\mbox{problem} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1)}{k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\frac{\text{Γ}\left(-\epsilon\right)\kor{\left(-\epsilon\right)_{0}}}{\kor{\left(\epsilon+\frac{1}{2}\right)_{0}0!}}\kor{\sum_{r=0}^{0}\binom{0}{r}\left(ik\right)^{-r}}\sum_{w=0}^{\infty}\binom{\kor r+\frac{3}{2}\epsilon}{w}\sigma^{w}c^{w}\left(-ik_{0}\right)^{\kor r+\frac{3}{2}\epsilon-w}2^{\kor r-0}\kor{\left(\left(-1\right)^{r}+1\right)}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1)}{k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\text{Γ}\left(-\epsilon\right)\sum_{w=0}^{\infty}\kor{\binom{\frac{3}{2}\epsilon}{w}}\sigma^{w}c^{w}\left(-ik_{0}\right)^{\frac{3}{2}\epsilon-w}2\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1)}{k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\text{Γ}\left(-\epsilon\right)\sum_{w=0}^{\infty}\frac{\Gamma\left(1+\frac{3}{2}\epsilon\right)}{\Gamma\left(w+1\right)\Gamma\left(1+\frac{3}{2}\epsilon-w\right)}\sigma^{w}c^{w}\left(-ik_{0}\right)^{\frac{3}{2}\epsilon-w}2.
 \end{eqnarray*}
 
 \end_inset
@@ -645,8 +645,83 @@ In the last sum, the divisor
 -regularisation,
 \begin_inset Formula 
 \[
-\mbox{problem}=\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\text{Γ}\left(-\epsilon\right)\sum_{w=\koru{\kappa}}^{\infty}\frac{\Gamma\left(1+\frac{3}{2}\epsilon\right)}{\Gamma\left(w+1\right)\Gamma\left(1+\frac{3}{2}\epsilon-w\right)}\sigma^{w}c^{w}\left(-ik_{0}^{\frac{3}{2}\epsilon-w}\right)2
+\mbox{problem}=\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\kor{\text{Γ}\left(-\epsilon\right)}\sum_{w=\koru{\kappa}}^{\infty}\frac{\Gamma\left(1+\frac{3}{2}\epsilon\right)}{\Gamma\left(w+1\right)\kor{\Gamma\left(1+\frac{3}{2}\epsilon-w\right)}}\sigma^{w}c^{w}\left(-ik_{0}\right)^{\frac{3}{2}\epsilon-w}2.
 \]
+
+\end_inset
+
+6amma function has simple poles for non-positive integer arguments with
+ 
+\begin_inset Formula $\mathrm{Res}\left(Γ,-n\right)=\left(-1\right)^{n}/n!$
+\end_inset
+
+, so writing the Laurent series for the underlined factors gives
+\begin_inset Formula 
+\[
+\lim_{\epsilon\to0}\frac{Γ\left(-\epsilon\right)}{Γ\left(1+\frac{3}{2}\epsilon-w\right)}=\lim_{\epsilon\to0}\frac{\left(-\epsilon\right)^{-1}+\sum_{n=0}^{\infty}\dots\epsilon^{n}}{\left(-1\right)^{w-1}\left(\frac{3}{2}\epsilon\left(w-1\right)!\right)^{-1}+\sum_{n=0}^{\infty}\dots\epsilon^{n}}=\lim_{\epsilon\to0}\frac{-1+\epsilon\sum_{n=0}^{\infty}\dots\epsilon^{n}}{\left(-1\right)^{w-1}\frac{2}{3}/\left(w-1\right)!+\epsilon\sum_{n=0}^{\infty}\dots\epsilon^{n}}=\frac{3}{2}\left(-1\right)^{w}\left(w-1\right)!
+\]
+
+\end_inset
+
+ and the rest is obviously continuous with regard to 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+.
+ Therefore,
+\begin_inset Formula 
+\begin{eqnarray*}
+\lim_{\epsilon\to0}\mbox{problem} & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\sum_{w=\kappa}^{\infty}\frac{1}{\kor{\Gamma\left(w+1\right)}}\frac{3}{2}\left(-1\right)^{w}\kor{\left(w-1\right)!}\sigma^{w}c^{w}\left(-ik_{0}\right)^{-w}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{3}{2}\sum_{w=\kappa}^{\infty}\frac{\left(-1\right)^{w}\sigma^{w}c^{w}\left(-ik_{0}\right)^{-w}}{\koru w}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{3}{2}\sum_{w=\kappa}^{\infty}\frac{1}{w}\left(-i\frac{\sigma c}{k_{0}}\right)^{w}
+\end{eqnarray*}
+
+\end_inset
+
+and if 
+\begin_inset Formula $\left|\sigma c/k_{0}\right|<1$
+\end_inset
+
+, the last expression is (almost) the well known power series 
+\begin_inset Formula $\log\left(1+x\right)=-\sum_{n=1}^{\infty}\left(-x\right)^{n}/n$
+\end_inset
+
+, so
+\begin_inset Formula 
+\[
+\lim_{\epsilon\to0}\mbox{problem}=-\kor{\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}}\frac{3}{2}\left[\log\left(1+i\frac{\sigma c}{k_{0}}\right)+\sum_{w=1}^{\kappa-1}\frac{1}{w}\kor{\left(-i\frac{\sigma c}{k_{0}}\right)^{w}}\right]
+\]
+
+\end_inset
+
+and the 
+\begin_inset Formula $\kappa$
+\end_inset
+
+-regularisation makes the last term identically zero, providing even simpler
+ expression
+\begin_inset Formula 
+\[
+\lim_{\epsilon\to0}\mbox{problem}=-\frac{3}{2}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\log\left(1+i\frac{\sigma c}{k_{0}}\right).
+\]
+
+\end_inset
+
+
+\emph on
+What does this mean w.r.t.
+ the limit 
+\begin_inset Formula $k\to\infty$
+\end_inset
+
+?
+\emph default
+ Back to the whole Bessel transform,
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht 0{s_{2+\epsilon,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & - & \mbox{problem}\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{\epsilon}\text{Γ}(1+n)}{2^{n}k_{0}^{\epsilon}}\frac{\text{Γ}\left(1\right)\text{Γ}\left(\frac{1-\epsilon}{2}\right)}{\text{Γ}\left(\frac{2+\epsilon}{2}\right)2\text{Γ}\left(\frac{1}{2}-\epsilon\right)}\sum_{s=1}^{\infty}\frac{\text{Γ}\left(s-\epsilon\right)\left(-\epsilon\right)_{s}}{\left(\epsilon+\frac{1}{2}\right)_{s}s!}\sum_{r=0}^{s}\binom{s}{r}\left(ik\right)^{-r}\sum_{w=0}^{\infty}\binom{r+\frac{3}{2}\epsilon}{w}\kor{\sigma^{w}}c^{w}\left(-ik_{0}\right)^{r+\frac{3}{2}\epsilon-w}2^{r-s}\left(\left(-1\right)^{r}+1\right)
+\end{eqnarray*}
 
 \end_inset
 

@@ -37,6 +37,9 @@
 %\newfontfamily\russianfont[Script=Cyrillic]{DejaVu Sans}
 \end_preamble
 \use_default_options true
+\begin_modules
+theorems-starred
+\end_modules
 \maintain_unincluded_children false
 \language english
 \language_package default
@@ -2618,6 +2621,54 @@ name "tab:Asymptotical-behaviour-Mathematica"
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{russian}
+\end_layout
+
+\end_inset
+
+Градштейн и Рыжик
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{russian}
+\end_layout
+
+\end_inset
+
+ 6.512.1 has expression for 
+\begin_inset Formula $\int_{0}^{\infty}J_{\mu}\left(ax\right)J_{\nu}\left(bx\right)\ud x$
+\end_inset
+
+, 
+\begin_inset Formula $\Re\left(\mu+\nu\right)>-1$
+\end_inset
+
+ in terms of hypergeometric function.
+ Unfortunately, no corresponding and general enough expression for 
+\begin_inset Formula $\int_{0}^{\infty}J_{\mu}\left(ax\right)Y_{\nu}\left(bx\right)\ud x$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -2985,7 +3036,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -2995,7 +3046,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -3008,7 +3059,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -3062,7 +3113,7 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{equation}
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
 \end{equation}
 
 \end_inset
