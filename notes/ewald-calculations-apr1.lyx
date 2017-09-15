@@ -364,8 +364,12 @@ Again we use
  so
 \begin_inset Formula 
 \begin{eqnarray*}
-\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \koru{\frac{2^{1-q+n}}{\sqrt{\pi}}}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\sum_{s=0}^{\infty}\frac{\koru{\text{Γ}\left(\frac{2-q+n}{2}+s\right)\text{Γ}\left(\frac{3-q+n}{2}+s\right)}}{\text{Γ}(1+n+s)s!}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{s}\\
- & = & \frac{2^{1-q+n}}{\sqrt{\pi}}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}}{2^{n}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\sum_{s=0}^{\infty}\frac{\text{Γ}\left(\frac{2-q+n}{2}+s\right)\text{Γ}\left(\frac{3-q+n}{2}+s\right)}{\text{Γ}(1+n+s)s!}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{s}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \koru{\frac{2^{1-q\kor{+n}}}{\sqrt{\pi}}}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}}{\kor{2^{n}}k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\sum_{s=0}^{\infty}\frac{\koru{\text{Γ}\left(\frac{2-q+n}{2}+s\right)\text{Γ}\left(\frac{3-q+n}{2}+s\right)}}{\text{Γ}(1+n+s)s!}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{s}\\
+\mbox{OKShort} & = & \frac{2^{1-q}}{\sqrt{\pi}}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\kor{\sum_{s=0}^{\infty}\frac{\text{Γ}\left(\frac{2-q+n}{2}+s\right)\text{Γ}\left(\frac{3-q+n}{2}+s\right)}{\text{Γ}(1+n+s)s!}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{s}}\\
+\mbox{(D15.2.1)} & = & \frac{2^{1-q}}{\sqrt{\pi}}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\koru{\frac{\text{Γ}\left(1+n\right)}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{3-q+n}{2}\right)}\kor{\hgf\left(\begin{array}{c}
+\frac{2-q+n}{2},\frac{3-q+n}{2}\\
+1+n
+\end{array};\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)}}
 \end{eqnarray*}
 
 \end_inset

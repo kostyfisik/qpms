@@ -728,5 +728,68 @@ What does this mean w.r.t.
 
 \end_layout
 
+\begin_layout Subparagraph*
+
+\lang english
+Trash
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+Now if 
+\begin_inset Formula $\frac{2-q+n}{2}$
+\end_inset
+
+ or 
+\begin_inset Formula $\frac{3-q+n}{2}$
+\end_inset
+
+ is non-positive integer, (D15.2.4) is applicable and the result is simply
+ a polynomial
+\begin_inset Formula 
+\[
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right)=\frac{2^{1-q}}{\sqrt{\pi}}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\frac{\text{Γ}\left(1+n\right)}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{3-q+n}{2}\right)}\koru{\sum_{s=0}^{\frac{q-2-n}{2}}\left(-1\right)^{s}\binom{\frac{2-q+n}{2}}{s}\frac{\left(\frac{3-q+n}{2}\right)_{s}}{\left(n+1\right)_{s}}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{s}}
+\]
+
+\end_inset
+
+if 
+\begin_inset Formula $-\frac{2-q+n}{2}\in\nats_{0}$
+\end_inset
+
+ and
+\begin_inset Formula 
+\[
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right)=\frac{2^{1-q}}{\sqrt{\pi}}\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k^{n}}{k_{0}^{q}\left(\sigma c-ik_{0}\right)^{2-q+n}}\frac{\text{Γ}\left(1+n\right)}{\text{Γ}\left(\frac{2-q+n}{2}\right)\text{Γ}\left(\frac{3-q+n}{2}\right)}\koru{\sum_{s=0}^{\frac{q-3-n}{2}}\left(-1\right)^{s}\binom{\frac{3-q+n}{2}}{s}\frac{\left(\frac{2-q+n}{2}\right)_{s}}{\left(n+1\right)_{s}}\left(\frac{-k^{2}}{\left(\sigma c-ik_{0}\right)^{2}}\right)^{s}}
+\]
+
+\end_inset
+
+if 
+\begin_inset Formula $-\frac{3-q+n}{2}\in\nats_{0}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang english
+This is some kind of shit, as it returns zeroes.
+ Where is the mistake?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
