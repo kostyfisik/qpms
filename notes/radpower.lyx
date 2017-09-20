@@ -543,6 +543,101 @@ reference "eq:Absorption is never negative in Dirac notation"
  is the power absorbed by the scatterer.
 \end_layout
 
+\begin_layout Subsection
+Lossless scatterer
+\end_layout
+
+\begin_layout Standard
+Radiation energy conserving scatterer is not very realistic, but it might
+ provide some simplifications necessary for developing the topological theory.
+\end_layout
+
+\begin_layout Standard
+A scatterer always conserves the radiation energy iff 
+\begin_inset Formula $W=0$
+\end_inset
+
+, i.e.
+ iff
+\begin_inset Formula 
+\[
+\frac{T^{\dagger}T}{2}+\frac{T+T^{\dagger}}{4}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Diagonal 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix
+\end_layout
+
+\begin_layout Standard
+To get some insight into what does this mean, it might be useful to start
+ with a diagonal 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, 
+\begin_inset Formula $T_{mn}=t_{n}\delta_{mn}$
+\end_inset
+
+ (valid for e.g.
+ a spherical particle).
+ Then for the 
+\begin_inset Formula $m$
+\end_inset
+
+-th matrix element we have
+\begin_inset Formula 
+\[
+\left(\Re t_{n}\right)^{2}+\left(\Im t_{n}\right)^{2}+\Re t_{n}=0
+\]
+
+\end_inset
+
+or
+\begin_inset Formula 
+\[
+\left(\Re t_{n}+\frac{1}{2}\right)^{2}+\left(\Im t_{n}\right)^{2}=\left(\frac{1}{2}\right)^{2}
+\]
+
+\end_inset
+
+which gives a relation between the real and imaginary parts of the scattering
+ coefficients.
+ There are two 
+\begin_inset Quotes eld
+\end_inset
+
+extremal
+\begin_inset Quotes erd
+\end_inset
+
+ real values, 
+\begin_inset Formula $t_{n}=0$
+\end_inset
+
+ (no scattering at all) and 
+\begin_inset Formula $t_{n}=-1$
+\end_inset
+
+.
+ In general, the possible values lie on a half-unit circle in the complex
+ plane with the centre at 
+\begin_inset Formula $-1/2$
+\end_inset
+
+.
+ The half-unit disk delimited by the circle is the (realistic) lossy region,
+ while everything outside it represents (unrealistic) system with gain.
+\end_layout
+
 \begin_layout Section
 Multiple scattering
 \end_layout
@@ -643,6 +738,12 @@ or, in the indexless notation for the whole system
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+TODO
 \end_layout
 
 \end_body
