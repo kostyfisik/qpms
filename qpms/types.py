@@ -9,6 +9,7 @@ import enum
 
 class NormalizationT(enum.IntEnum):
     """ Corresponding to the c type qpms_normalization_t from translations.h """
+    KRISTENSSON=2 # power-normalised, this should be the default in the future
     TAYLOR=1
     UNDEF=0
 

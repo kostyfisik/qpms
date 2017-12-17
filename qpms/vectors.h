@@ -2,23 +2,7 @@
 #define VECTORS_H
 #include <math.h>
 #define M_PI_2 (1.570796326794896619231321691639751442098584699687552910487)
-
-typedef struct {
-	double x, y, z;
-} cart3_t;
-
-typedef struct {
-	double x, y;
-} cart2_t;
-
-typedef struct {
-	double r, theta, phi;
-} sph_t;
-
-typedef struct {
-	double r, phi;
-} pol_t;
-
+#include "qpms_types.h"
 
 //static inline double vectors_h_sq(double x) {return x*x;}
 

@@ -1,27 +1,18 @@
 #ifndef QPMS_TRANSLATIONS_H
 #define QPMS_TRANSLATIONS_H
 #include "vectors.h"
+#include "qpms_types.h"
 #include <complex.h>
 #include <stdbool.h>
 #include <stddef.h>
+// Associated Legendre polynomial at zero argument (DLMF 14.5.1)
 double qpms_legendre0(int m, int n); 
+// Associated Legendre polynomial derivative at zero argument (DLMF 14.5.2)
 double qpms_legendred0(int m, int n); 
-
-typedef enum {
-	QPMS_NORMALIZATION_TAYLOR = 1,
-	QPMS_NORMALIZATION_UNDEF = 0
-} qpms_normalization_t;
-
-typedef enum {
-        QPMS_BESSEL_REGULAR = 1, // regular function j
-        QPMS_BESSEL_SINGULAR = 2, // singular function y
-        QPMS_HANKEL_PLUS = 3, // hankel function h1 = j + I*y
-        QPMS_HANKEL_MINUS = 4, // hankel function h2 = j - I*y
-	QPMS_BESSEL_UNDEF = 0
-} qpms_bessel_t;
-
 int qpms_sph_bessel_array(qpms_bessel_t typ, int lmax, double x, complex double *result_array);
 
+// TODO replace the xplicit "Taylor" functions with general,
+// taking qpms_bessel_t argument.
 complex double qpms_trans_single_A_Taylor(int m, int n, int mu, int nu, sph_t kdlj,
                 bool r_ge_d, qpms_bessel_t J);
 
@@ -33,6 +24,13 @@ complex double qpms_trans_single_A_Taylor_ext(int m, int n, int mu, int nu, doub
 
 complex double qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
+
+// Electric wave N; NI
+complex double qpms_vswf_single_el(int m, int n, sph_t kdlj, 
+		qpms_bessel_t btyp, qpms_normalization_t norm);
+// Magnetic wave M; NI
+complex double qpms_vswf_single_mg(int m, int n, sph_t kdlj, 
+		qpms_bessel_t btyp, qpms_normalization_t norm);
 
 
 typedef struct qpms_trans_calculator {
