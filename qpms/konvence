@@ -1,0 +1,7 @@
+Konvence pro názvy alokačních, dealokačních aj. funkcí a "getrů"
+
+NÁZEV_t: identifikátor typu
+NÁZEV_free(NÁZEV_t)
+NÁZEV_pfree(NÁZEV_t*)
+NÁZEV_get_CO(const NÁZEV_t*, const ...): získej nějakou hodnotu (triviality lze přímo)
+

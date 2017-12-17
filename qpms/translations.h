@@ -25,14 +25,6 @@ complex double qpms_trans_single_A_Taylor_ext(int m, int n, int mu, int nu, doub
 complex double qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
-// Electric wave N; NI
-complex double qpms_vswf_single_el(int m, int n, sph_t kdlj, 
-		qpms_bessel_t btyp, qpms_normalization_t norm);
-// Magnetic wave M; NI
-complex double qpms_vswf_single_mg(int m, int n, sph_t kdlj, 
-		qpms_bessel_t btyp, qpms_normalization_t norm);
-
-
 typedef struct qpms_trans_calculator {
         int lMax;
         size_t nelem;
