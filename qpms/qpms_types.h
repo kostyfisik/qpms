@@ -7,6 +7,8 @@
 
 // integer index types
 typedef int qpms_lm_t;
+typedef unsigned int qpms_l_t;
+typedef qpms_lm_t qpms_m_t;
 typedef size_t qpms_y_t;
 
 // Normalisations
