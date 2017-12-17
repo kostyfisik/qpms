@@ -45,6 +45,11 @@ typedef struct {
 	double r, theta, phi;
 } sph_t;
 
+// complex vector components in local spherical basis
+typedef struct {
+	complex double rc, thetac, phic; 
+} csphvec_t;
+
 typedef struct {
 	double r, phi;
 } pol_t;
