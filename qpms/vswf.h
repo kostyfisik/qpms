@@ -1,6 +1,7 @@
 #ifndef QPMS_VSWF_H
 #define QPMS_VSWF_H
 #include "qpms_types.h"
+#include <gsl/gsl_sf_legendre.h>
 
 // Electric wave N; NI
 complex double qpms_vswf_single_el(int m, int n, sph_t kdlj,
@@ -18,9 +19,20 @@ typedef struct {
 	csphvec_t *el, *mg;
 } qpms_vswfset_sph_t;
 
+
+double *qpms_legenre_deriv_y_get(double x, qpms_l_t lMax, 
+		gsle_sf_legendre_t lnorm, double csphase);
+qpms_errno_t qpms_legenre_deriv_y_fill(double *where, double x, 
+		qpms_l_t lMax, gsl_sf_legendre_t lnorm, double csphase); //NI
+
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
 	qpms_bessel_t btyp, qpms_normalization_t norm);//NI
 void qpms_vswfst_sph_pfree(qpms_vswfset_t *);//NI
+
+double *qpms_legendre_y_get(double x, qpms_l_t lMax, qpms_normalisation_t norm);//NI
+double *qpms_legendre0d_y_get(qpms_l_t lMax, qpms_normalization_t norm); //NI
+double *qpms_legendre_plus1d_y_get(qpms_l_t lMax, qpms_normalization_t norm); //NI
+double *qpms_legendre_minus1d_y_get(qpms_l_t lMax, qpms_normalization_t norm); //NI
 
 
 

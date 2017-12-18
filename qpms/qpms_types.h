@@ -11,6 +11,11 @@ typedef unsigned int qpms_l_t;
 typedef qpms_lm_t qpms_m_t;
 typedef size_t qpms_y_t;
 
+typedef enum {
+	QPMS_SUCCESS = 0;
+	QPMS_ERROR = 1;
+} qpms_errno_t;
+
 // Normalisations
 typedef enum {
 	QPMS_NORMALIZATION_XU = 3, // NI!
