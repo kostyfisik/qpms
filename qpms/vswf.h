@@ -20,9 +20,15 @@ typedef struct {
 } qpms_vswfset_sph_t;
 
 
-double *qpms_legenre_deriv_y_get(double x, qpms_l_t lMax, 
-		gsle_sf_legendre_t lnorm, double csphase);
-qpms_errno_t qpms_legenre_deriv_y_fill(double *where, double x, 
+/*
+ * N.B. for the norm definitions, see
+ * https://www.gnu.org/software/gsl/manual/html_node/Associated-Legendre-Polynomials-and-Spherical-Harmonics.html
+ * ( gsl/specfunc/legendre_source.c and 7.24.2 of gsl docs
+ * 
+
+double *qpms_legendre_deriv_y_get(double x, qpms_l_t lMax, 
+		gsle_sf_legendre_t lnorm, double csphase); //FIXME what about derivative?
+qpms_errno_t qpms_legendre_deriv_y_fill(double *where, double *where_deriv, double x, 
 		qpms_l_t lMax, gsl_sf_legendre_t lnorm, double csphase); //NI
 
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,

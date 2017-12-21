@@ -1,4 +1,5 @@
 #include "vswf.h"
+#include <math.h>
 
 // Legendre functions also for negative m, see DLMF 14.9.3
 qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, double x, qpms_l_t lMax,
@@ -25,12 +26,22 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, do
 				// viz DLMF 14.9.3, čert ví, jak je to s cs fasí.
 				double factor = exp(lgamma(l-m+1)-lgamma(n+m+1))*((m%2)?-1:1);
 				target[y] = factor * legendre_tmp[i];
-				target_deriv[y] = factor * legendre_deriv_tmp;
+				target_deriv[y] = factor * legendre_deriv_tmp[i];
 				}
 			break;
 		case GSL_SF_LEGENDRE_SCHMIDT:
 		case GSL_SF_LEGENDRE_SPHARM:
 		case GSL_SF_LEGENDRE_FULL:
+			for (qpms_l_t l = 0; l <= lMax; ++l)
+				for (qpms_m_t m = 1; m <= l; ++m) {
+				qpms_y_t y = gpms_mn2y(-m,l);
+				size_t i = gsl_sf_legenre_array_index(l,m);
+				// viz DLMF 14.9.3, čert ví, jak je to s cs fasí.
+				double factor = ((m%2)?-1:1); // this is the difference from the unnormalised case
+				target[y] = factor * legendre_tmp[i];
+				target_deriv[y] = factor * legendre_deriv_tmp[i];
+				}
+			break;
 		default:
 			abort(); //NI
 			break;
