@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass report
@@ -16,13 +16,13 @@
 \font_roman TeX Gyre Pagella
 \font_sans default
 \font_typewriter default
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts true
 \font_sc false
 \font_osf true
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format pdf4
 \output_sync 0
@@ -44,15 +44,24 @@
 \pdf_pdfusetitle true
 \papersize a5paper
 \use_geometry true
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
 \cite_engine basic
+\cite_engine_type default
+\biblio_style plain
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -581,6 +590,46 @@ Definition [K](2.4.6);
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Kristensson vs.
+ Xu
+\end_layout
+
+\begin_layout Standard
+As in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (36)"
+key "xu_calculation_1996"
+
+\end_inset
+
+ with unnormalised Legendre polynomials:
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\vect{u/v/w}\right)_{1lm} & = & \left(\mbox{CS}\right)^{m}\sqrt{\frac{2l+1}{4\pi}\frac{\left(l-m\right)!}{\left(l+m\right)!}}\frac{\vect N_{ml}^{(3/1/4)}}{\sqrt{l\left(l+1\right)}}\\
+\left(\vect{u/v/w}\right)_{1lm} & = & \left(\mbox{CS}\right)^{m}\sqrt{\frac{2l+1}{4\pi}\frac{\left(l-m\right)!}{\left(l+m\right)!}}\frac{\vect M_{ml}^{(3/1/4)}}{\sqrt{l\left(l+1\right)}}
+\end{eqnarray*}
+
+\end_inset
+
+where CS is 
+\begin_inset Formula $-1$
+\end_inset
+
+ in Kristensson's text.
+ N.B.
+ be careful about the translation coefficients and 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (81)"
+key "xu_calculation_1996"
+
+\end_inset
+
+, Xu's text is a bit confusing.
 \end_layout
 
 \begin_layout Subsection
@@ -1245,7 +1294,7 @@ Quantisation of quasistatic modes of a sphere
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "Electrodynamics"
+bibfiles "Electrodynamics,/home/mmn/repo/qpms/Electrodynamics"
 options "plain"
 
 \end_inset
