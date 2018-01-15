@@ -10,6 +10,7 @@ scripts_common.py
 timetrack.py
 tmatrices.py
 types.py
+svwf.c
 
 ## Smíšené / v přepisu
 scattering.py

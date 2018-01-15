@@ -231,6 +231,7 @@ if not pargs.nocentre:
     ypositions -= Ny * dy / 2
 xpositions, ypositions = np.meshgrid(xpositions, ypositions, indexing='ij', copy=False)
 positions=np.stack((xpositions.ravel(),ypositions.ravel()), axis=-1)
+positions=positions[np.random.permutation(len(positions))]
 N = positions.shape[0]
 
 kx = np.linspace(pargs.kxmin, pargs.kxmax, num=pargs.kxdensity, endpoint=True) * 2*np.pi / dx
@@ -331,7 +332,7 @@ for action in actions:
                     print("%d. momentum %s invalid (k_0=%f), skipping" % (i, str(klist[i]),k_0))
                 continue
             kdir = klistdir[i]
-            phases = np.exp(1j*np.sum(klist2d[i] * positions, axis=-1))
+            phases = np.exp(-1j*np.sum(klist2d[i] * positions, axis=-1))
             if action == 0 or action is None:
                 pq = np.array(qpms.plane_pq_y(lMax, kdir, xu)).ravel()[TEč] * phases[:, nx] 
                 xresult[i] = scat.scatter_partial(0, pq)
@@ -346,6 +347,7 @@ for action in actions:
         if action is None:
             np.savez(outfile, omega = freq, klist = klist,
                 metadata=metadata,
+                positions=positions,
                 ab_x=xresult,
                 ab_y=yresult,
                 ab_z=zresult
@@ -353,12 +355,14 @@ for action in actions:
         elif action == 0:
             np.savez(outfile, omega = freq, klist = klist,
                 metadata=metadata,
+                positions=positions,
                 ab_x=xresult,
                 ab_y=yresult,
                 )
         elif action == 1:
             np.savez(outfile, omega = freq, klist = klist,
                 metadata=metadata,
+                positions=positions,
                 ab_z=zresult
                 )
         else:

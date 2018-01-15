@@ -29,6 +29,7 @@ qpms_c = Extension('qpms_c',
             #'-fopenmp',
             ],
         libraries=['gsl', 'blas', 'gslcblas', #'omp'
+            # TODO resolve the problem with openblas (missing gotoblas symbol) and preferable use other blas library
 	],
         runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':') if 'LD_LIBRARY_PATH' in os.environ else []
         )
