@@ -338,6 +338,69 @@ The final result has asymptotic behaviour of ...
 .
 \end_layout
 
+\begin_layout Subparagraph
+Special case 
+\begin_inset Formula $q=3,n=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=\left\lceil \frac{\kappa}{2}\right\rceil }^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\left(\frac{\text{Γ}\left(\frac{2-q+n}{2}\right)\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}-\frac{\text{Γ}\left(\frac{3-q+n}{2}\right)\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}\right)\\
+ & = & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{2^{-2}}{k_{0}^{3}}\sqrt{\pi}\sum_{s=\left\lceil \frac{\kappa}{2}\right\rceil }^{\infty}\left(-1\right)^{s}k^{1-2s}\left(\sigma c-ik_{0}\right)^{2s}\left(\frac{\text{Γ}\left(\frac{2-q+n}{2}\right)\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}-\frac{\text{Γ}\left(\frac{3-q+n}{2}\right)\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}\right)
+\end{eqnarray*}
+
+\end_inset
+
+Let's hope that the left term (sum) in the big round brackets is zero for
+ 
+\begin_inset Formula $\kappa\ge3$
+\end_inset
+
+ (verified numerically, see file xxx; and BTW numerics show that it is zero
+ also when 
+\begin_inset Formula $k<k_{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa\ge3$
+\end_inset
+
+), and therefore
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=\left\lceil \frac{\kappa}{2}\right\rceil }^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\frac{\kor{\text{Γ}\left(\frac{3-q+n}{2}\right)\left(\frac{3-q+n}{2}\right)_{s}}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}\\
+ & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=\left\lceil \frac{\kappa}{2}\right\rceil }^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\frac{\koru{\text{Γ}\left(\frac{3-q+n}{2}+s\right)}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}\\
+\pht 1{s_{3,k_{0}}^{\textup{L}\kappa>3,c}}\left(k\right) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{2^{-2}}{k_{0}^{3}}\sqrt{\pi}\sum_{s=\left\lceil \frac{\kappa}{2}\right\rceil }^{\infty}\left(-1\right)^{s}\kor{k^{1-2s}}\left(\sigma c-ik_{0}\right)^{2s}\frac{\text{Γ}\left(\frac{1}{2}+s\right)\left(-\frac{1}{2}\right)_{s}}{\text{Γ}\left(\frac{3}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}\\
+ & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{2^{-2}\koru k}{k_{0}^{3}}\sqrt{\pi}\sum_{s=\left\lceil \frac{\kappa}{2}\right\rceil }^{\infty}\left(-1\right)^{s}\koru{\left(\frac{\sigma c-ik_{0}}{k}\right)^{2s}}\frac{\text{Γ}\left(\frac{1}{2}+s\right)\left(-\frac{1}{2}\right)_{s}}{\text{Γ}\left(\frac{3}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}
+\end{eqnarray*}
+
+\end_inset
+
+and Mathematica tells us that 
+\begin_inset Formula 
+\begin{eqnarray*}
+\sum_{s=0}^{\infty}\frac{\text{Γ}\left(\frac{1}{2}+s\right)\left(-\frac{1}{2}\right)_{s}}{\text{Γ}\left(\frac{3}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}x^{s} & = & 2\frac{\sqrt{x\left(1-x\right)}\sin^{-1}\sqrt{x}}{\sqrt{\pi}\sqrt{x}}\\
+\sum_{s=0}^{\infty}\frac{\text{Γ}\left(\frac{1}{2}+s\right)\left(-\frac{1}{2}\right)_{s}}{\text{Γ}\left(\frac{3}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}(-1)^{s}y^{2s} & = & 2\frac{y\sqrt{1+y^{2}}+\sinh^{-1}y}{\sqrt{\pi}y}
+\end{eqnarray*}
+
+\end_inset
+
+so
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht 1{s_{3,k_{0}}^{\textup{L}\kappa>3,c}}\left(k\right) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\kor{2^{-2}}k}{k_{0}^{3}}\kor{\sqrt{\pi}\left(\frac{\sigma c-ik_{0}}{k}\right)}\kor 2\frac{\left(\frac{\sigma c-ik_{0}}{k}\right)\sqrt{1+\left(\frac{\sigma c-ik_{0}}{k}\right)^{2}}+\sinh^{-1}\left(\frac{\sigma c-ik_{0}}{k}\right)}{\kor{\sqrt{\pi}\left(\frac{\sigma c-ik_{0}}{k}\right)}}\\
+ & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k}{2k_{0}^{3}}\left(\left(\frac{\sigma c-ik_{0}}{k}\right)\sqrt{1+\left(\frac{\sigma c-ik_{0}}{k}\right)^{2}}+\sinh^{-1}\left(\frac{\sigma c-ik_{0}}{k}\right)\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Paragraph
 Small k 
 \end_layout
