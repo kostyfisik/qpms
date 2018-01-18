@@ -1,19 +1,19 @@
 #include "bessels.h"
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 static const double ln2 = 0.69314718055994531;
 
-#include <stdio.h>
 
-// general; gives an array of size 
+// general; gives an array of size xxx with TODODESC
 complex double * hankelcoefftable_init(size_t maxn) {
 	complex double *hct = malloc((maxn+1)*(maxn+2)/2 * sizeof(complex double));
 	for(size_t n = 0; n <= maxn; ++n) {
 		complex double *hcs = hankelcoeffs_get(hct,n);
 		for (size_t k = 0; k <= n; ++k) {
 			double lcoeff = lgamma(n+k+1) - lgamma(n-k+1) - lgamma(k+1) - k*ln2;
-			printf("%f, %.16f\n", lcoeff, exp(lcoeff));
 			// for some reason, casting k-n to double does not work,so
 			// cpow (I, k-n-1) cannot be used...
 			complex double ifactor;
@@ -38,3 +38,57 @@ complex double * hankelcoefftable_init(size_t maxn) {
 	return hct;
 }
 
+void hankelLR2_fill(complex double *target, size_t maxn, complex double *hct, 
+								unsigned kappa, double c, double x) {
+	memset(target, 0, (maxn+1)*sizeof(complex double));
+	double regularisator = pow(1. - exp(-c * x), (double) kappa);
+	complex double expix = cexp(I * x);
+	double xfrac = 1.; // x ** (-1-k)
+	for (size_t k = 0; k < 2; ++k) {
+					xfrac /= x;
+					for(size_t n = k; n <= maxn; ++n) 
+						target[n] += regularisator * xfrac * hankelcoeffs_get(hct,n)[k];
+	}
+	for(size_t n = 0; n <= maxn; ++n)
+					target[n] *= expix;
+}
+
+void hankelSR2_fill(complex double *target, size_t maxn, complex double *hct, 
+								unsigned kappa, double c, double x) {
+	memset(target, 0, (maxn+1)*sizeof(complex double));
+	double antiregularisator = 1 - pow(1. - exp(-c * x), (double) kappa);
+	complex double expix = cexp(I * x);
+	double xfrac = 1.; // x ** (-1-k)
+	for (size_t k = 0; k < maxn; ++k) {
+					xfrac /= x;
+					for(size_t n = k; n <= maxn; ++n) 
+						target[n] += ((k<2) ? antiregularisator : 1) 
+										* xfrac * hankelcoeffs_get(hct,n)[k];
+	}
+	for(size_t n = 0; n <= maxn; ++n)
+					target[n] *= expix;
+}
+
+void hankelparts_fill(complex double *lrt, complex double *srt, size_t maxn,
+								size_t lrk_cutoff, complex double *hct,
+								unsigned kappa, double c, double x) {
+	memset(lrt, 0, (maxn+1)*sizeof(complex double));
+	memset(srt, 0, (maxn+1)*sizeof(complex double));
+	double regularisator = pow(1. - exp(-c * x), (double) kappa);
+	double antiregularisator = 1. - regularisator;
+	double xfrac = 1.; // x ** (-1-k)
+	for (size_t k = 0; k <= maxn; ++k) {
+	xfrac /= x;
+	  for(size_t n = k; n <= maxn; ++n) 
+	  	srt[n] += ((k<lrk_cutoff) ? antiregularisator : 1) 
+		  				* xfrac * hankelcoeffs_get(hct,n)[k];
+	  if (k < lrk_cutoff) for (size_t n = k; n <= maxn; ++n)
+	  	lrt[n] += regularisator * xfrac * hankelcoeffs_get(hct,n)[k];
+	}
+
+	complex double expix = cexp(I * x);
+	for(size_t n = 0; n <= maxn; ++n){
+					srt[n] *= expix;
+					lrt[n] *= expix;
+	}
+}
