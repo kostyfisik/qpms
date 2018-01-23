@@ -1,18 +1,38 @@
-#include "bessels.h"
-//#include "mdefs.h"
-#include <complex.h>
-#include <string.h>
-#define SQ(x) ((x)*(x))
+/*
+ * This is a dirty implementation of lrhankel_recpart_fill() that calculates
+ * the (cylindrical) Hankel transforms of the regularised part of the spherical Hankel
+ * functions that are to be summed in the reciprocal space.
+ *
+ * For now, only the regularisation with κ == 5 && q <= 2 && n <= 5 is implemented
+ * by writing down the explicit formula for each q,n pair and k>k0 vs k<k0 case,
+ * only with the help of some macros to make the whole thing shorter.
+ * 
+ * N.B. the results for very small k/k0 differ significantly (sometimes even in the first
+ * digit for n >= 3, probably due to catastrophic cancellation (hopefully not due
+ * to an error in the formula!). On the other hand,
+ * these numbers are tiny in their absolute value, so their contribution to the
+ * lattice sum should be negligible.
+ */
 
 #define MAXQM 1
 #define MAXN 5
 #define MAXKAPPA 5
 
-#define FF (-1)
+#include "bessels.h"
+//#include "mdefs.h"
+#include <complex.h>
+#include <string.h>
+#include <assert.h>
+#define SQ(x) ((x)*(x))
 
 #define P4(x) (((x)*(x))*((x)*(x)))
 
 
+/* 
+ * General form of the κ == 5 transforms. One usually has to put a (-1) factor
+ * to some part of the zeroth term of one of the cases k < k0 or k > k0 in order
+ * to stay on the correct branch of complex square root...
+ */
 #define KAPPA5SUM(form) (\
                 (form(0, 1))  \
             - 5*(form(1, 1)) \
@@ -31,11 +51,16 @@
             -   (form(5, 1)) \
 )
 
-#define LRHANKELDEF(fname) complex double fname(double c, double k0, double k, \
+/* 
+ * Prototype for the individual (per q,n) Bessel transform calculating functions.
+ * a, b, d, e, ash are recurring pre-calculated intermediate results, see the definition
+ * of lrhankel_recpart_fill() below to see their meaning
+ */
+#define LRHANKELDEF(fname) complex double fname(const double c, const double k0, const double k, \
 		const complex double *a, const complex double *b, const complex double *d, \
 		const complex double *e, const complex double *ash)
 
-typedef complex double (*lrhankelspec)(double, double, double, 
+typedef complex double (*lrhankelspec)(const double, const double, const double, 
 		const complex double *,
 		const complex double *,
 		const complex double *,
@@ -185,7 +210,6 @@ LRHANKELDEF(fk5q2n5s){
 #undef FORMK5Q2N5
 
 
-
 static const lrhankelspec transfuns_f[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
@@ -195,7 +219,7 @@ static const lrhankelspec transfuns_f[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
 	{{fk5q1n0l,fk5q1n1l,fk5q1n2l,fk5q1n3l,fk5q1n4l,fk5q1n5l},{fk5q2n0,fk5q2n1l,fk5q2n2l,fk5q2n3l,fk5q2n4l,fk5q2n5l}}
 };
 
-static lrhankelspec transfuns_n[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
+static const lrhankelspec transfuns_n[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
@@ -203,19 +227,33 @@ static lrhankelspec transfuns_n[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
 	{{fk5q1n0s,fk5q1n1s,fk5q1n2s,fk5q1n3s,fk5q1n4s,fk5q1n5s},{fk5q2n0,fk5q2n1s,fk5q2n2s,fk5q2n3s,fk5q2n4s,fk5q2n5s}}
 };
+
 void lrhankel_recpart_fill(complex  double *target,
-               size_t maxn, size_t lrk_cutoff,
+               size_t maxp /*max. degree of transformed spherical Hankel fun, 
+	        also the max. order of the Hankel transform */, 
+	       size_t lrk_cutoff,
                complex double  *hct,
                unsigned kappa, double c, double k0, double k)
 {
-	memset(target, 0, (maxn+1)*sizeof(complex double));
-	complex double a[kappa+1], b[kappa+1], d[kappa+1], e[kappa+1];
+	assert(5 == kappa); // Only kappa == 5 implemented so far
+	assert(maxp <= 5); // only n <= implemented so far
+	// assert(lrk_cutoff <= TODO);
+	const lrhankelspec (*funarr)[MAXQM+1][MAXN+1] = (k>k0) ? transfuns_f : transfuns_n;
+	memset(target, 0, maxp*(maxp+1)/2*sizeof(complex double));
+	complex double a[kappa+1], b[kappa+1], d[kappa+1], e[kappa+1], ash[kappa+1];
 	for (size_t sigma = 0; sigma <= kappa; ++sigma) {
 		a[sigma] = (sigma * c - I * k0);
 		b[sigma] = csqrt(1+k*k/(a[sigma]*a[sigma]));
 		d[sigma] = 1/b[sigma];
 		e[sigma] = d[sigma] / a[sigma];
+		ash[sigma] = casinh(a[sigma]/k);
 	}
+	for (size_t ql = 0; (ql <= maxp) && (ql < lrk_cutoff); ++ql)  // ql is q-1, i.e. corresponds to the hankel term power
+		for (size_t deltam = 0; deltam <= maxp; ++deltam){
+			complex double result = funarr[kappa][ql][deltam](c,k0,k,a,b,d,e,ash);
+			for (size_t p = 0; p <= maxp; ++p)
+				trindex_cd(target,p)[deltam] += result * hankelcoeffs_get(hct,p)[ql];
+		}
 }
 
 #ifdef TESTING
