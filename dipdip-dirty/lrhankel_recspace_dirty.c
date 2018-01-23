@@ -43,89 +43,90 @@ typedef complex double (*lrhankelspec)(double, double, double,
 		const complex double *);
 // complex double fun(double c, double k0, double k, ccd *a, ccd *b, ccd *d, ccd *e)
 
-
+#define FORMK5Q1N0(i,ff) (ff*e[i])
 LRHANKELDEF(fk5q1n0l){
-	return (FF*e[0]-5*e[1]+10*e[2]-10*e[3]+5*e[4]-e[5])/k0;
+	return (KAPPA5SUMFF(FORMK5Q1N0))/k0;
 }
+LRHANKELDEF(fk5q1n0s){
+	return (KAPPA5SUM(FORMK5Q1N0))/k0;
+}
+#undef FORMK5Q1N0
+
+#define FORMK5Q1N1(i,ff) (-ff*d[i])
 LRHANKELDEF(fk5q1n1l){
-	return (-FF*d[0]+5*d[1]-10*d[2]+10*d[3]-5*d[4]+d[5])/(k0*k);
+	return (KAPPA5SUMFF(FORMK5Q1N1))/(k0*k);
 }
+LRHANKELDEF(fk5q1n1s){
+	return (KAPPA5SUM(FORMK5Q1N1))/(k0*k);
+}
+#undef FORMK5Q1N1
+
+#define FORMK5Q1N2(i,ff) (ff*e[i] - t*a[i] + ff*t*d[i]*a[i])
 LRHANKELDEF(fk5q1n2l){
 	double t = 2/(k*k);
-	return (     (FF*e[0] - t*a[0] + FF*t*d[0]*a[0])
-		-5 * (e[1] - t*a[1] + t*d[1]*a[1])
-		+10 *(e[2] - t*a[2] + t*d[2]*a[2])
-		-10 *(e[3] - t*a[3] + t*d[3]*a[3])
-		+5 * (e[4] - t*a[4] + t*d[4]*a[4])
-		-    (e[5] - t*a[5] + t*d[5]*a[5])
-	       )/k0;
+	return (KAPPA5SUMFF(FORMK5Q1N2))/k0;
 }
+LRHANKELDEF(fk5q1n2s){
+	double t = 2/(k*k);
+	return (KAPPA5SUM(FORMK5Q1N2))/k0;
+}
+#undef FORMK5Q1N2
+
+#define FORMK5Q1N3(i,ff) (-ff*d[i] * (kk3 + 4*a[i]*a[i]))
 LRHANKELDEF(fk5q1n3l){
 	double kk3 = 3*k*k;
-	return (
-			- FF*d[0]*(kk3+4*a[0]*a[0])
-			+  5*d[1]*(kk3+4*a[1]*a[1])
-			- 10*d[2]*(kk3+4*a[2]*a[2])
-			+ 10*d[3]*(kk3+4*a[3]*a[3])
-			-  5*d[4]*(kk3+4*a[4]*a[4])
-			+    d[5]*(kk3+4*a[5]*a[5])
-	       )/(k0*k*k*k);
+	return (KAPPA5SUMFF(FORMK5Q1N3))/(k0*k*k*k);
 }
+LRHANKELDEF(fk5q1n3s){
+	double kk3 = 3*k*k;
+	return (KAPPA5SUM(FORMK5Q1N3))/(k0*k*k*k);	
+}
+#undef FORMK5Q1N3
+
+#define FORMK5Q1N4(i,ff) (ff*e[i] * (kkkk + kk8*a[i]*a[i] + 8*P4(a[i])))
 LRHANKELDEF(fk5q1n4l){
-	double kk8 = k*k*8, kkkk = P4(k); // Není lepší pow?
-	return (
-			+ FF*e[0]*(kkkk + kk8*a[0]*a[0] + 8*P4(a[0]))
-			-  5*e[1]*(kkkk + kk8*a[1]*a[1] + 8*P4(a[1]))
-			+ 10*e[2]*(kkkk + kk8*a[2]*a[2] + 8*P4(a[2]))
-			- 10*e[3]*(kkkk + kk8*a[3]*a[3] + 8*P4(a[3]))
-			+  5*e[4]*(kkkk + kk8*a[4]*a[4] + 8*P4(a[4]))
-			-    e[5]*(kkkk + kk8*a[5]*a[5] + 8*P4(a[5]))
-	       )/(k0*kkkk);
+	double kk8 = k*k*8, kkkk = P4(k); 
+	return (KAPPA5SUMFF(FORMK5Q1N4))/(k0*kkkk);
 }
+LRHANKELDEF(fk5q1n4s){
+	double kk8 = k*k*8, kkkk = P4(k); 
+	return (KAPPA5SUM(FORMK5Q1N4))/(k0*kkkk);
+}
+#undef FORMK5Q1N4
 
 #define FORMK5Q1N5(i,ff) (d[i]*(kkkk*(-5*ff+b[i])-ff*kk20*a[i]*a[i]-ff*16*P4(a[i])))
 LRHANKELDEF(fk5q1n5l){
 	double kk20 = k*k*20, kkkk = P4(k); 
-	return (
-		KAPPA5SUMFF(FORMK5Q1N5)
-	       )/(k0*kkkk*k);
+	return (KAPPA5SUMFF(FORMK5Q1N5))/(k0*kkkk*k);
 }
 LRHANKELDEF(fk5q1n5s){
 	double kk20 = k*k*20, kkkk = P4(k); 
-	return (
-		KAPPA5SUM(FORMK5Q1N5)
-	       )/(k0*kkkk*k);
+	return (KAPPA5SUM(FORMK5Q1N5))/(k0*kkkk*k);
 }
 #undef FORMK5Q1N5
 
-
+#define FORMK5Q2N0(i,ff) (-ash[i])
 LRHANKELDEF(fk5q2n0){
-	return (
-		 -     ash[0]
-		 + 5 * ash[1]
-		 -10 * ash[2]
-		 +10 * ash[3]
-		 - 5 * ash[4]
-		 +     ash[5]
-	       ) / (k0*k0);
+	return (KAPPA5SUM(FORMK5Q2N0)) / (k0*k0);
 }
+const lrhankelspec fk5q2n0s = fk5q2n0, fk5q2n0l = fk5q2n0;
+#undef FORMK5Q2N0
+
+#define FORMK5Q2N1(i,ff) (ff*b[i]*a[i])
 LRHANKELDEF(fk5q2n1l){
-	return (   FF *b[0]*a[0]
-		  - 5 *b[1]*a[1]
-		  +10 *b[2]*a[2]
-		  -10 *b[3]*a[3]
-		  + 5 *b[4]*a[4]
-		  -    b[5]*a[5]
-	       )/(k*k0*k0);
+	return (KAPPA5SUMFF(FORMK5Q2N1))/(k*k0*k0);
 }
+LRHANKELDEF(fk5q2n1s){
+	return (KAPPA5SUM(FORMK5Q2N1))/(k*k0*k0);
+}
+#undef FORMK5Q2N1
+
+#define FORMK5Q2N2(i,ff) (-ff*b[i]*a[i]*a[i])
 LRHANKELDEF(fk5q2n2l){
-	return  (       b[0]*a[0]*a[0]
-		  + 5 * b[1]*a[1]*a[1]
-		  -10 * b[2]*a[2]*a[2]
-		  +10 * b[3]*a[3]*a[3]
-		  - 5 * b[4]*a[4]*a[4]
-		  +     b[5]*a[5]*a[5]
-		) / (k*k*k0*k0);
+	return  (KAPPA5SUMFF(FORMK5Q2N2)) / (k*k*k0*k0);
+}
+LRHANKELDEF(fk5q2n2s){
+	return  (KAPPA5SUM(FORMK5Q2N2)) / (k*k*k0*k0);
 }
 
 #if 0
@@ -142,94 +143,25 @@ complex double fk5q3n0l(double c, double k0, double k,
 }
 #endif
 
-LRHANKELDEF(fk5q1n0s){
-	return (e[0]-5*e[1]+10*e[2]-10*e[3]+5*e[4]-e[5])/k0;
-}
-LRHANKELDEF(fk5q1n1s){
-	return (-d[0]+5*d[1]-10*d[2]+10*d[3]-5*d[4]+d[5])/(k0*k);
-}
-LRHANKELDEF(fk5q1n2s){
-	double t = 2/(k*k);
-	return (     (e[0] - t*a[0] + t*d[0]*a[0])
-		-5 * (e[1] - t*a[1] + t*d[1]*a[1])
-		+10 *(e[2] - t*a[2] + t*d[2]*a[2])
-		-10 *(e[3] - t*a[3] + t*d[3]*a[3])
-		+5 * (e[4] - t*a[4] + t*d[4]*a[4])
-		-    (e[5] - t*a[5] + t*d[5]*a[5])
-	       )/k0;
-}
-
-LRHANKELDEF(fk5q1n3s){
-	double kk3 = 3*k*k;
-	return (
-			-    d[0]*(kk3+4*a[0]*a[0])
-			+  5*d[1]*(kk3+4*a[1]*a[1])
-			- 10*d[2]*(kk3+4*a[2]*a[2])
-			+ 10*d[3]*(kk3+4*a[3]*a[3])
-			-  5*d[4]*(kk3+4*a[4]*a[4])
-			+    d[5]*(kk3+4*a[5]*a[5])
-	       )/(k0*k*k*k);
-}
-LRHANKELDEF(fk5q1n4s){
-	double kk8 = k*k*8, kkkk = P4(k); // Není lepší pow?
-	return (
-			+    e[0]*(kkkk + kk8*a[0]*a[0] + 8*P4(a[0]))
-			-  5*e[1]*(kkkk + kk8*a[1]*a[1] + 8*P4(a[1]))
-			+ 10*e[2]*(kkkk + kk8*a[2]*a[2] + 8*P4(a[2]))
-			- 10*e[3]*(kkkk + kk8*a[3]*a[3] + 8*P4(a[3]))
-			+  5*e[4]*(kkkk + kk8*a[4]*a[4] + 8*P4(a[4]))
-			-    e[5]*(kkkk + kk8*a[5]*a[5] + 8*P4(a[5]))
-	       )/(k0*kkkk);
-}
-
-const lrhankelspec fk5q2n0s = fk5q2n0, fk5q2n0l = fk5q2n0;
-
-LRHANKELDEF(fk5q2n1s){
-	return (   FF *b[0]*a[0]
-		  - 5 *b[1]*a[1]
-		  +10 *b[2]*a[2]
-		  -10 *b[3]*a[3]
-		  + 5 *b[4]*a[4]
-		  -    b[5]*a[5]
-	       )/(k*k0*k0);
-}
-LRHANKELDEF(fk5q2n2s){
-	return  (  FF * b[0]*a[0]*a[0]
-		  + 5 * b[1]*a[1]*a[1]
-		  -10 * b[2]*a[2]*a[2]
-		  +10 * b[3]*a[3]*a[3]
-		  - 5 * b[4]*a[4]*a[4]
-		  +     b[5]*a[5]*a[5]
-		) / (k*k*k0*k0);
-}
-
 #define FORMK5Q2N3(i,ff) (ff*a[i]*b[i]*(kk + 4*a[i]*a[i]))
 LRHANKELDEF(fk5q2n3l){
 	double kk = k*k; 
-	return (
-		KAPPA5SUMFF(FORMK5Q2N3)
-	       )/(3*k0*k0*kk*k);
+	return (KAPPA5SUMFF(FORMK5Q2N3))/(3*k0*k0*kk*k);
 }
 LRHANKELDEF(fk5q2n3s){
 	double kk = k*k; 
-	return (
-		KAPPA5SUM(FORMK5Q2N3)
-	       )/(3*k0*k0*kk*k);
+	return (KAPPA5SUM(FORMK5Q2N3))/(3*k0*k0*kk*k);
 }
 #undef FORMK5Q2N3
 
 #define FORMK5Q2N4(i,ff) (-ff*b[i]*a[i]*a[i]*(kk+2*a[i]*a[i]))
 LRHANKELDEF(fk5q2n4l){
 	double kk = k*k; 
-	return (
-		KAPPA5SUMFF(FORMK5Q2N4)
-	       )/(k0*k0*kk*kk);
+	return (KAPPA5SUMFF(FORMK5Q2N4))/(k0*k0*kk*kk);
 }
 LRHANKELDEF(fk5q2n4s){
 	double kk = k*k; 
-	return (
-		KAPPA5SUM(FORMK5Q2N4)
-	       )/(k0*k0*kk*kk);
+	return (KAPPA5SUM(FORMK5Q2N4))/(k0*k0*kk*kk);
 }
 #undef FORMK5Q2N4
 
@@ -254,7 +186,7 @@ LRHANKELDEF(fk5q2n5s){
 
 
 
-static lrhankelspec transfuns_f[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
+static const lrhankelspec transfuns_f[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
 	{{NULL,NULL,NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL,NULL}},
