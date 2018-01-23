@@ -44,16 +44,13 @@ typedef complex double (*lrhankelspec)(double, double, double,
 // complex double fun(double c, double k0, double k, ccd *a, ccd *b, ccd *d, ccd *e)
 
 
-complex double fk5q1n0l(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n0l){
 	return (FF*e[0]-5*e[1]+10*e[2]-10*e[3]+5*e[4]-e[5])/k0;
 }
-complex double fk5q1n1l(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n1l){
 	return (-FF*d[0]+5*d[1]-10*d[2]+10*d[3]-5*d[4]+d[5])/(k0*k);
 }
-complex double fk5q1n2l(double c, double k0, double k,
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n2l){
 	double t = 2/(k*k);
 	return (     (FF*e[0] - t*a[0] + FF*t*d[0]*a[0])
 		-5 * (e[1] - t*a[1] + t*d[1]*a[1])
@@ -63,8 +60,7 @@ complex double fk5q1n2l(double c, double k0, double k,
 		-    (e[5] - t*a[5] + t*d[5]*a[5])
 	       )/k0;
 }
-complex double fk5q1n3l(double c, double k0, double k,
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n3l){
 	double kk3 = 3*k*k;
 	return (
 			- FF*d[0]*(kk3+4*a[0]*a[0])
@@ -75,8 +71,7 @@ complex double fk5q1n3l(double c, double k0, double k,
 			+    d[5]*(kk3+4*a[5]*a[5])
 	       )/(k0*k*k*k);
 }
-complex double fk5q1n4l(double c, double k0, double k,
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n4l){
 	double kk8 = k*k*8, kkkk = P4(k); // Není lepší pow?
 	return (
 			+ FF*e[0]*(kkkk + kk8*a[0]*a[0] + 8*P4(a[0]))
@@ -104,8 +99,7 @@ LRHANKELDEF(fk5q1n5s){
 #undef FORMK5Q1N5
 
 
-complex double fk5q2n0(double c, double k0, double k,
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q2n0){
 	return (
 		 -     ash[0]
 		 + 5 * ash[1]
@@ -115,8 +109,7 @@ complex double fk5q2n0(double c, double k0, double k,
 		 +     ash[5]
 	       ) / (k0*k0);
 }
-complex double fk5q2n1l(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q2n1l){
 	return (   FF *b[0]*a[0]
 		  - 5 *b[1]*a[1]
 		  +10 *b[2]*a[2]
@@ -125,8 +118,7 @@ complex double fk5q2n1l(double c, double k0, double k,
 		  -    b[5]*a[5]
 	       )/(k*k0*k0);
 }
-complex double fk5q2n2l(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q2n2l){
 	return  (       b[0]*a[0]*a[0]
 		  + 5 * b[1]*a[1]*a[1]
 		  -10 * b[2]*a[2]*a[2]
@@ -150,16 +142,13 @@ complex double fk5q3n0l(double c, double k0, double k,
 }
 #endif
 
-complex double fk5q1n0s(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n0s){
 	return (e[0]-5*e[1]+10*e[2]-10*e[3]+5*e[4]-e[5])/k0;
 }
-complex double fk5q1n1s(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n1s){
 	return (-d[0]+5*d[1]-10*d[2]+10*d[3]-5*d[4]+d[5])/(k0*k);
 }
-complex double fk5q1n2s(double c, double k0, double k,
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n2s){
 	double t = 2/(k*k);
 	return (     (e[0] - t*a[0] + t*d[0]*a[0])
 		-5 * (e[1] - t*a[1] + t*d[1]*a[1])
@@ -170,8 +159,7 @@ complex double fk5q1n2s(double c, double k0, double k,
 	       )/k0;
 }
 
-complex double fk5q1n3s(double c, double k0, double k,
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n3s){
 	double kk3 = 3*k*k;
 	return (
 			-    d[0]*(kk3+4*a[0]*a[0])
@@ -182,8 +170,7 @@ complex double fk5q1n3s(double c, double k0, double k,
 			+    d[5]*(kk3+4*a[5]*a[5])
 	       )/(k0*k*k*k);
 }
-complex double fk5q1n4s(double c, double k0, double k,
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q1n4s){
 	double kk8 = k*k*8, kkkk = P4(k); // Není lepší pow?
 	return (
 			+    e[0]*(kkkk + kk8*a[0]*a[0] + 8*P4(a[0]))
@@ -197,8 +184,7 @@ complex double fk5q1n4s(double c, double k0, double k,
 
 const lrhankelspec fk5q2n0s = fk5q2n0, fk5q2n0l = fk5q2n0;
 
-complex double fk5q2n1s(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q2n1s){
 	return (   FF *b[0]*a[0]
 		  - 5 *b[1]*a[1]
 		  +10 *b[2]*a[2]
@@ -207,8 +193,7 @@ complex double fk5q2n1s(double c, double k0, double k,
 		  -    b[5]*a[5]
 	       )/(k*k0*k0);
 }
-complex double fk5q2n2s(double c, double k0, double k, 
-		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+LRHANKELDEF(fk5q2n2s){
 	return  (  FF * b[0]*a[0]*a[0]
 		  + 5 * b[1]*a[1]*a[1]
 		  -10 * b[2]*a[2]*a[2]
@@ -301,6 +286,7 @@ void lrhankel_recpart_fill(complex  double *target,
 	}
 }
 
+#ifdef TESTING
 #include <stdio.h>
 int main() {
 	double k0 = 0.7;
@@ -325,11 +311,11 @@ int main() {
 			//if (/*!*/((qm==1)&&(n==0))){ //  not skip q==2, n=0 for now
 // complex double fun(double c, double k0, double k, ccd *a, ccd *b, ccd *d, ccd *e)
 				complex double result = 
-					//transfuns_f[kappa][qm][n](c,k0,k,a,b,d,e,ash);
-				 	fk5q2n5l(c,k0,k,a,b,d,e,ash);
+					(k < k0 ? transfuns_n : transfuns_f)[kappa][qm][n](c,k0,k,a,b,d,e,ash);
 				printf("%.16e %.16e ", creal(result), cimag(result));
 			}
 		printf("\n");
 	}
 	return 0;
 }
+#endif
