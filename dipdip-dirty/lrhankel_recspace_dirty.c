@@ -38,6 +38,18 @@ complex double fk5q1n2l(double c, double k0, double k,
 		-    (e[5] - t*a[5] + t*d[5]*a[5])
 	       )/k0;
 }
+complex double fk5q1n3l(double c, double k0, double k,
+		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+	double kk3 = 3*k*k;
+	return (
+			-    d[0]*(kk3+4*a[0]*a[0])
+			+  5*d[1]*(kk3+4*a[1]*a[1])
+			- 10*d[2]*(kk3+4*a[2]*a[2])
+			+ 10*d[3]*(kk3+4*a[3]*a[3])
+			-  5*d[4]*(kk3+4*a[4]*a[4])
+			+    d[5]*(kk3+4*a[5]*a[5])
+	       )/(k0*k*k*k);
+}
 complex double fk5q2n0(double c, double k0, double k,
 		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
 	return (
@@ -184,7 +196,7 @@ int main() {
 // complex double fun(double c, double k0, double k, ccd *a, ccd *b, ccd *d, ccd *e)
 				complex double result = 
 					//transfuns_f[kappa][qm][n](c,k0,k,a,b,d,e,ash);
-				 	fk5q2n0s(c,k0,k,a,b,d,e,ash);
+				 	fk5q1n3l(c,k0,k,a,b,d,e,ash);
 				printf("%.16e %.16e ", creal(result), cimag(result));
 			}
 		printf("\n");

@@ -291,6 +291,87 @@ extra
 .
 \end_layout
 
+\begin_layout Standard
+
+\lang english
+According to Mathematica, the right sum with 
+\begin_inset Formula $s$
+\end_inset
+
+ going from 0 
+\begin_inset Formula 
+\begin{equation}
+\frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\left(-\frac{\text{Γ}\left(\frac{3-q+n}{2}\right)\left(\frac{3-q+n}{2}\right)_{s}\left(\frac{3-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n-1}{2}\right)\text{Γ}\left(\frac{3}{2}+s\right)s!}\frac{\left(\sigma c-ik_{0}\right)}{k}\right)\label{eq:right sum}
+\end{equation}
+
+\end_inset
+
+can be written as (mathematica output) 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\lang english
+(2^(2 - q)*k^(-3 + q)*((-I)*k0 + c*sig)*Gamma[(3 + n - q)/2]*Hypergeometric2F1[3
+/2 - n/2 - q/2, 3/2 + n/2 - q/2, 3/2, (k0 + I*c*sig)^2/k^2])/(k0^q*Gamma[(-1
+ + n + q)/2]) 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{2^{2-q}k^{-3+q}\left(-ik_{0}+c\sigma\right)\text{Γ}\left(\frac{3+n-q}{2}\right)\hgf\left(\begin{array}{c}
+\frac{3-n-q}{2},\frac{3+n-q}{2}\\
+3/2
+\end{array};-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right)}{k_{0}^{q;}\Gamma\left(\frac{-1+n+q}{2}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Similarly, the left sum
+\begin_inset Formula 
+\begin{equation}
+\frac{2^{1-q}}{k_{0}^{q}}\sqrt{\pi}\sum_{s=0}^{\infty}\left(-1\right)^{s}k^{-2+q-2s}\left(\sigma c-ik_{0}\right)^{2s}\left(\frac{\text{Γ}\left(\frac{2-q+n}{2}\right)\left(\frac{2-q+n}{2}\right)_{s}\left(\frac{2-q-n}{2}\right)_{s}}{\text{Γ}\left(\frac{q+n}{2}\right)\text{Γ}\left(\frac{1}{2}+s\right)s!}\right)\label{eq:left sum}
+\end{equation}
+
+\end_inset
+
+gives (mathematica output) 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\lang english
+(2^(1 - q)*k^(-2 + q)*Gamma[(2 + n - q)/2]*Hypergeometric2F1[1 - n/2 - q/2,
+ 1 + n/2 - q/2, 1/2, (k0 + I*c*sig)^2/k^2])/(k0^q*Gamma[(n + q)/2]) 
+\end_layout
+
+\end_inset
+
+ and is equal to
+\begin_inset Formula 
+\[
+\frac{2^{1-q}k^{-2+q}\Gamma\left(\frac{2+n-q}{2}\right)\hgf\left(\begin{array}{c}
+\frac{2-n-q}{2},\frac{2+n-q}{2}\\
+1/2
+\end{array};-\frac{\left(\sigma c-ik_{0}\right)^{2}}{k^{2}}\right)}{k_{0}^{q;}\Gamma\left(\frac{n+q}{2}\right)}
+\]
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subparagraph
 
 \lang english
@@ -393,9 +474,80 @@ so
 \begin_inset Formula 
 \begin{eqnarray*}
 \pht 1{s_{3,k_{0}}^{\textup{L}\kappa>3,c}}\left(k\right) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\kor{2^{-2}}k}{k_{0}^{3}}\kor{\sqrt{\pi}\left(\frac{\sigma c-ik_{0}}{k}\right)}\kor 2\frac{\left(\frac{\sigma c-ik_{0}}{k}\right)\sqrt{1+\left(\frac{\sigma c-ik_{0}}{k}\right)^{2}}+\sinh^{-1}\left(\frac{\sigma c-ik_{0}}{k}\right)}{\kor{\sqrt{\pi}\left(\frac{\sigma c-ik_{0}}{k}\right)}}\\
- & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k}{2k_{0}^{3}}\left(\left(\frac{\sigma c-ik_{0}}{k}\right)\sqrt{1+\left(\frac{\sigma c-ik_{0}}{k}\right)^{2}}+\sinh^{-1}\left(\frac{\sigma c-ik_{0}}{k}\right)\right)
+(Hq3n1) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k}{2k_{0}^{3}}\left(\left(\frac{\sigma c-ik_{0}}{k}\right)\sqrt{1+\left(\frac{\sigma c-ik_{0}}{k}\right)^{2}}+\sinh^{-1}\left(\frac{\sigma c-ik_{0}}{k}\right)\right)
 \end{eqnarray*}
 
+\end_inset
+
+
+\series bold
+což je prej blbě (zjisti proč – blbě opsáno nebo nesprávná větev logaritmu?);
+\series default
+ správný výsledek je (mathematica kód: 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+- Sum[(-1)^sig Binomial[kap, sig] (((-I)*k0 + c*sig)*(k0*Sqrt[1 - (k0 +
+ I*c*sig)^2/k^2] + I*c*sig*Sqrt[1 - (k0 + I*c*sig)^2/k^2] + k*ArcSin[(k0
+ + I*c*sig)/k]))/(2*k0^3*(k0 + I*c*sig)) , {sig, 0, kap}]
+\end_layout
+
+\end_inset
+
+ nebo FullSimplify 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+(((-I)*k0 + c*sig)*Sqrt[(k^2 - (k0 + I*c*sig)^2)/k^2] - I*k*ArcSin[(k0 +
+ I*c*sig)/k])/(2*k0^3) 
+\end_layout
+
+\end_inset
+
+; snad jsem to tentokrát neopsal blbě)
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht 1{s_{3,k_{0}}^{\textup{L}\kappa>3,c}}\left(k\right) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\left(-ik_{0}+c\sigma\right)\left(k_{0}\sqrt{1+\left(\frac{\sigma c-ik_{0}}{k}\right)^{2}}+ic\sigma\sqrt{1+\left(\frac{\sigma c-ik_{0}}{k}\right)^{2}}+k\sin^{-1}\left(\frac{k_{0}+ic\sigma}{k}\right)\right)}{2k_{0}^{3}\left(k_{0}+ic\sigma\right)}\\
+\mbox{(f.simpl.)} & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\left(-ik_{0}+c\sigma\right)\sqrt{1-\left(\frac{k_{0}+ic\sigma}{k}\right)^{2}}-ik\sin^{-1}\left(\frac{k_{0}+ic\sigma}{k}\right)}{2k_{0}^{3}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subparagraph
+Special case 
+\begin_inset Formula $q=3,n=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mathematica řiká po fullsimplify zhruba toto 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Sum[((-1)^(1 + sig)*(k*Sqrt[(k^2 - (k0 + I*c*sig)^2)/k^2] + (k0 + I*c*sig)*ArcSi
+n[(k0 + I*c*sig)/k])*Binomial[kap, sig])/k0^3, {sig, 0, kap}]
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht 0{s_{3,k_{0}}^{\textup{L}\kappa>3,c}}\left(k\right) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k\sqrt{1-\left(\frac{k_{0}+ic\sigma}{k}\right)^{2}}+\left(k_{0}+ic\sigma\right)\sin^{-1}\left(\frac{k_{0}+ic\sigma}{k}\right)}{k_{0}^{3}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula $\kappa\ge2$
 \end_inset
 
 

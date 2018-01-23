@@ -16,9 +16,18 @@ hankelcoeffs_get(complex double *hankelcoefftable, size_t n){
 
 
 // general; target_longrange and target_shortrange are of size (maxn+1)
+// if target_longrange is NULL, only the short-range part is calculated
 void hankelparts_fill(complex double *target_longrange, complex double *target_shortrange,
-		size_t maxn, size_t longrange_k_cutoff, // x**(-(k+1)-1) terms go completely to short-range part
+		size_t maxn, size_t longrange_order_cutoff, // x**(-(order+1)-1) terms go completely to short-range part
 		complex double *hankelcoefftable,
-		unsigned kappa, double c, double x);
+		unsigned kappa, double c, double x); // x = k0 * r
+
+
+// this declaration is general; however, the implementation 
+// is so far only for kappa == ???, maxn == ??? TODO
+void lrhankel_recpart_fill(complex  double *target_longrange_kspace,
+	       size_t maxn, size_t longrange_k_cutoff, 
+	       complex double  *hankelcoefftable,
+	       unsigned kappa, double c, double k0, double k);
 
 #endif //BESSELS_H

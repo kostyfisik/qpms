@@ -1,0 +1,380 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     11519,        371]
+NotebookOptionsPosition[     10578,        333]
+NotebookOutlinePosition[     10914,        348]
+CellTagsIndexPosition[     10871,        345]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"rho", "[", 
+   RowBox[{"r_", ",", "c_", ",", "kap_"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1", "-", 
+     RowBox[{"Exp", "[", 
+      RowBox[{
+       RowBox[{"-", "c"}], " ", "r"}], "]"}]}], ")"}], "^", "kap"}]}], "\n", 
+ RowBox[{
+  RowBox[{"s", "[", 
+   RowBox[{"r_", ",", "k0_", ",", "q_"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{"I", " ", "k0", " ", "r"}], "]"}], " ", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"k0", " ", "r"}], ")"}], "^", 
+    RowBox[{"(", 
+     RowBox[{"-", "q"}], ")"}]}]}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"integrand", "[", 
+    RowBox[{
+    "r_", ",", "k_", ",", "k0_", ",", "c_", ",", "kap_", ",", "q_", ",", 
+     "n_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"rho", "[", 
+     RowBox[{"r", ",", "c", ",", "kap"}], "]"}], " ", 
+    RowBox[{"s", "[", 
+     RowBox[{"r", ",", "k0", ",", "q"}], "]"}], " ", "r", " ", 
+    RowBox[{"BesselJ", "[", 
+     RowBox[{"n", ",", 
+      RowBox[{"k", " ", "r"}]}], "]"}]}]}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Lsum30", "[", 
+   RowBox[{"kap_", ",", "c_", ",", "k0_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{"Sum", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"-", "1"}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "+", "sig"}], ")"}]}], "*", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"k", "*", 
+          RowBox[{"Sqrt", "[", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"k", "^", "2"}], "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"k0", "+", 
+                 RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "^", "2"}]}], 
+             ")"}], "/", 
+            RowBox[{"k", "^", "2"}]}], "]"}]}], "+", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"k0", "+", 
+            RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "*", 
+          RowBox[{"ArcSin", "[", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"k0", "+", 
+              RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "/", "k"}], 
+           "]"}]}]}], ")"}], "*", 
+       RowBox[{"Binomial", "[", 
+        RowBox[{"kap", ",", "sig"}], "]"}]}], ")"}], "/", 
+     RowBox[{"k0", "^", "3"}]}], ",", 
+    RowBox[{"{", 
+     RowBox[{"sig", ",", "0", ",", "kap"}], "}"}]}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Nint30", "[", 
+   RowBox[{"kap_", ",", "c_", ",", "k0_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{"NIntegrate", "[", 
+   RowBox[{
+    RowBox[{"integrand", "[", 
+     RowBox[{
+     "r", ",", "k", ",", "k0", ",", "c", ",", "kap", ",", "3", ",", "0"}], 
+     "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"r", ",", "0", ",", "Infinity"}], "}"}]}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Lsum30relerror", "[", 
+   RowBox[{"kappa_", ",", "c_", ",", "k0_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{"Abs", "[", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"NIntegrate", "[", 
+       RowBox[{
+        RowBox[{"integrand", "[", 
+         RowBox[{
+         "r", ",", "k", ",", "k0", ",", "c", ",", "kappa", ",", "3", ",", 
+          "0"}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"r", ",", "0", ",", "Infinity"}], "}"}]}], "]"}], "-", 
+      RowBox[{"Lsum30", "[", 
+       RowBox[{"kappa", ",", "c", ",", "k0", ",", "k"}], "]"}]}], ")"}], "/", 
+    
+    RowBox[{"Lsum30", "[", 
+     RowBox[{"kappa", ",", "c", ",", "k0", ",", "k"}], "]"}]}], 
+   "]"}]}]}], "Input",
+ CellChangeTimes->{{3.725113471451489*^9, 3.725113518541342*^9}, 
+   3.72511361142743*^9, {3.7251136649255037`*^9, 3.725113665100748*^9}, 
+   3.725113940122211*^9, {3.72511397606431*^9, 3.725114004686063*^9}, {
+   3.7251140520462313`*^9, 3.725114052164033*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Lsum30relerror", "[", 
+  RowBox[{"6", ",", "0.1", ",", "1", ",", "1.1"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7251136200622*^9, 3.7251136322203493`*^9}}],
+
+Cell[BoxData["6.70650792232631`*^-12"], "Output",
+ CellChangeTimes->{3.725113638647744*^9, 3.7251136705456123`*^9, 
+  3.725113945893931*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Lsum30relerror", "[", 
+  RowBox[{"2", ",", "0.1", ",", "1.8", ",", "0.7"}], "]"}]], "Input",
+ CellChangeTimes->{{3.725113688094325*^9, 3.72511371089297*^9}, {
+  3.725113953012788*^9, 3.725113957835388*^9}}],
+
+Cell[BoxData["0.9975419499206724`"], "Output",
+ CellChangeTimes->{{3.725113689091052*^9, 3.725113711464198*^9}, {
+  3.72511394863025*^9, 3.725113958377577*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Lsum30", "[", 
+  RowBox[{"2", ",", "0.1", ",", "1.8", ",", "0.7"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7251140122908077`*^9, 3.725114027355405*^9}, {
+  3.7251140719110518`*^9, 3.72511408374263*^9}}],
+
+Cell[BoxData[
+ RowBox[{"0.00006715230791048965`", "\[VeryThinSpace]", "+", 
+  RowBox[{"0.41841799501968396`", " ", "\[ImaginaryI]"}]}]], "Output",
+ CellChangeTimes->{
+  3.7251140276493177`*^9, {3.725114072392956*^9, 3.7251140841186037`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Nint30", "[", 
+  RowBox[{"2", ",", "0.1", ",", "1.8", ",", "0.7"}], "]"}]], "Input",
+ CellChangeTimes->{{3.72511403724128*^9, 3.725114037839789*^9}, {
+  3.725114078108095*^9, 3.725114082476921*^9}}],
+
+Cell[BoxData[
+ RowBox[{"0.00006715230791033052`", "\[VeryThinSpace]", "+", 
+  RowBox[{"0.0010284870104265479`", " ", "\[ImaginaryI]"}]}]], "Output",
+ CellChangeTimes->{{3.72511403840551*^9, 3.725114086040118*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Sum", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"-", "1"}], ")"}], "^", 
+       RowBox[{"(", 
+        RowBox[{"1", "+", "sig"}], ")"}]}], "*", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"k", "*", 
+         RowBox[{"Sqrt", "[", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"k", "^", "2"}], "-", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"k0", "+", 
+                RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "^", "2"}]}], 
+            ")"}], "/", 
+           RowBox[{"k", "^", "2"}]}], "]"}]}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"k0", "+", 
+           RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "*", 
+         RowBox[{"ArcSin", "[", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"k0", "+", 
+             RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "/", "k"}], 
+          "]"}]}]}], ")"}], "*", 
+      RowBox[{"Binomial", "[", 
+       RowBox[{"kap", ",", "sig"}], "]"}]}], ")"}], "/", 
+    RowBox[{"k0", "^", "3"}]}], ",", 
+   RowBox[{"{", 
+    RowBox[{"sig", ",", "0", ",", "kap"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.725113829800209*^9, 3.725113829800631*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  UnderoverscriptBox["\[Sum]", 
+   RowBox[{"sig", "=", "0"}], "kap"], 
+  FractionBox[
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{"(", 
+      RowBox[{"-", "1"}], ")"}], 
+     RowBox[{"1", "+", "sig"}]], " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"k", " ", 
+       SqrtBox[
+        FractionBox[
+         RowBox[{
+          SuperscriptBox["k", "2"], "-", 
+          SuperscriptBox[
+           RowBox[{"(", 
+            RowBox[{"k0", "+", 
+             RowBox[{"\[ImaginaryI]", " ", "c", " ", "sig"}]}], ")"}], "2"]}], 
+         SuperscriptBox["k", "2"]]]}], "+", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"k0", "+", 
+         RowBox[{"\[ImaginaryI]", " ", "c", " ", "sig"}]}], ")"}], " ", 
+       RowBox[{"ArcSin", "[", 
+        FractionBox[
+         RowBox[{"k0", "+", 
+          RowBox[{"\[ImaginaryI]", " ", "c", " ", "sig"}]}], "k"], "]"}]}]}], 
+     ")"}], " ", 
+    RowBox[{"Binomial", "[", 
+     RowBox[{"kap", ",", "sig"}], "]"}]}], 
+   SuperscriptBox["k0", "3"]]}]], "Output",
+ CellChangeTimes->{3.7251138695080853`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Lsum30alt", "[", 
+   RowBox[{"kap_", ",", "c_", ",", "k0_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{"Sum", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"-", "1"}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "+", "sig"}], ")"}]}], "*", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"k", "*", 
+          RowBox[{"Sqrt", "[", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"k", "^", "2"}], "-", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{"k0", "+", 
+                 RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "^", "2"}]}], 
+             ")"}], "/", 
+            RowBox[{"k", "^", "2"}]}], "]"}]}], "+", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"k0", "+", 
+            RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "*", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"ArcSin", "[", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"k0", "+", 
+                RowBox[{"I", "*", "c", "*", "sig"}]}], ")"}], "/", "k"}], 
+             "]"}], "+", 
+            RowBox[{"I", "*", "Pi"}]}], ")"}]}]}], ")"}], "*", 
+       RowBox[{"Binomial", "[", 
+        RowBox[{"kap", ",", "sig"}], "]"}]}], ")"}], "/", 
+     RowBox[{"k0", "^", "3"}]}], ",", 
+    RowBox[{"{", 
+     RowBox[{"sig", ",", "0", ",", "kap"}], "}"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.725114285602276*^9, 3.725114340572805*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Lsum30alt", "[", 
+  RowBox[{"2", ",", "0.1", ",", "1.8", ",", "0.7"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7251143362072897`*^9, 3.725114336572289*^9}}],
+
+Cell[BoxData[
+ RowBox[{"0.00006715230791043414`", "\[VeryThinSpace]", "+", 
+  RowBox[{"0.4184179950196838`", " ", "\[ImaginaryI]"}]}]], "Output",
+ CellChangeTimes->{3.725114342830419*^9}]
+}, Open  ]]
+},
+WindowSize->{1280, 758},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"10.0 for Linux x86 (64-bit) (December 4, 2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 3847, 115, 231, "Input"],
+Cell[CellGroupData[{
+Cell[4430, 139, 180, 3, 32, "Input"],
+Cell[4613, 144, 140, 2, 34, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4790, 151, 230, 4, 32, "Input"],
+Cell[5023, 157, 160, 2, 32, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5220, 164, 226, 4, 32, "Input"],
+Cell[5449, 170, 241, 4, 32, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5727, 179, 222, 4, 32, "Input"],
+Cell[5952, 185, 213, 3, 32, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6202, 193, 1309, 40, 55, "Input"],
+Cell[7514, 235, 1072, 34, 94, "Output"]
+}, Open  ]],
+Cell[8601, 272, 1567, 46, 99, "Input"],
+Cell[CellGroupData[{
+Cell[10193, 322, 179, 3, 32, "Input"],
+Cell[10375, 327, 187, 3, 32, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

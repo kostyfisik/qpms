@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const double ln2 = 0.69314718055994531;
+static const double ln2 = 0.693147180559945309417;
 
 
 // general; gives an array of size xxx with TODODESC
@@ -41,7 +41,7 @@ complex double * hankelcoefftable_init(size_t maxn) {
 void hankelparts_fill(complex double *lrt, complex double *srt, size_t maxn,
 								size_t lrk_cutoff, complex double *hct,
 								unsigned kappa, double c, double x) {
-	memset(lrt, 0, (maxn+1)*sizeof(complex double));
+	if (lrt) memset(lrt, 0, (maxn+1)*sizeof(complex double));
 	memset(srt, 0, (maxn+1)*sizeof(complex double));
 	double regularisator = pow(1. - exp(-c * x), (double) kappa);
 	double antiregularisator = 1. - regularisator;
@@ -51,13 +51,13 @@ void hankelparts_fill(complex double *lrt, complex double *srt, size_t maxn,
 	  for(size_t n = k; n <= maxn; ++n) 
 	  	srt[n] += ((k<lrk_cutoff) ? antiregularisator : 1) 
 		  				* xfrac * hankelcoeffs_get(hct,n)[k];
-	  if (k < lrk_cutoff) for (size_t n = k; n <= maxn; ++n)
+	  if (lrt && k < lrk_cutoff) for (size_t n = k; n <= maxn; ++n)
 	  	lrt[n] += regularisator * xfrac * hankelcoeffs_get(hct,n)[k];
 	}
 
 	complex double expix = cexp(I * x);
-	for(size_t n = 0; n <= maxn; ++n){
+	for(size_t n = 0; n <= maxn; ++n)
 					srt[n] *= expix;
-					lrt[n] *= expix;
-	}
+	if (lrt) for(size_t n = 0; n <= maxn; ++n)
+					srt[n] *= expix;
 }

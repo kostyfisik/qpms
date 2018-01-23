@@ -2702,6 +2702,79 @@ for
  
 \end_layout
 
+\begin_layout Paragraph
+Case 
+\begin_inset Formula $n=1,q=3$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As shown in separate note (check whether copied correctly)
+\begin_inset Formula 
+\[
+\pht 1{s_{3,k_{0}}^{\textup{L}\kappa>3,c}}\left(k\right)=-\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{\left(-ik_{0}+c\sigma\right)\sqrt{1-\left(\frac{k_{0}+ic\sigma}{k}\right)^{2}}-ik\sin^{-1}\left(\frac{k_{0}+ic\sigma}{k}\right)}{2k_{0}^{3}}
+\]
+
+\end_inset
+
+for 
+\begin_inset Formula $\kappa\ge3$
+\end_inset
+
+, 
+\begin_inset Formula $k>k_{0}?$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Paragraph
+Case 
+\begin_inset Formula $n=0,q=3$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As shown in separate note (check whether copied correctly)
+\lang finnish
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\lang finnish
+Sum[((-1)^(1 + sig)*(k*Sqrt[(k^2 - (k0 + I*c*sig)^2)/k^2] + (k0 + I*c*sig)*ArcSi
+n[(k0 + I*c*sig)/k])*Binomial[kap, sig])/k0^3, {sig, 0, kap}]
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht 0{s_{3,k_{0}}^{\textup{L}\kappa>3,c}}\left(k\right) & = & -\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{k\sqrt{1-\left(\frac{k_{0}+ic\sigma}{k}\right)^{2}}+\left(k_{0}+ic\sigma\right)\sin^{-1}\left(\frac{k_{0}+ic\sigma}{k}\right)}{k_{0}^{3}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\lang english
+for 
+\begin_inset Formula $\kappa\ge2$
+\end_inset
+
+, 
+\begin_inset Formula $k>k_{0}?$
+\end_inset
+
+ 
+\end_layout
+
 \begin_layout Standard
 \begin_inset Note Note
 status open
@@ -2964,7 +3037,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -2974,7 +3047,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -2987,7 +3060,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -3040,9 +3113,10 @@ where the Hankel transform of order
 
  is defined as
 \begin_inset Formula 
-\begin{equation}
-\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
-\end{equation}
+\begin{eqnarray}
+\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
+ & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\, g(r)J_{\left|m\right|}(kr)r
+\end{eqnarray}
 
 \end_inset
 
