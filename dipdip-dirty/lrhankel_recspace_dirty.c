@@ -42,7 +42,7 @@ complex double fk5q1n3l(double c, double k0, double k,
 		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
 	double kk3 = 3*k*k;
 	return (
-			-    d[0]*(kk3+4*a[0]*a[0])
+			- FF*d[0]*(kk3+4*a[0]*a[0])
 			+  5*d[1]*(kk3+4*a[1]*a[1])
 			- 10*d[2]*(kk3+4*a[2]*a[2])
 			+ 10*d[3]*(kk3+4*a[3]*a[3])
@@ -115,7 +115,20 @@ complex double fk5q1n2s(double c, double k0, double k,
 	       )/k0;
 }
 
-lrhankelspec fk5q2n0s = fk5q2n0, fk5q2n0l = fk5q2n0;
+complex double fk5q1n3s(double c, double k0, double k,
+		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
+	double kk3 = 3*k*k;
+	return (
+			-    d[0]*(kk3+4*a[0]*a[0])
+			+  5*d[1]*(kk3+4*a[1]*a[1])
+			- 10*d[2]*(kk3+4*a[2]*a[2])
+			+ 10*d[3]*(kk3+4*a[3]*a[3])
+			-  5*d[4]*(kk3+4*a[4]*a[4])
+			+    d[5]*(kk3+4*a[5]*a[5])
+	       )/(k0*k*k*k);
+}
+
+const lrhankelspec fk5q2n0s = fk5q2n0, fk5q2n0l = fk5q2n0;
 
 complex double fk5q2n1s(double c, double k0, double k, 
 		const complex double *a, const complex double *b, const complex double *d, const complex double *e, const complex double *ash) {
