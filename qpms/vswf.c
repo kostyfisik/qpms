@@ -2,7 +2,7 @@
 #include <math.h>
 
 // Legendre functions also for negative m, see DLMF 14.9.3
-qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, double x, qpms_l_t lMax,
+int qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, double x, qpms_l_t lMax,
 		gsl_sf_legendre_t lnorm, double csphase)
 {
 	size_t n = gsl_sf_legenre_array_n(lMax);
@@ -12,7 +12,7 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, do
 			lnorm, (size_t)lMax, x, csphase, legendre_tmp,legendre_tmp_deriv);
 	for (qpms_l_t l = 0; l <= lMax; ++l)
 			for (qpms_m_t m = 0; m <= l; ++m) {
-				qpms_y_t y = gpms_mn2y(m,l);
+				qpms_y_t y = qpms_mn2y(m,l);
 				size_t i = gsl_sf_legenre_array_index(l,m);
 				target[y] = legendre_tmp[i];
 				target_deriv[y] = legendre_deriv_tmp[i];
@@ -21,7 +21,7 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, do
 		case GSL_SF_LEGEDRE_NONE:
 			for (qpms_l_t l = 0; l <= lMax; ++l)
 				for (qpms_m_t m = 1; m <= l; ++m) {
-				qpms_y_t y = gpms_mn2y(-m,l);
+				qpms_y_t y = qpms_mn2y(-m,l);
 				size_t i = gsl_sf_legenre_array_index(l,m);
 				// viz DLMF 14.9.3, čert ví, jak je to s cs fasí.
 				double factor = exp(lgamma(l-m+1)-lgamma(n+m+1))*((m%2)?-1:1);
@@ -34,7 +34,7 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, do
 		case GSL_SF_LEGENDRE_FULL:
 			for (qpms_l_t l = 0; l <= lMax; ++l)
 				for (qpms_m_t m = 1; m <= l; ++m) {
-				qpms_y_t y = gpms_mn2y(-m,l);
+				qpms_y_t y = qpms_mn2y(-m,l);
 				size_t i = gsl_sf_legenre_array_index(l,m);
 				// viz DLMF 14.9.3, čert ví, jak je to s cs fasí.
 				double factor = ((m%2)?-1:1); // this is the difference from the unnormalised case
@@ -51,13 +51,13 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, do
 	return QPMS_SUCCESS;
 }
 
-// FIXME ZAPOMNĚL JSEM NA POLE DERIVACÍ (TÉŽ HLAVIČKOVÝ SOUBOR)
-double *qpms_legendre_deriv_y_get(double x, qpms_l_t lMax, gsle_sf_legendre_t lnorm,
+int qpms_legendre_deriv_y_get(double **target, double **dtarget, double x, qpms_l_t lMax, gsl_sf_legendre_t lnorm,
 		double csphase)
 {
-	double *ar = malloc(sizeof(double)*qpms_lMaxnelem(lMax));
-	if (qpms_legendre_deriv_y_fill(ar, x, lMax, lnorm, csphase))
-		abort();
+
+	*target = malloc(sizeof(double)*qpms_lMax2nelem(lMax));
+	*dtarget = malloc(sizeof(double)*qpms_lMax2nelem(lMax));
+	return qpms_legendre_deriv_y_fill(ar, x, lMax, lnorm, csphase);
 }
 
 

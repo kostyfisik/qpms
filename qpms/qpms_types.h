@@ -18,7 +18,9 @@ typedef enum {
 
 // Normalisations
 typedef enum {
+	// As in TODO
 	QPMS_NORMALIZATION_XU = 3, // NI!
+	// As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
 	QPMS_NORMALIZATION_KRISTENSSON = 2, // NI!
 	QPMS_NORMALIZATION_POWER = QPMS_NORMALIZATION_KRISTENSSON, // NI!
 	QPMS_NORMALIZATION_TAYLOR = 1,

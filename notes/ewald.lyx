@@ -915,7 +915,69 @@ reference "eq:2d long range regularisation problem statement"
 \end_inset
 
 might lead to satisfactory results; see below.
- 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+In natural/dimensionless units; 
+\begin_inset Formula $x=k_{0}r$
+\end_inset
+
+, 
+\begin_inset Formula $\tilde{k}=k/k_{0}$
+\end_inset
+
+, 
+\begin_inset Formula $č=c/k_{0}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+s_{q}(x)\equiv e^{ix}x^{-q}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\tilde{\rho}_{\kappa,č}(x)\equiv\left(1-e^{-čx}\right)^{\text{\kappa}}=\left(1-e^{-\frac{c}{k_{0}}k_{0}r}\right)^{\kappa}=\left(1-e^{-cr}\right)^{\kappa}=\rho_{\kappa,c}(r)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+s_{q}^{\textup{L}}\left(x\right)\equiv s_{q}(x)\tilde{\rho}_{\kappa,č}(x)=e^{ix}x^{-q}\left(1-e^{-čx}\right)^{\text{\kappa}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\pht n{s_{q}^{\textup{L}}}\left(\tilde{k}\right) & = & \int_{0}^{\infty}s_{q}^{\textup{L}}\left(x\right)xJ_{n}\left(\tilde{k}x\right)\ud x=\int_{0}^{\infty}s_{q}\left(x\right)\tilde{\rho}_{\kappa,č}(x)xJ_{n}\left(\tilde{k}x\right)\ud x\\
+ & = & \int_{0}^{\infty}s_{k_{0},q}\left(r\right)\rho_{\kappa,c}(r)\left(k_{0}r\right)J_{n}\left(kr\right)\ud\left(k_{0}r\right)\\
+ & = & k_{0}^{2}\int_{0}^{\infty}s_{k_{0},q}\left(r\right)\rho_{\kappa,c}(r)rJ_{n}\left(kr\right)\ud r\\
+ & = & k_{0}^{2}\pht n{s_{k_{0},q}^{\textup{L}}}\left(k\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -3037,7 +3099,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -3047,7 +3109,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -3060,7 +3122,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -3114,8 +3176,8 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{eqnarray}
-\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
- & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\, g(r)J_{\left|m\right|}(kr)r
+\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
+ & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\,g(r)J_{\left|m\right|}(kr)r
 \end{eqnarray}
 
 \end_inset
