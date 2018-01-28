@@ -2,9 +2,10 @@
 #define QPMS_INDEXING_H
 
 #include "qpms_types.h"
+#include <math.h>
 
 static inline qpms_y_t qpms_mn2y(qpms_m_t m, qpms_l_t n) {
-        return (qpms_y_t) n * (n + 1) + m - 1;
+        return n * (n + 1) + m - 1;
 }
 
 static inline qpms_lm_t qpms_y2n(qpms_y_t y) {

@@ -241,6 +241,117 @@ Pi and tau
 \end_layout
 
 \begin_layout Subsection
+Xu
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Xu pitau"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As in (37)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\pi_{mn}\left(\cos\theta\right) & = & \frac{m}{\sin\theta}P_{n}^{m}\left(\cos\theta\right)\\
+\tau_{mn}\left(\cos\theta\right) & = & \frac{\ud}{\ud\theta}P_{n}^{m}\left(\cos\theta\right)=-\left(\sin\theta\right)\frac{\ud P_{n}^{m}\left(\cos\theta\right)}{\ud\left(\cos\theta\right)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The expressions 
+\begin_inset Formula $\left(\sin\theta\right)^{-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{\ud P_{n}^{m}\left(\cos\theta\right)}{\ud\left(\cos\theta\right)}$
+\end_inset
+
+ are singular for 
+\begin_inset Formula $\cos\theta=\pm1$
+\end_inset
+
+, the limits 
+\begin_inset Formula $\tau_{mn}\left(\pm1\right),\pi_{mn}\left(\pm1\right)$
+\end_inset
+
+ however exist.
+ Labeling 
+\begin_inset Formula $x\equiv\cos\theta$
+\end_inset
+
+, 
+\begin_inset Formula $\sqrt{\left(1+x\right)\left(1-x\right)}=\sqrt{1-x^{2}}\equiv\sin\theta$
+\end_inset
+
+ and using the asymptotic expression (DLMF 14.8.2) we obtain that the limits
+ are nonzero only for 
+\begin_inset Formula $m=\pm1$
+\end_inset
+
+ and
+\begin_inset Formula 
+\begin{eqnarray*}
+\pi_{1\nu}(1-) & = & -\frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}\\
+\tau_{1\nu}(1-) & = & \frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}
+\end{eqnarray*}
+
+\end_inset
+
+and using the parity property 
+\begin_inset Formula $P_{n}^{m}\left(-x\right)=\left(-1\right)^{m+n}P_{n}^{m}\left(x\right)$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\pi_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}\\
+\tau_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}
+\end{eqnarray*}
+
+\end_inset
+
+For 
+\begin_inset Formula $m=1$
+\end_inset
+
+, we simply use the relation 
+\begin_inset Formula $P_{n}^{-m}=\left(CS\right)^{m}P_{n}^{m}\frac{\left(n-m\right)!}{\left(n+m\right)!}$
+\end_inset
+
+ to get
+\begin_inset Formula 
+\begin{eqnarray*}
+\pi_{-1\nu}(1-) & = & -CS\frac{\nu+2}{2}\\
+\tau_{-1\nu}(1-) & = & CS\frac{\nu+2}{2}\\
+\pi_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\frac{\nu+2}{2}\\
+\tau_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\frac{\nu+2}{2}
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $CS$
+\end_inset
+
+ is 
+\begin_inset Formula $-1$
+\end_inset
+
+ if the Condon-Shortley phase is employed on the level of Legendre polynomials,
+ 1 otherwise.
+\end_layout
+
+\begin_layout Subsection
 Taylor
 \end_layout
 
@@ -254,6 +365,51 @@ Taylor
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The limiting expressions are obtained simply by multiplying the expressions
+ from sec.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Xu pitau"
+
+\end_inset
+
+ by the normalisation factor,
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{\pi}_{1\nu}(1-) & = & -\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
+\tilde{\tau}_{1\nu}(1-) & = & \sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
+\tilde{\pi}_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
+\tilde{\tau}_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}
+\end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\tilde{\pi}_{-1\nu}(1-) & = & -CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
+\tilde{\tau}_{-1\nu}(1-) & = & CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
+\tilde{\pi}_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
+\tilde{\tau}_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}
+\end{eqnarray*}
+
+\end_inset
+
+i.e.
+ the expressions for 
+\begin_inset Formula $m=-1$
+\end_inset
+
+ are the same as for 
+\begin_inset Formula $m=1$
+\end_inset
+
+ except for the sign if Condon-Shortley phase is used on the Legendre polynomial
+ level.
 \end_layout
 
 \begin_layout Section
@@ -545,6 +701,27 @@ Definition [T](2.40);
 \widetilde{\vect N}_{mn}^{(j)} & = & \frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\hat{\vect r}\\
  &  & +\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\, z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
 \widetilde{\vect M}_{mn}^{(j)} & = & \left[i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}-\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Xu
+\end_layout
+
+\begin_layout Standard
+are the electric and magnetic waves, respectively:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\vect N_{mn}^{(j)} & = & \frac{n(n+1)}{kr}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\hat{\vect r}\\
+ &  & +\left[\tau_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\pi_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\, z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
+\vect M_{mn}^{(j)} & = & \left[i\pi_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}-\tau_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
 \end{eqnarray*}
 
 \end_inset

@@ -7,29 +7,25 @@
 
 // integer index types
 typedef int qpms_lm_t;
-typedef unsigned int qpms_l_t;
+typedef int qpms_l_t; // can't be unsigned because of the behaviour under - operator
 typedef qpms_lm_t qpms_m_t;
 typedef size_t qpms_y_t;
 
 typedef enum {
-	QPMS_SUCCESS = 0;
-	QPMS_ERROR = 1;
+	QPMS_SUCCESS = 0,
+	QPMS_ERROR = 1
 } qpms_errno_t;
 
 // Normalisations
 typedef enum {
 	// As in TODO
-	QPMS_NORMALIZATION_XU = 3, // NI!
+	QPMS_NORMALISATION_XU = 3, // NI!
 	// As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
-	QPMS_NORMALIZATION_KRISTENSSON = 2, // NI!
-	QPMS_NORMALIZATION_POWER = QPMS_NORMALIZATION_KRISTENSSON, // NI!
-	QPMS_NORMALIZATION_TAYLOR = 1,
-	QPMS_NORMALIZATION_UNDEF = 0
-} qpms_normalization_t;
-
-typedef enum {
-	QPMS_SUCCESS = 0;
-} qpms_errno_t;
+	QPMS_NORMALISATION_KRISTENSSON = 2, // NI!
+	QPMS_NORMALISATION_POWER = QPMS_NORMALISATION_KRISTENSSON, // NI!
+	QPMS_NORMALISATION_TAYLOR = 1,
+	QPMS_NORMALISATION_UNDEF = 0
+} qpms_normalisation_t;
 
 typedef enum {
         QPMS_BESSEL_REGULAR = 1, // regular function j
