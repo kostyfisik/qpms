@@ -301,8 +301,8 @@ The expressions
  and
 \begin_inset Formula 
 \begin{eqnarray*}
-\pi_{1\nu}(1-) & = & -\frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}\\
-\tau_{1\nu}(1-) & = & \frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}
+\pi_{1\nu}(+1-) & = & CS\frac{\nu\left(\nu+1\right)}{2}\\
+\tau_{1\nu}(+1-) & = & CS\frac{\nu\left(\nu+1\right)}{2}
 \end{eqnarray*}
 
 \end_inset
@@ -314,8 +314,8 @@ and using the parity property
 
 \begin_inset Formula 
 \begin{eqnarray*}
-\pi_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}\\
-\tau_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\frac{\nu\left(\nu+1\right)\left(\nu+2\right)}{2}
+\pi_{1\nu}(-1+) & = & -CS\left(-1\right)^{\nu}\frac{\nu\left(\nu+1\right)}{2}\\
+\tau_{1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\frac{\nu\left(\nu+1\right)}{2}
 \end{eqnarray*}
 
 \end_inset
@@ -331,10 +331,10 @@ For
  to get
 \begin_inset Formula 
 \begin{eqnarray*}
-\pi_{-1\nu}(1-) & = & -CS\frac{\nu+2}{2}\\
-\tau_{-1\nu}(1-) & = & CS\frac{\nu+2}{2}\\
-\pi_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\frac{\nu+2}{2}\\
-\tau_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\frac{\nu+2}{2}
+\pi_{-1\nu}(+1-) & = & \frac{CS}{2}\\
+\tau_{-1\nu}(+1-) & = & -\frac{CS}{2}\\
+\pi_{-1\nu}(-1+) & = & -\left(-1\right)^{\nu}\frac{CS}{2}\\
+\tau_{-1\nu}(-1+) & = & -\left(-1\right)^{\nu}\frac{CS}{2}
 \end{eqnarray*}
 
 \end_inset
@@ -380,10 +380,10 @@ reference "sub:Xu pitau"
  by the normalisation factor,
 \begin_inset Formula 
 \begin{eqnarray*}
-\tilde{\pi}_{1\nu}(1-) & = & -\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
-\tilde{\tau}_{1\nu}(1-) & = & \sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
-\tilde{\pi}_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
-\tilde{\tau}_{1\nu}(-1+) & = & \left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}
+\tilde{\pi}_{1\nu}(+1-) & = & CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}}{2}\\
+\tilde{\tau}_{1\nu}(+1-) & = & CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}}{2}\\
+\tilde{\pi}_{1\nu}(-1+) & = & -CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}}{2}\\
+\tilde{\tau}_{1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}}{2}
 \end{eqnarray*}
 
 \end_inset
@@ -391,10 +391,10 @@ reference "sub:Xu pitau"
 
 \begin_inset Formula 
 \begin{eqnarray*}
-\tilde{\pi}_{-1\nu}(1-) & = & -CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
-\tilde{\tau}_{-1\nu}(1-) & = & CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
-\tilde{\pi}_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
-\tilde{\tau}_{-1\nu}(-1+) & = & CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}
+\tilde{\pi}_{-1\nu}(+1-) & = & CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}}{2}\\
+\tilde{\tau}_{-1\nu}(+1-) & = & -CS\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}}{2}\\
+\tilde{\pi}_{-1\nu}(-1+) & = & -CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}\\
+\tilde{\tau}_{-1\nu}(-1+) & = & -CS\left(-1\right)^{\nu}\sqrt{\frac{2\nu+1}{4\pi}}\frac{\sqrt{\nu\left(\nu+1\right)}\left(\nu+2\right)}{2}
 \end{eqnarray*}
 
 \end_inset
@@ -699,7 +699,7 @@ Definition [T](2.40);
 \begin_inset Formula 
 \begin{eqnarray*}
 \widetilde{\vect N}_{mn}^{(j)} & = & \frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\hat{\vect r}\\
- &  & +\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\, z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
+ &  & +\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\,z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
 \widetilde{\vect M}_{mn}^{(j)} & = & \left[i\tilde{\pi}_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}-\tilde{\tau}_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
 \end{eqnarray*}
 
@@ -720,7 +720,7 @@ are the electric and magnetic waves, respectively:
 \begin_inset Formula 
 \begin{eqnarray*}
 \vect N_{mn}^{(j)} & = & \frac{n(n+1)}{kr}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\hat{\vect r}\\
- &  & +\left[\tau_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\pi_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\, z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
+ &  & +\left[\tau_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}+i\pi_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\,z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}\\
 \vect M_{mn}^{(j)} & = & \left[i\pi_{mn}\left(\cos\theta\right)\hat{\vect{\theta}}-\tau_{mn}\left(\cos\theta\right)\hat{\vect{\phi}}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
 \end{eqnarray*}
 
@@ -760,7 +760,7 @@ Definition [K](2.4.6);
  to simlify the notation.
 \begin_inset Formula 
 \begin{eqnarray*}
-\left(\vect{u/v/w}\right)_{2lm} & = & \frac{1}{kr}\frac{\ud\left(kr\, z_{l}^{(j)}\left(kr\right)\right)}{\ud\, kr}\vect A_{2lm}\left(\hat{\vect r}\right)+\sqrt{l\left(l+1\right)}\frac{z_{l}^{(j)}(kr)}{kr}\vect A_{3lm}\left(\hat{\vect r}\right)\\
+\left(\vect{u/v/w}\right)_{2lm} & = & \frac{1}{kr}\frac{\ud\left(kr\,z_{l}^{(j)}\left(kr\right)\right)}{\ud\,kr}\vect A_{2lm}\left(\hat{\vect r}\right)+\sqrt{l\left(l+1\right)}\frac{z_{l}^{(j)}(kr)}{kr}\vect A_{3lm}\left(\hat{\vect r}\right)\\
 \left(\vect{u/v/w}\right)_{1lm} & = & z_{l}^{(j)}\left(kr\right)\vect A_{1lm}\left(\hat{\vect r}\right)
 \end{eqnarray*}
 

@@ -6,10 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef CSPHASE
-#define CSPHASE (1.) // FIXME this should be later determined by qpms_normalization_t
-#endif
-
 // Legendre functions also for negative m, see DLMF 14.9.3
 qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, double x, qpms_l_t lMax,
 		gsl_sf_legendre_t lnorm, double csphase)
@@ -72,6 +68,8 @@ qpms_errno_t qpms_legendre_deriv_y_get(double **target, double **dtarget, double
 
 qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t norm) 
 {
+	const double csphase = qpms_normalisation_t_csphase(norm);
+	norm = qpms_normalisation_t_normonly(norm);
 	qpms_pitau_t res;
 	qpms_y_t nelem = qpms_lMax2nelem(lMax);
 	res.pi = malloc(nelem * sizeof(double));
@@ -88,10 +86,10 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
 					double p = l*(l+1)/2;
 					const double n = 0.5;
 					int lpar = (l%2)?-1:1;
-					res.pi [qpms_mn2y(+1, l)] = ((ct>0) ? -1 : lpar) * p;
-					res.pi [qpms_mn2y(-1, l)] = ((ct>0) ? -1 : lpar) * n * CSPHASE;
-					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * p;
-					res.tau[qpms_mn2y(-1, l)] = ((ct>0) ? +1 : lpar) * n * CSPHASE;
+					res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * p * csphase;
+					res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * n * csphase;
+					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * p * csphase;
+					res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * n * csphase;
 				}
 				break;
 			case QPMS_NORMALISATION_TAYLOR:
@@ -99,10 +97,10 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
 					res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)*0.25*M_1_PI);
 					int lpar = (l%2)?-1:1;
 					double fl = 0.25 * sqrt((2*l+1)*l*(l+1)*M_1_PI);
-					res.pi [qpms_mn2y(+1, l)] = ((ct>0) ? -1 : lpar) * fl;
-					res.pi [qpms_mn2y(-1, l)] = ((ct>0) ? -1 : lpar) * fl * CSPHASE;
-					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl;
-					res.tau[qpms_mn2y(-1, l)] = ((ct>0) ? +1 : lpar) * fl * CSPHASE;
+					res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
+					res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
+					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl * csphase;
+					res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * fl * csphase;
 				}
 				break;
 			case QPMS_NORMALISATION_POWER:
@@ -110,10 +108,10 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
 					res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)/(4*M_PI *l*(l+1)));
 					int lpar = (l%2)?-1:1;
 					double fl = 0.25 * sqrt((2*l+1)*M_1_PI);
-					res.pi [qpms_mn2y(+1, l)] = ((ct>0) ? -1 : lpar) * fl;
-					res.pi [qpms_mn2y(-1, l)] = ((ct>0) ? -1 : lpar) * fl * CSPHASE;
-					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl;
-					res.tau[qpms_mn2y(-1, l)] = ((ct>0) ? +1 : lpar) * fl * CSPHASE;
+					res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
+					res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
+					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl * csphase;
+					res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * fl * csphase;
 	
 				}
 				break;
@@ -126,7 +124,7 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
 		res.leg = malloc(sizeof(double)*qpms_lMax2nelem(lMax));
 		if (qpms_legendre_deriv_y_fill(res.leg, legder, ct, lMax, 
 					norm == QPMS_NORMALISATION_XU ? GSL_SF_LEGENDRE_NONE
-						: GSL_SF_LEGENDRE_SPHARM, CSPHASE)) 
+						: GSL_SF_LEGENDRE_SPHARM, csphase)) 
 			abort();
 		if (norm == QPMS_NORMALISATION_POWER) 
 			/* for Xu (=non-normalized) and Taylor (=sph. harm. normalized) 
