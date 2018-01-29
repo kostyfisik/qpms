@@ -31,6 +31,9 @@ qpms_errno_t qpms_legendre_deriv_y_get(double **result, double **result_deriv, d
 qpms_errno_t qpms_legendre_deriv_y_fill(double *where, double *where_deriv, double x, 
 		qpms_l_t lMax, gsl_sf_legendre_t lnorm, double csphase); 
 
+qpms_errno_t qpms_vswf_fill(csphvec_t *resultM, csphvec_t *resultN, qpms_l_t lMax, sph_t kdrj,
+		qpms_bessel_t btyp, qpms_normalisation_t norm);
+
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
 	qpms_bessel_t btyp, qpms_normalisation_t norm);//NI
 void qpms_vswfset_sph_pfree(qpms_vswfset_sph_t *);//NI

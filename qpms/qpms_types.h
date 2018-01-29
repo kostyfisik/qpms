@@ -64,6 +64,10 @@ typedef struct {
 } cart3_t;
 
 typedef struct {
+	complex double x, y, z;
+} ccart3_t;
+
+typedef struct {
 	double x, y;
 } cart2_t;
 
@@ -80,4 +84,6 @@ typedef struct {
 	double r, phi;
 } pol_t;
 
+
+#define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES

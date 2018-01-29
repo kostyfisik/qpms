@@ -9,7 +9,8 @@
 double qpms_legendre0(int m, int n); 
 // Associated Legendre polynomial derivative at zero argument (DLMF 14.5.2)
 double qpms_legendred0(int m, int n); 
-int qpms_sph_bessel_array(qpms_bessel_t typ, int lmax, double x, complex double *result_array);
+// TODO unify types
+int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *result_array);
 
 // TODO replace the xplicit "Taylor" functions with general,
 // taking qpms_bessel_t argument.
@@ -30,10 +31,10 @@ typedef struct qpms_trans_calculator {
         size_t nelem;
         complex double **A_multipliers;
         complex double **B_multipliers;
-        qpms_normalization_t normalization;
+        qpms_normalisation_t normalisation;
 } qpms_trans_calculator;
 
-qpms_trans_calculator *qpms_trans_calculator_init(int lMax, qpms_normalization_t nt);
+qpms_trans_calculator *qpms_trans_calculator_init(int lMax, qpms_normalisation_t nt);
 void qpms_trans_calculator_free(qpms_trans_calculator *);
 
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,

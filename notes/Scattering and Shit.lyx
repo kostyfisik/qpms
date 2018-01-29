@@ -683,6 +683,19 @@ In the usual cases we encounter, the part described by the magnetic waves
  is pretty small.
 \end_layout
 
+\begin_layout Standard
+The expression with Bessel function derivatives appearing below in the electric
+ waves can be rewritten using (DLMF 10.51.2)
+\begin_inset Formula 
+\[
+\frac{1}{kr}\frac{\ud\left(kr\,z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}=\frac{\ud z_{n}^{j}\left(kr\right)}{\ud(kr)}+\frac{z_{n}^{j}\left(kr\right)}{kr}=z_{n-1}^{j}\left(kr\right)-n\frac{z_{n}^{j}\left(kr\right)}{kr}.
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Taylor
 \end_layout
