@@ -8,7 +8,7 @@ const qpms_l_t lMax = 3;
 int main() {
 	qpms_y_t nelem = qpms_lMax2nelem(lMax);
 	for (double theta = 0.; theta <= M_PI; theta += dtheta) {
-		printf("%.5e ", theta);
+		printf("%.5e %.5e ", theta, cos(theta));
 		for(qpms_normalisation_t norm = 1; norm <= 3; ++norm) {//fujka :D
 			qpms_pitau_t pt = qpms_pitau_get(theta, lMax, norm);
 			for (qpms_y_t y = 0; y < nelem; ++y)

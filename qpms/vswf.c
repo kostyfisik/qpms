@@ -33,7 +33,7 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, do
 				qpms_y_t y = qpms_mn2y(-m,l);
 				size_t i = gsl_sf_legendre_array_index(l,m);
 				// viz DLMF 14.9.3, čert ví, jak je to s cs fasí.
-				double factor = exp(lgamma(l-m+1)-lgamma(n+m+1))*((m%2)?-1:1);
+				double factor = exp(lgamma(l-m+1)-lgamma(l+m+1))*((m%2)?-1:1);
 				target[y] = factor * legendre_tmp[i];
 				target_deriv[y] = factor * legendre_deriv_tmp[i];
 				}
@@ -85,8 +85,8 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
 			case QPMS_NORMALISATION_XU:
 				for (qpms_l_t l = 1; l <= lMax; ++l) {
 					res.leg[qpms_mn2y(0, l)] = (l%2)?ct:1.;
-					double p = l*(l+1)*(l+2)/2;
-					double n = (l+2)/2.;
+					double p = l*(l+1)/2;
+					const double n = 0.5;
 					int lpar = (l%2)?-1:1;
 					res.pi [qpms_mn2y(+1, l)] = ((ct>0) ? -1 : lpar) * p;
 					res.pi [qpms_mn2y(-1, l)] = ((ct>0) ? -1 : lpar) * n * CSPHASE;
@@ -98,7 +98,7 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
 				for (qpms_l_t l = 1; l <= lMax; ++l) {
 					res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)*0.25*M_1_PI);
 					int lpar = (l%2)?-1:1;
-					double fl = 0.25 * (l+2) * sqrt((2*l+1)*l*(l+1)*M_1_PI);
+					double fl = 0.25 * sqrt((2*l+1)*l*(l+1)*M_1_PI);
 					res.pi [qpms_mn2y(+1, l)] = ((ct>0) ? -1 : lpar) * fl;
 					res.pi [qpms_mn2y(-1, l)] = ((ct>0) ? -1 : lpar) * fl * CSPHASE;
 					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl;
@@ -109,7 +109,7 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
 				for (qpms_l_t l = 1; l <= lMax; ++l) {
 					res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)/(4*M_PI *l*(l+1)));
 					int lpar = (l%2)?-1:1;
-					double fl = 0.25 * (l+2) * sqrt((2*l+1)*M_1_PI);
+					double fl = 0.25 * sqrt((2*l+1)*M_1_PI);
 					res.pi [qpms_mn2y(+1, l)] = ((ct>0) ? -1 : lpar) * fl;
 					res.pi [qpms_mn2y(-1, l)] = ((ct>0) ? -1 : lpar) * fl * CSPHASE;
 					res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl;
