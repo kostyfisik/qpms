@@ -31,8 +31,27 @@ qpms_errno_t qpms_legendre_deriv_y_get(double **result, double **result_deriv, d
 qpms_errno_t qpms_legendre_deriv_y_fill(double *where, double *where_deriv, double x, 
 		qpms_l_t lMax, gsl_sf_legendre_t lnorm, double csphase); 
 
-qpms_errno_t qpms_vswf_fill(csphvec_t *resultM, csphvec_t *resultN, qpms_l_t lMax, sph_t kdrj,
+/* some of the result targets may be NULL */
+qpms_errno_t qpms_vswf_fill(csphvec_t *resultL, csphvec_t *resultM, csphvec_t *resultN, qpms_l_t lMax, sph_t kdrj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
+// Should give the same results: for consistency checks
+qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *resultL, csphvec_t *resultM, csphvec_t *resultN, qpms_l_t lMax, sph_t kdrj,
+		qpms_bessel_t btyp, qpms_normalisation_t norm);
+
+qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
+		                qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
+qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
+		                qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
+
+qpms_errno_t qpms_planewave2vswf_fill_cart(ccart3_t amplitude, ccart3_t wavedir /* real or complex? */,
+		complex double *targt_longcoeff, complex double *target_mgcoeff, complex double *target_elcoeff,
+		qpms_normalisation_t norm);
+qpms_errno_t qpms_planewave2vswf_fill_cart(sph_t wavedir, csphvec_t amplitude,
+		complex double *targt_longcoeff, complex double *target_mgcoeff, complex double *target_elcoeff,
+		qpms_normalisation_t norm);
+
+
+
 
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
 	qpms_bessel_t btyp, qpms_normalisation_t norm);//NI

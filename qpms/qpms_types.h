@@ -39,6 +39,9 @@ typedef enum {
 	QPMS_NORMALISATION_UNDEF = 0
 } qpms_normalisation_t;
 
+
+
+
 static inline int qpms_normalisation_t_csphase(qpms_normalisation_t norm) {
 	return (norm & QPMS_NORMALISATION_T_CSBIT)? -1 : 1;
 }
@@ -48,6 +51,46 @@ static inline int qpms_normalisation_t_normonly(qpms_normalisation_t norm) {
 }
 
 
+// relative to QPMS_NORMALISATION_KRISTENSSON_CS, i.e.
+// P_l^m[normtype] = P_l^m[Kristensson]
+static inline double qpms_normalisation_t_factor(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
+	int csphase = qpms_normalisation_t_csphase(norm);
+	norm = qpms_normalisation_t_normonly(norm);
+	double factor;
+	switch (norm) {
+		case QPMS_NORMALISATION_KRISTENSSON:
+			factor = 1.;
+			break;
+		case QPMS_NORMALISATION_TAYLOR:
+			factor = sqrt(l*(l+1));
+			break;
+		case QPMS_NORMALISATION_XU:
+			factor = sqrt(l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1)));
+			break;
+		default:
+			assert(0);
+	}
+	factor *= (m%2)?(-csphase):1;
+	return factor;
+}
+
+static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
+	norm = qpms_normalisation_t_normonly(norm);
+	switch (norm) {
+		case QPMS_NORMALISATION_KRISTENSSON:
+			return 1.;
+			break;
+		case QPMS_NORMALISATION_TAYLOR:
+			return l*(l+1);
+			break;
+		case QPMS_NORMALISATION_XU:
+			return l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
+			break;
+		default:
+			assert(0);
+			return NAN;
+	}
+}
 
 
 typedef enum {
@@ -74,6 +117,11 @@ typedef struct {
 typedef struct {
 	double r, theta, phi;
 } sph_t;
+
+typedef struct { // Do I really need this???
+	complex double r;
+       	double	theta, phi;
+} csph_t;
 
 // complex vector components in local spherical basis
 typedef struct {

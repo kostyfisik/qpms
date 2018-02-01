@@ -27,6 +27,21 @@ static inline cart3_t sph2cart(const sph_t sph) {
 	return cart;
 }
 
+static inline cart3_t cart3_add(const cart3_t a, const cart3_t b) {
+	cart3_t res = {a.x+b.x, a.y+b.y, a.z+b.z};
+	return res;
+}
+
+static inline csphvec_t csphvec_add(const csphvec_t a, const csphvec_t b) {
+	csphvec_t res = {a.rc + b.rc, a.thetac + b.thetac, a.phic + b.phic};
+	return res;
+}
+
+static inline csphvec_t scphvec_scale(complex double c, const scphvec_t v) {
+	csphvec_t res = {c * v.rc, c * v.thetac, c * v.phic};
+	return res;
+}
+
 // equivalent to sph_loccart2cart in qpms_p.py
 static inline ccart3_t csphvec2cart(const csphvec_t sphvec, const sph_t at) {
 	ccart3_t res = {0, 0, 0};
