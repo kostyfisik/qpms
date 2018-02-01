@@ -3,7 +3,10 @@
 #include <complex.h>
 #include <stdbool.h>
 #include <stddef.h>
+
+#ifndef M_PI_2
 #define M_PI_2 (1.570796326794896619231321691639751442098584699687552910487)
+#endif
 
 // integer index types
 typedef int qpms_lm_t;
@@ -51,6 +54,7 @@ static inline int qpms_normalisation_t_normonly(qpms_normalisation_t norm) {
 }
 
 
+// TODO move elsewhere
 // relative to QPMS_NORMALISATION_KRISTENSSON_CS, i.e.
 // P_l^m[normtype] = P_l^m[Kristensson]
 static inline double qpms_normalisation_t_factor(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
@@ -74,6 +78,8 @@ static inline double qpms_normalisation_t_factor(qpms_normalisation_t norm, qpms
 	return factor;
 }
 
+
+// TODO move elsewhere
 static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
 	norm = qpms_normalisation_t_normonly(norm);
 	switch (norm) {

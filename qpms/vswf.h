@@ -43,14 +43,17 @@ qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2t
 qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
 		                qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
 
-qpms_errno_t qpms_planewave2vswf_fill_cart(ccart3_t amplitude, ccart3_t wavedir /* real or complex? */,
+qpms_errno_t qpms_planewave2vswf_fill_cart(cart3_t wavedir, ccart3_t amplitude,
 		complex double *targt_longcoeff, complex double *target_mgcoeff, complex double *target_elcoeff,
-		qpms_normalisation_t norm);
-qpms_errno_t qpms_planewave2vswf_fill_cart(sph_t wavedir, csphvec_t amplitude,
+		qpms_l_t lMax, qpms_normalisation_t norm);
+qpms_errno_t qpms_planewave2vswf_fill_sph(sph_t wavedir, csphvec_t amplitude,
 		complex double *targt_longcoeff, complex double *target_mgcoeff, complex double *target_elcoeff,
-		qpms_normalisation_t norm);
+		qpms_l_t lMax, qpms_normalisation_t norm);
 
 
+csphvec_t qpms_eval_vswf(sph_t where,
+		complex double *longcoeffs, complex double *mgcoeffs, complex double *elcoeffs,
+		qpms_l_t lMax, qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,

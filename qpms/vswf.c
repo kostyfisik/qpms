@@ -1,12 +1,12 @@
+#include <math.h>
+#include <gsl/gsl_math.h>
+#include "assert_cython_workaround.h"
 #include "vswf.h"
 #include "indexing.h"
 #include "translations.h" // TODO move qpms_sph_bessel_fill elsewhere
-#include <math.h>
-#include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_legendre.h>
 #include <stdlib.h>
 #include <string.h>
-#include "assert_cython_workaround.h"
 
 // Legendre functions also for negative m, see DLMF 14.9.3
 qpms_errno_t qpms_legendre_deriv_y_fill(double *target, double *target_deriv, double x, qpms_l_t lMax,
@@ -205,7 +205,7 @@ qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
 	qpms_y_t nelem = qpms_lMax2nelem(lMax);
 	res->el = malloc(sizeof(csphvec_t)*nelem);
 	res->mg = malloc(sizeof(csphvec_t)*nelem);
-	if(QPMS_SUCCESS != qpms_vswf_fill(res->mg, res->el, lMax, kdlj, btyp, norm))
+	if(QPMS_SUCCESS != qpms_vswf_fill(NULL, res->mg, res->el, lMax, kdlj, btyp, norm))
 		abort(); // or return NULL? or rather assert?
 	return res;
 }
@@ -274,7 +274,9 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *const longtarget, csphvec_t *
 	qpms_y_t nelem = qpms_lMax2nelem(lMax);
 	csphvec_t * const a1 = malloc(3*nelem*sizeof(csphvec_t)), * const a2 = a1 + nelem, * const a3 = a2 + nelem;
 	if(qpms_vecspharm_fill(a1, a2, a3, lMax, kr, norm)) abort();
-	const sphvec_t *p1 = a1, const *p2 = a2, const *p3 = a3;
+	const csphvec_t *p1 = a1; 
+	const csphvec_t *p2 = a2;
+	const csphvec_t *p3 = a3;
 
 	csphvec_t *plong = longtarget, *pmg = mgtarget, *pel = eltarget;
 	for(qpms_l_t l = 1; l <= lMax; ++l) {
@@ -314,7 +316,7 @@ qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2t
 	double const *ppi = pt.pi;
 	double const *ptau = pt.tau;
 	csphvec_t *p1 = a1target, *p2 = a2target, *p3 = a3target;
-	for(qpms_l_t = 1; l <= lMax; ++l) {
+	for (qpms_l_t l = 1; l <= lMax; ++l) {
 		for(qpms_m_t m = -l; m <= l; ++m) {
 			complex double eimf = cexp(m * dir.phi * I);
 			if (a1target) {
@@ -350,7 +352,7 @@ qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *cons
 	double const *ppi = pt.pi;
 	double const *ptau = pt.tau;
 	csphvec_t *p1 = a1target, *p2 = a2target, *p3 = a3target;
-	for(qpms_l_t = 1; l <= lMax; ++l) {
+	for(qpms_l_t l = 1; l <= lMax; ++l) {
 		for(qpms_m_t m = -l; m <= l; ++m) {
 			double normfac = 1./qpms_normalisation_t_factor_abssquare(norm, l, m); // factor w.r.t. Kristensson
 			complex double eimf = cexp(m * dir.phi * I);
@@ -380,8 +382,23 @@ qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *cons
 }
 
 
+static inline complex double ipowl(qpms_l_t l) {
+	switch(l % 4) {
+		case 0: return 1;
+			break;
+		case 1: return I;
+			break;
+		case 2: return -1;
+			break;
+		case 3: return -I;
+			break;
+		default: abort();
+	}
+	assert(0);
+}
+
 qpms_errno_t qpms_planewave2vswf_fill_sph(sph_t wavedir, csphvec_t amplitude,
-		complex double *targt_longcoeff, complex double *target_mgcoeff,
+		complex double *target_longcoeff, complex double *target_mgcoeff,
 	       	complex double *target_elcoeff, qpms_l_t lMax, qpms_normalisation_t norm) {
 	abort(); //NI
 	qpms_y_t nelem = qpms_lMax2nelem(lMax);
@@ -389,20 +406,54 @@ qpms_errno_t qpms_planewave2vswf_fill_sph(sph_t wavedir, csphvec_t amplitude,
 		  * const dual_A3 = dual_A2 + nelem;
 	if (QPMS_SUCCESS != qpms_vecspharm_dual_fill(dual_A1, dual_A2, dual_A3, lMax, wavedir, norm))
 		abort();
+	const csphvec_t *pA1 = dual_A1, *pA2 = dual_A2, *pA3 = dual_A3;
+	complex double *plong = target_longcoeff, *pmg = target_mgcoeff, *pel = target_elcoeff;
 	for (qpms_l_t l = 1; l <= lMax; ++l) {
-		...
+		complex double prefac1 = 4 * M_PI * ipowl(l);
+		complex double prefac23 = - 4 * M_PI * ipowl(l+1);
+		for (qpms_m_t m = -l; m <= l; ++m) {
+			*plong = prefac23 * csphvec_dotnc(*pA3, amplitude);
+			*pmg = prefac1 * csphvec_dotnc(*pA1, amplitude);
+			*pel = prefac23 * csphvec_dotnc(*pA2, amplitude);
+			++pA1; ++pA2; ++pA3; ++plong; ++pmg; ++pel;
+		}
+
 	}
-	
 	free(dual_A1);
 	return QPMS_SUCCESS;
 }
 
-qpms_errno_t qpms_planewave2vswf_fill_cart(cart3_t wavedir /*allow complex k?*/, ccart3_t amplitude,
+qpms_errno_t qpms_planewave2vswf_fill_cart(cart3_t wavedir_cart /*allow complex k?*/, ccart3_t amplitude_cart,
 		complex double * const longcoeff, complex double * const mgcoeff,
-		complex double * const elcoeff, qpms_normalisation_t norm) 
+		complex double * const elcoeff, qpms_l_t lMax, qpms_normalisation_t norm) 
 {
-	abort(); //NI
 
-	return QPMS_SUCCESS;
+	sph_t wavedir_sph = cart2sph(wavedir_cart);
+	csphvec_t amplitude_sphvec = ccart2csphvec(amplitude_cart, wavedir_sph);
+	return qpms_planewave2vswf_fill_sph(wavedir_sph, amplitude_sphvec,
+			longcoeff, mgcoeff, elcoeff, lMax, norm);
+}
+
+csphvec_t qpms_eval_vswf(sph_t kr,
+		complex double * const lc, complex double *const mc, complex double *const ec,
+		qpms_l_t lMax, qpms_bessel_t btyp, qpms_normalisation_t norm)
+{
+	qpms_y_t nelem = qpms_lMax2nelem(lMax);
+	csphvec_t lsum = {0, 0, 0}, msum = {0, 0, 0}, esum = {0, 0, 0};
+	csphvec_t *lset = NULL, *mset = NULL, *eset = NULL;
+	if(lc) lset = malloc(nelem * sizeof(csphvec_t));
+	if(mc) mset = malloc(nelem * sizeof(csphvec_t));
+	if(ec) eset = malloc(nelem * sizeof(csphvec_t));
+	qpms_vswf_fill(lset, mset, eset, lMax, kr, btyp, norm);
+	if(lc) for(qpms_y_t y = 0; y < nelem; ++y)
+		lsum = csphvec_add(lsum, csphvec_scale(lc[y], lset[y]));
+	if(mc) for(qpms_y_t y = 0; y < nelem; ++y)
+		msum = csphvec_add(msum, csphvec_scale(mc[y], mset[y]));
+	if(ec) for(qpms_y_t y = 0; y < nelem; ++y)
+		esum = csphvec_add(esum, csphvec_scale(ec[y], eset[y]));
+	if(lc) free(lset);
+	if(mc) free(mset);
+	if(ec) free(eset);
+	return csphvec_add(esum, csphvec_add(msum, lsum));
 }
 
