@@ -7,6 +7,9 @@
 #ifndef M_PI_2
 #define M_PI_2 (1.570796326794896619231321691639751442098584699687552910487)
 #endif
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
 
 // integer index types
 typedef int qpms_lm_t;

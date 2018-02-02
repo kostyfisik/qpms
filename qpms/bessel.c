@@ -1,7 +1,7 @@
+#include <assert.h>
 #include "translations.h"
 #include <stdlib.h>
 #include <gsl/gsl_sf_bessel.h>
-#include <assert.h>
 
 int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *result_array) {
 	int retval;

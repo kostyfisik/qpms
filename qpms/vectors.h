@@ -34,6 +34,16 @@ static inline cart3_t cart3_add(const cart3_t a, const cart3_t b) {
 	return res;
 }
 
+static inline cart3_t cart3_scale(const double c, const cart3_t v) {
+	cart3_t res = {c * v.x, c * v.y, c * v.z};
+	return res;
+}
+
+static inline ccart3_t ccart3_scale(const complex  double c, const ccart3_t v) {
+	ccart3_t res = {c * v.x, c * v.y, c * v.z};
+	return res;
+}
+
 static inline csphvec_t csphvec_add(const csphvec_t a, const csphvec_t b) {
 	csphvec_t res = {a.rc + b.rc, a.thetac + b.thetac, a.phic + b.phic};
 	return res;
@@ -44,13 +54,17 @@ static inline csphvec_t csphvec_scale(complex double c, const csphvec_t v) {
 	return res;
 }
 
-static inline complex double csphvec_dotnc(csphvec_t a, csphvec_t b) {
+static inline complex double csphvec_dotnc(const csphvec_t a, const csphvec_t b) {
 	//N.B. no complex conjugation done here
 	return a.rc * b.rc + a.thetac * b.thetac + a.phic * b.phic;
 }
 
+static inline double cart3_dot(const cart3_t a, const cart3_t b) {
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
 // equivalent to sph_loccart2cart in qpms_p.py
-static inline ccart3_t csphvec2cart(const csphvec_t sphvec, const sph_t at) {
+static inline ccart3_t csphvec2ccart(const csphvec_t sphvec, const sph_t at) {
 	const double st = sin(at.theta);
 	const double ct = cos(at.theta);
 	const double sf = sin(at.phi);

@@ -400,7 +400,6 @@ static inline complex double ipowl(qpms_l_t l) {
 qpms_errno_t qpms_planewave2vswf_fill_sph(sph_t wavedir, csphvec_t amplitude,
 		complex double *target_longcoeff, complex double *target_mgcoeff,
 	       	complex double *target_elcoeff, qpms_l_t lMax, qpms_normalisation_t norm) {
-	abort(); //NI
 	qpms_y_t nelem = qpms_lMax2nelem(lMax);
 	csphvec_t * const dual_A1 = malloc(3*nelem*sizeof(csphvec_t)), *const dual_A2 = dual_A1 + nelem,
 		  * const dual_A3 = dual_A2 + nelem;
