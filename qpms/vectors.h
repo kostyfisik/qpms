@@ -107,4 +107,9 @@ static inline csphvec_t ccart2csphvec(const ccart3_t cartvec, const sph_t at) {
 	return res;
 }
 
+void print_csphvec(csphvec_t);
+void print_ccart3(ccart3_t);
+void print_cart3(cart3_t);
+void print_sph(sph_t);
+
 #endif //VECTORS_H
