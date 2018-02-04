@@ -230,13 +230,23 @@ qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget, csphvec_t * const mgtar
 	double const *ptau = pt.tau;
 	csphvec_t *plong = longtarget, *pmg = mgtarget, *pel = eltarget;
 	for(qpms_l_t l = 1; l <= lMax; ++l) {
-		complex double besfac = *pbes / kr.r;
-		complex double besderfac = *(pbes-1) - l * besfac;
+		complex double besfac;
+		complex double besderfac;
+	       	if (kr.r) {
+			besfac = *pbes / kr.r;
+		} else {
+			besfac = (1 == l) ? 1/3. : 0;
+		}
+		besderfac = *(pbes-1) - l * besfac;
 		for(qpms_m_t m = -l; m <= l; ++m) {
 			complex double eimf = cexp(m * kr.phi * I);
 			if (longtarget) {
 				complex double longfac = sqrt(l*(l+1)) * eimf;
-				plong->rc = (besderfac-besfac) * (*pleg) * longfac;
+				plong->rc = // FATAL FIXME: I get wrong result here for plane wave re-expansion 
+					// whenever kr.r > 0 (for waves with longitudinal component, ofcoz)
+					/*(*(pbes-1) - (l+1)/kr.r* *pbes)*/
+					(besderfac-besfac) 
+					* (*pleg) * longfac;
 				plong->thetac = *ptau * besfac * longfac;
 				plong->phic = *ppi * I * besfac * longfac;
 				++plong;
