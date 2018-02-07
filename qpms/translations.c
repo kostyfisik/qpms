@@ -260,6 +260,8 @@ complex double qpms_trans_single_B_Xu(int m, int n, int mu, int nu, sph_t kdlj,
 	complex double prenormratio = ipow(nu-n) * sqrt(((2.*nu+1)/(2.*n+1))* exp(
 				lgamma(n+m+1)-lgamma(n-m+1)+lgamma(nu-mu+1)-lgamma(nu+mu+1)));
 
+	return (presum / prenormratio) * sum;
+}
 
 
 complex double qpms_trans_single_B_Taylor(int m, int n, int mu, int nu, sph_t kdlj,
