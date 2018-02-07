@@ -1,9 +1,9 @@
 #include <assert.h>
-#include "translations.h"
+#include "qpms_specfunc.h"
 #include <stdlib.h>
 #include <gsl/gsl_sf_bessel.h>
 
-int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *result_array) {
+qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array) {
 	int retval;
 	double tmparr[lmax+1];
 	switch(typ) {

@@ -60,23 +60,4 @@ qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
 	qpms_bessel_t btyp, qpms_normalisation_t norm);//NI
 void qpms_vswfset_sph_pfree(qpms_vswfset_sph_t *);//NI
 
-double *qpms_legendre_y_get(double x, qpms_l_t lMax, qpms_normalisation_t norm);//NI
-double *qpms_legendre0d_y_get(qpms_l_t lMax, qpms_normalisation_t norm); //NI
-double *qpms_legendre_plus1d_y_get(qpms_l_t lMax, qpms_normalisation_t norm); //NI
-double *qpms_legendre_minus1d_y_get(qpms_l_t lMax, qpms_normalisation_t norm); //NI
-
-
-
-// array of Legendre and pi, tau auxillary functions (see [1,(37)])
-// This should handle correct evaluation for theta -> 0 and theta -> pi
-typedef struct {
-	//qpms_normalisation_t norm;
-	qpms_l_t lMax;
-	//qpms_y_t nelem;
-	double *leg, *pi, *tau;
-} qpms_pitau_t;
-qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t norm);
-void qpms_pitau_free(qpms_pitau_t);//NI
-void qpms_pitau_pfree(qpms_pitau_t*);//NI
-
 #endif // QPMS_VSWF_H

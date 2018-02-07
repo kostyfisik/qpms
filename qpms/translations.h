@@ -5,65 +5,71 @@
 #include <complex.h>
 #include <stdbool.h>
 #include <stddef.h>
-// Associated Legendre polynomial at zero argument (DLMF 14.5.1)
-double qpms_legendre0(int m, int n); 
-// Associated Legendre polynomial derivative at zero argument (DLMF 14.5.2)
-double qpms_legendred0(int m, int n); 
-// TODO unify types
-int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *result_array);
 
 // TODO replace the xplicit "Taylor" functions with general,
 // taking qpms_bessel_t argument.
-complex double qpms_trans_single_A_Taylor(int m, int n, int mu, int nu, sph_t kdlj,
+complex double qpms_trans_single_A_Taylor(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
                 bool r_ge_d, qpms_bessel_t J);
 
-complex double qpms_trans_single_B_Taylor(int m, int n, int mu, int nu, sph_t kdlj,
+complex double qpms_trans_single_B_Taylor(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
                 bool r_ge_d, qpms_bessel_t J);
 
-complex double qpms_trans_single_A_Taylor_ext(int m, int n, int mu, int nu, double kdlj_r,
+complex double qpms_trans_single_A_Taylor_ext(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
-complex double qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu, double kdlj_r,
+complex double qpms_trans_single_B_Taylor_ext(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
 typedef struct qpms_trans_calculator {
-        int lMax;
-        size_t nelem;
+        qpms_normalisation_t normalisation;
+        qpms_l_t lMax;
+        qpms_y_t nelem;
         complex double **A_multipliers;
         complex double **B_multipliers;
-        qpms_normalisation_t normalisation;
+#if 0
+	// Normalised values of the Legendre functions and derivatives
+	// for θ == π/2, i.e. for the 2D case.
+	double *leg0; 
+	double *pi0;
+	double *tau0;
+	// Spherical Bessel function coefficients:
+	// TODO
+#endif
 } qpms_trans_calculator;
 
-qpms_trans_calculator *qpms_trans_calculator_init(int lMax, qpms_normalisation_t nt);
+qpms_trans_calculator *qpms_trans_calculator_init(qpms_l_t lMax, qpms_normalisation_t nt);
 void qpms_trans_calculator_free(qpms_trans_calculator *);
 
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
-		int m, int n, int mu, int nu, sph_t kdlj,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
 complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
-		int m, int n, int mu, int nu, sph_t kdlj,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
+int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+		bool r_ge_d, qpms_bessel_t J);
+int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		size_t deststride, size_t srcstride,
+		sph_t kdlj, bool r_ge_d, qpms_bessel_t J); 
 
+
+// TODO update the types later
 complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
 		int m, int n, int mu, int nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
+
 complex double qpms_trans_calculator_get_B_ext(const qpms_trans_calculator *c,
 		int m, int n, int mu, int nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
-int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
-		complex double *Adest, complex double *Bdest,
-		int m, int n, int mu, int nu, sph_t kdlj,
-		bool r_ge_d, qpms_bessel_t J);
 int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		int m, int n, int mu, int nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
-int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
-		complex double *Adest, complex double *Bdest,
-		size_t deststride, size_t srcstride,
-		sph_t kdlj, bool r_ge_d, qpms_bessel_t J); 
 int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		size_t deststride, size_t srcstride,

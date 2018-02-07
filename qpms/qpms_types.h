@@ -57,7 +57,9 @@ static inline int qpms_normalisation_t_normonly(qpms_normalisation_t norm) {
 }
 
 
-// TODO move elsewhere
+// TODO move the inlines elsewhere
+#include <math.h>
+#include <assert.h>
 // relative to QPMS_NORMALISATION_KRISTENSSON_CS, i.e.
 // P_l^m[normtype] = P_l^m[Kristensson]
 static inline double qpms_normalisation_t_factor(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
