@@ -627,7 +627,7 @@ static void qpms_trans_calculator_multipliers_B_Taylor(
 }
 
 int qpms_trans_calculator_multipliers_A(qpms_normalisation_t norm, complex double *dest, int m, int n, int mu, int nu, int qmax) {
-	switch (norm) {
+	switch (qpms_normalisation_t_normonly(norm)) {
 		case QPMS_NORMALISATION_TAYLOR:
 #ifdef USE_SEPARATE_TAYLOR
 			qpms_trans_calculator_multipliers_A_Taylor(dest,m,n,mu,nu,qmax);
@@ -646,7 +646,7 @@ int qpms_trans_calculator_multipliers_A(qpms_normalisation_t norm, complex doubl
 }
 
 int qpms_trans_calculator_multipliers_B(qpms_normalisation_t norm, complex double *dest, int m, int n, int mu, int nu, int qmax) {
-	switch (norm) {
+	switch (qpms_normalisation_t_normonly(norm)) {
 		case QPMS_NORMALISATION_TAYLOR:
 #ifdef USE_SEPARATE_TAYLOR
 			qpms_trans_calculator_multipliers_B_Taylor(dest,m,n,mu,nu,qmax);
@@ -837,7 +837,7 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
 		// TODO warn? different return value?
 		return 0;
 	}
-	switch(c->normalisation) {
+	switch(qpms_normalisation_t_normonly(c->normalisation)) {
 		case QPMS_NORMALISATION_TAYLOR:
 		case QPMS_NORMALISATION_KRISTENSSON:
 		case QPMS_NORMALISATION_XU:

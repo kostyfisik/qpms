@@ -5,7 +5,7 @@
 
 void print_csphvec(csphvec_t v)
 {
-	printf("(%f+%fj)r̂ + (%f+%fj)θ̂ + (%f+%fj)φ̂",
+	printf("(%g+%gj)r̂ + (%g+%gj)θ̂ + (%g+%gj)φ̂",
 			creal(v.rc), cimag(v.rc),
 			creal(v.thetac), cimag(v.thetac),
 			creal(v.phic), cimag(v.phic)
@@ -15,12 +15,12 @@ void print_csphvec(csphvec_t v)
 
 void print_cart3(cart3_t v)
 {
-	printf("%fx̂ + %fŷ + %fẑ", v.x, v.y, v.z);
+	printf("%gx̂ + %gŷ + %gẑ", v.x, v.y, v.z);
 }
 
 void print_ccart3(ccart3_t v)
 {
-	printf("(%f+%fj)x̂ + (%f+%fj)ŷ + (%f+%fj)ẑ",
+	printf("(%g+%gj)x̂ + (%g+%gj)ŷ + (%g+%gj)ẑ",
 			creal(v.x), cimag(v.x),
 			creal(v.y), cimag(v.y),
 			creal(v.z), cimag(v.z)
