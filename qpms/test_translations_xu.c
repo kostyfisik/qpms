@@ -15,7 +15,7 @@ testcase_single_trans_t testcases_xu[] = {
 #include "testcases_translations_Xu"
 };
 
-int lMax=10;
+int lMax=20;
 
 int main() {
 	qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_XU);
@@ -24,10 +24,10 @@ int main() {
 		if (!tc->n || !tc->nu || tc->n > lMax || tc->nu > lMax ) continue;
 
 		printf("m=%d, n=%d, mu=%d, nu=%d,\n", tc->m,tc->n,tc->mu,tc->nu);
-		complex double A = qpms_trans_single_A(QPMS_NORMALISATION_XU,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
-		complex double B = qpms_trans_single_B(QPMS_NORMALISATION_XU,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
-		complex double A2 = qpms_trans_calculator_get_A(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
-		complex double B2 = qpms_trans_calculator_get_B(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
+		complex double A = qpms_trans_single_A(QPMS_NORMALISATION_XU,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, false, tc->J);
+		complex double B = qpms_trans_single_B(QPMS_NORMALISATION_XU,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, false, tc->J);
+		complex double A2 = qpms_trans_calculator_get_A(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, false, tc->J);
+		complex double B2 = qpms_trans_calculator_get_B(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, false, tc->J);
 		printf("A  = %.16f+%.16fj, relerr=%.16f, J=%d\n",
 				creal(A), cimag(A),  (0 == cabs(tc->result_A - A)) ? 0 :
 				cabs(tc->result_A - A)/((cabs(A) < cabs(tc->result_A)) ? cabs(A) : cabs(tc->result_A)),
