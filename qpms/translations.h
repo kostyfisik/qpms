@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 // TODO replace the xplicit "Taylor" functions with general,
-// taking qpms_bessel_t argument.
+// taking qpms_normalisation_t argument.
 complex double qpms_trans_single_A_Taylor(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
                 bool r_ge_d, qpms_bessel_t J);
 
@@ -19,6 +19,12 @@ complex double qpms_trans_single_A_Taylor_ext(qpms_m_t m, qpms_l_t n, qpms_m_t m
 
 complex double qpms_trans_single_B_Taylor_ext(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
+
+complex double qpms_trans_single_A(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+                bool r_ge_d, qpms_bessel_t J);
+
+complex double qpms_trans_single_B(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+                bool r_ge_d, qpms_bessel_t J);
 
 typedef struct qpms_trans_calculator {
         qpms_normalisation_t normalisation;

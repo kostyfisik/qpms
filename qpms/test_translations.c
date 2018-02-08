@@ -4,6 +4,7 @@
 #include <complex.h>
 
 typedef struct {
+	qpms_normalisation_t norm;
 	int m, n, mu, nu;
 	sph_t kdlj;
 	qpms_bessel_t J;

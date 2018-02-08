@@ -11,26 +11,21 @@ typedef struct {
 	complex double result_A, result_B;
 } testcase_single_trans_t;
 
-testcase_single_trans_t testcases_Taylor[] = {
-#include "testcases_taylor"
+testcase_single_trans_t testcases_xu[] = {
+#include "testcases_translations_Xu"
 };
 
 int lMax=10;
 
 int main() {
-	qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_TAYLOR);
+	qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_XU);
 
-	for(testcase_single_trans_t *tc = testcases_Taylor; tc->J != QPMS_BESSEL_UNDEF; tc++) {
+	for(testcase_single_trans_t *tc = testcases_xu; tc->J != QPMS_BESSEL_UNDEF; tc++) {
 		if (!tc->n || !tc->nu || tc->n > lMax || tc->nu > lMax ) continue;
 
 		printf("m=%d, n=%d, mu=%d, nu=%d,\n", tc->m,tc->n,tc->mu,tc->nu);
-#if 0
-		complex double A = qpms_trans_single_A_Taylor(tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
-		complex double B = qpms_trans_single_B_Taylor(tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
-#else
-		complex double A = qpms_trans_single_A(QPMS_NORMALISATION_TAYLOR, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
-		complex double B = qpms_trans_single_B(QPMS_NORMALISATION_TAYLOR,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
-#endif
+		complex double A = qpms_trans_single_A(QPMS_NORMALISATION_XU,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
+		complex double B = qpms_trans_single_B(QPMS_NORMALISATION_XU,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
 		complex double A2 = qpms_trans_calculator_get_A(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
 		complex double B2 = qpms_trans_calculator_get_B(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, true, tc->J);
 		printf("A  = %.16f+%.16fj, relerr=%.16f, J=%d\n",
