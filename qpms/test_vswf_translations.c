@@ -36,17 +36,18 @@ int main() {
 	qpms_l_t lMax = 8;
 	//qpms_l_t viewlMax = 2;
 	int npoints = 10;
-	double sigma = 1.3;
+	double sigma = 0.1;
+	double shiftsigma = 2.;
 
 	cart3_t o2minuso1;
-	o2minuso1.x = gsl_ran_gaussian(rng, sigma);
-	o2minuso1.y = gsl_ran_gaussian(rng, sigma);
-	o2minuso1.z = gsl_ran_gaussian(rng, sigma);
+	o2minuso1.x = gsl_ran_gaussian(rng, shiftsigma);
+	o2minuso1.y = gsl_ran_gaussian(rng, shiftsigma);
+	o2minuso1.z = gsl_ran_gaussian(rng, shiftsigma);
 	
 	cart3_t points[npoints];
 	double relerrs[npoints];
 	memset(points, 0, npoints * sizeof(cart3_t));
-	points[0].x = points[1].y = points[2].z = 1.;
+	points[0].x = points[1].y = points[2].z = sigma;
 	double relerrthreshold = 1e-11;
 	for (unsigned i = 3; i < npoints; ++i) {
 		cart3_t *w = points+i;
