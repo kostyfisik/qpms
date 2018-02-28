@@ -19,6 +19,7 @@ def gaunta_p(M, n, mu, nu, p): # [Xu](5)
         wigner_3j(n, nu, p, 0, 0, 0) * wigner_3j(n, nu, p, M, mu, -M-mu))
 
 def bCXcoeff(M, n, mu, nu, p): # [Xu](61)
+    #print(M,n,mu,nu,p,file=sys.stderr)
     return (-1)**(M+mu) * (2*p + 3) * sqrt(
         factorial(n+M) * factorial(nu+mu) * factorial(p+1-M-mu)
       / factorial(n-M) / factorial(nu-mu) / factorial(p+1+M+mu)) * (
@@ -32,10 +33,10 @@ def ACXcoeff(m, n, mu, nu, q): # [Xu](58)
 
 def BCXcoeff(m, n, mu, nu, q): # [Xu](59)
     p = p_q(q,n,nu)
-    return ((-1)**(m+1) * (2*nu + 1) * factorial(nu+m) * factorial(nu-mu) / (
+    return ((-1)**(m+1) * (2*nu + 1) * factorial(n+m) * factorial(nu-mu) / (
         2 * n * (n+1) * factorial(n-m) * factorial(nu+mu)) * I**(p+1) * 
         sqrt(((p+1)**2-(n-nu)**2) * ((n+nu+1)**2-(p+1)**2)) 
-        * gaunta_p(-m,n,mu,nu,p))
+        * bCXcoeff(-m,n,mu,nu,p))
 
 def printACXcoeffs(lMax, file=sys.stdout):
     for n in IntegerRange(lMax+1):
@@ -45,7 +46,7 @@ def printACXcoeffs(lMax, file=sys.stdout):
                     for q in IntegerRange(qmax(-m,n,mu,nu)):
                         #print(m, n, mu, nu, q, p_q(q,n,nu), file=sys.stderr)
                         coeff= ACXcoeff(m, n, mu, nu, q);
-                        print(N(ACXcoeff(m, n, mu, nu, q), prec=53), 
+                        print(N(coeff, prec=53), 
                             ", // %d, %d, %d, %d, %d," % (m,n,mu,nu,q),
                             coeff,
                             file=file)
@@ -59,7 +60,7 @@ def printBCXcoeffs(lMax, file=sys.stdout):
                     for q in IntegerRange(1, Qmax(-m,n,mu,nu)):
                         #print(m, n, mu, nu, q, p_q(q,n,nu), file=sys.stderr)
                         coeff= BCXcoeff(m, n, mu, nu, q);
-                        print(N(BCXcoeff(m, n, mu, nu, q), prec=53), 
+                        print(N(coeff, prec=53), 
                             ", // %d, %d, %d, %d, %d," % (m,n,mu,nu,q),
                             coeff,
                             file=file)
