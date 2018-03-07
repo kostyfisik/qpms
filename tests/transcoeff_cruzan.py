@@ -57,7 +57,7 @@ def printBCXcoeffs(lMax, file=sys.stdout):
         for nu in IntegerRange(lMax+1):
             for m in IntegerRange(-n, n+1):
                 for mu in IntegerRange(-nu, nu+1):
-                    for q in IntegerRange(1, Qmax(-m,n,mu,nu)):
+                    for q in IntegerRange(1, Qmax(-m,n,mu,nu) +1 ):
                         #print(m, n, mu, nu, q, p_q(q,n,nu), file=sys.stderr)
                         coeff= BCXcoeff(m, n, mu, nu, q);
                         print(N(coeff, prec=53), 

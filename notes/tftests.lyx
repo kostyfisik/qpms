@@ -314,5 +314,98 @@ Vytvoř náhodně vektor přesunu
  
 \end_layout
 
+\begin_layout Enumerate
+TODO
+\end_layout
+
+\begin_layout Subsection
+Nalezené nesrovnalosti
+\end_layout
+
+\begin_layout Standard
+Xuovy vzorce ve starší práci 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(77–80)"
+key "xu_calculation_1996"
+
+\end_inset
+
+ a v novější práci 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(63–65, ...)"
+key "xu_efficient_1998"
+
+\end_inset
+
+ pro koefficienty 
+\begin_inset Formula $B_{mn\mu\nu}$
+\end_inset
+
+ se liší v několika ohledech:
+\end_layout
+
+\begin_layout Enumerate
+Ve starší práci suma začíná na 
+\begin_inset Formula $q=0$
+\end_inset
+
+, kdežto v novější práci až na 
+\begin_inset Formula $q=1$
+\end_inset
+
+.
+ Ovšem členy s 
+\begin_inset Formula $q=0$
+\end_inset
+
+ jsou identicky nulové, takže je zbytečné začínat na nule.
+ (Ověřeno numericky – i tam jsou to přesně nuly.)
+\end_layout
+
+\begin_layout Enumerate
+Ve starší práci je poslední člen sumy 
+\begin_inset Formula $q=\min\left(n+1,\nu,\frac{n+\nu+1-\left|\mu-m\right|}{2}\right)$
+\end_inset
+
+, zatímco v novější je to 
+\begin_inset Formula $q=\min\left(n,\nu,\frac{n+\nu+1-\left|\mu-m\right|}{2}\right)$
+\end_inset
+
+.
+ Tyto hodnoty se pochopitelně mohou lišit, například pro 
+\begin_inset Formula $\left(m,n,\mu,\nu\right)=\left(-1,1,-1,3\right)$
+\end_inset
+
+.
+ Numericky ověřeno, že „přebytečné“ členy ze starší práce jsou nulové (avšak
+ vypočtené hodnoty nejsou přesně nuly, něco zbude kvůli zaokrouhlovacích
+ chyb).
+\end_layout
+
+\begin_layout Enumerate
+!!! Některé hodnoty nesedějí, například pro 
+\begin_inset Formula $\left(m,n,\mu,\nu\right)=\left(0,1,-1,1\right)$
+\end_inset
+
+!!!
+\end_layout
+
+\begin_layout Enumerate
+A nakonec samotné vzorce pro sčítance mají poněkud jiný tvar.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "/l/necadam1/repo/qpms/Electrodynamics"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
