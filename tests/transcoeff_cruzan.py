@@ -85,9 +85,9 @@ def trcoeff_ACX(m, n, mu, nu, besseltype, kd, th, fi, csphase=1): # [Xu](58)
 
 def trcoeff_BCX(m, n, mu, nu, besseltype, kd, th, fi, csphase=1): # [Xu](59) 
     res = 0
-    for q in range(Qmax(-m,n,mu,nu)+1):
+    for q in IntegerRange(1,Qmax(-m,n,mu,nu)+1):
         p = p_q(q,n,nu)
-        res += BCXcoeff(m,n,mu,nu,q) * sphericalBessels[besseltype](p+1) * gen_legendre_P(p+1, mu-m, cos(th)) * (-csphase)**(mu-m)
+        res += BCXcoeff(m,n,mu,nu,q) * sphericalBessels[besseltype](p+1,kd) * gen_legendre_P(p+1, mu-m, cos(th)) * (-csphase)**(mu-m)
     res *= exp(I*(mu-m)*fi)
     return res
 
