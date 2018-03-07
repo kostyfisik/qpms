@@ -1473,6 +1473,54 @@ Mie decomposition of Green's function for single nanoparticle
 Translation of spherical waves: getting insane
 \end_layout
 
+\begin_layout Standard
+Cruzan's formulation, Xu's normalisation 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(59)"
+key "xu_efficient_1998"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+B_{m,n,\mu,\nu}=\underbrace{\left(-1\right)^{-m}\frac{\left(2\nu+1\right)\left(n+m\right)!\left(\nu-\mu\right)!}{2n\left(n+1\right)\left(n-m\right)!\left(\nu+\mu\right)!}\sum_{q=1}^{Q_{max}^{-m,n,\mu,\nu}}i^{p+1}\sqrt{\left(\left(p+1\right)^{2}-\left(n-\nu\right)^{2}\right)\left(\left(n+\nu+1\right)^{2}-\left(p+1\right)^{2}\right)}b_{-m,n,\mu,\nu}^{p,p+1}}_{\mbox{(without the \ensuremath{\sum})}\equiv B_{m,n,\mu,\nu}^{q}}z_{p+1}P_{p+1}e^{i\left(\mu-m\right)\phi},
+\]
+
+\end_inset
+
+where 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(28,5,60,61)"
+key "xu_efficient_1998"
+
+\end_inset
+
+ 
+\begin_inset Formula $p\equiv n+\nu-2q$
+\end_inset
+
+, 
+\begin_inset Formula $Q_{max}^{-m,n,\mu,\nu}\equiv\min\left(n,\nu,\frac{n+\nu+1-\left|\mu-m\right|}{2}\right)$
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+b_{-m,n,\mu,\nu}^{p,p+1}\equiv\left(-1\right)^{\mu-m}\left(2p+3\right)\sqrt{\frac{\left(n-m\right)!\left(\nu+\mu\right)!\left(p+m-\mu+1\right)!}{\left(n+m\right)!\left(\nu-\mu\right)!\left(p-m+\mu+1\right)!}}\begin{pmatrix}n & \nu & p+1\\
+-m & \mu & m-\mu
+\end{pmatrix}\begin{pmatrix}n & \nu & p\\
+0 & 0 & 0
+\end{pmatrix}.
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Multiple scattering: nice linear algebra born from all the mess
 \end_layout
@@ -1484,7 +1532,7 @@ Quantisation of quasistatic modes of a sphere
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "Electrodynamics,/home/mmn/repo/qpms/Electrodynamics"
+bibfiles "/l/necadam1/repo/qpms/Electrodynamics"
 options "plain"
 
 \end_inset

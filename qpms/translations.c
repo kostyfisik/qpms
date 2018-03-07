@@ -8,6 +8,7 @@
 #include <gsl/gsl_sf_bessel.h>
 #include "assert_cython_workaround.h"
 #include <stdlib.h> //abort()
+#include <gsl/gsl_sf_coupling.h>
 
 // if defined, the pointer B_multipliers[y] corresponds to the q = 1 element;
 // otherwise, it corresponds to the q = 0 element, which should be identically zero
@@ -228,6 +229,7 @@ complex double qpms_trans_single_A_Taylor(int m, int n, int mu, int nu, sph_t kd
 // [Xu_old], eq. (83)
 complex double qpms_trans_single_B_Xu(int m, int n, int mu, int nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J) { 
+	assert(0); // FIXME probably gives wrong values, do not use.
 	if(r_ge_d) J = QPMS_BESSEL_REGULAR;
 	double costheta = cos(kdlj.theta);
 
@@ -287,6 +289,7 @@ complex double qpms_trans_single_B_Xu(int m, int n, int mu, int nu, sph_t kdlj,
 complex double qpms_trans_single_B(qpms_normalisation_t norm,
 		int m, int n, int mu, int nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J) { 
+	assert(0); // FIXME probably gives wrong values, do not use.
 	if(r_ge_d) J = QPMS_BESSEL_REGULAR;
 	double costheta = cos(kdlj.theta);
 
@@ -348,6 +351,7 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
 
 complex double qpms_trans_single_B_Taylor(int m, int n, int mu, int nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J) { 
+	assert(0); // FIXME probably gives wrong values, do not use.
 	if(r_ge_d) J = QPMS_BESSEL_REGULAR;
 	double costheta = cos(kdlj.theta);
 
@@ -480,9 +484,29 @@ static void qpms_trans_calculator_multipliers_A_general(
 }
 
 
-/*static*/ void qpms_trans_calculator_multipliers_B_general(
+void qpms_trans_calculator_multipliers_B_general(
+		qpms_normalisation_t norm,
+		complex double *dest, int m, int n, int mu, int nu, int Qmax){
+	// This is according to the Cruzan-type formula [Xu](59)
+	assert(Qmax == gauntB_Q_max(-m,n,mu,nu));
+
+	
+	
+	int csphase = qpms_normalisation_t_csphase(norm); //TODO FIXME use this
+        norm = qpms_normalisation_t_normonly(norm);
+        double normlogfac= qpms_trans_normlogfac(norm,m,n,mu,nu);
+        double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
+        // TODO use csphase to modify normfac here!!!!
+        // normfac = xxx ? -normfac : normfac;
+        normfac *= min1pow(m);//different from old taylor
+
+
+}
+
+/*static*/ void qpms_trans_calculator_multipliers_B_general_oldXu(
 		qpms_normalisation_t norm,
 		complex double *dest, int m, int n, int mu, int nu, int Qmax) {
+	assert(0); // FIXME probably gives wrong values, do not use.
 	assert(Qmax == gauntB_Q_max(-m,n,mu,nu));
 	int q2max = gaunt_q_max(-m-1,n+1,mu+1,nu);
 	// assert(Qmax == q2max);
@@ -607,6 +631,7 @@ static void qpms_trans_calculator_multipliers_A_Taylor(
 
 static void qpms_trans_calculator_multipliers_B_Taylor(
 		complex double *dest, int m, int n, int mu, int nu, int Qmax) {
+	assert(0); // FIXME probably gives wrong values, do not use.
 	assert(Qmax == gauntB_Q_max(-m,n,mu,nu));
 	int q2max = gaunt_q_max(-m-1,n+1,mu+1,nu);
 	//assert(Qmax == q2max);
