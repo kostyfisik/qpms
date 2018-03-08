@@ -289,7 +289,7 @@ complex double qpms_trans_single_B_Xu(int m, int n, int mu, int nu, sph_t kdlj,
 complex double qpms_trans_single_B(qpms_normalisation_t norm,
 		int m, int n, int mu, int nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J) { 
-	assert(0); // FIXME probably gives wrong values, do not use.
+	//assert(0); // FIXME probably gives wrong values, do not use.
 	if(r_ge_d) J = QPMS_BESSEL_REGULAR;
 	double costheta = cos(kdlj.theta);
 
@@ -442,6 +442,8 @@ static inline size_t qpms_trans_calculator_index_yyu(const qpms_trans_calculator
 
 #define SQ(x) ((x)*(x))
 
+static inline int isq(int x) { return x * x; }
+static inline double fsq(double x) {return x * x; }
 
 static void qpms_trans_calculator_multipliers_A_general(
 		qpms_normalisation_t norm,
@@ -484,6 +486,17 @@ static void qpms_trans_calculator_multipliers_A_general(
 }
 
 
+// as in [Xu](61)
+double cruzan_bfactor(int M, int n, int mu, int nu, int p) {
+       double logprefac = lgamma(n+M+1) - lgamma(n-M+1) + lgamma(nu+mu+1) - lgamma(nu-mu+1) 
+	       + lgamma(p-M-mu+2) - lgamma(p+M+mu+2);
+       logprefac *= 0.5;
+       return min1pow(mu+M) * (2*p+3) * exp(logprefac) 
+	       * gsl_sf_coupling_3j(2*n, 2*nu, 2*(p+1), 2*M, 2*mu, 2*(-M-mu))
+	       * gsl_sf_coupling_3j(2*n, 2*nu, 2*p, 0, 0, 0);
+}
+
+
 void qpms_trans_calculator_multipliers_B_general(
 		qpms_normalisation_t norm,
 		complex double *dest, int m, int n, int mu, int nu, int Qmax){
@@ -498,9 +511,22 @@ void qpms_trans_calculator_multipliers_B_general(
         double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
         // TODO use csphase to modify normfac here!!!!
         // normfac = xxx ? -normfac : normfac;
-        normfac *= min1pow(m);//different from old taylor
+        //normfac *= min1pow(m);//different from old taylor
 
-
+	double presum = min1pow(1-m) * (2*nu+1)/(2.*(n*(n+1))) 
+		* exp(lgamma(n+m+1) - lgamma(n-m+1) + lgamma(nu-mu+1) - lgamma(nu+mu+1)
+				+ normlogfac)
+		* normfac;
+	
+	for(int q = BQ_OFFSET; q <= Qmax; ++q) {
+		int p = n+nu-2*q;
+		double t = sqrt(
+			  (isq(p+1)-isq(n-nu))
+			* (isq(n+nu+1)-isq(p+1))
+		);
+		dest[q-BQ_OFFSET] = presum * t 
+			* cruzan_bfactor(-m,n,mu,nu,p) * ipow(p+1);
+	}
 }
 
 /*static*/ void qpms_trans_calculator_multipliers_B_general_oldXu(
