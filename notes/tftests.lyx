@@ -389,11 +389,58 @@ Ve starší práci je poslední člen sumy
 \begin_inset Formula $\left(m,n,\mu,\nu\right)=\left(0,1,-1,1\right)$
 \end_inset
 
-!!!
+!!! (Opraveno, použit Cruzanův tvar v 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xu_efficient_1998"
+
+\end_inset
+
+.)
 \end_layout
 
 \begin_layout Enumerate
 A nakonec samotné vzorce pro sčítance mají poněkud jiný tvar.
+\end_layout
+
+\begin_layout Subsection
+Možné zdroje nepřesností
+\end_layout
+
+\begin_layout Standard
+I po opravě na Cruzanovy/Xuovy vzorce dochází k tomu, že posunuté vlny mají
+ chybu řádově v procentech a více.
+ Přitom hodnota se nezlepšuje se zvýšením lMax.
+ Možné zdroje nepřesností, jež je třeba vyloučit:
+\end_layout
+
+\begin_layout Itemize
+Odčítání podobných hodnot.
+ Řešení: nahradit všechny podezřelé součty Kahanovým sčítáním.
+\end_layout
+
+\begin_layout Itemize
+Nepřesnosti v implementaci GSL.
+ Otestovat a porovnat s 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Legendreovy polynomy,
+\end_layout
+
+\begin_layout Itemize
+Besselovy funkce.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Vzorce v Xu blbě? To by bylo blbé, ale byl ještě jeden článek v jakémsi
+ obskurním plátku.
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Standard
