@@ -49,6 +49,16 @@ static inline ccart3_t ccart3_scale(const complex  double c, const ccart3_t v) {
 	return res;
 }
 
+static inline ccart3_t ccart3_add(const ccart3_t a, const ccart3_t b) {
+	ccart3_t res = {a.x+b.x, a.y+b.y, a.z+b.z};
+	return res;
+}
+
+static inline ccart3_t ccart3_substract(const ccart3_t a, const ccart3_t b) {
+	ccart3_t res = {a.x-b.x, a.y-b.y, a.z-b.z};
+	return res;
+}
+
 static inline csphvec_t csphvec_add(const csphvec_t a, const csphvec_t b) {
 	csphvec_t res = {a.rc + b.rc, a.thetac + b.thetac, a.phic + b.phic};
 	return res;
@@ -131,18 +141,15 @@ static inline void csphvec_kahaninit(csphvec_t *sum, csphvec_t *compensation) {
 	sum->rc = sum->thetac = sum->phic = compensation->rc = compensation->thetac = compensation->phic = 0;
 }
 
-static inline void ccart3_kahanadd(ccart3_t *sum, ccart3_t *compensation, const *ccart3_t input) {
-	ccart3_t comped_input = ccart3_substract(*input, *compensation);
+static inline void ccart3_kahanadd(ccart3_t *sum, ccart3_t *compensation, const ccart3_t input) {
+	ccart3_t comped_input = ccart3_substract(input, *compensation);
 	ccart3_t nsum = ccart3_add(*sum, comped_input);
 	*compensation = ccart3_substract(ccart3_substract(nsum, *sum), comped_input);
 	*sum = nsum;
 }
 
-
-
-
-static inline void csphvec_kahanadd(csphvec_t *sum, csphvec_t *compensation, const csphvec_t *input) {
-	csphvec_t comped_input = csphvec_substract(*input, *compensation);
+static inline void csphvec_kahanadd(csphvec_t *sum, csphvec_t *compensation, const csphvec_t input) {
+	csphvec_t comped_input = csphvec_substract(input, *compensation);
 	csphvec_t nsum = csphvec_add(*sum, comped_input);
 	*compensation = csphvec_substract(csphvec_substract(nsum, *sum), comped_input);
 	*sum = nsum;

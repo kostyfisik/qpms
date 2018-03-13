@@ -6,7 +6,7 @@ static inline void kahaninit(double *sum, double *compensation) {
 	compensation = 0;
 }
 
-static inline void kahaninc(double *sum, double *compensation, double input) {
+static inline void kahanadd(double *sum, double *compensation, double input) {
 	double compensated_input = input - *compensation;
 	double nsum = *sum + compensated_input;
 	*compensation = (nsum - *sum) - compensated_input;
@@ -19,7 +19,7 @@ static inline void ckahaninit(complex double *sum, complex double *compensation)
 	compensation = 0;
 }
 
-static inline void ckahaninc(complex double *sum, complex double *compensation, complex double input) {
+static inline void ckahanadd(complex double *sum, complex double *compensation, complex double input) {
 	complex double compensated_input = input - *compensation;
 	complex double nsum = *sum + compensated_input;
 	*compensation = (nsum - *sum) - compensated_input;

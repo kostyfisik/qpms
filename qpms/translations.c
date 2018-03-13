@@ -820,7 +820,7 @@ static inline complex double qpms_trans_calculator_get_A_precalcbuf(const qpms_t
 		double Pp = legendre_buf[gsl_sf_legendre_array_index(p, abs(mu-m))];
 		complex double zp = bessel_buf[p];
 		complex double multiplier = c->A_multipliers[i][q];
-		ckahaninc(&sum, &kahanc, Pp * zp *  multiplier);
+		ckahanadd(&sum, &kahanc, Pp * zp *  multiplier);
 	}
 	complex double eimf =  cexp(I*(mu-m)*kdlj.phi);
 	return sum * eimf;
@@ -864,13 +864,13 @@ static inline complex double qpms_trans_calculator_get_B_precalcbuf(const qpms_t
 	size_t qmax = c->B_multipliers[i+1] - c->B_multipliers[i] - (1 - BQ_OFFSET);
 	assert(qmax == gauntB_Q_max(-m,n,mu,nu));
 	complex double sum, kahanc;
-	kahaninit(&sum, &kahanc);
+	ckahaninit(&sum, &kahanc);
 	for(int q = BQ_OFFSET; q <= qmax; ++q) {
 		int p = n+nu-2*q;
 		double Pp_ = legendre_buf[gsl_sf_legendre_array_index(p+1, abs(mu-m))];
 		complex double zp_ = bessel_buf[p+1];
 		complex double multiplier = c->B_multipliers[i][q-BQ_OFFSET];
-		ckahaninc(&sum, &kahanc, Pp_ * zp_ * multiplier);
+		ckahanadd(&sum, &kahanc, Pp_ * zp_ * multiplier);
 	}
 	complex double eimf =  cexp(I*(mu-m)*kdlj.phi);
 	return sum * eimf;
