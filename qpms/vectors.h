@@ -34,6 +34,11 @@ static inline cart3_t cart3_add(const cart3_t a, const cart3_t b) {
 	return res;
 }
 
+static inline cart3_t cart3_substract(const cart3_t a, const cart3_t b) {
+	cart3_t res = {a.x-b.x, a.y-b.y, a.z-b.z};
+	return res;
+}
+
 static inline cart3_t cart3_scale(const double c, const cart3_t v) {
 	cart3_t res = {c * v.x, c * v.y, c * v.z};
 	return res;
@@ -46,6 +51,11 @@ static inline ccart3_t ccart3_scale(const complex  double c, const ccart3_t v) {
 
 static inline csphvec_t csphvec_add(const csphvec_t a, const csphvec_t b) {
 	csphvec_t res = {a.rc + b.rc, a.thetac + b.thetac, a.phic + b.phic};
+	return res;
+}
+
+static inline csphvec_t csphvec_substract(const csphvec_t a, const csphvec_t b) {
+	csphvec_t res = {a.rc - b.rc, a.thetac - b.thetac, a.phic - b.phic};
 	return res;
 }
 
@@ -111,5 +121,31 @@ void print_csphvec(csphvec_t);
 void print_ccart3(ccart3_t);
 void print_cart3(cart3_t);
 void print_sph(sph_t);
+
+// kahan sums for various types... TODO make generic code using macros
+
+static inline void ccart3_kahaninit(ccart3_t *sum, ccart3_t *compensation) {
+	sum->x = sum->y = sum->z = compensation->x = compensation->y = compensation->z = 0;
+}
+static inline void csphvec_kahaninit(csphvec_t *sum, csphvec_t *compensation) {
+	sum->rc = sum->thetac = sum->phic = compensation->rc = compensation->thetac = compensation->phic = 0;
+}
+
+static inline void ccart3_kahanadd(ccart3_t *sum, ccart3_t *compensation, const *ccart3_t input) {
+	ccart3_t comped_input = ccart3_substract(*input, *compensation);
+	ccart3_t nsum = ccart3_add(*sum, comped_input);
+	*compensation = ccart3_substract(ccart3_substract(nsum, *sum), comped_input);
+	*sum = nsum;
+}
+
+
+
+
+static inline void csphvec_kahanadd(csphvec_t *sum, csphvec_t *compensation, const csphvec_t *input) {
+	csphvec_t comped_input = csphvec_substract(*input, *compensation);
+	csphvec_t nsum = csphvec_add(*sum, comped_input);
+	*compensation = csphvec_substract(csphvec_substract(nsum, *sum), comped_input);
+	*sum = nsum;
+}
 
 #endif //VECTORS_H
