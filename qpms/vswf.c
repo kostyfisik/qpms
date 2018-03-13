@@ -296,21 +296,27 @@ csphvec_t qpms_eval_vswf(sph_t kr,
 		qpms_l_t lMax, qpms_bessel_t btyp, qpms_normalisation_t norm)
 {
 	qpms_y_t nelem = qpms_lMax2nelem(lMax);
-	csphvec_t lsum = {0, 0, 0}, msum = {0, 0, 0}, esum = {0, 0, 0};
+	csphvec_t lsum, msum, esum, lcomp, mcomp, ecomp;
+	csphvec_kahaninit(&lsum, &lcomp);
+	csphvec_kahaninit(&msum, &mcomp);
+	csphvec_kahaninit(&esum, &ecomp);
 	csphvec_t *lset = NULL, *mset = NULL, *eset = NULL;
 	if(lc) lset = malloc(nelem * sizeof(csphvec_t));
 	if(mc) mset = malloc(nelem * sizeof(csphvec_t));
 	if(ec) eset = malloc(nelem * sizeof(csphvec_t));
 	qpms_vswf_fill(lset, mset, eset, lMax, kr, btyp, norm);
 	if(lc) for(qpms_y_t y = 0; y < nelem; ++y)
-		lsum = csphvec_add(lsum, csphvec_scale(lc[y], lset[y]));
+		csphvec_kahanadd(&lsum, &lcomp, csphvec_scale(lc[y], lset[y]));
 	if(mc) for(qpms_y_t y = 0; y < nelem; ++y)
-		msum = csphvec_add(msum, csphvec_scale(mc[y], mset[y]));
+		csphvec_kahanadd(&msum, &mcomp, csphvec_scale(mc[y], mset[y]));
 	if(ec) for(qpms_y_t y = 0; y < nelem; ++y)
-		esum = csphvec_add(esum, csphvec_scale(ec[y], eset[y]));
+		csphvec_kahanadd(&esum, &ecomp, csphvec_scale(ec[y], eset[y]));
 	if(lc) free(lset);
 	if(mc) free(mset);
 	if(ec) free(eset);
-	return csphvec_add(esum, csphvec_add(msum, lsum));
+	//return csphvec_add(esum, csphvec_add(msum, lsum));
+	csphvec_kahanadd(&esum, &ecomp, msum);
+	csphvec_kahanadd(&esum, &ecomp, lsum);
+	return esum;
 }
 
