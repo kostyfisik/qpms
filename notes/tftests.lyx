@@ -343,7 +343,7 @@ key "xu_efficient_1998"
 \begin_inset Formula $B_{mn\mu\nu}$
 \end_inset
 
- se liší v několika ohledech:
+ se lišejí v několika ohledech:
 \end_layout
 
 \begin_layout Enumerate
@@ -389,9 +389,18 @@ Ve starší práci je poslední člen sumy
 \begin_inset Formula $\left(m,n,\mu,\nu\right)=\left(0,1,-1,1\right)$
 \end_inset
 
-!!! (Opraveno, použit Cruzanův tvar v 
+!!! (Při numerickém srovnání Xuových vzorců 
 \begin_inset CommandInset citation
 LatexCommand cite
+after "(77–80)"
+key "xu_calculation_1996"
+
+\end_inset
+
+ ve staré práci a cruzanovských vzorců 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(59–61, ...)"
 key "xu_efficient_1998"
 
 \end_inset
@@ -430,7 +439,9 @@ Legendreovy polynomy,
 \end_layout
 
 \begin_layout Itemize
-Besselovy funkce.
+Besselovy funkce – nepřesné jak sviňa zejména u derivací besselových funkcí
+ prvního druhu.
+ Nutno zvolit jinou implementaci.
 \end_layout
 
 \end_deeper
