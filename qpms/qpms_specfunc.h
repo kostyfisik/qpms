@@ -11,6 +11,20 @@
 qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array);
 
 
+
+typedef struct qpms_bessel_calculator_t {
+        qpms_l_t lMax;
+        double *akn; // coefficients as in DLMF 10.49.1
+	complex double *bkn; // coefficients of the derivatives
+};
+
+qpms_bessel_calculator_t *qpms_bessel_calculator_init(qpms_l_t lMax);
+void qpms_bessel_calculator_free(qpms_bessel_calculator_t *c);
+
+qpms_errno_t qpms_sph_bessel_calc_fill(qpms_bessel_calculator_t *c, qpms_bessel_t typ, qpms_l_t lmax,
+	double x, complex double *result_array);
+
+
 /******************************************************************************
  *         Legendre functions and their "angular derivatives"                 *
  ******************************************************************************/
