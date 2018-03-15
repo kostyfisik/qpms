@@ -2,8 +2,16 @@
 #include "qpms_specfunc.h"
 #include <stdlib.h>
 #include <stddef.h>
-#include <kahansum.h>
+#include "kahansum.h"
 #include <gsl/gsl_sf_bessel.h>
+
+#ifndef M_LN2
+#define M_LN2   0.69314718055994530942  /* log_e 2 */
+#endif
+
+static inline complex double ipow(int x) {
+	return cpow(I,x);
+}
 
 // There is a big issue with gsl's precision of spherical bessel function; these have to be implemented differently
 qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array) {
@@ -48,7 +56,54 @@ static inline ptrdiff_t bkn_index(qpms_l_t n, qpms_l_t k) {
 	return ((ptrdiff_t) n + 2) * (n + 1) / 2 - 1 + k;
 }
 
+static inline qpms_errno_t qpms_sbessel_calculator_ensure_lMax(qpms_sbessel_calculator_t *c, qpms_l_t lMax) {
+	if (lMax <= c->lMax)
+		return QPMS_SUCCESS;
+	else {
+		if ( NULL == (c->akn = realloc(c->akn, sizeof(double) * akn_index(lMax + 2, 0))))
+			abort();
+		//if ( NULL == (c->bkn = realloc(c->bkn, sizeof(complex double) * bkn_index(lMax + 1, 0))))
+		//	abort();
+		for(qpms_l_t n = c->lMax+1; l <= lMax + 1; ++l)
+			for(qpms_l_t k = 0; k <= n; ++k)
+				c->akn[akn_index(n,k)] = exp(lgamma(n + k + 1) - k*M_LN2 - lgamma(k + 1) - lgamma(n - k + 1));
+		// ... TODO derivace
+		c->lMax = lMax;
+		return QPMS_SUCCESS
+	}
+}
 
-qpms_bessel_calculator_t *qpms_bessel_calculator_init(...){
-	TODO dudom;
+complex double qpms_sbessel_calc_h1(qpms_sbessel_calculator_t *c, qpms_l_t n, double x) {
+	double imaginary z = I/x;
+	complex double result = 0;
+	for (qpms_l_t k = n; k >= 0; --k) 
+		// can we use fma for complex?
+		//result = fma(result, z, c->akn(n, k));
+		result = result * z + c->akn(n,k);
+	result *= z * ipow TODOTODOTODO
+
+
+
+
+
+
+
+
+
+
+
+qpms_sbessel_calculator_t *qpms_sbessel_calculator_init() {
+	qpms_sbessel_calculator_t *c = malloc(sizeof(qpms_sbessel_calculator_t));
+	c->akn = NULL;
+	c->bkn = NULL;
+	c->lMax = -1;
+	return c;
+}
+
+
+
+void qpms_sbessel_calculator_free_p(qpms_sbessel_calculator_t *c) {
+	if(c->akn) free(c->akn);
+	if(c->bkn) free(c->bkn);
+	free(c);
 }
