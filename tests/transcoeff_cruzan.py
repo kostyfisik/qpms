@@ -91,3 +91,93 @@ def trcoeff_BCX(m, n, mu, nu, besseltype, kd, th, fi, csphase=1): # [Xu](59)
     res *= exp(I*(mu-m)*fi)
     return res
 
+
+def legpi_xu(n, m, fi): # momentálně neošetřeny okraje (cos(fi) == +- 1)
+    return m/sin(fi) * gen_legendre_P(n, m, cos(fi))
+
+def legtau_xu(n, m, fi):
+    locx = var('locx')
+    return -sin(fi)*derivative(gen_legendre_P(n,m,locx), locx).substitute(locx = cos(fi))
+
+def vswf_M_xu(besseltype, n, m, kr, th, fi):
+    postpart = sphericalBessels[besseltype](n, kr) * exp(I * m * fi)
+    tc = I*legpi_xu(n,m,th) * postpart
+    fc = -legtau_xu(n,m,th) * postpart
+    return (0, tc, fc)
+
+def vswf_N_xu(besseltype, n, m, kr, th, fi):
+    eimf = exp(I * m * fi)
+    rc = n * (n+1) * gen_legendre_P(n, m, cos(th)) * sphericalBessels[besseltype](n, kr)/kr * eimf
+    krv = var('krv')
+    radpart = derivative(krv * sphericalBessels[besseltype](n, krv), krv).substitute(krv=kr)/kr
+    tc = legtau_xu(n,m,th) * radpart * eimf
+    fc = I*legpi_xu(n,m,th)  * radpart * eimf
+    return (rc,tc,fc)
+
+def cart2sph(v):
+    (x, y, z) = v
+    r = sqrt(x**2 + y**2 + z**2)
+    th = arccos(z/r) if r else 0
+    fi = arctan2(y,x)
+    return (r, th, fi)
+
+def sph2cart(s):
+    (r, th, fi) = s
+    sinth = sin(th)
+    x = r * sinth * cos(fi)
+    y = r * sinth * sin(fi)
+    z = r * cos(th)
+    return (x,y,z)
+
+def sphvec2cart(loccart, sph):
+    r, th, fi = sph
+    sinth = sin(th)
+    costh = cos(th)
+    sinfi = sin(fi)
+    cosfi = cos(fi)
+
+    rx = sinth * cosfi
+    ry = sinth * sinfi
+    rz = costh
+    tx = costh * cosfi
+    ty = costh * sinfi
+    tz = -sinth
+    fx = -sinfi
+    fy = cosfi
+    fz = 0
+    
+    rc, tc, fc = loccart
+    x = rx * rc + tx * tc + fx * fc
+    y = ry * rc + ty * tc + fy * fc
+    z = rz * rc + tz * tc + fz * fc
+    return (x, y, z)
+
+def cart2sphvec(cart, sph):
+    _, th, fi = sph
+    x, y, z = cart
+
+    rx = sinth * cosfi
+    ry = sinth * sinfi
+    rz = costh
+    tx = costh * cosfi
+    ty = costh * sinfi
+    tz = -sinth
+    fx = -sinfi
+    fy = cosfi
+    fz = 0
+
+    rc = rx * x + ry * y + rz * z
+    tc = tx * x + ty * y + tz * z
+    fc = fx * x + fy * y + fz * z
+    return (rc, tc, fc)
+
+def test_M_translation_xu(lMax, origl, origm, origcartat, cartshift):
+    ox, oy, oz = origcartat
+    sx, sy, sz = cartshift
+    newcartat = (ox - sx, oy - sy, oz - sz)
+    w1s = cart2sph(origcartat)
+    w2s = cart2sph(newcartat)
+    pass # TODO
+
+    
+
