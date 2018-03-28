@@ -20,6 +20,9 @@ def printbesselYrow(lMax, x, file=sys.stdout):
         print(N(spherical_bessel_Y(l,x)), end = ' ', file=file)
     print('', file=file)
 
+
+#cf DLMF 10.51.2
+
 def printbesselDJrow(lMax, x, file=sys.stdout):
     print(lMax, N(x), end=' ', file=file);
     for l in range(lMax+1):
@@ -35,6 +38,9 @@ def printbesselDYrow(lMax, x, file=sys.stdout):
             + l/x*spherical_bessel_Y(l,x)), end = ' ', file=file)
     print('', file=file)
 
+
+def ank(n, k):
+    return factorial(n+k)/2**k/factorial(k)/factorial(n-k)
 
 def genall(lMax):
     f = open('besselDJcases', 'w')
@@ -58,3 +64,16 @@ def genall(lMax):
         printbesselYrow(lMax, 1/o, file=f)
         printbesselYrow(lMax, o/sqrt(3), file=f)
 
+
+import math
+M_LN2 = math.log(2)
+
+def ankf(n,k):
+    n = float(n)
+    k = float(k)
+    return math.exp(math.lgamma(n+k+1) - k * M_LN2 - math.lgamma(k+1) - math.lgamma(n-k+1))
+
+def ankrelerr(n,k):
+    a = ank(n,k)
+    b = ankf(n,k)
+    return 2 * abs(a - b)/(abs(a)+abs(b))
