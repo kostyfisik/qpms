@@ -29,3 +29,9 @@ Singular value asymmetry
 Similar as the scattering result asymmetry, although not necessarily 
 only in the y-direction?
 
+Overflows etc.
+--------------
+Assertion failed in gaunt_xu for test_vswf_translations.c and high values of LMAX
+(LMAX=25)
+
+
