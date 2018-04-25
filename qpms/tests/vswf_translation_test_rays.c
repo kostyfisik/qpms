@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
         qpms_l_t l2; qpms_m_t m2;
         qpms_y2mn_p(y2, &m2, &l2);
         if (QPMS_SUCCESS != qpms_trans_calculator_get_AB_p(c, &(A[y2]), &(B[y2]),
-            m2, l2, m1, l2, // !!! FIXME mám správné pořadí??? !!!
+            m2, l2, m1, l1, // !!! FIXME mám správné pořadí??? !!!
             ss, true /* FIXME Pro J != 1 */,  J)) abort();
         fprintf(f, "%g\t%g\t" "%g\t%g\t" "%g\t%g\t%g\t%g\t%g\t%g\t"
           "%g\t%g\t%g\t%g\t%g\t%g\t", 
