@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
       fprintf(pfile[p], "#\tThis point cart:\t%g\t%g\t%g\n", 
           points[p].x, points[p].y, points[p].z);
       sph_t ps = cart2sph(points[p]);
-      fprintf(pfile[p], "#tThis point sph:\t%g\t%g\t%g\n",
+      fprintf(pfile[p], "#\tThis point sph:\t%g\t%g\t%g\n",
           ps.r, ps.theta, ps.phi);
       csphvec_t M1[nelem], N1[nelem]; // mohl bych to počítat jednotlivě...
       if(QPMS_SUCCESS != qpms_vswf_fill(NULL, M1, N1, lMax, ps, J, norm)) abort();
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
       );
       // TODO print column headers here
       fputs("## TODO print column headers here\n", pfile[p]);
-      fputs("#\tstep\t"
+      fputs("#step\t"
         "(o2-o1).x\t(o2-o1).y\t(o2-o1).z\t(o2-o1).r\t(o2-o1).θ\t(o2-o1).φ\t"
         "(x-o2).x\t(x-o2).y\t(x-o2).z\t(x-o2).r\t(x-o2).θ\t(x-o2).φ\t",
         pfile[p]
@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
           "R(M1@2(%d,%d).φ)\tI(M1@2(%d,%d).φ)\t"
           "R(N1@2(%d,%d).r)\tI(N1@2(%d,%d).r)\t"
           "R(N1@2(%d,%d).θ)\tI(N1@2(%d,%d).θ)\t"
-          "R(N1@2(%d,%d).φ)\tI(N1@2(%d,%d).φ)\n"
+          "R(N1@2(%d,%d).φ)\tI(N1@2(%d,%d).φ)\t"
           "R(Mr1@2(%d,%d).r)\tI(Mr1@2(%d,%d).r)\t"
           "R(Mr1@2(%d,%d).θ)\tI(Mr1@2(%d,%d).θ)\t"
           "R(Mr1@2(%d,%d).φ)\tI(Mr1@2(%d,%d).φ)\t"
