@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
           "R(Mr1@2(%d,%d).φ)\tI(Mr1@2(%d,%d).φ)\t"
           "R(Nr1@2(%d,%d).r)\tI(Nr1@2(%d,%d).r)\t"
           "R(Nr1@2(%d,%d).θ)\tI(Nr1@2(%d,%d).θ)\t"
-          "R(Nr1@2(%d,%d).φ)\tI(Nr1@2(%d,%d).φ)\n",
+          "R(Nr1@2(%d,%d).φ)\tI(Nr1@2(%d,%d).φ)\t",
           l1,m1,l1,m1, l1,m1,l1,m1, l1,m1,l1,m1,
           l1,m1,l1,m1, l1,m1,l1,m1, l1,m1,l1,m1,
           l1,m1,l1,m1, l1,m1,l1,m1, l1,m1,l1,m1,
@@ -158,6 +158,7 @@ int main(int argc, char **argv) {
           l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2
         );
       }
+      fputc('\n', pfile[p]);
     }
   }
 
@@ -181,7 +182,11 @@ int main(int argc, char **argv) {
         qpms_l_t l2; qpms_m_t m2;
         qpms_y2mn_p(y2, &m2, &l2);
         if (QPMS_SUCCESS != qpms_trans_calculator_get_AB_p(c, &(A[y2]), &(B[y2]),
-            m2, l2, m1, l1, // !!! FIXME mám správné pořadí??? !!!
+#ifdef REVERSE
+              m1, l1, m2, l2,
+#else
+              m2, l2, m1, l1, // !!! FIXME mám správné pořadí??? !!!
+#endif
             ss, true /* FIXME Pro J != 1 */,  J)) abort();
       }
 
