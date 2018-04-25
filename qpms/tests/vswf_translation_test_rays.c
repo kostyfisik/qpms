@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
   // o2minuso1.x = gsl_ran_gaussian(rng, shiftsigma);
   // o2minuso1.y = gsl_ran_gaussian(rng, shiftsigma);
   // o2minuso1.z = gsl_ran_gaussian(rng, shiftsigma);
-  o2minuso1_max.x = 1;
+  o2minuso1_max.x = 6;
   o2minuso1_max.y = 0;
   o2minuso1_max.z = 0;
   int nraysteps = 512;
@@ -123,21 +123,7 @@ int main(int argc, char **argv) {
         "(x-o2).x\t(x-o2).y\t(x-o2).z\t(x-o2).r\t(x-o2).θ\t(x-o2).φ\t",
         pfile[p]
       );
-      for(qpms_y_t y = 0; y < nelem; ++y) {
-        qpms_l_t l2; qpms_m_t m2;
-        qpms_y2mn_p(y, &m2, &l2);
-        fprintf(pfile[p], "R(A(%d,%d))\tI(A(%d,%d))\t"
-          "R(B(%d,%d))\tI(B(%d,%d))\t"
-          "R(M2(%d,%d).r)\tI(M2(%d,%d).r)\t"
-          "R(M2(%d,%d).θ)\tI(M2(%d,%d).θ)\t"
-          "R(M2(%d,%d).φ)\tI(M2(%d,%d).φ)\t"
-          "R(N2(%d,%d).r)\tI(N2(%d,%d).r)\t"
-          "R(N2(%d,%d).θ)\tI(N2(%d,%d).θ)\t"
-          "R(N2(%d,%d).φ)\tI(N2(%d,%d).φ)\t",
-          l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2, 
-          l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2
-        );
-      }
+
       fprintf(pfile[p], //original and reconstructed waves at new origin
           "R(M1@2(%d,%d).r)\tI(M1@2(%d,%d).r)\t"
           "R(M1@2(%d,%d).θ)\tI(M1@2(%d,%d).θ)\t"
@@ -156,6 +142,22 @@ int main(int argc, char **argv) {
           l1,m1,l1,m1, l1,m1,l1,m1, l1,m1,l1,m1,
           l1,m1,l1,m1, l1,m1,l1,m1, l1,m1,l1,m1
       );
+
+      for(qpms_y_t y = 0; y < nelem; ++y) {
+        qpms_l_t l2; qpms_m_t m2;
+        qpms_y2mn_p(y, &m2, &l2);
+        fprintf(pfile[p], "R(A(%d,%d))\tI(A(%d,%d))\t"
+          "R(B(%d,%d))\tI(B(%d,%d))\t"
+          "R(M2(%d,%d).r)\tI(M2(%d,%d).r)\t"
+          "R(M2(%d,%d).θ)\tI(M2(%d,%d).θ)\t"
+          "R(M2(%d,%d).φ)\tI(M2(%d,%d).φ)\t"
+          "R(N2(%d,%d).r)\tI(N2(%d,%d).r)\t"
+          "R(N2(%d,%d).θ)\tI(N2(%d,%d).θ)\t"
+          "R(N2(%d,%d).φ)\tI(N2(%d,%d).φ)\t",
+          l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2, 
+          l2,m2,l2,m2, l2,m2,l2,m2, l2,m2,l2,m2
+        );
+      }
     }
   }
 
@@ -181,18 +183,8 @@ int main(int argc, char **argv) {
         if (QPMS_SUCCESS != qpms_trans_calculator_get_AB_p(c, &(A[y2]), &(B[y2]),
             m2, l2, m1, l1, // !!! FIXME mám správné pořadí??? !!!
             ss, true /* FIXME Pro J != 1 */,  J)) abort();
-        fprintf(f, "%g\t%g\t" "%g\t%g\t" "%g\t%g\t%g\t%g\t%g\t%g\t"
-          "%g\t%g\t%g\t%g\t%g\t%g\t", 
-          creal(A[y2]), cimag(A[y2]),
-          creal(B[y2]), cimag(B[y2]), 
-          creal(M2at2[y2].rc), cimag(M2at2[y2].rc),
-          creal(M2at2[y2].thetac), cimag(M2at2[y2].thetac),
-          creal(M2at2[y2].phic), cimag(M2at2[y2].phic),
-          creal(N2at2[y2].rc), cimag(N2at2[y2].rc),
-          creal(N2at2[y2].thetac), cimag(N2at2[y2].thetac),
-          creal(N2at2[y2].phic), cimag(N2at2[y2].phic)
-        );
       }
+
       M1at2 = ccart2csphvec(csphvec2ccart(M1[y1], w1s), w2s);
       N1at2 = ccart2csphvec(csphvec2ccart(N1[y1], w1s), w2s);
       fprintf(f, "%g\t%g\t%g\t%g\t%g\t%g\t" "%g\t%g\t%g\t%g\t%g\t%g\t", 
@@ -213,6 +205,20 @@ int main(int argc, char **argv) {
         creal(N1Rat2.thetac), cimag(N1Rat2.thetac),
         creal(N1Rat2.phic), cimag(N1Rat2.phic)
       );
+
+      for(qpms_y_t y2 = 0; y2 < nelem; ++y2){
+        fprintf(f, "%g\t%g\t" "%g\t%g\t" "%g\t%g\t%g\t%g\t%g\t%g\t"
+          "%g\t%g\t%g\t%g\t%g\t%g\t", 
+          creal(A[y2]), cimag(A[y2]),
+          creal(B[y2]), cimag(B[y2]), 
+          creal(M2at2[y2].rc), cimag(M2at2[y2].rc),
+          creal(M2at2[y2].thetac), cimag(M2at2[y2].thetac),
+          creal(M2at2[y2].phic), cimag(M2at2[y2].phic),
+          creal(N2at2[y2].rc), cimag(N2at2[y2].rc),
+          creal(N2at2[y2].thetac), cimag(N2at2[y2].thetac),
+          creal(N2at2[y2].phic), cimag(N2at2[y2].phic)
+        );
+      }
       fputc('\n', f);
     }
   }
