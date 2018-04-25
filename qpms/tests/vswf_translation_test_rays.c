@@ -176,6 +176,7 @@ int main(int argc, char **argv) {
           r, sc.x, sc.y, sc.z, ss.r, ss.theta, ss.phi,
           w2c.x, w2c.y, w2c.z, w2s.r, w2s.theta, w2s.phi);
       complex double A[nelem], B[nelem]; // translation ceofficients
+      if(QPMS_SUCCESS != qpms_vswf_fill(NULL, M1, N1, lMax, w1s, J, norm)) abort();
       csphvec_t M2at2[nelem], N2at2[nelem], M1at2, N1at2, M1Rat2, N1Rat2;
       if(QPMS_SUCCESS != qpms_vswf_fill(NULL, M2at2, N2at2, lMax, w2s, J, norm)) abort();
       for(qpms_y_t y2 = 0; y2 < nelem; ++y2) {
