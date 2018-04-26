@@ -477,7 +477,7 @@ static void qpms_trans_calculator_multipliers_A_general(
 		int Pp_order = mu - m;
 		assert(p >= abs(Pp_order));
 		double a1q_n = a1q[q] / a1q0;
-		// Assuming non_normalized legendre polynomials!
+		// Assuming non_normalized legendre polynomials (normalisation done here by hand)!
 		double Ppfac = (Pp_order >= 0) ? 1 :
 			min1pow(mu-m) * exp(lgamma(1+p+Pp_order)-lgamma(1+p-Pp_order));
 		double summandfac = (n*(n+1) + nu*(nu+1) - p*(p+1)) * min1pow(q) * a1q_n;
@@ -521,11 +521,16 @@ void qpms_trans_calculator_multipliers_B_general(
 	
 	for(int q = BQ_OFFSET; q <= Qmax; ++q) {
 		int p = n+nu-2*q;
+    int Pp_order = mu - m;
+    // Assuming non-normalised Legendre polynomials, normalise here by hand.
+    // Ppfac_ differs from Ppfac in the A-case by the substitution p->p+1
+    double Ppfac_ = (Pp_order >= 0)? 1 :
+      min1pow(mu-m) * exp(lgamma(1+1+p+Pp_order)-lgamma(1+1+p-Pp_order));
 		double t = sqrt(
 			  (isq(p+1)-isq(n-nu))
 			* (isq(n+nu+1)-isq(p+1))
 		);
-		dest[q-BQ_OFFSET] = presum * t 
+		dest[q-BQ_OFFSET] = presum * t * Ppfac_ 
 			* cruzan_bfactor(-m,n,mu,nu,p) * ipow(p+1);
 	}
 }
