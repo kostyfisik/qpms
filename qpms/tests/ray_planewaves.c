@@ -1,4 +1,4 @@
-// c99 -o raypwtest1 -I .. ray_planewaves.c -lgsl -lm ../legendre.c ../vswf.c ../bessel.c -lblas
+// c99 -o ../../tests/pwraytests/raypwtest1 -I .. ray_planewaves.c -lgsl -lm ../legendre.c ../vswf.c ../bessel.c -lblas
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_randist.h>
@@ -57,9 +57,9 @@ int main(int argc, char **argv) {
 	cart3_t rays[nrays];
 	double relerrs[nrays];
 	memset(rays, 0, nrays * sizeof(cart3_t));
-	rays[1].x = rays[2].y = rays[3].z = sigma;
+	rays[0].x = rays[1].y = rays[2].z = sigma;
 	double relerrthreshold = 1e-11;
-	for (unsigned i = 4; i < nrays; ++i) {
+	for (unsigned i = 3; i < nrays; ++i) {
 		cart3_t *w = rays+i;
 		w->x = gsl_ran_gaussian(rng, sigma);
 		w->y = gsl_ran_gaussian(rng, sigma);
