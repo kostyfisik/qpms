@@ -1,3 +1,4 @@
+// c99 -ggdb -I .. -o translations_xutable translations_xutable_test.c ../translations.c ../gaunt.c -lgsl -lblas -lm
 #include "translations.h"
 #include <stdio.h>
 //#include <math.h>
@@ -28,21 +29,21 @@ int main() {
 		complex double B = qpms_trans_single_B(QPMS_NORMALISATION_XU,tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, false, tc->J);
 		complex double A2 = qpms_trans_calculator_get_A(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, false, tc->J);
 		complex double B2 = qpms_trans_calculator_get_B(c, tc->m, tc->n, tc->mu, tc->nu, tc->kdlj, false, tc->J);
-		printf("A  = %.16f+%.16fj, relerr=%.16f, J=%d\n",
+		printf("A  = %.16e+%.16ej, relerr=%.16e, J=%d\n",
 				creal(A), cimag(A),  (0 == cabs(tc->result_A - A)) ? 0 :
 				cabs(tc->result_A - A)/((cabs(A) < cabs(tc->result_A)) ? cabs(A) : cabs(tc->result_A)),
 				tc->J);
-		printf("A' = %.16f+%.16fj, relerr=%.16f, relerr2=%.3e\n",
+		printf("A' = %.16e+%.16ej, relerr=%.16e, relerr2=%.3e\n",
 				creal(A2), cimag(A2),  (0 == cabs(tc->result_A - A2)) ? 0 :
 				cabs(tc->result_A - A2)/((cabs(A2) < cabs(tc->result_A)) ? cabs(A2) : cabs(tc->result_A)),
 				(0 == cabs(A - A2)) ? 0 :
 				cabs(A - A2)/((cabs(A2) < cabs(A)) ? cabs(A2) : cabs(A))
 		      );
-		printf("B  = %.16f+%.16fj, relerr=%.16f, J=%d\n",
+		printf("B  = %.16e+%.16ej, relerr=%.16e, J=%d\n",
 				creal(B), cimag(B),  (0 == cabs(tc->result_B - B)) ? 0 :
 				cabs(tc->result_B - B)/((cabs(B) < cabs(tc->result_B)) ? cabs(B) : cabs(tc->result_B)),
 				tc->J);
-		printf("B' = %.16f+%.16fj, relerr=%.16f, relerr2=%.3e\n",
+		printf("B' = %.16e+%.16ej, relerr=%.16e, relerr2=%.3e\n",
 				creal(B2), cimag(B2),  (0 == cabs(tc->result_B - B2)) ? 0 :
 				cabs(tc->result_B - B2)/((cabs(B2) < cabs(tc->result_B)) ? cabs(B2) : cabs(tc->result_B)),
 				(0 == cabs(B - B2)) ? 0 :
