@@ -110,6 +110,19 @@ int main(int argc, char **argv) {
       fprintf(rfile[p], "#\tThis ray sph:\t%g\t%g\t%g\n",
           ps.r, ps.theta, ps.phi);
       fputs("## TODO Coefficients of the wave decomposition\n", rfile[p]); // TODO print Lc, Mc, Nc
+      fputs("\t"
+          "\t\t\t\t\t\t" "\t"
+          "\t\t\t\t\t\t"
+          "\t\t\t\t\t\t"
+          "\t\t\t\t\t\t" "\t\t\t\t\t\t", rfile[p]);
+      for(qpms_y_t y = 0; y < nelem; ++y){ // TODO print also the longitudinal waves? 
+        for(int i = 0; i < 3; ++i)
+          fprintf(rfile[p], "%g\t%g\t", creal(Mc[y]), cimag(Mc[y])); 
+        for(int i = 0; i < 3; ++i)
+          fprintf(rfile[p], "%g\t%g\t", creal(Nc[y]), cimag(Nc[y]));
+      }
+      fputc('\n', rfile[p]);
+
       fputs("#step\t"
         "x\ty\tz\tr\tθ\tφ\tphase\t"
         "R(Ex)\tI(Ex)\tR(Ey)\tI(Ey)\tR(Ez)\tI(Ez)\t"
@@ -150,24 +163,27 @@ int main(int argc, char **argv) {
       csphvec_t L[nelem], M[nelem], N[nelem], Es, rEs;
       Es = ccart2csphvec(E, sph);
       rEs = qpms_eval_vswf(sph, Lc, Mc, Nc, lMax, QPMS_BESSEL_REGULAR, norm); // TODO maybe also check this by summing manually Lc * L etc.
+      ccart3_t rEc = csphvec2ccart(rEs, sph);
       if (qpms_vswf_fill(L, M, N, lMax, sph, QPMS_BESSEL_REGULAR, norm)) abort();
 
       fprintf(rfile[p],"%d\t"
           "%g\t%g\t%g\t%g\t%g\t%g\t" "%g\t"
           "%g\t%g\t%g\t%g\t%g\t%g\t"
           "%g\t%g\t%g\t%g\t%g\t%g\t"
+          "%g\t%g\t%g\t%g\t%g\t%g\t"
           "%g\t%g\t%g\t%g\t%g\t%g\t",
           step, cart.x, cart.y, cart.z, sph.r, sph.theta, sph.phi, phase,
           creal(E.x), cimag(E.x), creal(E.y), cimag(E.y), creal(E.z), cimag(E.z), 
           creal(Es.rc), cimag(Es.rc), creal(Es.thetac), cimag(Es.thetac), creal(Es.phic), cimag(Es.phic), 
+          creal(rEc.x), cimag(rEc.x), creal(rEc.y), cimag(rEc.y), creal(rEc.z), cimag(rEc.z),
           creal(rEs.rc), cimag(rEs.rc), creal(rEs.thetac), cimag(rEs.thetac), creal(rEs.phic), cimag(rEs.phic)
       );
       
       for(qpms_y_t y = 0; y < nelem; ++y) {
         csphvec_t /*Lsc,*/ Msc, Nsc; // TODO print also the longitudinal waves?
         //Lsc = csphvec_scale(Lc[y], L);
-        Msc = csphvec_scale(Mc[y], M[y]);
-        Nsc = csphvec_scale(Nc[y], N[y]);
+        Msc = M[y];//csphvec_scale(Mc[y], M[y]);
+        Nsc = N[y];//csphvec_scale(Nc[y], N[y]);
         fprintf(rfile[p], "%g\t%g\t%g\t%g\t%g\t%g\t""%g\t%g\t%g\t%g\t%g\t%g\t",
             creal(Msc.rc), cimag(Msc.rc),
             creal(Msc.thetac), cimag(Msc.thetac),
