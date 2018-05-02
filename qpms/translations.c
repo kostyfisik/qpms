@@ -290,7 +290,9 @@ complex double qpms_trans_single_B_Xu(int m, int n, int mu, int nu, sph_t kdlj,
 complex double qpms_trans_single_B(qpms_normalisation_t norm,
 		int m, int n, int mu, int nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J) { 
-	//assert(0); // FIXME probably gives wrong values, do not use.
+#ifndef USE_BROKEN_SINGLETC
+	assert(0); // FIXME probably gives wrong values, do not use.
+#endif
 	if(r_ge_d) J = QPMS_BESSEL_REGULAR;
 	double costheta = cos(kdlj.theta);
 
@@ -481,7 +483,7 @@ static void qpms_trans_calculator_multipliers_A_general(
 		double Ppfac = (Pp_order >= 0) ? 1 :
 			min1pow(mu-m) * exp(lgamma(1+p+Pp_order)-lgamma(1+p-Pp_order));
 		double summandfac = (n*(n+1) + nu*(nu+1) - p*(p+1)) * min1pow(q) * a1q_n;
-		dest[q] = presum * summandfac * Ppfac;
+		dest[q] = presum * summandfac * Ppfac /* * ipow(n-nu) */;
 		// FIXME I might not need complex here
 	}
 }
@@ -531,7 +533,7 @@ void qpms_trans_calculator_multipliers_B_general(
 			* (isq(n+nu+1)-isq(p+1))
 		);
 		dest[q-BQ_OFFSET] = presum * t * Ppfac_ 
-			* cruzan_bfactor(-m,n,mu,nu,p) * ipow(p+1);
+			* cruzan_bfactor(-m,n,mu,nu,p) * ipow(p+1) /* * ipow(n-nu) */;
 	}
 }
 

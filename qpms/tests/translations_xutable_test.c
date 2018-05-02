@@ -1,4 +1,4 @@
-// c99 -ggdb -I .. -o translations_xutable translations_xutable_test.c ../translations.c ../gaunt.c -lgsl -lblas -lm
+// c99 -ggdb -I .. -DUSE_BROKEN_SINGLETC -o translations_xutable translations_xutable_test.c ../translations.c ../gaunt.c -lgsl -lblas -lm
 #include "translations.h"
 #include <stdio.h>
 //#include <math.h>
