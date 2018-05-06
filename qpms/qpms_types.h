@@ -105,10 +105,10 @@ static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t 
 
 
 typedef enum {
-        QPMS_BESSEL_REGULAR = 1, // regular function j
-        QPMS_BESSEL_SINGULAR = 2, // singular function y
-        QPMS_HANKEL_PLUS = 3, // hankel function h1 = j + I*y
-        QPMS_HANKEL_MINUS = 4, // hankel function h2 = j - I*y
+	QPMS_BESSEL_REGULAR = 1, // regular function j
+	QPMS_BESSEL_SINGULAR = 2, // singular function y
+	QPMS_HANKEL_PLUS = 3, // hankel function h1 = j + I*y
+	QPMS_HANKEL_MINUS = 4, // hankel function h2 = j - I*y
 	QPMS_BESSEL_UNDEF = 0
 } qpms_bessel_t;
 
@@ -131,7 +131,7 @@ typedef struct {
 
 typedef struct { // Do I really need this???
 	complex double r;
-       	double	theta, phi;
+	double	theta, phi;
 } csph_t;
 
 // complex vector components in local spherical basis

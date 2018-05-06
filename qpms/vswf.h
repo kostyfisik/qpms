@@ -5,10 +5,10 @@
 
 // Electric wave N; NI
 csphvec_t qpms_vswf_single_el(int m, int n, sph_t kdlj,
-                qpms_bessel_t btyp, qpms_normalisation_t norm);
+		qpms_bessel_t btyp, qpms_normalisation_t norm);
 // Magnetic wave M; NI
 csphvec_t qpms_vswf_single_mg(int m, int n, sph_t kdlj,
-                qpms_bessel_t btyp, qpms_normalisation_t norm);
+		qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 // Set of electric and magnetic VSWF in spherical coordinate basis
 typedef struct {
@@ -39,9 +39,9 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *resultL, csphvec_t *resultM, 
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
-		                qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
+		qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
 qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
-		                qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
+		qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
 
 qpms_errno_t qpms_planewave2vswf_fill_cart(cart3_t wavedir, ccart3_t amplitude,
 		complex double *targt_longcoeff, complex double *target_mgcoeff, complex double *target_elcoeff,
@@ -57,7 +57,7 @@ csphvec_t qpms_eval_vswf(sph_t where,
 
 
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
-	qpms_bessel_t btyp, qpms_normalisation_t norm);//NI
+		qpms_bessel_t btyp, qpms_normalisation_t norm);//NI
 void qpms_vswfset_sph_pfree(qpms_vswfset_sph_t *);//NI
 
 #endif // QPMS_VSWF_H
