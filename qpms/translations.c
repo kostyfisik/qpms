@@ -152,7 +152,9 @@ static inline double qpms_trans_normfac(qpms_normalisation_t norm,
   double normfac = 1.;
   switch(norm) {
     case QPMS_NORMALISATION_KRISTENSSON:
-      normfac *= sqrt((nu*(nu+1.))/(n*(n+1.)));
+      normfac *= sqrt((n*(n+1.))/(nu*(nu+1.)));
+      normfac *= sqrt((2.*n+1)/(2.*nu+1));
+      break;
     case QPMS_NORMALISATION_TAYLOR:
       normfac *= sqrt((2.*n+1)/(2.*nu+1));
       break;
