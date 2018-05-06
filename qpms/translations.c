@@ -137,9 +137,14 @@ static inline double qpms_trans_normlogfac(qpms_normalisation_t norm,
     case QPMS_NORMALISATION_TAYLOR:
       return -0.5*(lgamma(n+m+1)-lgamma(n-m+1)+lgamma(nu-mu+1)-lgamma(nu+mu+1));
       break;
+    case QPMS_NORMALISATION_NONE:
+      return -(lgamma(n+m+1)-lgamma(n-m+1)+lgamma(nu-mu+1)-lgamma(nu+mu+1));
+      break;
+    /* // TODO NONE and XU are going to be different after all...
     case QPMS_NORMALISATION_XU:
       return 0;
       break;
+    */
     default:
       abort();
   }
@@ -158,8 +163,13 @@ static inline double qpms_trans_normfac(qpms_normalisation_t norm,
     case QPMS_NORMALISATION_TAYLOR:
       normfac *= sqrt((2.*n+1)/(2.*nu+1));
       break;
+    case QPMS_NORMALISATION_NONE:
+      normfac *= (2.*n+1)/(2.*nu+1);
+      break;
+    /* // TODO NONE and XU are going to be different after all...
     case QPMS_NORMALISATION_XU:
       break;
+    */
     default:
       abort();
   }
