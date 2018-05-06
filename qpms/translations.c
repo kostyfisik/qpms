@@ -66,19 +66,87 @@ static const double sqrtpi = 1.7724538509055160272981674833411451827975494561223
 
 // Associated Legendre polynomial at zero argument (DLMF 14.5.1)
 double qpms_legendre0(int m, int n) {
-TAYLOR:
-  return -0.5*(lgamma(n+m+1)-lgamma(n-m+1)+lgamma(nu-mu+1)-lgamma(nu+mu+1));
-  break;
-  case QPMS_NORMALISATION_XU:
-  return 0;
-  break;
-  default:
-  abort();
+  return pow(2,m) * sqrtpi / tgamma(.5*n - .5*m + .5) / tgamma(.5*n-.5*m);
 }
+
+static inline int min1pow(int x) {
+  return (x % 2) ? -1 : 1;
+}
+
+static inline complex double ipow(int x) {
+  return cpow(I, x);
+}
+
+// Derivative of associated Legendre polynomial at zero argument (DLMF 14.5.2)
+double qpms_legendreD0(int m, int n) {
+  return -2 * qpms_legendre0(m, n);
+}
+
+
+static inline int imin(int x, int y) {
+  return x > y ? y : x;
+}
+
+// The uppermost value of q index for the B coefficient terms from [Xu](60).
+// N.B. this is different from [Xu_old](79) due to the n vs. n+1 difference.
+// However, the trailing terms in [Xu_old] are analytically zero (although
+// the numerical values will carry some non-zero rounding error).
+static inline int gauntB_Q_max(int M, int n, int mu, int nu) {
+  return imin(n, imin(nu, (n+nu+1-abs(M+mu))/2));
+}
+
+int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *result_array) {
+  int retval;
+  double tmparr[lmax+1];
+  switch(typ) {
+    case QPMS_BESSEL_REGULAR:
+      retval = gsl_sf_bessel_jl_steed_array(lmax, x, tmparr);
+      for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
+      return retval;
+      break;
+    case QPMS_BESSEL_SINGULAR: //FIXME: is this precise enough? Would it be better to do it one-by-one?
+      retval = gsl_sf_bessel_yl_array(lmax,x,tmparr);
+      for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
+      return retval;
+      break;
+    case QPMS_HANKEL_PLUS:
+    case QPMS_HANKEL_MINUS:
+      retval = gsl_sf_bessel_jl_steed_array(lmax, x, tmparr);
+      for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
+      if(retval) return retval;
+      retval = gsl_sf_bessel_yl_array(lmax, x, tmparr);
+      if (typ==QPMS_HANKEL_PLUS)
+        for (int l = 0; l <= lmax; ++l) result_array[l] += I * tmparr[l];
+      else 
+        for (int l = 0; l <= lmax; ++l) result_array[l] +=-I * tmparr[l];
+      return retval;
+      break;
+    default:
+      abort();
+      //return GSL_EDOM;
+  }
+  assert(0);
+}
+
+static inline double qpms_trans_normlogfac(qpms_normalisation_t norm,
+    int m, int n, int mu, int nu) {
+  //int csphase = qpms_normalisation_t csphase(norm); // probably not needed here
+  norm = qpms_normalisation_t_normonly(norm);
+  switch(norm) {
+    case QPMS_NORMALISATION_KRISTENSSON:
+    case QPMS_NORMALISATION_TAYLOR:
+      return -0.5*(lgamma(n+m+1)-lgamma(n-m+1)+lgamma(nu-mu+1)-lgamma(nu+mu+1));
+      break;
+    case QPMS_NORMALISATION_XU:
+      return 0;
+      break;
+    default:
+      abort();
+  }
 }
 
 static inline double qpms_trans_normfac(qpms_normalisation_t norm,
-    /*dest*/int m, int n, /*src*/int mu, int nu) {
+    int m, int n, int mu, int nu) {
   int csphase = qpms_normalisation_t_csphase(norm); // FIXME USEME TODO
   norm = qpms_normalisation_t_normonly(norm);
   double normfac = 1.;
