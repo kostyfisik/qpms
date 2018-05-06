@@ -1,3 +1,4 @@
+//c99 -o test_vswf_translations -ggdb -I .. test_vswf_translations.c ../translations.c ../gaunt.c -lgsl -lm -lblas ../vecprint.c ../vswf.c ../legendre.c
 #include "translations.h"
 #include "vswf.h"
 #include <stdio.h>

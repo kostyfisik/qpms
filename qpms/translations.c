@@ -11,6 +11,35 @@
 #include <stdlib.h> //abort()
 #include <gsl/gsl_sf_coupling.h>
 
+
+/*
+ * Define macros with additional factors that "should not be there" according
+ * to the "original" formulae but are needed to work with my vswfs.
+ * (actually, I don't know whether the error is in using "wrong" implementation
+ * of vswfs, "wrong" implementation of Xu's translation coefficient formulae,
+ * error/inconsintency in Xu's paper or something else)
+ * Anyway, the zeroes give the correct _numerical_ values according to Xu's
+ * paper tables (without Xu's typos, of course), while 
+ * the predefined macros give the correct translations of the VSWFs.
+ */
+#if !(defined AN0 || defined AN1 || defined AN2 || defined AN3)
+#pragma message "using AN1 macro as default"
+#define AN1
+#endif
+//#if !(defined AM0 || defined AM2)
+//#define AM1
+//#endif
+#if !(defined BN0 || defined BN1 || defined BN2 || defined BN3)
+#pragma message "using BN1 macro as default"
+#define BN1
+#endif
+//#if !(defined BM0 || defined BM2)
+//#define BM1
+//#endif
+//#if !(defined BF0 || defined BF1 || defined BF2 || defined BF3)
+//#define BF1
+//#endif
+
 // if defined, the pointer B_multipliers[y] corresponds to the q = 1 element;
 // otherwise, it corresponds to the q = 0 element, which should be identically zero
 #ifdef QPMS_PACKED_B_MULTIPLIERS
@@ -483,7 +512,18 @@ static void qpms_trans_calculator_multipliers_A_general(
 		double Ppfac = (Pp_order >= 0) ? 1 :
 			min1pow(mu-m) * exp(lgamma(1+p+Pp_order)-lgamma(1+p-Pp_order));
 		double summandfac = (n*(n+1) + nu*(nu+1) - p*(p+1)) * min1pow(q) * a1q_n;
-		dest[q] = presum * summandfac * Ppfac /* * ipow(n-nu) */;
+		dest[q] = presum * summandfac * Ppfac
+#ifdef AN1
+     * ipow(n-nu)
+#elif defined AN2
+     * min1pow(-n+nu)
+#elif defined AN3
+    * ipow (nu - n)
+#endif
+#ifdef AM2
+   * min1pow(-m+mu)
+#endif //NNU
+   ;
 		// FIXME I might not need complex here
 	}
 }
@@ -533,7 +573,25 @@ void qpms_trans_calculator_multipliers_B_general(
 			* (isq(n+nu+1)-isq(p+1))
 		);
 		dest[q-BQ_OFFSET] = presum * t * Ppfac_ 
-			* cruzan_bfactor(-m,n,mu,nu,p) * ipow(p+1) /* * ipow(n-nu) */;
+			* cruzan_bfactor(-m,n,mu,nu,p) * ipow(p+1) 
+#ifdef BN1
+     * ipow(n-nu)
+#elif defined BN2
+     * min1pow(-n+nu)
+#elif defined BN3
+    * ipow (nu - n)
+#endif
+#ifdef BM2
+   * min1pow(-m+mu)
+#endif  
+#ifdef BF1
+   * I
+#elif defined BF2
+   * (-1)
+#elif defined BF3
+   * (-I)
+#endif
+   ;// NNU
 	}
 }
 

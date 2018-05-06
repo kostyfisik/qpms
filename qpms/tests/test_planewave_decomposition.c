@@ -1,3 +1,4 @@
+// c99 -o test_planewave_decomposition -ggdb -I .. test_planewave_decomposition.c ../vswf.c -lgsl -lm -lblas ../legendre.c ../bessel.c
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_randist.h>
