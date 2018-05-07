@@ -27,8 +27,8 @@ typedef enum {
 #define QPMS_NORMALISATION_T_CSBIT 128
 typedef enum {
 	// As in TODO
-	QPMS_NORMALISATION_XU = 3, 
-	QPMS_NORMALISATION_NONE = QPMS_NORMALISATION_XU,
+	QPMS_NORMALISATION_XU = 4, // such that the numerical values in Xu's tables match
+	QPMS_NORMALISATION_NONE = 3, // genuine unnormalised waves (with unnormalised Legendre polynomials)
 	// As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
 	QPMS_NORMALISATION_KRISTENSSON = 2,
 	QPMS_NORMALISATION_POWER = QPMS_NORMALISATION_KRISTENSSON, 
@@ -37,7 +37,7 @@ typedef enum {
 	QPMS_NORMALISATION_SPHARM = QPMS_NORMALISATION_TAYLOR,
 	// Variants with Condon-Shortley phase
 	QPMS_NORMALISATION_XU_CS = QPMS_NORMALISATION_XU | QPMS_NORMALISATION_T_CSBIT, 
-	QPMS_NORMALISATION_NONE_CS = QPMS_NORMALISATION_XU_CS,
+	QPMS_NORMALISATION_NONE_CS = QPMS_NORMALISATION_NONE | QPMS_NORMALISATION_T_CSBIT,
 	QPMS_NORMALISATION_KRISTENSSON_CS = QPMS_NORMALISATION_KRISTENSSON | QPMS_NORMALISATION_T_CSBIT, 
 	QPMS_NORMALISATION_POWER_CS = QPMS_NORMALISATION_KRISTENSSON_CS,
 	QPMS_NORMALISATION_TAYLOR_CS = QPMS_NORMALISATION_TAYLOR | QPMS_NORMALISATION_T_CSBIT,
@@ -73,7 +73,7 @@ static inline double qpms_normalisation_t_factor(qpms_normalisation_t norm, qpms
 		case QPMS_NORMALISATION_TAYLOR:
 			factor = sqrt(l*(l+1));
 			break;
-		case QPMS_NORMALISATION_XU:
+		case QPMS_NORMALISATION_NONE:
 			factor = sqrt(l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1)));
 			break;
 		default:
@@ -94,7 +94,7 @@ static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t 
 		case QPMS_NORMALISATION_TAYLOR:
 			return l*(l+1);
 			break;
-		case QPMS_NORMALISATION_XU:
+		case QPMS_NORMALISATION_NONE:
 			return l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
 			break;
 		default:

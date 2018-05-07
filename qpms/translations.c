@@ -790,7 +790,7 @@ int qpms_trans_calculator_multipliers_A(qpms_normalisation_t norm, complex doubl
       return 0;
       break;
 #endif
-    case QPMS_NORMALISATION_XU:
+    case QPMS_NORMALISATION_NONE:
     case QPMS_NORMALISATION_KRISTENSSON:
       qpms_trans_calculator_multipliers_A_general(norm, dest, m, n, mu, nu, qmax);
       return 0;
@@ -809,7 +809,7 @@ int qpms_trans_calculator_multipliers_B(qpms_normalisation_t norm, complex doubl
       return 0;
       break;
 #endif
-    case QPMS_NORMALISATION_XU:
+    case QPMS_NORMALISATION_NONE:
     case QPMS_NORMALISATION_KRISTENSSON:
       qpms_trans_calculator_multipliers_B_general(norm, dest, m, n, mu, nu, Qmax);
       return 0;
@@ -918,7 +918,7 @@ complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
     // TODO use normalised legendre functions for Taylor and Kristensson
     case QPMS_NORMALISATION_TAYLOR:
     case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_XU:
+    case QPMS_NORMALISATION_NONE:
       {
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,
@@ -967,7 +967,7 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
   switch(c->normalisation) {
     case QPMS_NORMALISATION_TAYLOR:
     case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_XU:
+    case QPMS_NORMALISATION_NONE:
       {
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
@@ -998,7 +998,7 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
   switch(qpms_normalisation_t_normonly(c->normalisation)) {
     case QPMS_NORMALISATION_TAYLOR:
     case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_XU:
+    case QPMS_NORMALISATION_NONE:
       {
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
