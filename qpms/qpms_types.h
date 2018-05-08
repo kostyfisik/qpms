@@ -27,7 +27,7 @@ typedef enum {
 #define QPMS_NORMALISATION_T_CSBIT 128
 typedef enum {
 	// As in TODO
-	QPMS_NORMALISATION_XU = 4, // such that the numerical values in Xu's tables match
+	QPMS_NORMALISATION_XU = 4, // such that the numerical values in Xu's tables match, not recommended to use otherwise
 	QPMS_NORMALISATION_NONE = 3, // genuine unnormalised waves (with unnormalised Legendre polynomials)
 	// As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
 	QPMS_NORMALISATION_KRISTENSSON = 2,
@@ -58,6 +58,13 @@ static inline int qpms_normalisation_t_normonly(qpms_normalisation_t norm) {
 
 
 // TODO move the inlines elsewhere
+/* Normalisation of the spherical waves is now scattered in at least three different files:
+ * here, we have the norm in terms of radiated power of outgoing wave.
+ * In file legendre.c, function qpms_pitau_get determines the norm used in the vswf.c
+ * spherical vector wave norms. The "dual" waves in vswf.c use the ..._abssquare function below.
+ * In file translations.c, the normalisations are again set by hand using the normfac and lognormfac
+ * functions.
+ */
 #include <math.h>
 #include <assert.h>
 // relative to QPMS_NORMALISATION_KRISTENSSON_CS, i.e.
@@ -75,6 +82,9 @@ static inline double qpms_normalisation_t_factor(qpms_normalisation_t norm, qpms
 			break;
 		case QPMS_NORMALISATION_NONE:
 			factor = sqrt(l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1)));
+			break;
+		case QPMS_NORMALISATION_XU:
+			factor = sqrt(4 * M_PI) / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
 			break;
 		default:
 			assert(0);
@@ -96,6 +106,10 @@ static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t 
 			break;
 		case QPMS_NORMALISATION_NONE:
 			return l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
+			break;
+		case QPMS_NORMALISATION_XU:
+			double fac = sqrt(4 * M_PI) / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
+			return fac * fac;
 			break;
 		default:
 			assert(0);

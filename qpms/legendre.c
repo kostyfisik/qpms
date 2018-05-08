@@ -79,7 +79,8 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
     memset(res.tau, 0, nelem*sizeof(double));
     res.leg = calloc(nelem, sizeof(double));
     switch(norm) {
-      case QPMS_NORMALISATION_XU:
+      /* FIXME get rid of multiplicating the five lines */
+      case QPMS_NORMALISATION_NONE:
         for (qpms_l_t l = 1; l <= lMax; ++l) {
           res.leg[qpms_mn2y(0, l)] = (l%2)?ct:1.;
           double p = l*(l+1)/2;
@@ -91,11 +92,22 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
           res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * n * csphase;
         }
         break;
+      case QPMS_NORMALISATION_XU: // Rather useless except for testing.
+        for (qpms_l_t l = 1; l <= lMax; ++l) {
+          res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt(0.25*M_1_PI *(2*l+1)/(l*(l+1)));
+          double p = ..... HERE TODO ENDED CO
+          int lpar = (l%2)?-1:1;
+          res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * p * csphase;
+          res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * n * csphase;
+          res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * p * csphase;
+          res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * n * csphase;
+        }
+        break;
       case QPMS_NORMALISATION_TAYLOR:
         for (qpms_l_t l = 1; l <= lMax; ++l) {
           res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)*0.25*M_1_PI);
-          int lpar = (l%2)?-1:1;
           double fl = 0.25 * sqrt((2*l+1)*l*(l+1)*M_1_PI);
+          int lpar = (l%2)?-1:1;
           res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
           res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
           res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl * csphase;
@@ -105,13 +117,12 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
       case QPMS_NORMALISATION_POWER:
         for (qpms_l_t l = 1; l <= lMax; ++l) {
           res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)/(4*M_PI *l*(l+1)));
-          int lpar = (l%2)?-1:1;
           double fl = 0.25 * sqrt((2*l+1)*M_1_PI);
+          int lpar = (l%2)?-1:1;
           res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
           res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
           res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl * csphase;
           res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * fl * csphase;
-
         }
         break;
       default:
@@ -122,11 +133,11 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
     double *legder = malloc(sizeof(double)*qpms_lMax2nelem(lMax));
     res.leg = malloc(sizeof(double)*qpms_lMax2nelem(lMax));
     if (qpms_legendre_deriv_y_fill(res.leg, legder, ct, lMax,
-          norm == QPMS_NORMALISATION_XU ? GSL_SF_LEGENDRE_NONE
+          norm == QPMS_NORMALISATION_NONE ? GSL_SF_LEGENDRE_NONE
           : GSL_SF_LEGENDRE_SPHARM, csphase))
       abort();
     if (norm == QPMS_NORMALISATION_POWER)
-      /* for Xu (=non-normalized) and Taylor (=sph. harm. normalized)
+      /* for None (=non-normalized) and Taylor (=sph. harm. normalized)
        * the correct normalisation is already obtained from gsl_sf_legendre_deriv_array_e().
        * However, Kristensson ("power") normalisation differs from Taylor
        * by 1/sqrt(l*(l+1)) factor.
@@ -136,6 +147,18 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
         for (qpms_m_t m = -l; m <= l; ++m) {
           res.leg[qpms_mn2y(m,l)] *= prefac;
           legder[qpms_mn2y(m,l)] *= prefac;
+        }
+      }
+    else if (norm == QPMS_NORMALISATION_XU)
+      /* for Xu (anti-normalized), we start from spharm-normalized Legendre functions
+       * Do not use this normalisation except for testing
+       */
+      for (qpms_l_t l = 1; l <= lMax; ++l) {
+        double prefac = (2*l + 1) / sqrt(4*M_PI / (l*(l+1)));
+        for (qpms_m_t m = -l; m <= l; ++m) {
+          double fac = prefac * exp(lgamma(l+m+1) - lgamma(l-m+1));
+          res.leg[qpms_mn2y(m,l)] *= fac;
+          legder[qpms_mn2y(m,l)] *= fac;
         }
       }
     for (qpms_l_t l = 1; l <= lMax; ++l) {
