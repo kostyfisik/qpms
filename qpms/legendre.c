@@ -92,10 +92,14 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
           res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * n * csphase;
         }
         break;
+#ifdef USE_XU_ANTINORMALISATION // broken
       case QPMS_NORMALISATION_XU: // Rather useless except for testing.
         for (qpms_l_t l = 1; l <= lMax; ++l) {
           res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt(0.25*M_1_PI *(2*l+1)/(l*(l+1)));
-          double p = ..... HERE TODO ENDED CO
+          double p = l*(l+1)/2 /* as in _NONE */ 
+            * sqrt(0.25 * M_1_PI * (2*l + 1));
+          double n = 0.5 /* as in _NONE */
+            * sqrt(0.25 * M_1_PI * (2*l + 1)) / (l * (l+1));
           int lpar = (l%2)?-1:1;
           res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * p * csphase;
           res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * n * csphase;
@@ -103,6 +107,7 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
           res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * n * csphase;
         }
         break;
+#endif
       case QPMS_NORMALISATION_TAYLOR:
         for (qpms_l_t l = 1; l <= lMax; ++l) {
           res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)*0.25*M_1_PI);
@@ -149,10 +154,12 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
           legder[qpms_mn2y(m,l)] *= prefac;
         }
       }
+#ifdef USE_XU_ANTINORMALISATION
     else if (norm == QPMS_NORMALISATION_XU)
       /* for Xu (anti-normalized), we start from spharm-normalized Legendre functions
        * Do not use this normalisation except for testing
        */
+      // FIXME PROBABLY BROKEN HERE
       for (qpms_l_t l = 1; l <= lMax; ++l) {
         double prefac = (2*l + 1) / sqrt(4*M_PI / (l*(l+1)));
         for (qpms_m_t m = -l; m <= l; ++m) {
@@ -161,6 +168,7 @@ qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t no
           legder[qpms_mn2y(m,l)] *= fac;
         }
       }
+#endif
     for (qpms_l_t l = 1; l <= lMax; ++l) {
       for (qpms_m_t m = -l; m <= l; ++m) {
         res.pi [qpms_mn2y(m,l)] = m / st * res.leg[qpms_mn2y(m,l)];

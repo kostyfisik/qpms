@@ -8,6 +8,9 @@
 #include "string.h"
 #include "indexing.h"
 
+#define _GNU_SOURCE
+#include <fenv.h>
+
 char *normstr(qpms_normalisation_t norm) {
 	//int csphase = qpms_normalisation_t_csphase(norm);
 	norm = qpms_normalisation_t_normonly(norm);
@@ -18,6 +21,8 @@ char *normstr(qpms_normalisation_t norm) {
 			return "spharm";
 		case QPMS_NORMALISATION_POWER:
 			return "power";
+    case QPMS_NORMALISATION_XU:
+      return "xu";
 		default:
 			return "!!!undef!!!";
 	}
@@ -28,8 +33,9 @@ int test_planewave_decomposition_silent(cart3_t k, ccart3_t E, qpms_l_t lMax, qp
 int main() {
 	gsl_rng *rng =  gsl_rng_alloc(gsl_rng_ranlxs0);
 	gsl_rng_set(rng, 666);
+  feenableexcept(FE_INVALID | FE_OVERFLOW);
 
-	qpms_l_t lMax = 50;
+	qpms_l_t lMax = 30;
 	int npoints = 10;
 	double sigma = 1.3;
 	cart3_t points[npoints];
@@ -76,7 +82,7 @@ int main() {
 			for(int p = 0; p < npoints; ++p) printf("%.3g ", relerrs[p]);
 		}
 #endif 
-		for(int i = 1; i <= 3; ++i){
+		for(int i = 1; i <= 4; ++i){
 			test_planewave_decomposition(k, E, lMax, i, npoints, points);
 			test_planewave_decomposition(k, E, lMax, i | QPMS_NORMALISATION_T_CSBIT, npoints, points);
 		}

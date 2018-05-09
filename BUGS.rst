@@ -3,10 +3,18 @@ Known bugs
 
 Wrong factor on B coefficient
 -----------------------------
+(Probably fixed in the "calculator object" versions!)
 Under Kristensson normalisation (with CS = -1), my code gives
 B(1,0,n,n)/B(1,0,n,-n) == -(2n)! at (x,y,z) = (x,0,0)
 (expected plus or minus 1).
 A-coefficients seem to behave correctly.
+
+Xu's antinormalisation
+----------------------
+"Xu's antinormalisation" is broken (most likely in legendre.c and maybe
+also in qpms_types.h) – the plane wave test fails and the spherical wave
+reconstruction as well (but the translation coefficients match the 
+Xu's tables).
 
 Translation coefficients inconsistent
 -------------------------------------

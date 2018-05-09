@@ -20,6 +20,10 @@ char *normstr(qpms_normalisation_t norm) {
 			return "spharm";
 		case QPMS_NORMALISATION_POWER:
 			return "power";
+#ifdef USE_XU_ANTINORMALISATION
+    case QPMS_NORMALISATION_XU:
+      return "xu";
+#endif
 		default:
 			return "!!!undef!!!";
 	}
@@ -37,13 +41,13 @@ int main() {
 	qpms_l_t lMax = 8;
 	//qpms_l_t viewlMax = 2;
 	int npoints = 10;
-	double sigma = 0.1;
-	double shiftsigma = 2.;
+	double sigma = 4;
+  //double shiftsigma = 2.;
 
 	cart3_t o2minuso1;
-	o2minuso1.x = gsl_ran_gaussian(rng, shiftsigma);
-	o2minuso1.y = gsl_ran_gaussian(rng, shiftsigma);
-	o2minuso1.z = gsl_ran_gaussian(rng, shiftsigma);
+	o2minuso1.x = 1; //gsl_ran_gaussian(rng, shiftsigma);
+	o2minuso1.y = 2; //gsl_ran_gaussian(rng, shiftsigma);
+	o2minuso1.z = 5; //gsl_ran_gaussian(rng, shiftsigma);
 	
 	cart3_t points[npoints];
 	double relerrs[npoints];
@@ -58,7 +62,13 @@ int main() {
 	}
 	
 	for(int use_csbit = 0; use_csbit <= 1; ++use_csbit) {
-		for(int i = 1; i <= 3; ++i){
+		for(int i = 1; 
+#ifdef USE_XU_ANTINORMALISATION
+        i <= 4; 
+#else
+        i <= 3; 
+#endif
+        ++i){
 			qpms_normalisation_t norm = i | (use_csbit ? QPMS_NORMALISATION_T_CSBIT : 0);
 			qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, norm);
 			for(int J = 1; J <= 4; ++J)
@@ -109,7 +119,7 @@ int test_sphwave_translation(const qpms_trans_calculator *c, qpms_bessel_t wavet
 			for(qpms_y_t y2 = 0; y2 < nelem; ++y2){
 				qpms_m_t m2; qpms_l_t l2;
 				qpms_y2mn_p(y2, &m2, &l2);
-				if(qpms_trans_calculator_get_AB_p(c, A+y2, B+y2, m2, l2, m1, l1, ss, (w1s.r > ss.r), wavetype))
+				if(qpms_trans_calculator_get_AB_p(c, &(A[y2]), &(B[y2]), m2, l2, m1, l1, ss, (w1s.r > ss.r) , wavetype))
 					abort();
 			}
 

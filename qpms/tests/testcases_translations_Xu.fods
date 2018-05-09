@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0" xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0" xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0" xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0" xmlns:ooo="http://openoffice.org/2004/office" xmlns:ooow="http://openoffice.org/2004/writer" xmlns:oooc="http://openoffice.org/2004/calc" xmlns:dom="http://www.w3.org/2001/xml-events" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rpt="http://openoffice.org/2005/report" xmlns:of="urn:oasis:names:tc:opendocument:xmlns:of:1.2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:grddl="http://www.w3.org/2003/g/data-view#" xmlns:tableooo="http://openoffice.org/2009/table" xmlns:drawooo="http://openoffice.org/2010/draw" xmlns:calcext="urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" xmlns:field="urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" xmlns:formx="urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" xmlns:css3t="http://www.w3.org/TR/css3-text/" office:version="1.2" office:mimetype="application/vnd.oasis.opendocument.spreadsheet">
- <office:meta><meta:creation-date>2018-02-07T18:03:11.644802081</meta:creation-date><dc:date>2018-02-07T19:45:24.778557362</dc:date><meta:editing-duration>PT29M30S</meta:editing-duration><meta:editing-cycles>6</meta:editing-cycles><meta:generator>LibreOffice/5.1.6.2$Linux_X86_64 LibreOffice_project/10m0$Build-2</meta:generator><meta:document-statistic meta:table-count="1" meta:cell-count="787" meta:object-count="0"/></office:meta>
+ <office:meta><meta:creation-date>2018-02-07T18:03:11.644802081</meta:creation-date><dc:date>2018-05-08T18:45:46.807538258</dc:date><meta:editing-duration>PT36M22S</meta:editing-duration><meta:editing-cycles>7</meta:editing-cycles><meta:generator>LibreOffice/4.3.3.2$Linux_X86_64 LibreOffice_project/430m0$Build-2</meta:generator><meta:document-statistic meta:table-count="1" meta:cell-count="924" meta:object-count="0"/></office:meta>
  <office:settings>
   <config:config-item-set config:name="ooo:view-settings">
    <config:config-item config:name="VisibleAreaTop" config:type="int">0</config:config-item>
    <config:config-item config:name="VisibleAreaLeft" config:type="int">0</config:config-item>
-   <config:config-item config:name="VisibleAreaWidth" config:type="int">36119</config:config-item>
-   <config:config-item config:name="VisibleAreaHeight" config:type="int">14449</config:config-item>
+   <config:config-item config:name="VisibleAreaWidth" config:type="int">38376</config:config-item>
+   <config:config-item config:name="VisibleAreaHeight" config:type="int">17159</config:config-item>
    <config:config-item-map-indexed config:name="Views">
     <config:config-item-map-entry>
      <config:config-item config:name="ViewId" config:type="string">view1</config:config-item>
      <config:config-item-map-named config:name="Tables">
       <config:config-item-map-entry config:name="Taulukko1">
-       <config:config-item config:name="CursorPositionX" config:type="int">10</config:config-item>
-       <config:config-item config:name="CursorPositionY" config:type="int">9</config:config-item>
+       <config:config-item config:name="CursorPositionX" config:type="int">4</config:config-item>
+       <config:config-item config:name="CursorPositionY" config:type="int">36</config:config-item>
        <config:config-item config:name="HorizontalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="VerticalSplitMode" config:type="short">0</config:config-item>
        <config:config-item config:name="HorizontalSplitPosition" config:type="int">0</config:config-item>
@@ -23,7 +23,7 @@
        <config:config-item config:name="PositionLeft" config:type="int">0</config:config-item>
        <config:config-item config:name="PositionRight" config:type="int">0</config:config-item>
        <config:config-item config:name="PositionTop" config:type="int">0</config:config-item>
-       <config:config-item config:name="PositionBottom" config:type="int">0</config:config-item>
+       <config:config-item config:name="PositionBottom" config:type="int">5</config:config-item>
        <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
        <config:config-item config:name="ZoomValue" config:type="int">100</config:config-item>
        <config:config-item config:name="PageViewZoomValue" config:type="int">60</config:config-item>
@@ -31,7 +31,7 @@
       </config:config-item-map-entry>
      </config:config-item-map-named>
      <config:config-item config:name="ActiveTable" config:type="string">Taulukko1</config:config-item>
-     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">1853</config:config-item>
+     <config:config-item config:name="HorizontalScrollbarWidth" config:type="int">1228</config:config-item>
      <config:config-item config:name="ZoomType" config:type="short">0</config:config-item>
      <config:config-item config:name="ZoomValue" config:type="int">100</config:config-item>
      <config:config-item config:name="PageViewZoomValue" config:type="int">60</config:config-item>
@@ -44,7 +44,6 @@
      <config:config-item config:name="HasColumnRowHeaders" config:type="boolean">true</config:config-item>
      <config:config-item config:name="HasSheetTabs" config:type="boolean">true</config:config-item>
      <config:config-item config:name="IsOutlineSymbolsSet" config:type="boolean">true</config:config-item>
-     <config:config-item config:name="IsValueHighlightingEnabled" config:type="boolean">false</config:config-item>
      <config:config-item config:name="IsSnapToRaster" config:type="boolean">false</config:config-item>
      <config:config-item config:name="RasterIsVisible" config:type="boolean">false</config:config-item>
      <config:config-item config:name="RasterResolutionX" config:type="int">1000</config:config-item>
@@ -56,34 +55,34 @@
    </config:config-item-map-indexed>
   </config:config-item-set>
   <config:config-item-set config:name="ooo:configuration-settings">
-   <config:config-item config:name="IsDocumentShared" config:type="boolean">false</config:config-item>
    <config:config-item config:name="LoadReadonly" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="AllowPrintJobCancel" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="UpdateFromTemplate" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="IsKernAsianPunctuation" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="EmbedFonts" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="IsSnapToRaster" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="RasterResolutionX" config:type="int">1000</config:config-item>
-   <config:config-item config:name="RasterResolutionY" config:type="int">1000</config:config-item>
-   <config:config-item config:name="HasSheetTabs" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="IsRasterAxisSynchronized" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="ShowPageBreaks" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="ShowGrid" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="ShowNotes" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="IsOutlineSymbolsSet" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="ShowZeroValues" config:type="boolean">true</config:config-item>
    <config:config-item config:name="SaveVersionOnClose" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="GridColor" config:type="long">12632256</config:config-item>
-   <config:config-item config:name="RasterIsVisible" config:type="boolean">false</config:config-item>
-   <config:config-item config:name="PrinterName" config:type="string"/>
-   <config:config-item config:name="LinkUpdateMode" config:type="short">3</config:config-item>
-   <config:config-item config:name="RasterSubdivisionX" config:type="int">1</config:config-item>
-   <config:config-item config:name="HasColumnRowHeaders" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="RasterSubdivisionY" config:type="int">1</config:config-item>
-   <config:config-item config:name="AutoCalculate" config:type="boolean">true</config:config-item>
-   <config:config-item config:name="PrinterSetup" config:type="base64Binary"/>
+   <config:config-item config:name="IsDocumentShared" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsKernAsianPunctuation" config:type="boolean">false</config:config-item>
    <config:config-item config:name="ApplyUserData" config:type="boolean">true</config:config-item>
    <config:config-item config:name="CharacterCompressionType" config:type="short">0</config:config-item>
+   <config:config-item config:name="PrinterSetup" config:type="base64Binary">jwH+/0hQLUxhc2VySmV0LTMzOTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQ1VQUzpIUC1MYXNlckpldC0zMzkwAAAAAAAAAAAAAAAWAAMAtQAAAAAAAAAEAAhSAAAEdAAASm9iRGF0YSAxCnByaW50ZXI9SFAtTGFzZXJKZXQtMzM5MApvcmllbnRhdGlvbj1Qb3J0cmFpdApjb3BpZXM9MQpjb2xsYXRlPWZhbHNlCm1hcmdpbmRhanVzdG1lbnQ9MCwwLDAsMApjb2xvcmRlcHRoPTI0CnBzbGV2ZWw9MApwZGZkZXZpY2U9MQpjb2xvcmRldmljZT0wClBQRENvbnRleERhdGEKUGFnZVNpemU6QTQAABIAQ09NUEFUX0RVUExFWF9NT0RFCgBEVVBMRVhfT0ZG</config:config-item>
+   <config:config-item config:name="PrinterName" config:type="string">HP-LaserJet-3390</config:config-item>
+   <config:config-item config:name="UpdateFromTemplate" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="AutoCalculate" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="EmbedFonts" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="RasterIsVisible" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="IsSnapToRaster" config:type="boolean">false</config:config-item>
+   <config:config-item config:name="RasterSubdivisionX" config:type="int">1</config:config-item>
+   <config:config-item config:name="IsOutlineSymbolsSet" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="AllowPrintJobCancel" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="RasterResolutionX" config:type="int">1000</config:config-item>
+   <config:config-item config:name="HasSheetTabs" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="LinkUpdateMode" config:type="short">3</config:config-item>
+   <config:config-item config:name="IsRasterAxisSynchronized" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="ShowPageBreaks" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="HasColumnRowHeaders" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="GridColor" config:type="long">12632256</config:config-item>
+   <config:config-item config:name="ShowGrid" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="RasterSubdivisionY" config:type="int">1</config:config-item>
+   <config:config-item config:name="RasterResolutionY" config:type="int">1000</config:config-item>
+   <config:config-item config:name="ShowNotes" config:type="boolean">true</config:config-item>
+   <config:config-item config:name="ShowZeroValues" config:type="boolean">true</config:config-item>
   </config:config-item-set>
  </office:settings>
  <office:scripts>
@@ -101,21 +100,21 @@
  </office:font-face-decls>
  <office:styles>
   <style:default-style style:family="table-cell">
-   <style:paragraph-properties style:tab-stop-distance="12.5mm"/>
+   <style:paragraph-properties style:tab-stop-distance="1.25cm"/>
    <style:text-properties style:font-name="Liberation Sans" fo:language="fi" fo:country="FI" style:font-name-asian="DejaVu Sans" style:language-asian="zh" style:country-asian="CN" style:font-name-complex="DejaVu Sans" style:language-complex="hi" style:country-complex="IN"/>
   </style:default-style>
   <number:number-style style:name="N0">
    <number:number number:min-integer-digits="1"/>
   </number:number-style>
   <number:currency-style style:name="N107P0" style:volatile="true">
-   <number:number number:decimal-places="2" loext:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
+   <number:number number:decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <number:text> </number:text>
    <number:currency-symbol number:language="fi" number:country="FI">€</number:currency-symbol>
   </number:currency-style>
   <number:currency-style style:name="N107">
    <style:text-properties fo:color="#ff0000"/>
    <number:text>-</number:text>
-   <number:number number:decimal-places="2" loext:min-decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
+   <number:number number:decimal-places="2" number:min-integer-digits="1" number:grouping="true"/>
    <number:text> </number:text>
    <number:currency-symbol number:language="fi" number:country="FI">€</number:currency-symbol>
    <style:map style:condition="value()&gt;=0" style:apply-style-name="N107P0"/>
@@ -138,78 +137,78 @@
  </office:styles>
  <office:automatic-styles>
   <style:style style:name="co1" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="22.58mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="2.258cm"/>
   </style:style>
   <style:style style:name="co2" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="4.89mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.489cm"/>
   </style:style>
   <style:style style:name="co3" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="5.17mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.517cm"/>
   </style:style>
   <style:style style:name="co4" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="6.79mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.679cm"/>
   </style:style>
   <style:style style:name="co5" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="5.43mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.543cm"/>
   </style:style>
   <style:style style:name="co6" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="5.72mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.572cm"/>
   </style:style>
   <style:style style:name="co7" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="8.17mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.817cm"/>
   </style:style>
   <style:style style:name="co8" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="4.07mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.407cm"/>
   </style:style>
   <style:style style:name="co9" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="9.79mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.979cm"/>
   </style:style>
   <style:style style:name="co10" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="4.62mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.462cm"/>
   </style:style>
   <style:style style:name="co11" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="10.34mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="1.034cm"/>
   </style:style>
   <style:style style:name="co12" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="6.53mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.653cm"/>
   </style:style>
   <style:style style:name="co13" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="7.88mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.788cm"/>
   </style:style>
   <style:style style:name="co14" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="5.98mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.598cm"/>
   </style:style>
   <style:style style:name="co15" style:family="table-column">
-   <style:table-column-properties fo:break-before="auto" style:column-width="7.62mm"/>
+   <style:table-column-properties fo:break-before="auto" style:column-width="0.762cm"/>
   </style:style>
   <style:style style:name="ro1" style:family="table-row">
-   <style:table-row-properties style:row-height="4.52mm" fo:break-before="auto" style:use-optimal-row-height="true"/>
+   <style:table-row-properties style:row-height="0.452cm" fo:break-before="auto" style:use-optimal-row-height="true"/>
   </style:style>
   <style:style style:name="ta1" style:family="table" style:master-page-name="Default">
    <style:table-properties table:display="true" style:writing-mode="lr-tb"/>
   </style:style>
   <style:style style:name="ce1" style:family="table-cell" style:parent-style-name="Default">
    <style:table-cell-properties style:text-align-source="value-type" style:repeat-content="false"/>
-   <style:paragraph-properties fo:margin-left="0mm"/>
+   <style:paragraph-properties fo:margin-left="0cm"/>
   </style:style>
   <style:page-layout style:name="pm1">
    <style:page-layout-properties style:writing-mode="lr-tb"/>
    <style:header-style>
-    <style:header-footer-properties fo:min-height="7.5mm" fo:margin-left="0mm" fo:margin-right="0mm" fo:margin-bottom="2.5mm"/>
+    <style:header-footer-properties fo:min-height="0.75cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-bottom="0.25cm"/>
    </style:header-style>
    <style:footer-style>
-    <style:header-footer-properties fo:min-height="7.5mm" fo:margin-left="0mm" fo:margin-right="0mm" fo:margin-top="2.5mm"/>
+    <style:header-footer-properties fo:min-height="0.75cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0.25cm"/>
    </style:footer-style>
   </style:page-layout>
   <style:page-layout style:name="pm2">
    <style:page-layout-properties style:writing-mode="lr-tb"/>
    <style:header-style>
-    <style:header-footer-properties fo:min-height="7.5mm" fo:margin-left="0mm" fo:margin-right="0mm" fo:margin-bottom="2.5mm" fo:border="2.49pt solid #000000" fo:padding="0.18mm" fo:background-color="#c0c0c0">
+    <style:header-footer-properties fo:min-height="0.75cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-bottom="0.25cm" fo:border="2.49pt solid #000000" fo:padding="0.018cm" fo:background-color="#c0c0c0">
      <style:background-image/>
     </style:header-footer-properties>
    </style:header-style>
    <style:footer-style>
-    <style:header-footer-properties fo:min-height="7.5mm" fo:margin-left="0mm" fo:margin-right="0mm" fo:margin-top="2.5mm" fo:border="2.49pt solid #000000" fo:padding="0.18mm" fo:background-color="#c0c0c0">
+    <style:header-footer-properties fo:min-height="0.75cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:margin-top="0.25cm" fo:border="2.49pt solid #000000" fo:padding="0.018cm" fo:background-color="#c0c0c0">
      <style:background-image/>
     </style:header-footer-properties>
    </style:footer-style>
@@ -232,7 +231,7 @@
      <text:p><text:sheet-name>???</text:sheet-name> (<text:title>???</text:title>)</text:p>
     </style:region-left>
     <style:region-right>
-     <text:p><text:date style:data-style-name="N2" text:date-value="2018-02-07">00.00.0000</text:date>, <text:time>00:00:00</text:time></text:p>
+     <text:p><text:date style:data-style-name="N2" text:date-value="2018-05-08">00.00.0000</text:date>, <text:time style:data-style-name="N2" text:time-value="18:38:54.840458010">00:00:00</text:time></text:p>
     </style:region-right>
    </style:header>
    <style:header-left style:display="false"/>
@@ -272,6 +271,7 @@
     <table:table-column table:style-name="co14" table:default-cell-style-name="Default"/>
     <table:table-column table:style-name="co1" table:default-cell-style-name="ce1"/>
     <table:table-column table:style-name="co15" table:default-cell-style-name="Default"/>
+    <table:table-column table:style-name="co1" table:default-cell-style-name="Default"/>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>//</text:p>
@@ -357,6 +357,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="string" calcext:value-type="string">
@@ -370,7 +371,7 @@
      <table:table-cell table:style-name="Default"/>
      <table:table-cell/>
      <table:table-cell table:style-name="Default"/>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="2"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -455,6 +456,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -539,6 +541,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -623,6 +626,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -707,6 +711,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -791,6 +796,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -875,6 +881,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -959,6 +966,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="string" calcext:value-type="string">
@@ -972,7 +980,7 @@
      <table:table-cell table:style-name="Default"/>
      <table:table-cell/>
      <table:table-cell table:style-name="Default"/>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="2"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1051,11 +1059,14 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p><text:s/>+ </text:p>
      </table:table-cell>
-     <table:table-cell office:value-type="string" calcext:value-type="string">
-      <text:p>-.1110285257e+32</text:p>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.1110285257e+33</text:p>
      </table:table-cell>
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>/* N.B. article value is erroneous */</text:p>
      </table:table-cell>
     </table:table-row>
     <table:table-row table:style-name="ro1">
@@ -1141,6 +1152,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1225,6 +1237,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1309,6 +1322,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1393,6 +1407,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1477,6 +1492,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1561,6 +1577,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1645,6 +1662,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1729,6 +1747,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1813,6 +1832,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1897,6 +1917,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -1981,6 +2002,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2065,6 +2087,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2149,6 +2172,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2233,6 +2257,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2317,6 +2342,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2401,6 +2427,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2485,6 +2512,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2569,6 +2597,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2653,6 +2682,438 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I},</text:p>
      </table:table-cell>
+     <table:table-cell/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>// Yu-lin Xu, Journal of computational physics 139, 137–165 (1998), Table 14</text:p>
+     </table:table-cell>
+     <table:table-cell table:number-columns-repeated="28"/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell/>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>{</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_NORMALISATION_XU</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-2" calcext:value-type="float">
+      <text:p>-2</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="6" calcext:value-type="float">
+      <text:p>6</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-2" calcext:value-type="float">
+      <text:p>-2</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="10" calcext:value-type="float">
+      <text:p>10</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, {</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>2.</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>}, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_HANKEL_PLUS</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.1377011649e-01</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.2385575934e+13</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>* I, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.3282035237e+12</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.1587043209e-02</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>* I},</text:p>
+     </table:table-cell>
+     <table:table-cell/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell/>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>{</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_NORMALISATION_XU</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-15" calcext:value-type="float">
+      <text:p>-15</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>16</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-15" calcext:value-type="float">
+      <text:p>-15</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="20" calcext:value-type="float">
+      <text:p>20</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, {</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>2.</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>}, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_HANKEL_PLUS</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.2074318970e-01</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.2653706899e+36</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>* I, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.5072175010e+35</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.9852438545e-02</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>* I},</text:p>
+     </table:table-cell>
+     <table:table-cell/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell/>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>{</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_NORMALISATION_XU</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-20" calcext:value-type="float">
+      <text:p>-20</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="35" calcext:value-type="float">
+      <text:p>35</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-20" calcext:value-type="float">
+      <text:p>-20</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="45" calcext:value-type="float">
+      <text:p>45</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, {</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>2.</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>}, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_HANKEL_PLUS</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.1851837652e-05</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.4993981811e+115</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>* I, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.2073152255e+114</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.4193366215e-07</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>* I},</text:p>
+     </table:table-cell>
+     <table:table-cell/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell/>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>{</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_NORMALISATION_XU</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="41" calcext:value-type="float">
+      <text:p>41</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="45" calcext:value-type="float">
+      <text:p>45</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-42" calcext:value-type="float">
+      <text:p>-42</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="45" calcext:value-type="float">
+      <text:p>45</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, {</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>2.</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>}, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_HANKEL_PLUS</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.2276246420e+247</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.2937180509e+247</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>* I, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.8692874643e+243</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.6736775193e+243</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>* I},</text:p>
+     </table:table-cell>
+     <table:table-cell/>
+    </table:table-row>
+    <table:table-row table:style-name="ro1">
+     <table:table-cell/>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>{</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_NORMALISATION_XU</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="45" calcext:value-type="float">
+      <text:p>45</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="57" calcext:value-type="float">
+      <text:p>57</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="-38" calcext:value-type="float">
+      <text:p>-38</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>,</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="float" office:value="42" calcext:value-type="float">
+      <text:p>42</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, {</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>2.</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>0.5</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>}, </text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>QPMS_HANKEL_PLUS</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.4293609827e+274</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>.3327447520e+274</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>* I, </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.4939385256e+271</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p><text:s/>+ </text:p>
+     </table:table-cell>
+     <table:table-cell table:style-name="Default" office:value-type="string" calcext:value-type="string">
+      <text:p>-.6373592055e+271</text:p>
+     </table:table-cell>
+     <table:table-cell office:value-type="string" calcext:value-type="string">
+      <text:p>* I},</text:p>
+     </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell office:value-type="string" calcext:value-type="string">
@@ -2666,7 +3127,7 @@
      <table:table-cell table:style-name="Default"/>
      <table:table-cell/>
      <table:table-cell table:style-name="Default"/>
-     <table:table-cell/>
+     <table:table-cell table:number-columns-repeated="2"/>
     </table:table-row>
     <table:table-row table:style-name="ro1">
      <table:table-cell/>
@@ -2751,6 +3212,7 @@
      <table:table-cell office:value-type="string" calcext:value-type="string">
       <text:p>* I}</text:p>
      </table:table-cell>
+     <table:table-cell/>
     </table:table-row>
    </table:table>
    <table:named-expressions/>
