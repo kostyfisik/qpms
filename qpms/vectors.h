@@ -155,4 +155,15 @@ static inline void csphvec_kahanadd(csphvec_t *sum, csphvec_t *compensation, con
 	*sum = nsum;
 }
 
+static inline double csphvec_norm(const csphvec_t a) {
+	return  sqrt(creal(a.rc * conj(a.rc) + a.thetac * conj(a.thetac) + a.phic * conj(a.phic)));
+}
+
+static inline double csphvec_reldiff(const csphvec_t a, const csphvec_t b) {
+	double anorm = csphvec_norm(a);
+	double bnorm = csphvec_norm(b);
+	if (anorm == 0 && bnorm == 0) return 0;
+	return csphvec_norm(csphvec_substract(a,b)) / (anorm + bnorm);
+}
+
 #endif //VECTORS_H
