@@ -920,7 +920,7 @@ complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
     // TODO warn? 
     return NAN+I*NAN;
   int csphase = qpms_normalisation_t_csphase(c->normalisation);
-  switch(c->normalisation) {
+  switch(qpms_normalisation_t_normonly(c->normalisation)) {
     // TODO use normalised legendre functions for Taylor and Kristensson
     case QPMS_NORMALISATION_TAYLOR:
     case QPMS_NORMALISATION_KRISTENSSON:
@@ -973,7 +973,7 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
     // TODO warn? 
     return NAN+I*NAN;
   int csphase = qpms_normalisation_t_csphase(c->normalisation);
-  switch(c->normalisation) {
+  switch(qpms_normalisation_t_normonly(c->normalisation)) {
     case QPMS_NORMALISATION_TAYLOR:
     case QPMS_NORMALISATION_KRISTENSSON:
     case QPMS_NORMALISATION_NONE:
