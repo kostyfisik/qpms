@@ -152,9 +152,13 @@ static inline double qpms_trans_normlogfac(qpms_normalisation_t norm,
 
 static inline double qpms_trans_normfac(qpms_normalisation_t norm,
     int m, int n, int mu, int nu) {
-  int csphase = qpms_normalisation_t_csphase(norm); // FIXME USEME TODO
+  int csphase = qpms_normalisation_t_csphase(norm);
   norm = qpms_normalisation_t_normonly(norm);
-  double normfac = 1.;
+  /* Account for csphase here. Alternatively, this could be done by
+   * using appropriate csphase in the legendre polynomials when calculating
+   * the translation operator.
+   */
+  double normfac = (1 == csphase) ? min1pow(m-mu) : 1.;
   switch(norm) {
     case QPMS_NORMALISATION_KRISTENSSON:
       normfac *= sqrt((n*(n+1.))/(nu*(nu+1.)));
@@ -191,7 +195,6 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm,
   gaunt_xu(-m,n,mu,nu,qmax,a1q,&err);
   double a1q0 = a1q[0];
   if (err) abort();
-  int csphase = qpms_normalisation_t_csphase(norm); //FIXME EITHER TO NORMFAC OR USE HERE
 
   double leg[gsl_sf_legendre_array_n(n+nu)];
   if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,costheta,csphase,leg)) abort();
@@ -221,7 +224,19 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm,
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
 
   // ipow(n-nu) is the difference from the Taylor formula!
-  presum *= /*ipow(n-nu) * */(normfac * exp(normlogfac));
+  presum *= /*ipow(n-nu) * */
+    (normfac * exp(normlogfac))
+#ifdef AN1
+      * ipow(n-nu)
+#elif defined AN2
+      * min1pow(-n+nu)
+#elif defined AN3
+      * ipow (nu - n)
+#endif
+#ifdef AM2
+      * min1pow(-m+mu)
+#endif //NNU
+  ;
   return presum * sum;
 }
 
@@ -356,7 +371,6 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
   a3q0 = a3q[0];
 
   double leg[gsl_sf_legendre_array_n(n+nu+1)];
-  int csphase = qpms_normalisation_t_csphase(norm);// FIXME EITHER TO NORMFAC OR USE HERE
   if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,costheta,csphase,leg)) abort();
   complex double bes[n+nu+2];
   if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bes)) abort();
@@ -389,7 +403,18 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
 
   // ipow(n-nu) is the difference from the "old Taylor" formula	
-  presum *= /*ipow(n-nu) * */(exp(normlogfac) * normfac);
+  presum *= /*ipow(n-nu) * */(exp(normlogfac) * normfac)
+#ifdef AN1
+      * ipow(n-nu)
+#elif defined AN2
+      * min1pow(-n+nu)
+#elif defined AN3
+      * ipow (nu - n)
+#endif
+#ifdef AM2
+      * min1pow(-m+mu)
+#endif //NNU
+  ;
 
   return presum * sum;
 }
@@ -500,14 +525,11 @@ static void qpms_trans_calculator_multipliers_A_general(
   if (err) abort();
   double a1q0 = a1q[0];
 
-  int csphase = qpms_normalisation_t_csphase(norm); //TODO FIXME use this
-  norm = qpms_normalisation_t_normonly(norm);
   double normlogfac = qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
 
-  // TODO use csphase to modify normfac here!!!!
-  // normfac = xxx ? -normfac : normfac;
   normfac *= min1pow(m); //different from old Taylor
+
   double exponent=(lgamma(2*n+1)-lgamma(n+2)+lgamma(2*nu+3)-lgamma(nu+2)
       +lgamma(n+nu+m-mu+1)-lgamma(n-m+1)-lgamma(nu+mu+1)
       +lgamma(n+nu+1) - lgamma(2*(n+nu)+1))
@@ -561,13 +583,8 @@ void qpms_trans_calculator_multipliers_B_general(
 
 
 
-  int csphase = qpms_normalisation_t_csphase(norm); //TODO FIXME use this
-  norm = qpms_normalisation_t_normonly(norm);
   double normlogfac= qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
-  // TODO use csphase to modify normfac here!!!!
-  // normfac = xxx ? -normfac : normfac;
-  //normfac *= min1pow(m);//different from old taylor
 
   double presum = min1pow(1-m) * (2*nu+1)/(2.*(n*(n+1))) 
     * exp(lgamma(n+m+1) - lgamma(n-m+1) + lgamma(nu-mu+1) - lgamma(nu+mu+1)
