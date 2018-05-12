@@ -159,11 +159,15 @@ static inline double csphvec_norm(const csphvec_t a) {
 	return  sqrt(creal(a.rc * conj(a.rc) + a.thetac * conj(a.thetac) + a.phic * conj(a.phic)));
 }
 
-static inline double csphvec_reldiff(const csphvec_t a, const csphvec_t b) {
+static inline double csphvec_reldiff_abstol(const csphvec_t a, const csphvec_t b, double tolerance) {
 	double anorm = csphvec_norm(a);
 	double bnorm = csphvec_norm(b);
-	if (anorm == 0 && bnorm == 0) return 0;
+	if (anorm <= tolerance && bnorm <= tolerance) return 0;
 	return csphvec_norm(csphvec_substract(a,b)) / (anorm + bnorm);
+}
+
+static inline double csphvec_reldiff(const csphvec_t a, const csphvec_t b) {
+	return csphvec_reldiff_abstol(a, b, 0);
 }
 
 #endif //VECTORS_H

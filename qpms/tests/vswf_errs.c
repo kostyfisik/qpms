@@ -29,6 +29,8 @@ char *normstr(qpms_normalisation_t norm) {
 	}
 }
 
+#define DIFFTOL (1e-13)
+
 int test_sphwave_translation(const qpms_trans_calculator *c, qpms_bessel_t wavetype, 
 		cart3_t o2minuso1, int npoints, cart3_t *o1points);
 //int test_planewave_decomposition(cart3_t k, ccart3_t E, qpms_l_t lMax, qpms_normalisation_t norm, int npoints, cart3_t *points);
@@ -72,7 +74,7 @@ int main() {
         ++i){
 			qpms_normalisation_t norm = i | (use_csbit ? QPMS_NORMALISATION_T_CSBIT : 0);
 			qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, norm);
-			for(int J = 2; J <= 2; ++J)
+			for(int J = 3; J <= 3; ++J)
 				test_sphwave_translation(c, J, o2minuso1, npoints, points);
 			qpms_trans_calculator_free(c);
 		}
@@ -140,10 +142,10 @@ int test_sphwave_translation(const qpms_trans_calculator *c, qpms_bessel_t wavet
 			csphvec_t M2s2_sgAB_regw = qpms_eval_vswf(w2s, NULL, A_sg, B_sg, lMax,QPMS_BESSEL_REGULAR, c->normalisation);
 			csphvec_t M2s2_sgAB_sgw = qpms_eval_vswf(w2s, NULL, A_sg, B_sg, lMax,wavetype, c->normalisation);
       printf("Merr:\tRC_RW %.2e\tRC_SW %.2e\tSC_RW %.2e\tSC_SW %.2e\n", 
-          csphvec_reldiff(M1s2, M2s2_regAB_regw),
-          csphvec_reldiff(M1s2, M2s2_regAB_sgw),
-          csphvec_reldiff(M1s2, M2s2_sgAB_regw),
-          csphvec_reldiff(M1s2, M2s2_sgAB_sgw)
+          csphvec_reldiff_abstol(M1s2, M2s2_regAB_regw, DIFFTOL),
+          csphvec_reldiff_abstol(M1s2, M2s2_regAB_sgw, DIFFTOL),
+          csphvec_reldiff_abstol(M1s2, M2s2_sgAB_regw, DIFFTOL),
+          csphvec_reldiff_abstol(M1s2, M2s2_sgAB_sgw, DIFFTOL)
       );
 
 
@@ -168,10 +170,10 @@ int test_sphwave_translation(const qpms_trans_calculator *c, qpms_bessel_t wavet
 			csphvec_t N2s2_sgAB_regw = qpms_eval_vswf(w2s, NULL, B_sg, A_sg, lMax,QPMS_BESSEL_REGULAR, c->normalisation);
 			csphvec_t N2s2_sgAB_sgw = qpms_eval_vswf(w2s, NULL, B_sg, A_sg, lMax,wavetype, c->normalisation);
       printf("Nerr:\tRC_RW %.2e\tRC_SW %.2e\tSC_RW %.2e\tSC_SW %.2e\n", 
-          csphvec_reldiff(N1s2, N2s2_regAB_regw),
-          csphvec_reldiff(N1s2, N2s2_regAB_sgw),
-          csphvec_reldiff(N1s2, N2s2_sgAB_regw),
-          csphvec_reldiff(N1s2, N2s2_sgAB_sgw)
+          csphvec_reldiff_abstol(N1s2, N2s2_regAB_regw, DIFFTOL),
+          csphvec_reldiff_abstol(N1s2, N2s2_regAB_sgw, DIFFTOL),
+          csphvec_reldiff_abstol(N1s2, N2s2_sgAB_regw, DIFFTOL),
+          csphvec_reldiff_abstol(N1s2, N2s2_sgAB_sgw, DIFFTOL)
       );
 
 
