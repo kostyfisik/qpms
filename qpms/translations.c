@@ -196,6 +196,8 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm,
   double a1q0 = a1q[0];
   if (err) abort();
 
+  int csphase = qpms_normalisation_t_csphase(norm);
+
   double leg[gsl_sf_legendre_array_n(n+nu)];
   if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,costheta,csphase,leg)) abort();
   complex double bes[n+nu+1];
@@ -369,6 +371,8 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
   }
   gaunt_xu(-m,n+1,mu,nu,Qmax,a3q,&err); if (err) abort();
   a3q0 = a3q[0];
+  
+  int csphase = qpms_normalisation_t_csphase(norm);
 
   double leg[gsl_sf_legendre_array_n(n+nu+1)];
   if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,costheta,csphase,leg)) abort();

@@ -8,6 +8,7 @@ Under Kristensson normalisation (with CS = -1), my code gives
 B(1,0,n,n)/B(1,0,n,-n) == -(2n)! at (x,y,z) = (x,0,0)
 (expected plus or minus 1).
 A-coefficients seem to behave correctly.
+BUT THE CSPHASE MIGHT BE WRONG ON BOTH SINGLE A AND B (TODO TEST)
 
 Xu's antinormalisation
 ----------------------
