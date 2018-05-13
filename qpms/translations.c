@@ -1054,8 +1054,6 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
 }
 
 
-
-
 int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
     size_t deststride, size_t srcstride,
@@ -1071,8 +1069,10 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
     // TODO warn? different return value?
     return 0;
   }
-  switch(c->normalisation) {
+  switch(qpms_normalisation_t_normonly(c->normalisation)) {
     case QPMS_NORMALISATION_TAYLOR:
+    case QPMS_NORMALISATION_POWER:
+    case QPMS_NORMALISATION_NONE:
       {
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
@@ -1126,7 +1126,7 @@ int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(2*c->lMax+1)];
-  complex double bes[2*c->lMax+2];
+  complex double bes[2*c->lMax+3]; // TODO check lMax
   return qpms_trans_calculator_get_AB_buf_p(c,Adest, Bdest,m,n,mu,nu,kdlj,r_ge_d,J,
       bes,leg);
 }
@@ -1136,7 +1136,7 @@ int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
     size_t deststride, size_t srcstride,
     sph_t kdlj, bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(c->lMax+c->lMax+1)];
-  complex double bes[c->lMax+c->lMax+2];
+  complex double bes[2*c->lMax+3]; // TODO check lMax
   return qpms_trans_calculator_get_AB_arrays_buf(c, 
       Adest, Bdest, deststride, srcstride,
       kdlj, r_ge_d, J, 
