@@ -1,7 +1,7 @@
 Known bugs
 ===========
 
-Wrong factor on B coefficient
+Wrong factor on B coefficient (single coeff version)
 -----------------------------
 (Probably fixed in the "calculator object" versions!)
 Under Kristensson normalisation (with CS = -1), my code gives
@@ -15,26 +15,6 @@ Xu's antinormalisation
 also in qpms_types.h) – the plane wave test fails and the spherical wave
 reconstruction as well (but the translation coefficients match the 
 Xu's tables).
-
-Translation coefficients inconsistent
--------------------------------------
-The translation coefficients currently do not work correctly except for certain
-combinations of additional i-factors (defined by the [AB][NMF][123] macros
-in translations.c) and only for certain normalisations.
-QPMS_NORMALISATION_KRISTENSSON_CS does not work at all
-QPMS_NORMALISATION_NONE_CS does not work at all
-QPMS_NORMALISATION_TAYLOR_CS works for the following macros defined:
-  AN1 AM0 BN1 BM0 BF0
-  AN1 AM0 BN3 BM2 BF2
-  AN3 AM2 BN1 BM0 BF0
-  AN3 AM2 BN3 BM2 BF2
-QPMS_NORMALISATION_TAYLOR works for the following macros defined:
-  AN1 AM2 BN1 BM3 BF0
-  AN1 AM2 BN3 BM0 BF2
-  AN3 AM0 BN1 BM2 BF0
-  AN3 AM0 BN3 BM0 BF2
-
-The default behaviour is now that the QPMS_NORMALISATION_TAYLOR_CS works.
 
 Longitudinal waves
 ------------------
