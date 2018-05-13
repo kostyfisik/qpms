@@ -1,0 +1,160 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language swedish
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Important note about the T-matrices obtained by scuff-tmatrix
+\end_layout
+
+\begin_layout Standard
+From what I managed to dig from the scuff-em documentation (and partially
+ source code, but with less reliability), the spherical waves used in scuff-em
+ are (at least in magnitude) 
+\series bold
+power-normalised
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+However, the vector spherical harmonics have an additional factor of 
+\begin_inset Formula $i$
+\end_inset
+
+ compared to Kristensson and while Kristensson states the interrelations
+\begin_inset Formula 
+\begin{eqnarray*}
+\nabla\times v_{1lm}(kr) & = & kv_{2lm}(kr),\\
+\nabla\times v_{2lm}(kr) & = & kv_{1lm}(kr),
+\end{eqnarray*}
+
+\end_inset
+
+Reid has 
+\begin_inset Formula 
+\[
+N_{lm}=-\frac{1}{ik}\nabla\times M_{lm},
+\]
+
+\end_inset
+
+in other words 
+\begin_inset Formula $\nabla\times M_{lm}=ikN_{lm}$
+\end_inset
+
+.
+ Therefore, it is quite possible that additional 
+\begin_inset Formula $i$
+\end_inset
+
+-factors will have to be added to the 
+\begin_inset Formula $B$
+\end_inset
+
+ coefficients.
+ Moreover, it is totally unclear whether Reid uses C.-S.
+ phase or not in his spherical harmonics.
+\end_layout
+
+\begin_layout Standard
+I will have to try all the possibilities to see how much it affects the
+ results.
+ If too much, one way to determine it 
+\begin_inset Quotes sld
+\end_inset
+
+exterimentally
+\begin_inset Quotes srd
+\end_inset
+
+ would be to try a configuration with several spheres and compare it to
+ the analytical Mie + translation coefficients -based solution.
+\end_layout
+
+\begin_layout Standard
+According to the documentation, in the output T-matrix files, the outgoing
+ (singular) spherical wave indices are in the lefter columns, while the
+ incoming (regular) wave indices are on the right (and then the T-matrix
+ entry follows).
+\end_layout
+
+\end_body
+\end_document
