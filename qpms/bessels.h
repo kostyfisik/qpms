@@ -40,8 +40,8 @@ void hankelparts_fill(complex double *target_longrange, /* Not needed for the ac
 							       k>= longrange_order_cutoff go 
 							       completely to short-range part */
 		complex double const * const hankelcoefftable,
-		unsigned kappa, double c, /* regularisation "slope" */ 
-		double x); // x = k0 * r
+		unsigned kappa, double c, /* regularisation "slope", dimensionless */ 
+		double x); // dimensionless x = k0 * r
 
 
 
@@ -55,6 +55,8 @@ void lrhankel_recpart_fill(complex  double *target_longrange_kspace /*Must be of
 					        completely to the shortrange part
 					        index with hankelcoeffs_get(target,p)l[delta_m] */, 
 	       complex double const * const hankelcoefftable,
-	       unsigned kappa, double c, double k0, double k);
+	       unsigned kappa, 
+	       // These are dimensionFUL (inverse lengths):
+	       double cv, double k0, double k);
 
 #endif //BESSELS_H
