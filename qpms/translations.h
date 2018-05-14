@@ -47,6 +47,7 @@ typedef struct qpms_trans_calculator {
 #endif
 #ifdef LATTICESUMS
 	complex double *hct; // Hankel function coefficient table 
+	double *legendre0; // Zero-argument Legendre functions – this might go outside #ifdef in the end...
 #endif
 } qpms_trans_calculator;
 
@@ -96,21 +97,21 @@ int qpms_trans_calculator_get_shortrange_AB_p(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
 		qpms_bessel_t J /* Only J=3 valid for now */,
-		qpms_l_t longrange_order_cutoff, unsigned kappa, double c);
+		qpms_l_t longrange_order_cutoff, unsigned kappa, double cc);
 int qpms_trans_calculator_get_shortrange_AB_arrays(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		size_t deststride, size_t srcstride,
 		sph_t kdlj, qpms_bessel_t J /* Only J=3 valid for now */,
-		qpms_l_t longrange_order_cutoff, unsigned kappa, double c); 
+		qpms_l_t longrange_order_cutoff, unsigned kappa, double cc); 
 
 // Fourier transforms of the long-range parts of the translation coefficients
-int qpms_trans_calculator_get_Fourier_longrange_AB_p(const qpms_trans_calculator *c,
+int qpms_trans_calculator_get_2DFT_longrange_AB_p(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t k_sph,
 		qpms_bessel_t J /* Only J=3 valid for now */,
 		qpms_l_t longrange_order_cutoff, unsigned kappa, double cv, double k0);
 
-int qpms_trans_calculator_get_Fourier_longrange_AB_arrays(const qpms_trans_calculator *c,
+int qpms_trans_calculator_get_2DFT_longrange_AB_arrays(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		size_t deststride, size_t srcstride,
 		sph_t k_sph, qpms_bessel_t J /* Only J=3 valid for now */,
