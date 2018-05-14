@@ -6,6 +6,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#ifdef LATTICESUMS
+#include "bessels.h"
+#endif
+
 // TODO replace the xplicit "Taylor" functions with general,
 // taking qpms_normalisation_t argument.
 complex double qpms_trans_single_A_Taylor(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
@@ -41,7 +45,11 @@ typedef struct qpms_trans_calculator {
 	// Spherical Bessel function coefficients:
 	// TODO
 #endif
+#ifdef LATTICESUMS
+	complex double *hct; // Hankel function coefficient table 
+#endif
 } qpms_trans_calculator;
+
 
 qpms_trans_calculator *qpms_trans_calculator_init(qpms_l_t lMax, qpms_normalisation_t nt);
 void qpms_trans_calculator_free(qpms_trans_calculator *);
@@ -81,6 +89,35 @@ int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
 		size_t deststride, size_t srcstride,
 		double kdlj_r, double kdlj_theta, double kdlj_phi,
 		int r_ge_d, int J);
+
+#ifdef LATTICESUMS 
+// Short-range parts of the translation coefficients
+int qpms_trans_calculator_get_shortrange_AB_p(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+		qpms_bessel_t J /* Only J=3 valid for now */,
+		qpms_l_t longrange_order_cutoff, unsigned kappa, double c);
+int qpms_trans_calculator_get_shortrange_AB_arrays(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		size_t deststride, size_t srcstride,
+		sph_t kdlj, qpms_bessel_t J /* Only J=3 valid for now */,
+		qpms_l_t longrange_order_cutoff, unsigned kappa, double c); 
+
+// Fourier transforms of the long-range parts of the translation coefficients
+int qpms_trans_calculator_get_Fourier_longrange_AB_p(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t k_sph,
+		qpms_bessel_t J /* Only J=3 valid for now */,
+		qpms_l_t longrange_order_cutoff, unsigned kappa, double cv, double k0);
+
+int qpms_trans_calculator_get_Fourier_longrange_AB_arrays(const qpms_trans_calculator *c,
+		complex double *Adest, complex double *Bdest,
+		size_t deststride, size_t srcstride,
+		sph_t k_sph, qpms_bessel_t J /* Only J=3 valid for now */,
+		qpms_l_t longrange_order_cutoff, unsigned kappa, double cv, double k0);
+#endif // LATTICESUMS
+
+
 
 #ifdef QPMS_COMPILE_PYTHON_EXTENSIONS
 #include <Python.h>

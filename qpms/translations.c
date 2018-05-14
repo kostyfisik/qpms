@@ -500,6 +500,9 @@ void qpms_trans_calculator_free(qpms_trans_calculator *c) {
   free(c->A_multipliers);
   free(c->B_multipliers[0]);
   free(c->B_multipliers);
+#ifdef LATTICESUMS
+  free(c->hct);
+#endif
   free(c);
 }
 
@@ -908,6 +911,9 @@ qpms_trans_calculator
     }
 
   free(qmaxes);
+#ifdef LATTICESUMS
+  c->hct = hankelcoefftable_init(2*lMax+1);
+#endif
   return c;
 }
 
@@ -1005,7 +1011,7 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
               costheta,csphase,legendre_buf)) abort();
-        if (qpms_sph_bessel_fill(J, n+nu+2, kdlj.r, bessel_buf)) abort();
+        if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
         return qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
             kdlj,r_ge_d,J,bessel_buf,legendre_buf);
       }
@@ -1039,7 +1045,7 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
               costheta,-1,legendre_buf)) abort();
-        if (qpms_sph_bessel_fill(J, n+nu+2, kdlj.r, bessel_buf)) abort();
+        if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
         *Adest = qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
             kdlj,r_ge_d,J,bessel_buf,legendre_buf);
         *Bdest = qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
@@ -1077,7 +1083,7 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
               costheta,-1,legendre_buf)) abort();
-        if (qpms_sph_bessel_fill(J, 2*c->lMax+2, kdlj.r, bessel_buf)) abort();
+        if (qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf)) abort();
         size_t desti = 0, srci = 0;
         for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
           for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
@@ -1107,7 +1113,7 @@ complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(n+nu)];
-  complex double bes[n+nu+1];
+  complex double bes[n+nu+1]; // maximum order is 2n for A coeffs, plus the zeroth.
   return qpms_trans_calculator_get_A_buf(c,m,n,mu,nu,kdlj,r_ge_d,J,
       bes,leg);
 }
@@ -1116,7 +1122,7 @@ complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(n+nu+1)];
-  complex double bes[n+nu+2];
+  complex double bes[n+nu+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
   return qpms_trans_calculator_get_B_buf(c,m,n,mu,nu,kdlj,r_ge_d,J,
       bes,leg);
 }
@@ -1126,7 +1132,7 @@ int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(2*c->lMax+1)];
-  complex double bes[2*c->lMax+3]; // TODO check lMax
+  complex double bes[2*c->lMax+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
   return qpms_trans_calculator_get_AB_buf_p(c,Adest, Bdest,m,n,mu,nu,kdlj,r_ge_d,J,
       bes,leg);
 }
@@ -1136,13 +1142,148 @@ int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
     size_t deststride, size_t srcstride,
     sph_t kdlj, bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(c->lMax+c->lMax+1)];
-  complex double bes[2*c->lMax+3]; // TODO check lMax
+  complex double bes[2*c->lMax+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
   return qpms_trans_calculator_get_AB_arrays_buf(c, 
       Adest, Bdest, deststride, srcstride,
       kdlj, r_ge_d, J, 
       bes, leg);
 }
 
+
+#ifdef LATTICESUMS
+int qpms_trans_calculator_get_shortrange_AB_arrays_buf(const qpms_trans_calculator *c,
+    complex double *Adest, complex double *Bdest,
+    size_t deststride, size_t srcstride,
+    sph_t kdlj, qpms_bessel_t J,
+    qpms_l_t lrcutoff, unsigned kappa, double c, // regularisation params
+    complex double *bessel_buf, double *legendre_buf,
+    ) {
+  assert(J == QPMS_HANKEL_PLUS); // support only J == 3 for now
+  if (0 == kdlj.r && J != QPMS_BESSEL_REGULAR) {
+    for (size_t i = 0; i < c->nelem; ++i)
+      for (size_t j = 0; j < c->nelem; ++j) {
+        *(Adest + i*srcstride + j*deststride) = NAN+I*NAN;
+        *(Bdest + i*srcstride + j*deststride) = NAN+I*NAN;
+      }
+    // TODO warn? different return value?
+    return 0;
+  }
+  switch(qpms_normalisation_t_normonly(c->normalisation)) {
+    case QPMS_NORMALISATION_TAYLOR:
+    case QPMS_NORMALISATION_POWER:
+    //case QPMS_NORMALISATION_NONE: // I am not sure the Hankel transform work the same way for unnormalised waves, so disallow for now
+      {
+        double costheta = cos(kdlj.theta);
+        if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
+              costheta,-1,legendre_buf)) abort();
+        // if (qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf)) abort(); // original
+        hankelparts_fill(NULL, bessel_buf, 2*c->lMax+1, lrcutoff, c->hct, kappa, c, kdlj.r);
+        size_t desti = 0, srci = 0;
+        for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
+          for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
+            size_t assertindex = qpms_trans_calculator_index_mnmunu(c,m,n,mu,nu);
+            assert(assertindex == desti*c->nelem + srci);
+            *(Adest + deststride * desti + srcstride * srci) = 
+              qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
+                  kdlj,false,J,bessel_buf,legendre_buf);
+            *(Bdest + deststride * desti + srcstride * srci) = 
+              qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
+                  kdlj,false,J,bessel_buf,legendre_buf);
+            ++srci;
+          }
+          ++desti;
+          srci = 0;
+        }
+        return 0;
+      }
+      break;
+    default:
+      abort();
+  }
+  assert(0);
+}
+
+int qpms_trans_calculator_get_shortrange_AB_buf_p(const qpms_trans_calculator *c,
+    complex double *Adest, complex double *Bdest,
+    int m, int n, int mu, int nu, sph_t kdlj,
+    qpms_bessel_t J,
+    qpms_l_t lrcutoff, unsigned kappa, double c, // regularisation params
+    complex double *bessel_buf, double *legendre_buf) {
+  assert(J == QPMS_HANKEL_PLUS); // support only J == 3 for now
+  if (0 == kdlj.r && J != QPMS_BESSEL_REGULAR) {
+    *Adest = NAN+I*NAN;
+    *Bdest = NAN+I*NAN;
+    // TODO warn? different return value?
+    return 0;
+  }
+  switch(qpms_normalisation_t_normonly(c->normalisation)) {
+    case QPMS_NORMALISATION_TAYLOR:
+    case QPMS_NORMALISATION_KRISTENSSON:
+    // case QPMS_NORMALISATION_NONE: // Not sure if it would work, so disable for now
+      {
+        double costheta = cos(kdlj.theta);
+        if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
+              costheta,-1,legendre_buf)) abort();
+        //if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort(); // original
+        hankelparts_fill(NULL, bessel_buf, 2*c->lMax+1, lrcutoff, c->hct, kappa, c, kdlj.r);
+        
+        *Adest = qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
+            kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+        *Bdest = qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
+            kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+        return 0;
+      }
+      break;
+    default:
+      abort();
+  }
+  assert(0);
+}
+
+// Short-range parts of the translation coefficients
+int qpms_trans_calculator_get_shortrange_AB_p(const qpms_trans_calculator *c,
+                complex double *Adest, complex double *Bdest,
+                qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+                qpms_bessel_t J /* Only J=3 valid for now */,
+                qpms_l_t lrcutoff, unsigned kappa, double c) {
+  double leg[gsl_sf_legendre_array_n(2*c->lMax+1)];
+  complex double bes[2*c->lMax+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
+  return qpms_trans_calculator_get_shortrange_AB_buf_p(c,Adest, Bdest,m,n,mu,nu,kdlj,J,
+      lrcutoff, kappa, c,
+      bes, leg);
+}
+
+int qpms_trans_calculator_get_shortrange_AB_arrays(const qpms_trans_calculator *c,
+                complex double *Adest, complex double *Bdest,
+                size_t deststride, size_t srcstride,
+                sph_t kdlj, qpms_bessel_t J /* Only J=3 valid for now */,
+                qpms_l_t lrcutoff, unsigned kappa, double c) {
+  double leg[gsl_sf_legendre_array_n(c->lMax+c->lMax+1)];
+  complex double bes[2*c->lMax+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
+  return qpms_trans_calculator_get_AB_arrays_buf(c, 
+      Adest, Bdest, deststride, srcstride,
+      kdlj, J,
+      lrcutoff, kappa, c,
+      bes, leg);
+}
+
+// Fourier transforms of the long-range parts of the translation coefficients
+int qpms_trans_calculator_get_Fourier_longrange_AB_p(const qpms_trans_calculator *c,
+                complex double *Adest, complex double *Bdest,
+                qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t k_sph,
+                qpms_bessel_t J /* Only J=3 valid for now */,
+                qpms_l_t lrcutoff, unsigned kappa, double cv, double k0) {
+  TODO;
+}
+
+int qpms_trans_calculator_get_Fourier_longrange_AB_arrays(const qpms_trans_calculator *c,
+                complex double *Adest, complex double *Bdest,
+                size_t deststride, size_t srcstride,
+                sph_t k_sph, qpms_bessel_t J /* Only J=3 valid for now */,
+                qpms_l_t lrcutoff, unsigned kappa, double cv, double k0) {
+  TODO;
+}
+#endif // LATTICESUMS
 
 
 complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
