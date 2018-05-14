@@ -67,12 +67,64 @@ latticepoints_circle_t generate_hexpoints_hor(double h, double R, cart2_t offset
   return lat;
 }
 
+latticepoints_circle_t generate_tripoints_ver(double a, double R, cart2_t offset /* if zero, an A is in the origin */) {
+  double h = a / s3;
+  latticepoints_circle_t lat;
+  lat.maxR = R;
+  lat.npoints = 0;
+  int nmax = R / (1.5 * h) + 2; // max no of lattice shifts in each direction (with reserve)
+  double unitcellS = s3 * 3 / 2 * h * h; // unit cell area
+  lat.capacity = 5 + (R + 1) * (R + 1) * M_PI / unitcellS; // should be enough with some random reserve
+  lat.points = malloc(lat.capacity *sizeof(cart2_t));
+
+  cart2_t a1 = {-1.5*h, s3/2 *h};
+  cart2_t a2 = {1.5*h, s3/2 *h};
+
+  for (int i1 = -nmax; i1 <= nmax; ++i1)
+    for (int i2 = -nmax; i2 <= nmax; ++i2) {
+      cart2_t Apoint = cart2_add(offset, cart2_add(cart2_scale(i1, a1), cart2_scale(i2, a2)));
+      if (cart2norm(Apoint) <= R) {
+        assert(lat.npoints < lat.capacity);
+        lat.points[lat.npoints] = Apoint;
+        lat.npoints++;
+      }
+    }
+  sort_cart2points_by_r(lat.points, lat.npoints);
+  return lat;
+}
+
+latticepoints_circle_t generate_tripoints_hor(double a, double R, cart2_t offset /* if zero, an A is in the origin */) {
+  double h = a / s3;
+  latticepoints_circle_t lat;
+  lat.maxR = R;
+  lat.npoints = 0;
+  int nmax = R / (1.5 * h) + 2; // max no of lattice shifts in each direction (with reserve)
+  double unitcellS = s3 * 3 / 2 * h * h; // unit cell area
+  lat.capacity = 5 + (R + 1) * (R + 1) * M_PI / unitcellS; // should be enough with some random reserve
+  lat.points = malloc(lat.capacity *sizeof(cart2_t));
+
+  cart2_t a1 = {s3/2 *h, -1.5*h};
+  cart2_t a2 = {s3/2 *h, 1.5 * h};
+
+  for (int i1 = -nmax; i1 <= nmax; ++i1)
+    for (int i2 = -nmax; i2 <= nmax; ++i2) {
+      cart2_t Apoint = cart2_add(offset, cart2_add(cart2_scale(i1, a1), cart2_scale(i2, a2)));
+      if (cart2norm(Apoint) <= R) {
+        assert(lat.npoints < lat.capacity);
+        lat.points[lat.npoints] = Apoint;
+        lat.npoints++;
+      }
+    }
+  sort_cart2points_by_r(lat.points, lat.npoints);
+  return lat;
+}
+
 int main (int argc, char **argv) {
   double h = 1.2;
   cart2_t offset = {0,0};
 
-  latticepoints_circle_t lat = generate_hexpoints_hor(h, 5, offset);
+  latticepoints_circle_t lat = generate_tripoints_ver(h, 30, offset);
   for (int i = 0; i < lat.npoints; ++i) 
-    printf("%g %g\n", lat.points[i].x, lat.points[i].y);
+    printf("%g %g %g\n", lat.points[i].x, lat.points[i].y, cart2norm(lat.points[i]));
   latticepoints_circle_free(&lat);
 }
