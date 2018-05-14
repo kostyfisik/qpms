@@ -28,20 +28,26 @@ hankelcoeffs_get(complex double const * const hankelcoefftable, size_t n){
   return trindex_cd(hankelcoefftable, n);
 }
 
+/* Compute the untransformed long- (optional) and short-range parts of spherical Hankel functions */
 // general; target_longrange and target_shortrange are of size (maxn+1)
 // if target_longrange is NULL, only the short-range part is calculated
-void hankelparts_fill(complex double *target_longrange, complex double *target_shortrange,
+void hankelparts_fill(complex double *target_longrange, /* Not needed for the actual calculations
+							   (only for testing and error estimates)
+							   as summed in the reciprocal space:
+							   pass NULL to omit */
+		complex double *target_shortrange,
 		size_t maxn, size_t longrange_order_cutoff, /* terms e**(I x)/x**(k+1), 
 							       k>= longrange_order_cutoff go 
 							       completely to short-range part */
 		complex double const * const hankelcoefftable,
-		unsigned kappa, double vc, double x); // x = k0 * r
+		unsigned kappa, double c, /* regularisation "slope" */ 
+		double x); // x = k0 * r
 
 
 
 /* Hankel transforms of the long-range parts of the spherical Hankel functions */
 // this declaration is general; however, the implementation 
-// is so far only for kappa == 5, maxp == 5 TODO
+// is so far only for kappa == 5, maxp <= 5, longrange_order_cutoff <= 1
 void lrhankel_recpart_fill(complex  double *target_longrange_kspace /*Must be of size maxn*(maxn+1)/2*/,
 	       size_t maxp /* Max. degree of transformed spherical Hankel function,
 			      also the max. order of the Hankel transform */,
