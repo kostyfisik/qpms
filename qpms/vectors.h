@@ -23,11 +23,21 @@ static inline cart2_t cart2_scale(const double c, const cart2_t v) {
 	return res;
 }
 
+static inline double cart2_dot(const cart2_t a, const cart2_t b) {
+	return a.x * b.x + a.y * b.y;
+}
+
 static inline double cart2norm(const cart2_t v) {
 	return sqrt(v.x*v.x + v.y*v.y);
 }
 
-
+static inline sph_t cart22sph(const cart2_t cart) {
+	sph_t sph;
+	sph.r = cart2norm(cart);
+	sph.theta = M_PI_2;
+	sph.phi = atan2(cart.y, cart.x);
+	return sph;
+}
 
 static inline double cart3norm(const cart3_t v) {
 	return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
