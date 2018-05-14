@@ -8,6 +8,27 @@
 
 //static inline double vectors_h_sq(double x) {return x*x;}
 
+static inline cart2_t cart2_add(const cart2_t a, const cart2_t b) {
+	cart2_t res = {a.x+b.x, a.y+b.y};
+	return res;
+}
+
+static inline cart2_t cart2_substract(const cart2_t a, const cart2_t b) {
+	cart2_t res = {a.x-b.x, a.y-b.y};
+	return res;
+}
+
+static inline cart2_t cart2_scale(const double c, const cart2_t v) {
+	cart2_t res = {c * v.x, c * v.y};
+	return res;
+}
+
+static inline double cart2norm(const cart2_t v) {
+	return sqrt(v.x*v.x + v.y*v.y);
+}
+
+
+
 static inline double cart3norm(const cart3_t v) {
 	return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
