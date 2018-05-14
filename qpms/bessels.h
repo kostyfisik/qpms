@@ -49,8 +49,7 @@ void hankelparts_fill(complex double *target_longrange, /* Not needed for the ac
 // this declaration is general; however, the implementation 
 // is so far only for kappa == 5, maxp <= 5, longrange_order_cutoff <= 1
 void lrhankel_recpart_fill(complex  double *target_longrange_kspace /*Must be of size maxn*(maxn+1)/2*/,
-	       size_t maxp /* Max. degree of transformed spherical Hankel function,
-			      also the max. order of the Hankel transform */,
+	       size_t maxp /* Max. order of the Hankel transform */,
 	       size_t longrange_order_cutoff /* terms e**(I x)/x**(k+1), k>= longrange_order_cutoff go
 					        completely to the shortrange part
 					        index with hankelcoeffs_get(target,p)l[delta_m] */, 

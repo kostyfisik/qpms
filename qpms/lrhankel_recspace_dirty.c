@@ -232,15 +232,14 @@ static const lrhankelspec transfuns_n[MAXKAPPA+1][MAXQM+1][MAXN+1] = {
 };
 
 void lrhankel_recpart_fill(complex  double *target,
-               size_t maxp /*max. degree of transformed spherical Hankel fun, 
-	        also the max. order of the Hankel transform */, 
+               size_t maxp /* max. order of the Hankel transform */, 
 	       size_t lrk_cutoff,
                complex double const *const hct,
                unsigned kappa, double c, double k0, double k)
 {
 	assert(5 == kappa); // Only kappa == 5 implemented so far
 	assert(maxp <= MAXN); // only n <= 5 implemented so far
-	assert(lrk_cutoff <= MAXQM); // only q <= 2 implemented so far
+	assert(lrk_cutoff <= MAXQM + 1); // only q <= 2 implemented so far; TODO shouldn't it be only MAXQM ???
 	const lrhankelspec (*funarr)[MAXQM+1][MAXN+1] = (k>k0) ? transfuns_f : transfuns_n;
 	memset(target, 0, maxp*(maxp+1)/2*sizeof(complex double));
 	complex double a[kappa+1], b[kappa+1], d[kappa+1], e[kappa+1], ash[kappa+1];
