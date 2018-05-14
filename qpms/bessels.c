@@ -39,7 +39,7 @@ complex double * hankelcoefftable_init(size_t maxn) {
 }
 
 void hankelparts_fill(complex double *lrt, complex double *srt, size_t maxn,
-								size_t lrk_cutoff, complex double *hct,
+								size_t lrk_cutoff, complex double const * const hct,
 								unsigned kappa, double c, double x) {
 	if (lrt) memset(lrt, 0, (maxn+1)*sizeof(complex double));
 	memset(srt, 0, (maxn+1)*sizeof(complex double));
@@ -48,7 +48,7 @@ void hankelparts_fill(complex double *lrt, complex double *srt, size_t maxn,
 	double xfrac = 1.; // x ** (-1-k)
 	for (size_t k = 0; k <= maxn; ++k) {
 	xfrac /= x;
-	  for(size_t n = k; n <= maxn; ++n) 
+	  for(size_t n = k; n <= maxn; ++n)  // TODO Kahan sums here
 	  	srt[n] += ((k<lrk_cutoff) ? antiregularisator : 1) 
 		  				* xfrac * hankelcoeffs_get(hct,n)[k];
 	  if (lrt && k < lrk_cutoff) for (size_t n = k; n <= maxn; ++n)
