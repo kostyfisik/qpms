@@ -1,6 +1,8 @@
 #ifndef KAHANSUM_H
 #define KAHANSUM_H
 
+#include <complex.h>
+
 static inline void kahaninit(double * const sum, double * const compensation) {
 	*sum = 0;
 	*compensation = 0;
