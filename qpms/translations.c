@@ -1422,7 +1422,7 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_arrays_buf(const qpms_trans_calc
 }
 
 
-int qpms_trans_calculator_get_Fourier_longrange_AB_arrays(const qpms_trans_calculator *c,
+int qpms_trans_calculator_get_2DFT_longrange_AB_arrays(const qpms_trans_calculator *c,
                 complex double *Adest, complex double *Bdest,
                 size_t deststride, size_t srcstride,
                 sph_t k_sph, qpms_bessel_t J /* Only J=3 valid for now */,
