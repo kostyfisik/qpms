@@ -185,6 +185,7 @@ class Scattering(object):
 
 class LatticeScattering(Scattering):
     def __init__(self, lattice_spec, k_0, zSym = False):
+        pass
 
 
 """

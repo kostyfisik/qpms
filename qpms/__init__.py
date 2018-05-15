@@ -3,5 +3,5 @@ __version__ = get_distribution('qpms').version
 
 from qpms_c import *
 from .qpms_p import *
-from .lattices import *
+from .lattices2d import *
 from .hexpoints import *

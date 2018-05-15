@@ -437,7 +437,7 @@ def hexlattice_get_AB(lMax, k_hexside, maxlayer, circular=True, return_points = 
 
 from scipy.constants import c
 from .timetrack import _time_b, _time_e
-from .qpms_p import symz_indexarrays
+from .tmatrices import symz_indexarrays
 
 def hexlattice_zsym_getSVD(lMax, TMatrices_om, epsilon_b, hexside, maxlayer, omega, klist, gaussianSigma=False, onlyNmin=0, verbose=False):
     btime = _time_b(verbose)

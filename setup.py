@@ -22,7 +22,7 @@ qpms_c = Extension('qpms_c',
             'qpms/gaunt.c',#'qpms/gaunt.h','qpms/vectors.h','qpms/translations.h',
             # FIXME http://stackoverflow.com/questions/4259170/python-setup-script-extensions-how-do-you-include-a-h-file
             'qpms/translations.c'],
-        extra_compile_args=['-std=c99','-ggdb','-O3',
+        extra_compile_args=['-std=c99','-ggdb', '-O0',
             '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # this is required
             #'-DQPMS_USE_OMP',
             '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules
@@ -35,7 +35,7 @@ qpms_c = Extension('qpms_c',
         )
 
 setup(name='qpms',
-        version = "0.2.15",
+        version = "0.2.99",
         packages=['qpms'],
 #        setup_requires=['setuptools_cython'],
         install_requires=['cython>=0.21','quaternion','spherical_functions','py_gmm'],

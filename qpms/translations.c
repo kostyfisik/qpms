@@ -1574,7 +1574,9 @@ int qpms_cython_trans_calculator_get_AB_arrays_loop(
         while(local_indices[ax] == innerloop_shape[ax] && ax >= 0) {
           // overflow to the next digit but stop when reached below the last one
           local_indices[ax] = 0;
-          local_indices[--ax]++;
+          //local_indices[--ax]++; // dekrementace indexu pod nulu a následná inkrementace poruší paměť FIXME
+          ax--;
+          if (ax >= 0) local_indices[ax]++;
         }
         if (ax >= 0) // did not overflow, get back to the lowest index
           ax = resnd - 1;

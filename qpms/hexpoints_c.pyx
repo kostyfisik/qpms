@@ -7,7 +7,7 @@ cdef double _s3 = math.sqrt(3)
 
 from scipy.constants import c
 from .timetrack import _time_b, _time_e
-from .qpms_p import symz_indexarrays
+from .tmatrices import symz_indexarrays
 from .hexpoints import hexlattice_get_AB
 
 cpdef hexlattice_zsym_getSVD(int lMax, TMatrices_om, double epsilon_b, double hexside, size_t maxlayer, double omega, klist, gaussianSigma=False, int onlyNmin=0, verbose=False):
