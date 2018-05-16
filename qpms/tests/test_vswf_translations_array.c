@@ -109,13 +109,18 @@ int test_sphwave_translation(const qpms_trans_calculator *c, qpms_bessel_t wavet
 		if(QPMS_SUCCESS != qpms_vswf_fill(NULL, M1, N1, lMax, w1s, wavetype, c->normalisation))
 			abort(); // original wave set
 
+    complex double A_whole[nelem][nelem], B_whole[nelem][nelem];
+    if (qpms_trans_calculator_get_AB_arrays(c,(complex double *) A_whole, (complex double *) B_whole,
+          1, nelem, ss, (w1s.r > ss.r), wavetype)) abort();
+
+
 		for(qpms_y_t y1 = 0; y1 < nelem; ++y1) { //index of the wave originating in o1 that will be reconstructed in o2
 			qpms_m_t m1;
 			qpms_l_t l1;
 			qpms_y2mn_p(y1, &m1, &l1);
 			printf("*** wave l = %d, m = %d ***\n", l1, m1);
 
-			complex double A[nelem], B[nelem];
+			//complex double A[nelem], B[nelem];
       /*
 			for(qpms_y_t y2 = 0; y2 < nelem; ++y2){
 				qpms_m_t m2; qpms_l_t l2;
@@ -124,7 +129,9 @@ int test_sphwave_translation(const qpms_trans_calculator *c, qpms_bessel_t wavet
 					abort();
 			}
       */
-      // array function instead HERE:
+      // array function instead above
+      complex double *A = A_whole[y1]; // CHECKME right index ??
+      complex double *B = B_whole[y1];
 
 
 			printf("M = ");
