@@ -146,22 +146,34 @@ def parity_yy(lmax):
 def _scuffTMatrixConvert_EM_01(EM):
     #print(EM)
     if (EM == b'E'):
-        return 0
-    elif (EM == b'M'):
         return 1
+    elif (EM == b'M'):
+        return 0
     else:
         return None
 
-def loadScuffTMatrices(fileName, normalisation = 1):
+def loadScuffTMatrices(fileName, normalisation = 1, version = 'old'):
     """
     TODO doc
+
+    version describes version of scuff-em. It is either 'old' or 'new'
     """
+    oldversion = (version == 'old')
     μm = 1e-6
     table = np.genfromtxt(fileName, 
-                  converters={1: _scuffTMatrixConvert_EM_01, 4: _scuffTMatrixConvert_EM_01},
-                  dtype=[('freq', '<f8'), ('outc_type', '<i8'), ('outc_l', '<i8'), ('outc_m', '<i8'), 
-                         ('inc_type', '<i8'), ('inc_l', '<i8'), ('inc_m', '<i8'), ('Treal', '<f8'), ('Timag', '<f8')]
-                          )
+                  converters={1: _scuffTMatrixConvert_EM_01, 4: _scuffTMatrixConvert_EM_01} if oldversion else None,
+                  skip_header = 0 if oldversion else 5,
+                  usecols = None if oldversion else (0, 2, 3, 4, 6, 7, 8, 9, 10),
+                  dtype=[('freq', '<f8'), 
+                         ('outc_type', '<i8'), ('outc_l', '<i8'), ('outc_m', '<i8'), 
+                         ('inc_type', '<i8'), ('inc_l', '<i8'), ('inc_m', '<i8'), 
+                         ('Treal', '<f8'), ('Timag', '<f8')] 
+                   if oldversion else 
+                        [('freq', '<f8'), 
+                         ('outc_l', '<i8'), ('outc_m', '<i8'),  ('outc_type', '<i8'),
+                         ('inc_l', '<i8'), ('inc_m', '<i8'), ('inc_type', '<i8'), 
+                         ('Treal', '<f8'), ('Timag', '<f8')]
+                    )
     lMax=np.max(table['outc_l'])
     my,ny = get_mn_y(lMax)
     nelem = len(ny)
@@ -180,7 +192,7 @@ def loadScuffTMatrices(fileName, normalisation = 1):
     TMatrices = np.zeros((len(freqs),2,nelem,2,nelem),dtype=complex)
     for inc_type in [0,1]:
         for outc_type in [0,1]:
-            TMatrices[:,1-outc_type,:,1-inc_type,:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
+            TMatrices[:,outc_type,:,inc_type,:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
     # IMPORTANT: now we are going from Reid's/Kristensson's/Jackson's/whoseever convention to Taylor's convention
     if normalisation == 1:
         TMatrices[:,:,:,:,:] = TMatrices[:,:,:,:,:] * np.sqrt(ny*(ny+1))[ň,ň,ň,ň,:] / np.sqrt(ny*(ny+1))[ň,ň,:,ň,ň]
