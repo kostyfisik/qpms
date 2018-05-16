@@ -56,4 +56,7 @@ Overflows etc.
 Assertion failed in gaunt_xu for test_vswf_translations.c and high values of LMAX
 (LMAX=25)
 
+Moreover, the non-normalized legendre functions that are used in translations.c
+are likely to overflow for even smaller values of l. 
+Therefore TODO: modify translations.c in a way that uses normalised legendre functions everywhere.
 
