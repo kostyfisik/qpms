@@ -152,6 +152,7 @@ int main (int argc, char **argv) {
   const double MAXR_REAL = 100 * LATTICE_H;
   const double MAXR_K = 100 * INVLATTICE_A;
 
+  if (argc < 2) abort();
 
   char *omegastr = argv[1];
   // char *kfile = argv[2]; // not used;, will be read from stdin
