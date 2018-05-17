@@ -765,7 +765,7 @@ def loadWfile(fileName, lMax = None):
     return {
             'freqs' : freqs,
             'ks' : ks,
-            'k0s' : k0s,
+            'k0_effs' : k0s,
             'Ws' : Ws,
             'freqs_weirdunits' : freqs_weirdunits,
             }
