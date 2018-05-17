@@ -162,7 +162,7 @@ int main (int argc, char **argv) {
   char outlongfile[strlen(outprefix)+10];
   char outshortfile[strlen(outprefix)+10];
   sprintf(outlongfile, "%s.long", outprefix);
-  sprintf(outshortfile, "%s.long", outprefix);
+  sprintf(outshortfile, "%s.short", outprefix);
 
 
 
