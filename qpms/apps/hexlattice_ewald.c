@@ -12,7 +12,7 @@
 #include "translations.h"
 
 #define MAXOMEGACOUNT 1000
-#define MAXKCOUNT 10000
+#define MAXKCOUNT 100
 const double s3 = 1.732050807568877293527446341505872366942805253810380628055;
 
 // IMPORTANT: lattice properties here
@@ -177,7 +177,7 @@ int main (int argc, char **argv) {
   fclose(f);
   */
 
-  int kcount = 1000;
+  int kcount = MAXKCOUNT;
   for (int i = 0; i <  kcount; ++i) {
     klist[i].x = 0;
     klist[i].y = 2. * 4. * M_PI / 3. / LATTICE_A / kcount * i;

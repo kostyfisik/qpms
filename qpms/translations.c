@@ -1091,7 +1091,9 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
         size_t desti = 0, srci = 0;
         for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
           for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
+#ifndef NDEBUG
             size_t assertindex = qpms_trans_calculator_index_mnmunu(c,m,n,mu,nu);
+#endif
             assert(assertindex == desti*c->nelem + srci);
             *(Adest + deststride * desti + srcstride * srci) = 
               qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
