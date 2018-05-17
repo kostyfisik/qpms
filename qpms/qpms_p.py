@@ -762,7 +762,7 @@ def loadWfile(fileName, lMax = None, fatForm = True):
     # maybe TODO copy the following so the original data gets freed to save memory
     freqs_weirdunits = np.array(data[:,0], copy=True)
     k0s = np.array(data[:,2], copy=True)
-    ks = np.array(data[:,3:4], copy=True)
+    ks = np.array(data[:,3:5], copy=True)
     freqs = freqs_weirdunits * c / um
     if fatForm: #indices: (...,) destparticle, desttype, desty, srcparticle, srctype, srcy
         Ws2 = np.moveaxis(Ws, [-5,-4,-3,-2,-1], [-4,-2,-5,-3,-1] )
