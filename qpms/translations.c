@@ -1274,7 +1274,6 @@ int qpms_trans_calculator_get_shortrange_AB_arrays(const qpms_trans_calculator *
       bes, leg);
 }
 
-
 // Long-range parts
 static inline complex double qpms_trans_calculator_get_2DFT_longrange_A_precalcbuf(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu, sph_t k_sph /* theta must be M_PI_2 */,
@@ -1423,7 +1422,7 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_arrays_buf(const qpms_trans_calc
   assert(0);
 }
 
-
+// FIXME i get stack smashing error inside the following function if compiled with optimizations
 int qpms_trans_calculator_get_2DFT_longrange_AB_arrays(const qpms_trans_calculator *c,
                 complex double *Adest, complex double *Bdest,
                 size_t deststride, size_t srcstride,
