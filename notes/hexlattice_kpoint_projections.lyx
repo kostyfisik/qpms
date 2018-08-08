@@ -1,0 +1,355 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language swedish
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Symmetry-adapted basis functions for honeycomb lattice at 
+\begin_inset Formula $K$
+\end_inset
+
+-point
+\end_layout
+
+\begin_layout Section
+Generation theorem
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+ be a group and 
+\begin_inset Formula $\Gamma^{i}\left\{ R\to\mathbf{D}^{i}\left(R\right)\right\} $
+\end_inset
+
+ some 
+\begin_inset Formula $d_{i}$
+\end_inset
+
+-dimensional rep of 
+\begin_inset Formula $\mathbf{G}$
+\end_inset
+
+.
+ Let the group ring (corresponding to the given rep indexed by 
+\begin_inset Formula $i$
+\end_inset
+
+) elements be defined as [Bradley&Cracknell (2.2.2)]
+\begin_inset Formula 
+\[
+W_{ts}^{i}=\frac{d_{i}}{\left|\mathbf{G}\right|}\sum_{R\in\mathbf{G}}\mathbf{D}^{i}\left(R\right)_{ts}^{*}R.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From [Bradley&Cracknell, theorem 2.2.1]:
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\phi$
+\end_inset
+
+ is an arbitrary function of 
+\begin_inset Formula $V$
+\end_inset
+
+ (a linear space in which the realisation of the group operation act) such
+ that 
+\begin_inset Formula $W_{ss}^{i}\phi\ne0$
+\end_inset
+
+ (
+\begin_inset Formula $s$
+\end_inset
+
+ is fixed and is a number in the range 1 to 
+\begin_inset Formula $d_{i}$
+\end_inset
+
+; 
+\begin_inset Formula $i$
+\end_inset
+
+ is idx of the rep) then the funs 
+\begin_inset Formula $W_{ts}^{i}\phi=\phi_{t}^{i}$
+\end_inset
+
+, 
+\begin_inset Formula $t=1$
+\end_inset
+
+ to 
+\begin_inset Formula $d_{i}$
+\end_inset
+
+, form a basis for the rep 
+\begin_inset Formula $\Gamma^{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Particle-centered transformations
+\end_layout
+
+\begin_layout Standard
+Now let's see what are the point group actions on SVWF in the origin [Schulz]:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Z$
+\end_inset
+
+-axis rotation by 
+\begin_inset Formula $2\pi/N$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $C_{N}M_{l}^{m}=e^{\pm?i2\pi m/N}M_{l}^{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $C_{N}N_{l}^{m}=e^{\pm?i2\pi m/N}N_{l}^{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Horizontal (xy) reflection
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{h}M_{l}^{m}=\left(-1\right)^{m+l+1}M_{l}^{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{h}N_{l}^{m}=\left(-1\right)^{m+l}N_{l}^{m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Vertical (yz) reflection
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{yz}M_{l}^{m}=-M_{l}^{-m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{yz}N_{l}^{m}=N_{l}^{-m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Vertical (xz) reflection
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{xz}M_{l}^{m}=\left(-1\right)^{m+1}M_{l}^{-m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\sigma_{xz}N_{l}^{m}=\left(-1\right)^{m}N_{l}^{-m}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Transformations in a lattice
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document
