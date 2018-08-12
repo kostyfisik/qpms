@@ -638,6 +638,59 @@ extremal
  while everything outside it represents (unrealistic) system with gain.
 \end_layout
 
+\begin_layout Subsection
+Open questions
+\end_layout
+
+\begin_layout Subsubsection
+How much does the sph.
+ harm.
+ degree cutoff affect the eigenvalues of 
+\begin_inset Formula $W$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+When I simulated a cylindrical nanoparticle in scuff-tmatrix (
+\begin_inset Formula $l_{\mathrm{max}}=2$
+\end_inset
+
+, 50 nm height, 50 nm radius, Palik Ag permittivity) and then with the same
+ parameters, just with the imaginary part of permittivity set to zero (i.e.
+ without losses), I got almost the same results, including very similar
+ eigenvalues of 
+\begin_inset Formula $W$
+\end_inset
+
+ (although it should then be basically zero).
+ This is probably a problem of the BEM method, but it could also be consequence
+ of the cutoff.
+\end_layout
+
+\begin_layout Standard
+For comparison, when I tried exact Mie results for a sphere with 
+\begin_inset Formula $\Im\epsilon=0$
+\end_inset
+
+, I got also 
+\begin_inset Formula $W=0$
+\end_inset
+
+ (as expected).
+ But 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a sphere is diagonal, hence the cutoff does not affect the eigenvalue
+s of resulting (also diagonal) 
+\begin_inset Formula $W$
+\end_inset
+
+-matrix (below the cutoff, of course).
+\end_layout
+
 \begin_layout Section
 Multiple scattering
 \end_layout
