@@ -3,10 +3,19 @@
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 
+#ifndef EPSABS
 #define EPSABS 0
+#endif
+#ifndef EPSREL
 #define EPSREL 1e-8
+#endif
+#ifndef LIMIT
 #define LIMIT 8192 //???
-#define R0 1
+#endif
+#ifndef R0
+#define R0 8e-6
+#endif
+
 
 /* Relevant quadrature methods from gsl:
  * gsl_integration_qagiu
