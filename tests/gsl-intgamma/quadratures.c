@@ -7,10 +7,10 @@
 #define EPSABS 0
 #endif
 #ifndef EPSREL
-#define EPSREL 1e-8
+#define EPSREL 1e-13
 #endif
 #ifndef LIMIT
-#define LIMIT 8192 //???
+#define LIMIT 30000 //???
 #endif
 #ifndef R0
 #define R0 8e-6
