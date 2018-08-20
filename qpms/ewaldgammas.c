@@ -65,10 +65,11 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result) {
 
 // incomplete gamma for complex second argument
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
-  if (0 == fabs(cimag(x)) && // x is real; just use the real fun
-      fabs(cimag(x)) < fabs(creal(x)) * COMPLEXPART_REL_ZERO_LIMIT) {
+  if (creal(x) >= 0 &&
+      (0 == fabs(cimag(x)) || // x is real positive; just use the real fun
+      fabs(cimag(x)) < fabs(creal(x)) * COMPLEXPART_REL_ZERO_LIMIT)) {
     gsl_sf_result real_gamma_inc_result;
-    int retval = gsl_sf_gamma_inc_e(a, x, &real_gamma_inc_result);
+    int retval = gsl_sf_gamma_inc_e(a, creal(x), &real_gamma_inc_result);
     result->val = real_gamma_inc_result.val;
     result->err = real_gamma_inc_result.err;
     return retval;
