@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <gsl/gsl_sf_legendre.h>
 #include <gsl/gsl_sf_bessel.h>
+#include "tiny_inlines.h"
 #include "assert_cython_workaround.h"
 #include "kahansum.h"
 #include <stdlib.h> //abort()
@@ -67,14 +68,6 @@ static const double sqrtpi = 1.7724538509055160272981674833411451827975494561223
 // Associated Legendre polynomial at zero argument (DLMF 14.5.1)
 double qpms_legendre0(int m, int n) {
   return pow(2,m) * sqrtpi / tgamma(.5*n - .5*m + .5) / tgamma(.5*n-.5*m);
-}
-
-static inline int min1pow(int x) {
-  return (x % 2) ? -1 : 1;
-}
-
-static inline complex double ipow(int x) {
-  return cpow(I, x);
 }
 
 // Derivative of associated Legendre polynomial at zero argument (DLMF 14.5.2)
