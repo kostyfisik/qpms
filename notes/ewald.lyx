@@ -529,7 +529,8 @@ reference "eq:Dirac comb uaFt"
 \begin{eqnarray}
 W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\nonumber \\
  & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\recb{\basis u}}^{(d)}\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)\left(\vect k\right)\nonumber \\
- & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right).\label{eq:W sum in reciprocal space}
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W sum in reciprocal space}\\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}e^{i\left(\vect k-\vect K\right)\cdot\left(-\vect r_{\beta}+\vect r_{\alpha}\right)}\left(\uaft{S(\vect{\bullet}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\nonumber 
 \end{eqnarray}
 
 \end_inset
