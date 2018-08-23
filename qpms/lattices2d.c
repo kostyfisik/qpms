@@ -36,8 +36,10 @@ points2d_rordered_t *points2d_rordered_scale(const points2d_rordered_t *orig, co
     p->r_offsets[i] = orig->r_offsets[i];
   }
   p->r_offsets[p->nrs] = orig->r_offsets[p->nrs];
+  p->base = malloc(sizeof(point2d) * p->r_offsets[p->nrs]);
   for(size_t i = 0; i < p->r_offsets[p->nrs]; ++i)
     p->base[i] = point2d_fromxy(orig->base[i].x * f, orig->base[i].y * f);
+  return p;
 }
 
 
@@ -387,6 +389,7 @@ int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t * g, int max
         ++(g->ps.r_offsets[g->ps.nrs+1]);
       }
     }
+    ++(g->ps.nrs);
   }
   g->priv->maxs = maxsteps;
   return 0;
