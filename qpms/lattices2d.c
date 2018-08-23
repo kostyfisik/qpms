@@ -1,11 +1,45 @@
 #include "lattices.h"
 #include <assert.h>
+#include <stdlib.h>
 
 typedef struct {
   int i, j;
 } intcoord2_t;
 
 static inline int sqi(int x) { return x*x; }
+
+
+void points2d_rordered_free(points2d_rordered_t *p) {
+  free(p->rs);
+  free(p->base);
+  free(p->r_offsets);
+  free(p);
+}
+
+points2d_rordered_t *points2d_rordered_scale(const points2d_rordered_t *orig, const double f)
+{
+  points2d_rordered_t *p = malloc(sizeof(points2d_rordered_t));
+  if(0 == orig->nrs) { // orig is empty
+    p->nrs = 0;
+    p->rs = NULL;
+    p->base = NULL;
+    p->r_offsets = NULL;
+    return p;
+  }
+  p->nrs = orig->nrs;
+  p->rs = malloc(p->nrs*sizeof(double));
+  p->r_offsets = malloc((p->nrs+1)*sizeof(ptrdiff_t));
+
+  const double af = fabs(f);
+  for(size_t i = 0; i < p->nrs; ++i) {
+    p->rs[i] = orig->rs[i] * af;
+    p->r_offsets[i] = orig->r_offsets[i];
+  }
+  p->r_offsets[p->nrs] = orig->r_offsets[p->nrs];
+  for(size_t i = 0; i < p->r_offsets[p->nrs]; ++i)
+    p->base[i] = point2d_fromxy(orig->base[i].x * f, orig->base[i].y * f);
+}
+
 
 
 /*
@@ -67,11 +101,26 @@ static inline int sqi(int x) { return x*x; }
  * The real area inside the web is (a*s)**2 * 3 * sqrt(3) / 2.
  * Area of a unit cell is a**2 * sqrt(3)/2.
  * Inside the web, but excluding the circumscribed circle, there is no more
- * than 3/4.*s*(s+1) lattice cells (FIXME pretty stupid but safe estimate).
+ * than 3/4.*s*(s+1) + 6*s lattice cells (FIXME pretty stupid but safe estimate).
  *
  * s-th layer circumscribes a circle of radius a * s * sqrt(3)/2.
  *
  */
+
+
+typedef struct triangular_lattice_gen_privstuff_t {
+  intcoord2_t *pointlist_base; // allocated memory for the point "buffer"
+  size_t pointlist_capacity; 
+  // beginning and end of the point "buffer"
+  // not 100% sure what type should I use here
+  // (these are both relative to pointlist_base, due to possible realloc's)
+  ptrdiff_t pointlist_beg, pointlist_n; // end of queue is at [(pointlist_beg+pointlist_n)%pointlist_capacity]
+  int maxs; // the highest layer of the spider web generated (-1 by init, 0 is only origin (if applicable))
+  // capacities of the arrays in ps
+  size_t ps_rs_capacity;
+  size_t ps_points_capacity; // this is the "base" array
+  // TODO anything else?
+} triangular_lattice_gen_privstuff_t;
 
 static inline int trilat_r2_ij(const int i, const int j) {
   return sqi(i) + sqi(j) + i*j;
@@ -81,12 +130,8 @@ static inline int trilat_r2_coord(const intcoord2_t c) {
   return trilat_r2_ij(c.i, c.j);
 }
 
-static int trilat_cmp_intcoord2_by_r2(const void *p1, const void *p2) {
-  // CHECK the sign is right
-  return trilat_r2_coord(*(const intcoord2_t *)p1) - trilat_r2_coord(*(const intcoord2_t *)p2);
-}
 
-// Classify points into sextants (variant [a])
+// Classify points into sextants (variant [a] above)
 static int trilat_sextant_ij_a(const int i, const int j) {
   const int w = i + j;
   if (i >  0 && j >= 0) return  0;
@@ -99,23 +144,155 @@ static int trilat_sextant_ij_a(const int i, const int j) {
   assert(0); // other options should be impossible
 }
 
-typedef struct {
-  intcoord2_t *pointlist_base; // allocated memory for the point "buffer"
-  size_t pointlist_capacity; 
-  // beginning and end of the point "buffer"
-  // not 100% sure what type should I use here
-  // (these are both relative to pointlist_base, due to possible realloc's)
-  ptrdiff_t pointlist_beg, pointlist_end; 
-  int maxs; // the highest layer of the spider web generated (-1 by init, 0 is only origin (if applicable))
-  // capacities of the arrays in ps
-  size_t ps_rs_capacity;
-  size_t ps_points_capacity; // this is the "base" array
-  // TODO anything else?
-} triangular_lattice_gen_t_privstuff_t;
+static inline size_t tlgp_pl_end(const triangular_lattice_gen_privstuff_t *p) {
+  return (p->pointlist_beg + p->pointlist_n) % p->pointlist_capacity;
+}
+
+#if 0
+static inline void tlgpl_end_inc(triangular_lattice_gen_privstuff_t *p) {
+  p->p_pointlist_n += 1;
+}
+#endif
+
+// Puts a point to the end of the point queue
+static inline void trilatgen_pointlist_append_ij(triangular_lattice_gen_t *g, int i, int j) {
+  intcoord2_t thepoint = {i, j};
+  triangular_lattice_gen_privstuff_t *p = g->priv;
+  assert(p->pointlist_n < p->pointlist_capacity);
+  
+  // the actual addition
+  p->pointlist_base[tlgp_pl_end(p)] = thepoint;
+  p->pointlist_n += 1;
+}
+
+// Arange the pointlist queue into a continuous chunk of memory, so that we can qsort() it
+static void trilatgen_pointlist_linearise(triangular_lattice_gen_t *g) {
+  triangular_lattice_gen_privstuff_t *p = g->priv;
+  assert(p->pointlist_n <= p->pointlist_capacity);
+  if (p->pointlist_beg + p->pointlist_n <= p->pointlist_capacity)
+    return;  // already linear, do nothing
+  else if (p->pointlist_n == p->pointlist_capacity) { // full, therefore linear
+    p->pointlist_beg = 0;
+    return;
+  } else { // non-linear; move "to the right"
+    while (p->pointlist_beg < p->pointlist_capacity) {
+      p->pointlist_base[tlgp_pl_end(p)] = p->pointlist_base[p->pointlist_beg];
+      ++(p->pointlist_beg);
+    }
+    p->pointlist_beg = 0;
+    return;
+  }
+}
+
+static inline intcoord2_t trilatgen_pointlist_first(const triangular_lattice_gen_t *g) {
+  return g->priv->pointlist_base[g->priv->pointlist_beg];
+}
+
+static inline void trilatgen_pointlist_deletefirst(triangular_lattice_gen_t *g) {
+  triangular_lattice_gen_privstuff_t *p = g->priv;
+  assert(p->pointlist_n > 0);
+  ++p->pointlist_beg;
+  if(p->pointlist_beg == p->pointlist_capacity) 
+    p->pointlist_beg = 0;
+  --(p->pointlist_n);
+}
+
+// TODO abort() and void or errorchecks and int?
+static int trilatgen_pointlist_extend_capacity(triangular_lattice_gen_t *g, size_t newcapacity) {
+  triangular_lattice_gen_privstuff_t *p = g->priv;
+  if (newcapacity <= p->pointlist_capacity)
+    return 0;
+
+  trilatgen_pointlist_linearise(g);
+
+  intcoord2_t *newmem = realloc(p->pointlist_base, newcapacity * sizeof(intcoord2_t));
+  if (newmem != NULL) {
+    p->pointlist_base = newmem;
+    p->pointlist_capacity = newcapacity;
+    return 0;
+  } else 
+    abort();
+  
+}
+
+// lower estimate for the number of lattice points inside the circumscribed hexagon, but outside the circle
+static inline size_t tlg_circumscribe_reserve(int maxs) {
+  if (maxs <= 0) 
+    return 0;
+  return 3*maxs*(maxs+1)/4 + 6*maxs;
+}
+
+static inline size_t tlg_websize(int maxs) {
+  if (maxs <= 0)
+    return 0;
+  else 
+    return 3*maxs*(maxs+1); // does not include origin point!
+}
+
+static int trilatgen_ensure_pointlist_capacity(triangular_lattice_gen_t *g, int newmaxs) {
+  return trilatgen_pointlist_extend_capacity(g,
+        tlg_circumscribe_reserve(g->priv->maxs) // Space for those which are already in
+      + tlg_websize(newmaxs) - tlg_websize(g->priv->maxs) // space for the new web layers
+      + 1 // reserve for the origin
+      );
+}
+
+static int trilatgen_ensure_ps_rs_capacity(triangular_lattice_gen_t *g, int maxs) {
+  if (maxs < 0)
+    return 0;
+
+  size_t needed_capacity = 1 // reserve for origin
+    + maxs*(maxs+1)/2; // stupid but safe estimate: number of points in a sextant of maxs-layered spider web
+
+  if (needed_capacity <= g->priv->ps_rs_capacity)
+    return 0; // probably does not happen, but fuck it
+
+  double *newmem = realloc(g->ps.rs, needed_capacity * sizeof(double));
+  if (newmem != NULL)  
+    g->ps.rs = newmem; 
+  else 
+    abort();
+  ptrdiff_t *newmem2 = realloc(g->ps.r_offsets, (needed_capacity + 1) * sizeof(ptrdiff_t));
+  if (newmem2 != NULL)
+    g->ps.r_offsets = newmem2;
+  else 
+    abort();
+  
+  g->priv->ps_rs_capacity = needed_capacity;
+  return 0;
+}
+
+static int trilatgen_ensure_ps_points_capacity(triangular_lattice_gen_t *g, int maxs) {
+  if (maxs < 0)
+    return 0;
+  size_t needed_capacity = 1 /*res. for origin */ + tlg_websize(maxs) /* stupid but safe */;
+  if(needed_capacity <= g->priv->ps_points_capacity)
+    return 0;
+
+  point2d *newmem = realloc(g->ps.base, needed_capacity * sizeof(point2d));
+  if (newmem != NULL) 
+    g->ps.base = newmem;
+  else
+    abort();
+
+  g->priv->ps_points_capacity = needed_capacity;
+  return 0;
+}
+
+static int trilat_cmp_intcoord2_by_r2(const void *p1, const void *p2) {
+  // CHECK the sign is right
+  return trilat_r2_coord(*(const intcoord2_t *)p1) - trilat_r2_coord(*(const intcoord2_t *)p2);
+}
+
+static void trilatgen_sort_pointlist(triangular_lattice_gen_t *g) {
+  trilatgen_pointlist_linearise(g);
+  triangular_lattice_gen_privstuff_t *p = g->priv;
+  qsort(p->pointlist_base + p->pointlist_beg, p->pointlist_n, sizeof(intcoord2_t), trilat_cmp_intcoord2_by_r2);
+}
 
 triangular_lattice_gen_t * triangular_lattice_gen_init(double a, TriangularLatticeOrientation ori, bool include_origin)
 {
-  triangular_lattice_gen_t *g = malloc(sizeof(triangular_latice_gen_t));
+  triangular_lattice_gen_t *g = malloc(sizeof(triangular_lattice_gen_t));
   g->orientation = ori;
   g->includes_origin = include_origin;
   g->ps.nrs = 0;
@@ -127,13 +304,13 @@ triangular_lattice_gen_t * triangular_lattice_gen_init(double a, TriangularLatti
   g->priv->pointlist_capacity = 0;
   g->priv->pointlist_base = NULL;
   g->priv->pointlist_beg = 0;
-  g->priv->pointlist_end = 0;
+  g->priv->pointlist_n = 0;
   g->priv->ps_rs_capacity = 0;
   g->priv->ps_points_capacity = 0;
   return g;
 }
 
-void triangular_lattice_gen_free(triangular_lattice_get_t *g) {
+void triangular_lattice_gen_free(triangular_lattice_gen_t *g) {
   free(g->ps.rs);
   free(g->ps.base);
   free(g->ps.r_offsets);
@@ -142,11 +319,12 @@ void triangular_lattice_gen_free(triangular_lattice_get_t *g) {
   free(g);
 }
 
-const points2d_reordered_t * triangular_lattice_gen_getpoints(const triangular_lattice_generator_t *g) {
+const points2d_rordered_t * triangular_lattice_gen_getpoints(const triangular_lattice_gen_t *g) {
   return &(g->ps);
 }
 
-int triangular_lattice_gen_extend_to_steps(triangular_lattice_generator_t * g, int maxsteps) {
+int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t * g, int maxsteps) 
+{
   if (maxsteps <= g->priv->maxs)  // nothing needed
     return 0;
   // TODO FIXME: check for maximum possible maxsteps (not sure what it is)
@@ -159,23 +337,58 @@ int triangular_lattice_gen_extend_to_steps(triangular_lattice_generator_t * g, i
   if(err) return err;
   
   if(g->includes_origin && g->priv->maxs < 0) // Add origin if not there yet
-    trilatgen_append_ij(g, 0, 0);
+    trilatgen_pointlist_append_ij(g, 0, 0);
   
   for (int s = g->priv->maxs + 1; s <= maxsteps; ++s) {
     int i, j; 
     // now go along the spider web layer as indicated in the lenghthy comment above
-    for (i = s, j = 0; i > 0; --i; ++j) trilatgen_append_ij(g,i,j);
-    for (i = 0, j = s; i + j > 0; --i) trilatgen_append_ij(g,i,j);
-    for (i = -s, j = s; j > 0; --j) trilatgen_append_ij(g,i,j);
-    for (i = -s, j = 0; i < 0; ++i, --j) trilatgen_append_ij(g,i,j);
-    for (i = 0, j = -s; i + j < 0; ++i) trilatgen_append_ij(g,i,j);
-    for (i = s, j = -s; j < 0; ++j) trilatgen_append_ij(g,i,j);
+    for (i = s, j = 0; i > 0; --i, ++j) trilatgen_pointlist_append_ij(g,i,j);
+    for (i = 0, j = s; i + j > 0; --i) trilatgen_pointlist_append_ij(g,i,j);
+    for (i = -s, j = s; j > 0; --j) trilatgen_pointlist_append_ij(g,i,j);
+    for (i = -s, j = 0; i < 0; ++i, --j) trilatgen_pointlist_append_ij(g,i,j);
+    for (i = 0, j = -s; i + j < 0; ++i) trilatgen_pointlist_append_ij(g,i,j);
+    for (i = s, j = -s; j < 0; ++j) trilatgen_pointlist_append_ij(g,i,j);
   }
 
   trilatgen_sort_pointlist(g);
   
-  // TODO doma a ted je potřeba vytahat potřebný počet bodů z fronty a naflákat je do ps.
+  // initialise first r_offset if needed
+  if (0 == g->ps.nrs)
+    g->ps.r_offsets[0] = 0;
 
-
-
+  //ted je potřeba vytahat potřebný počet bodů z fronty a naflákat je do ps.
+  // FIXME pohlídat si kapacitu datových typů
+  int maxr2i = sqi(maxsteps) * 3 / 4;
+  while (g->priv->pointlist_n > 0) { // This condition should probably be always true anyways.
+    intcoord2_t coord = trilatgen_pointlist_first(g);
+    int r2i_cur = trilat_r2_coord(coord);
+    if(r2i_cur > maxr2i)
+      break;
+    g->ps.rs[g->ps.nrs] = sqrt(r2i_cur) * g->a;
+    g->ps.r_offsets[g->ps.nrs+1] = g->ps.r_offsets[g->ps.nrs]; // the difference is the number of points on the circle
+    while(1) {
+      coord = trilatgen_pointlist_first(g);
+      if(r2i_cur != trilat_r2_coord(coord))
+        break;
+      else {
+        trilatgen_pointlist_deletefirst(g);
+        point2d thepoint;
+        switch (g->orientation) {
+          case TRIANGULAR_HORIZONTAL:
+            thepoint = point2d_fromxy((coord.i+.5*coord.j)*g->a, (M_SQRT3_2*coord.j)*g->a);
+            break;
+          case TRIANGULAR_VERTICAL:
+            thepoint = point2d_fromxy((-M_SQRT3_2*coord.j)*g->a, (coord.i+.5*coord.j)*g->a);
+            break;
+          default:
+            abort();
+        }
+        g->ps.base[g->ps.r_offsets[g->ps.nrs+1]] = thepoint;
+        ++(g->ps.r_offsets[g->ps.nrs+1]);
+      }
+    }
+  }
+  g->priv->maxs = maxsteps;
+  return 0;
+}
 
