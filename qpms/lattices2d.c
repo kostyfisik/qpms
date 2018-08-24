@@ -295,6 +295,7 @@ static void trilatgen_sort_pointlist(triangular_lattice_gen_t *g) {
 triangular_lattice_gen_t * triangular_lattice_gen_init(double a, TriangularLatticeOrientation ori, bool include_origin)
 {
   triangular_lattice_gen_t *g = malloc(sizeof(triangular_lattice_gen_t));
+  g->a = a;
   g->orientation = ori;
   g->includes_origin = include_origin;
   g->ps.nrs = 0;

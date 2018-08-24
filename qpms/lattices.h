@@ -16,6 +16,7 @@ static inline point2d point2d_fromxy(const double x, const double y) {
 	point2d p;
 	p.x = x;
 	p.y = y;
+	return p;
 }
 
 /* 
@@ -40,6 +41,7 @@ typedef struct {
 
 // returns a copy but scaled by a factor
 points2d_rordered_t *points2d_rordered_scale(const points2d_rordered_t *orig, double factor);
+
 void points2d_rordered_free(points2d_rordered_t *); // use only for result of points2d_rordered_scale
 
 static inline point2d points2d_rordered_get_point(const points2d_rordered_t *ps, int r_order, int i) {
