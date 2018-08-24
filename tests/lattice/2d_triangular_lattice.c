@@ -36,7 +36,7 @@ int main() {
   triangular_lattice_gen_free(g);
 
 
-  g = triangular_lattice_gen_init(7, TRIANGULAR_HORIZONTAL, true);
+  g = triangular_lattice_gen_init(7, TRIANGULAR_VERTICAL, true);
   triangular_lattice_gen_extend_to_steps(g, 7);
   dump_points2d_rordered(&(g->ps), "triang_v_s7.out");
   p = points2d_rordered_scale(&(g->ps), 1/7.);
