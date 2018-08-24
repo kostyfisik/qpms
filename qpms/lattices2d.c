@@ -132,6 +132,16 @@ static inline int trilat_r2_coord(const intcoord2_t c) {
   return trilat_r2_ij(c.i, c.j);
 }
 
+// version with offset (n.b. this is includes a factor of 3)
+static inline int trilat_3r2_ijs(const int i, const int j, const int s) {
+  return 3*(sqi(i) + sqi(j) + i*j + j*s) + sqi(s);
+}
+
+static inline int trilat_3r2_coord_s(const intcoord2_t c, const int s) {
+  return trilat_3r2_ijs(c.i, c.j, s);
+}
+
+
 
 // Classify points into sextants (variant [a] above)
 static int trilat_sextant_ij_a(const int i, const int j) {
@@ -282,20 +292,50 @@ static int trilatgen_ensure_ps_points_capacity(triangular_lattice_gen_t *g, int 
 }
 
 static int trilat_cmp_intcoord2_by_r2(const void *p1, const void *p2) {
-  // CHECK the sign is right
   return trilat_r2_coord(*(const intcoord2_t *)p1) - trilat_r2_coord(*(const intcoord2_t *)p2);
+}
+
+
+static int trilat_cmp_intcoord2_by_3r2_plus1s(const void *p1, const void *p2) {
+  return trilat_3r2_coord_s(*(const intcoord2_t *)p1, +1) - trilat_3r2_coord_s(*(const intcoord2_t *)p2, +1);
+}
+
+static int trilat_cmp_intcoord2_by_3r2_minus1s(const void *p1, const void *p2) {
+  return trilat_3r2_coord_s(*(const intcoord2_t *)p1, -1) - trilat_3r2_coord_s(*(const intcoord2_t *)p2, -1);
+}
+
+static int trilat_cmp_intcoord2_by_3r2(const void *p1, const void *p2, void *sarg) {
+  return trilat_3r2_coord_s(*(const intcoord2_t *)p1, *(int *)sarg) - trilat_3r2_coord_s(*(const intcoord2_t *)p2, *(int *)sarg);
 }
 
 static void trilatgen_sort_pointlist(triangular_lattice_gen_t *g) {
   trilatgen_pointlist_linearise(g);
   triangular_lattice_gen_privstuff_t *p = g->priv;
-  qsort(p->pointlist_base + p->pointlist_beg, p->pointlist_n, sizeof(intcoord2_t), trilat_cmp_intcoord2_by_r2);
+  int (*compar)(const void *, const void *);
+  switch (g->hexshift) {
+    case 0:
+      compar = trilat_cmp_intcoord2_by_r2;
+      break;
+    case -1:
+      compar = trilat_cmp_intcoord2_by_3r2_minus1s;
+      break;
+    case 1:
+      compar = trilat_cmp_intcoord2_by_3r2_plus1s;
+      break;
+    default:
+      abort();
+  }
+  qsort(p->pointlist_base + p->pointlist_beg, p->pointlist_n, sizeof(intcoord2_t), compar);
 }
 
-triangular_lattice_gen_t * triangular_lattice_gen_init(double a, TriangularLatticeOrientation ori, bool include_origin)
+triangular_lattice_gen_t * triangular_lattice_gen_init(double a, TriangularLatticeOrientation ori, bool include_origin, 
+    int hexshift)
 {
   triangular_lattice_gen_t *g = malloc(sizeof(triangular_lattice_gen_t));
   g->a = a;
+  g->hexshift = ((hexshift % 3)+3)%3; // reduce to the set {-1, 0, 1}
+  if (2 == g->hexshift)
+    g->hexshift = -1;
   g->orientation = ori;
   g->includes_origin = include_origin;
   g->ps.nrs = 0;
@@ -332,11 +372,14 @@ int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t * g, int max
     return 0;
   // TODO FIXME: check for maximum possible maxsteps (not sure what it is)
   int err;
-  err = trilatgen_ensure_pointlist_capacity(g, maxsteps);
+  err = trilatgen_ensure_pointlist_capacity(g, maxsteps
+      + abs(g->hexshift) /*FIXME this is quite brainless addition, probably not even needed.*/);
   if(err) return err;
-  err = trilatgen_ensure_ps_rs_capacity(g, maxsteps);
+  err = trilatgen_ensure_ps_rs_capacity(g, maxsteps
+      + abs(g->hexshift) /*FIXME this is quite brainless addition, probably not even needed.*/);
   if(err) return err;
-  err = trilatgen_ensure_ps_points_capacity(g, maxsteps);
+  err = trilatgen_ensure_ps_points_capacity(g, maxsteps
+      + abs(g->hexshift) /*FIXME this is quite brainless addition, probably not even needed.*/);
   if(err) return err;
   
   if(g->includes_origin && g->priv->maxs < 0) // Add origin if not there yet
@@ -361,27 +404,31 @@ int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t * g, int max
 
   //ted je potřeba vytahat potřebný počet bodů z fronty a naflákat je do ps.
   // FIXME pohlídat si kapacitu datových typů
-  int maxr2i = sqi(maxsteps) * 3 / 4;
+  //int maxr2i = sqi(maxsteps) * 3 / 4;
+  int maxr2i3 = sqi(maxsteps) * 9 / 4 + sqi(g->hexshift) - abs(3*maxsteps*g->hexshift);
   while (g->priv->pointlist_n > 0) { // This condition should probably be always true anyways.
     intcoord2_t coord = trilatgen_pointlist_first(g);
-    int r2i_cur = trilat_r2_coord(coord);
-    if(r2i_cur > maxr2i)
+    //int r2i_cur = trilat_r2_coord(coord);
+    //if(r2i_cur > maxr2i)
+    int r2i3_cur = trilat_3r2_coord_s(coord, g->hexshift);
+    if(r2i3_cur > maxr2i3)
       break;
-    g->ps.rs[g->ps.nrs] = sqrt(r2i_cur) * g->a;
+    g->ps.rs[g->ps.nrs] = sqrt(/*r2i_cur*/ r2i3_cur/3.) * g->a;
     g->ps.r_offsets[g->ps.nrs+1] = g->ps.r_offsets[g->ps.nrs]; // the difference is the number of points on the circle
     while(1) {
       coord = trilatgen_pointlist_first(g);
-      if(r2i_cur != trilat_r2_coord(coord))
+      //if(r2i_cur != trilat_r2_coord(coord))
+      if (r2i3_cur != trilat_3r2_coord_s(coord, g->hexshift))
         break;
       else {
         trilatgen_pointlist_deletefirst(g);
         point2d thepoint;
         switch (g->orientation) {
           case TRIANGULAR_HORIZONTAL:
-            thepoint = point2d_fromxy((coord.i+.5*coord.j)*g->a, (M_SQRT3_2*coord.j)*g->a);
+            thepoint = point2d_fromxy((coord.i+.5*coord.j)*g->a, (M_SQRT3_2*coord.j + g->hexshift*M_1_SQRT3)*g->a);
             break;
           case TRIANGULAR_VERTICAL:
-            thepoint = point2d_fromxy((-M_SQRT3_2*coord.j)*g->a, (coord.i+.5*coord.j)*g->a);
+            thepoint = point2d_fromxy(-(M_SQRT3_2*coord.j + g->hexshift*M_1_SQRT3)*g->a, (coord.i+.5*coord.j)*g->a);
             break;
           default:
             abort();

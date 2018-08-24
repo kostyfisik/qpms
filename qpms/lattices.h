@@ -6,6 +6,7 @@
 #include <stddef.h>
 #define M_SQRT3 1.7320508075688772935274463415058724
 #define M_SQRT3_2 (M_SQRT3/2)
+#define M_1_SQRT3 0.57735026918962576450914878050195746
 
 
 // fuck, I already had had suitable type
@@ -73,16 +74,21 @@ typedef struct {
 	points2d_rordered_t ps;
 	TriangularLatticeOrientation orientation;
 	double a; // lattice vector length
-
+	
 	// not sure if needed:
 	bool includes_origin;
+
+	// Denotes an offset of the "origin" point; meaning step hexshift * a / sqrt(2) upwards
+	// or leftwards for the horizontal or vertical orientations, respectively.
+	int hexshift; 
 
 	// private:
 	triangular_lattice_gen_privstuff_t *priv;
 
 } triangular_lattice_gen_t;
 
-triangular_lattice_gen_t *triangular_lattice_gen_init(double a, TriangularLatticeOrientation ori, bool include_origin); 
+triangular_lattice_gen_t *triangular_lattice_gen_init(double a, TriangularLatticeOrientation ori, bool include_origin,
+		int halfoffset); 
 const points2d_rordered_t * triangular_lattice_gen_getpoints(const triangular_lattice_gen_t *g);
 int triangular_lattice_gen_extend_to_r(triangular_lattice_gen_t *g, double r);
 int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t *g, int maxsteps);
