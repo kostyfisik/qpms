@@ -12,7 +12,7 @@ void dump_points2d_rordered(const points2d_rordered_t *ps, char *filename) {
 }
 
 int main() {
-  triangular_lattice_gen_t *g = triangular_lattice_gen_init(5, TRIANGULAR_HORIZONTAL, false);
+  triangular_lattice_gen_t *g = triangular_lattice_gen_init(5, TRIANGULAR_HORIZONTAL, false,0);
   dump_points2d_rordered(&(g->ps), "triang_h_empty.out");
 
   points2d_rordered_t *p = points2d_rordered_scale(&(g->ps), 1.5464);
@@ -21,7 +21,7 @@ int main() {
   points2d_rordered_free(p);
   triangular_lattice_gen_free(g);
 
-  g = triangular_lattice_gen_init(5, TRIANGULAR_HORIZONTAL, false);
+  g = triangular_lattice_gen_init(5, TRIANGULAR_HORIZONTAL, false,0);
   triangular_lattice_gen_extend_to_steps(g, 5);
   dump_points2d_rordered(&(g->ps), "triang_h_s5.out");
   triangular_lattice_gen_extend_to_steps(g, 20);
@@ -36,13 +36,21 @@ int main() {
   triangular_lattice_gen_free(g);
 
 
-  g = triangular_lattice_gen_init(7, TRIANGULAR_VERTICAL, true);
+  g = triangular_lattice_gen_init(7, TRIANGULAR_VERTICAL, true,1);
   triangular_lattice_gen_extend_to_steps(g, 7);
-  dump_points2d_rordered(&(g->ps), "triang_v_s7.out");
+  dump_points2d_rordered(&(g->ps), "triang_v_plus_s7.out");
   p = points2d_rordered_scale(&(g->ps), 1/7.);
   triangular_lattice_gen_free(g);
-  dump_points2d_rordered(p, "triang_v_s7_scaled_out");
+  dump_points2d_rordered(p, "triang_v_plus_s7_scaled_out");
   points2d_rordered_free(p);
+  g = triangular_lattice_gen_init(7, TRIANGULAR_VERTICAL, true,-1);
+  triangular_lattice_gen_extend_to_steps(g, 7);
+  dump_points2d_rordered(&(g->ps), "triang_v_minus_s7.out");
+  p = points2d_rordered_scale(&(g->ps), 1/7.);
+  triangular_lattice_gen_free(g);
+  dump_points2d_rordered(p, "triang_v_minus_s7_scaled_out");
+  points2d_rordered_free(p);
+
   return 0;
 }
 
