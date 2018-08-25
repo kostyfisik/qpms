@@ -443,3 +443,57 @@ int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t * g, int max
   return 0;
 }
 
+honeycomb_lattice_gen_t *honeycomb_lattice_gen_init_h(double h, TriangularLatticeOrientation ori) {
+  double a = M_SQRT3 * h;
+  honeycomb_lattice_gen_t *g = honeycomb_lattice_gen_init_a(a, ori);
+  g->h = h; // maybe it's not necessary as sqrt is "exact"
+  return g;
+}
+
+honeycomb_lattice_gen_t *honeycomb_lattice_gen_init_a(double a, TriangularLatticeOrientation ori) {
+  honeycomb_lattice_gen_t *g = calloc(1, sizeof(honeycomb_lattice_gen_t)); // this already inits g->ps to zeros
+  g->a = a;
+  g->h = a * M_1_SQRT3;
+  g->tg = triangular_lattice_gen_init(a, ori, true, 1);
+  return g;
+}
+
+void honeycomb_lattice_gen_free(honeycomb_lattice_gen_t *g) {
+  free(g->ps.rs);
+  free(g->ps.base);
+  free(g->ps.r_offsets);
+  triangular_lattice_gen_free(g->tg);
+  free(g);
+}
+
+int honeycomb_lattice_gen_extend_to_steps(honeycomb_lattice_gen_t *g, const int maxsteps) {
+  if (maxsteps <= g->tg->priv->maxs)  // nothing needed
+    return 0;
+  triangular_lattice_gen_extend_to_steps(g->tg, maxsteps);
+
+  double *newmem = realloc(g->ps.rs, g->tg->ps.nrs * sizeof(double));
+  if (NULL != newmem)
+    g->ps.rs = newmem;
+  else abort();
+  ptrdiff_t *newmem2 = realloc(g->ps.r_offsets, (g->tg->ps.nrs+1) * sizeof(ptrdiff_t));
+  if (NULL != newmem2)
+    g->ps.r_offsets = newmem2;
+  else abort();
+  point2d *newmem3 = realloc(g->ps.base, 2 * (g->tg->ps.r_offsets[g->tg->ps.nrs]) * sizeof(point2d));
+  if (NULL != newmem3)
+    g->ps.base = newmem3;
+  else abort();
+
+  // Now copy (new) contents of g->tg->ps into g->ps, but with inverse copy of each point
+  for (size_t ri = g->ps.nrs; ri <= g->tg->ps.nrs; ++ri) 
+    g->ps.r_offsets[ri] = g->tg->ps.r_offsets[ri] * 2;
+  for (ptrdiff_t i_orig = g->tg->ps.r_offsets[g->ps.nrs]; i_orig < g->tg->ps.r_offsets[g->tg->ps.nrs]; ++i_orig) {
+    point2d p = g->tg->ps.base[i_orig];
+    g->ps.base[2*i_orig] = p;
+    p.x *= -1; p.y *= -1;
+    g->ps.base[2*i_orig + 1] = p;
+  }
+  g->ps.nrs = g->tg->ps.nrs;
+  return 0;
+}
+

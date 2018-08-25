@@ -51,6 +51,19 @@ int main() {
   dump_points2d_rordered(p, "triang_v_minus_s7_scaled_out");
   points2d_rordered_free(p);
 
+  honeycomb_lattice_gen_t *h = honeycomb_lattice_gen_init_h(1, TRIANGULAR_HORIZONTAL);
+  dump_points2d_rordered(&(h->ps), "hex_h_empty.out");
+  honeycomb_lattice_gen_extend_to_steps(h, 7);
+  dump_points2d_rordered(&(h->ps), "hex_h_s7.out");
+  honeycomb_lattice_gen_extend_to_steps(h, 120);
+  dump_points2d_rordered(&(h->ps), "hex_h_s120.out");
+  honeycomb_lattice_gen_free(h);
+
+  h = honeycomb_lattice_gen_init_a(1, TRIANGULAR_VERTICAL);
+  honeycomb_lattice_gen_extend_to_steps(h, 5);
+  dump_points2d_rordered(&(h->ps), "hex_v_s5.out");
+  honeycomb_lattice_gen_free(h);
+
   return 0;
 }
 

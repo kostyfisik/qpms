@@ -94,16 +94,26 @@ int triangular_lattice_gen_extend_to_r(triangular_lattice_gen_t *g, double r);
 int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t *g, int maxsteps);
 void triangular_lattice_gen_free(triangular_lattice_gen_t *g);
 
-#if 0
 
 /*
  * HONEYCOMB LATTICE
  */
 
 typedef struct {
+	// public:
+	points2d_rordered_t ps;
+	TriangularLatticeOrientation orientation;
+	double a;
+	double h;
 
-} honeycomb_lattice_generator_t;
+	// private:
+	triangular_lattice_gen_t *tg;
+} honeycomb_lattice_gen_t;
 
-#endif
+honeycomb_lattice_gen_t *honeycomb_lattice_gen_init_h(double h, TriangularLatticeOrientation ori);
+honeycomb_lattice_gen_t *honeycomb_lattice_gen_init_a(double a, TriangularLatticeOrientation ori);
+int honeycomb_lattice_gen_extend_to_steps(honeycomb_lattice_gen_t *g, int maxsteps);
+int honeycomb_lattice_gen_extend_to_r(honeycomb_lattice_gen_t *g, double r);
+void honeycomb_lattice_gen_free(honeycomb_lattice_gen_t *g);
 
 #endif // LATTICES_H
