@@ -1,5 +1,17 @@
 #ifndef LATTICES_H
 #define LATTICES_H
+
+
+/* IMPORTANT TODO
+ * ==============
+ *
+ * The current content of this part (and the implementation) is extremely ugly.
+ * When I have some time, I have to rewrite this in the style of lattices2d.py
+ *
+ */
+
+
+
 #include <math.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -19,6 +31,87 @@ static inline point2d point2d_fromxy(const double x, const double y) {
 	p.y = y;
 	return p;
 }
+
+/*
+ * THE NICE PART (adaptation of lattices2d.py)
+ * ===========================================
+ *
+ * all the functions are prefixed with l2d_
+ * convention for argument order: inputs, *outputs, add. params
+ */
+
+#define BASIS_RTOL 1e-13
+
+typedef enum {
+	OBLIQUE = 1,
+	RECTANGULAR = 2,
+	SQUARE = 4,
+	RHOMBIC = 5,
+	EQUILATERAL_TRIANGULAR = 3,
+	RIGHT_ISOSCELES=SQUARE,
+	PARALLELOGRAMMIC=OBLIQUE,
+	CENTERED_RHOMBIC=RECTANGULAR,
+	RIGHT_TRIANGULAR=RECTANGULAR,
+	CENTERED_RECTANGULAR=RHOMBIC,
+	ISOSCELE_TRIANGULAR=RHOMBIC,
+	RIGHT_ISOSCELE_TRIANGULAR=SQUARE,
+	HEXAGONAL=EQUILATERAL_TRIANGULAR
+} LatticeType;
+
+
+/*
+ * Lagrange-Gauss reduction of a 2D basis.
+ * The output shall satisfy |out1| <= |out2| <= |out2 - out1|
+ */
+void l2d_reduceBasis(cart2_t in1, cart2_t in2, cart2_t *out1, cart2_t *out2);
+
+/* 
+ * This gives the "ordered shortest triple" of base vectors (each pair from the triple
+ * is a base) and there may not be obtuse angle between o1, o2 and between o2, o3
+ */
+void l2d_shortestBase3(cart2_t i1, cart2_t i2, cart2_t *o1, cart2_t *o2, cart2_t *o3);
+
+/* 
+ * TODO doc
+ * return value is 4 or 6.
+ */
+int l2d_shortestBase46(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_t *o3, cart2_t *o4, cart2_t *o5, cart2_t *o6, double rtol);
+// variant
+int l2d_shortestBase46_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
+
+// Determines whether angle between inputs is obtuse
+bool l2d_is_obtuse(cart2_t i1, cart2_t i2, double rtol);
+
+/* 
+ * Given two basis vectors, returns 2D Bravais lattice type.
+ */
+LatticeType l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol);
+
+// Other functions in lattices2d.py: TODO?
+// range2D()
+// generateLattice()
+// generateLatticeDisk()
+// cutWS()
+// filledWS()
+// change_basis()
+
+/*
+ * Given basis vectors, returns the corners of the Wigner-Seits unit cell (W1, W2, -W1, W2)
+ * for rectangular and square lattice or (w1, w2, w3, -w1, -w2, -w3) otherwise.
+ */
+int l2d_cellCornersWS(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_t *o3, cart2_t *o4, cart2_t *o5, cart2_t *o6, double rtol);
+// variant
+int l2d_cellCornersWS_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
+
+// Reciprocal bases
+void l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+void l2D_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+
+
+/*
+ * THE MORE OR LESS OK PART
+ * ========================
+ */
 
 /* 
  * General set of points ordered by the r-coordinate.
@@ -56,6 +149,21 @@ static inline double points2d_rordered_get_r(const points2d_rordered_t *ps, int 
 	assert(r_order < ps->nrs);
 	return ps->rs[r_order];
 }
+
+
+ptrdiff_t points2d_rordered_locate_r(const points2d_rordered_t *, double r);
+
+// returns a "view" (does not copy any of the arrays)
+// -- DO NOT FREE orig BEFORE THE END OF SCOPE OF THE RESULT
+points2d_rordered_t points2d_rordered_annulus(const points2d_rordered_t *orig, double minr, bool minr_inc,
+		double maxr, bool maxr_inc);
+
+
+
+/*
+ * THE UGLY PART
+ * =============
+ */
 
 /* 
  * EQUILATERAL TRIANGULAR LATTICE

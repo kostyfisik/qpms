@@ -42,7 +42,43 @@ points2d_rordered_t *points2d_rordered_scale(const points2d_rordered_t *orig, co
   return p;
 }
 
+ptrdiff_t points2d_rordered_locate_r(const points2d_rordered_t *p, const double r) {
+  //if(p->r_rs[0] > r)
+  //  return -1;
+  //if(p->r_rs[p->nrs-1] < r)
+  //  return p->nrs;
+  ptrdiff_t lo = 0, hi = p->nrs-1, piv;
+  while(lo < hi) {
+    piv = (lo + hi + 1) / 2;
+    if(p->rs[piv] > r) // the result will be less or equal
+      hi = piv - 1;
+    else
+      lo = piv;
+  }
+  return lo;
+}
 
+points2d_rordered_t points2d_rordered_annulus(const points2d_rordered_t *orig,
+    double minr, bool inc_minr, double maxr, bool inc_maxr) {
+  points2d_rordered_t p;
+  ptrdiff_t imin, imax;
+  imin = points2d_rordered_locate_r(orig, minr);
+  imax = points2d_rordered_locate_r(orig, maxr);
+  if (!inc_minr && (orig->rs[imin] <= minr)) ++imin;
+  if (!inc_maxr && (orig->rs[imax] >= maxr)) --imax;
+  if (imax < imin) { // it's empty
+    p.nrs = 0;
+    p.base = NULL;
+    p.rs = NULL;
+    p.r_offsets = NULL;
+  } else {
+    p.base = orig->base;
+    p.nrs = imax - imin + 1;
+    p.rs = orig->rs + imin;
+    p.r_offsets = orig->r_offsets + imin;
+  }
+  return p;
+}
 
 /*
  * EQUILATERAL TRIANGULAR LATTICE

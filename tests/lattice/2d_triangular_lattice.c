@@ -32,6 +32,16 @@ int main() {
   dump_points2d_rordered(&(g->ps), "triang_h_s160_20.out");
   p = points2d_rordered_scale(&(g->ps), -.2);
   dump_points2d_rordered(p, "triang_h_s160_20_scaled.out");
+  {
+    points2d_rordered_t v = points2d_rordered_annulus(p, 15, true, 17, true);
+    dump_points2d_rordered(&v, "triang_h_ann_i15-i17.out");
+    v = points2d_rordered_annulus(p, 15, false, 17, true);
+    dump_points2d_rordered(&v, "triang_h_ann_x15-i17.out");
+    v = points2d_rordered_annulus(p, 15, false, 17, false);
+    dump_points2d_rordered(&v, "triang_h_ann_x15-x17.out");
+    v = points2d_rordered_annulus(p, 15, true, 17, false);
+    dump_points2d_rordered(&v, "triang_h_ann_i15-x17.out");
+  }
   points2d_rordered_free(p);
   triangular_lattice_gen_free(g);
 
@@ -48,7 +58,7 @@ int main() {
   dump_points2d_rordered(&(g->ps), "triang_v_minus_s7.out");
   p = points2d_rordered_scale(&(g->ps), 1/7.);
   triangular_lattice_gen_free(g);
-  dump_points2d_rordered(p, "triang_v_minus_s7_scaled_out");
+  dump_points2d_rordered(p, "triang_v_minus_s7_scaled.out");
   points2d_rordered_free(p);
 
   honeycomb_lattice_gen_t *h = honeycomb_lattice_gen_init_h(1, TRIANGULAR_HORIZONTAL);
