@@ -105,7 +105,7 @@ int l2d_cellCornersWS_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 
 // Reciprocal bases
 void l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
-void l2D_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+void l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
 
 
 /*
@@ -133,10 +133,26 @@ typedef struct {
 	 */ 
 } points2d_rordered_t;
 
-// returns a copy but scaled by a factor
-points2d_rordered_t *points2d_rordered_scale(const points2d_rordered_t *orig, double factor);
 
-void points2d_rordered_free(points2d_rordered_t *); // use only for result of points2d_rordered_scale
+// sorts arbitrary points and creates points2d_rordered_t
+points2d_rordered_t *points2d_rordered_frompoints(const point2d *orig_base,
+	       	size_t nmemb, double rtol, double atol);
+
+// returns a copy but shifted by a constant (actually in a stupid way, but whatever)
+points2d_rordered_t *points2d_rordered_shift(const points2d_rordered_t *orig,
+		point2d shift, double rtol, double atol);
+
+// returns a copy but scaled by a factor
+points2d_rordered_t *points2d_rordered_scale(const points2d_rordered_t *orig,
+       	double factor);
+
+
+/* The destructor: use only for results of
+ *  - points2D_rordered_frompoints,
+ *  - points2d_rordered_shift,
+ *  - points2d_rordered_scale.
+ */
+void points2d_rordered_free(points2d_rordered_t *);
 
 static inline point2d points2d_rordered_get_point(const points2d_rordered_t *ps, int r_order, int i) {
 	assert(i >= 0);

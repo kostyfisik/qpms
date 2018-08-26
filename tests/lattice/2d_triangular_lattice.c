@@ -1,5 +1,6 @@
 #include <qpms/lattices.h>
 #include <stdio.h>
+#include <float.h>
 
 void dump_points2d_rordered(const points2d_rordered_t *ps, char *filename) {
   FILE *f = fopen(filename, "w");
@@ -65,6 +66,10 @@ int main() {
   dump_points2d_rordered(&(h->ps), "hex_h_empty.out");
   honeycomb_lattice_gen_extend_to_steps(h, 7);
   dump_points2d_rordered(&(h->ps), "hex_h_s7.out");
+  point2d shift = {0, h->h};
+  p = points2d_rordered_shift(&(h->ps), shift, DBL_EPSILON, h->h * DBL_EPSILON);
+  dump_points2d_rordered(p, "hex_h_s7_shifted.out");
+  points2d_rordered_free(p);
   honeycomb_lattice_gen_extend_to_steps(h, 120);
   dump_points2d_rordered(&(h->ps), "hex_h_s120.out");
   honeycomb_lattice_gen_free(h);

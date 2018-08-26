@@ -1,6 +1,7 @@
 #include "lattices.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   int i, j;
@@ -8,6 +9,7 @@ typedef struct {
 
 static inline int sqi(int x) { return x*x; }
 
+static inline double sqf(double x) { return x*x; }
 
 void points2d_rordered_free(points2d_rordered_t *p) {
   free(p->rs);
@@ -78,6 +80,107 @@ points2d_rordered_t points2d_rordered_annulus(const points2d_rordered_t *orig,
     p.r_offsets = orig->r_offsets + imin;
   }
   return p;
+}
+
+
+static inline double pr2(const point2d p) {
+  return sqf(p.x) + sqf(p.y);
+}
+
+static inline double prn(const point2d p) {
+  return sqrt(pr2(p));
+}
+
+static int point2d_cmp_by_r2(const void *p1, const void *p2) {
+  const point2d *z1 = (point2d *) p1, *z2 = (point2d *) p2; 
+  double dif = pr2(*z1) - pr2(*z2);
+  if(dif > 0) return 1;
+  else if(dif < 0) return -1;
+  else return 0;
+}
+
+static points2d_rordered_t *points2d_rordered_frompoints_c(point2d *orig_base, const size_t nmemb,
+    const double rtol, const double atol, bool copybase)
+{
+  // TODO should the rtol and atol relate to |r| or r**2? (Currently: |r|)
+  assert(rtol >= 0);
+  assert(atol >= 0);
+  points2d_rordered_t *p = malloc(sizeof(points2d_rordered_t));
+  if(nmemb == 0) {
+    p->nrs = 0;
+    p->rs = NULL;
+    p->base = NULL;
+    p->r_offsets = NULL;
+    return p;
+  }
+
+  if (copybase) {
+    p->base = malloc(nmemb * sizeof(point2d));
+    memcpy(p->base, orig_base, nmemb * sizeof(point2d));
+  } else 
+    p->base = orig_base;
+
+  qsort(p->base, nmemb, sizeof(point2d), point2d_cmp_by_r2);
+
+  // first pass: determine the number of "different" r's.
+  size_t rcount = 0;
+  double rcur = -INFINITY;
+  double rcurmax = -INFINITY;
+  for (size_t i = 0; i < nmemb; ++i)
+    if ((rcur = prn(p->base[i])) > rcurmax) {
+      ++rcount;
+      rcurmax = rcur * (1 + rtol) + atol;
+    }
+
+  p->nrs = rcount;
+  // TODO check malloc return values
+  p->rs = malloc(rcount * sizeof(double));
+  p->r_offsets = malloc((rcount+1) * sizeof(ptrdiff_t));
+
+
+  // second pass: fill teh rs;
+  size_t ri = 0;
+  size_t rcurcount = 0;
+  rcur = prn(p->base[0]);
+  rcurmax = rcur * (1 + rtol) + atol;
+  double rcursum = 0;
+  p->r_offsets[0] = 0;
+  for (size_t i = 0; i < nmemb; ++i) {
+    rcur = prn(p->base[i]);
+    if (rcur > rcurmax) {
+      p->rs[ri] = rcursum / rcurcount; // average of the accrued r's within tolerance
+      ++ri;
+      p->r_offsets[ri] = i; //r_offsets[ri-1] + rcurcount (is the same)
+      rcurcount = 0;
+      rcursum = 0;
+      rcurmax = rcur * (1 + rtol) + atol;
+    } 
+    rcursum += rcur;
+    ++rcurcount;
+  }
+  p->r_offsets[rcount] = nmemb;
+
+  return p;
+}
+
+points2d_rordered_t *points2d_rordered_frompoints(const point2d *orig_base, const size_t nmemb,
+    const double rtol, const double atol) 
+{
+  return points2d_rordered_frompoints_c((point2d *)orig_base, nmemb, rtol, atol, true);
+}
+
+points2d_rordered_t *points2d_rordered_shift(const points2d_rordered_t *orig, const  point2d shift,
+    double rtol, double atol)
+{
+  size_t n = (orig->nrs > 0) ?
+      orig->r_offsets[orig->nrs] - orig->r_offsets[0] : 0;
+
+  point2d * shifted = malloc(n * sizeof(point2d));
+
+  for(size_t i = 0; i < n; ++i) 
+    shifted[i] = cart2_add(orig->base[i], shift);
+
+  return points2d_rordered_frompoints_c(shifted, n,rtol, atol, false);
 }
 
 /*
