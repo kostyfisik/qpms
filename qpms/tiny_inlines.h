@@ -1,5 +1,6 @@
 #ifndef TINY_INLINES_H
 #define TINY_INLINES_H
+#include <stdlib.h>
 
 static inline int min1pow(int pow) { return (pow % 2) ? -1 : 1; }
 
@@ -17,6 +18,8 @@ static inline complex double ipow(int x) {
       return -1;
     case 3:
       return -I;
+    default:
+      abort();
   }
 }
 
