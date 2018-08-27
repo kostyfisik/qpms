@@ -109,7 +109,7 @@ int ewald32_sigma_long_shiftedpoints (
     double rbeta_pq = cart2norm(beta_pq);
   // CHOOSE POINT END
 
-    complex double phasefac = cexp(I*cart2_dot(beta_pq,particle_shift)); // POINT-DEPENDENT (PFC)
+    complex double phasefac = cexp(I*cart2_dot(beta_pq,particle_shift)); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
     double arg_pq = atan2(beta_pq.y, beta_pq.x); // POINT-DEPENDENT
 
     // R-DEPENDENT BEGIN
@@ -125,6 +125,8 @@ int ewald32_sigma_long_shiftedpoints (
     // and just fetched for each n, m pair
     for(qpms_l_t n = 0; n <= lMax; ++n)
       for(qpms_m_t m = -n; m <= n; ++m) {
+        if((m+n) % 2 != 0) // odd coefficients are zero.
+          continue;
         qpms_y_t y = qpms_mn2y(m, n);
         complex double e_imalpha_pq = cexp(I*m*arg_pq);
         complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
@@ -140,7 +142,7 @@ int ewald32_sigma_long_shiftedpoints (
           summand *= Gamma_pq[j].val; // GGG
           ckahanadd(&jsum, &jsum_c, summand);
         }
-        jsum *= phasefac;
+        jsum *= phasefac; // PFC
         ckahanadd(target + y, target_c + y, jsum);
         if(err) kahanadd(err + y, err_c + y, jsum_err);
       }
@@ -155,8 +157,43 @@ int ewald32_sigma_long_shiftedpoints (
       err[y] *= commonfac;
   return 0;
 }
+ 
+int ewald32_sigma_short_shiftedpoints(
+    complex double *target, // must be c->nelem long
+    double *err,
+    const qpms_ewald32_constants_t *c, // N.B. not too useful here
+    const double eta, const double k,
+    const size_t npoints, const point2d *Rpoints_plus_particle_shift,
+    const point2d particle_shift           // used only in the very end to multiply it by the phase
+    )
+{
+  const qpms_y_t nelem = c->nelem;
+  const qpms_l_t lMax = c->lMax;
+  
+  // Manual init of the ewald summation targets
+  complex double *target_c = calloc(nelem, sizeof(complex double));
+  memset(target, 0, nelem * sizeof(complex double));
+  double *err_c = NULL;
+  if (err) {
+    err_c = calloc(nelem, sizeof(double));
+    memset(err, 0, nelem * sizeof(double));
+  }
   
 
+  //// Zde jsem skončil
+
+
+
+
+
+
+
+  free(err_c);
+  free(target_c);
+  return 0;
+}
+
+ 
 #if 0
 
 
@@ -174,14 +211,6 @@ int ewald32_sigma_long_shiftedpoints_rordered(
     double eta, double k, double unitcell_area,
     const points2d_rordered_t *Kpoints_plus_beta_rordered,
     point2d particle_shift
-    );
-
-int ewald32_sigma_short_shiftedpoints(
-    complex double *target_sigmasr_y, // must be c->nelem long
-    const qpms_ewald32_constants_t *c, // N.B. not too useful here
-    double eta, double k,
-    size_t npoints, const point2d *Rpoints_plus_particle_shift,
-    point2d particle_shift           // used only in the very end to multiply it by the phase
     );
 int ewald32_sigma_short_points_and_shift(
     complex double *target_sigmasr_y, // must be c->nelem long

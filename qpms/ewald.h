@@ -18,6 +18,7 @@ typedef struct {
 	qpms_y_t nelem;
 	qpms_l_t *s1_jMaxes;
 	complex double **s1_constfacs; // indices [y][j] where j is same as in [1, (4.5)]
+	// TODO probably normalisation and equatorial legendre polynomials should be included, too
 	complex double *s1_constfacs_base; // internal pointer holding the memory for the constants
 } qpms_ewald32_constants_t;
 
