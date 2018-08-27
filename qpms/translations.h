@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#ifdef LATTICESUMS
+#ifdef LATTICESUMS_OLD
 #include "bessels.h"
 #endif
 
@@ -45,7 +45,7 @@ typedef struct qpms_trans_calculator {
 	// Spherical Bessel function coefficients:
 	// TODO
 #endif
-#ifdef LATTICESUMS
+#ifdef LATTICESUMS_OLD
 	complex double *hct; // Hankel function coefficient table 
 	double *legendre0; // Zero-argument Legendre functions – this might go outside #ifdef in the end...
 #endif
@@ -91,7 +91,7 @@ int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
 		double kdlj_r, double kdlj_theta, double kdlj_phi,
 		int r_ge_d, int J);
 
-#ifdef LATTICESUMS 
+#ifdef LATTICESUMS_OLD 
 // Short-range parts of the translation coefficients
 int qpms_trans_calculator_get_shortrange_AB_p(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
@@ -116,7 +116,7 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_arrays(const qpms_trans_calculat
 		size_t deststride, size_t srcstride,
 		sph_t k_sph, qpms_bessel_t J /* Only J=3 valid for now */,
 		qpms_l_t longrange_order_cutoff, unsigned kappa, double cv, double k0);
-#endif // LATTICESUMS
+#endif // LATTICESUMS_OLD
 
 
 

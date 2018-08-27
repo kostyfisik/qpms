@@ -493,7 +493,7 @@ void qpms_trans_calculator_free(qpms_trans_calculator *c) {
   free(c->A_multipliers);
   free(c->B_multipliers[0]);
   free(c->B_multipliers);
-#ifdef LATTICESUMS
+#ifdef LATTICESUMS_OLD
   free(c->hct);
   free(c->legendre0);
 #endif
@@ -905,7 +905,7 @@ qpms_trans_calculator
     }
 
   free(qmaxes);
-#ifdef LATTICESUMS
+#ifdef LATTICESUMS_OLD
   c->hct = hankelcoefftable_init(2*lMax+1);
   c->legendre0 = malloc(gsl_sf_legendre_array_n(2*lMax+1) * sizeof(double));
   if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*lMax+1,
@@ -1149,7 +1149,7 @@ int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
 }
 
 
-#ifdef LATTICESUMS
+#ifdef LATTICESUMS_OLD
 
 int qpms_trans_calculator_get_shortrange_AB_arrays_buf(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
@@ -1429,7 +1429,7 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_arrays(const qpms_trans_calculat
      lrhankel_recpart);
 }
 
-#endif // LATTICESUMS
+#endif // LATTICESUMS_OLD
 
 
 complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
