@@ -30,6 +30,8 @@ complex double * hankelcoefftable_init(size_t maxn) {
 				case 3:
 					ifactor = I;
 					break;
+        default:
+          abort();
 			}
 			// the result should be integer, so round to remove inaccuracies
 			hcs[k] = round(exp(lcoeff)) * ifactor;
