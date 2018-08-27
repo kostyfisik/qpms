@@ -49,4 +49,58 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
 // if x is (almost) real, it just uses gsl_sf_gamma_inc_e
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result);
 
+
+#include "lattices.h"
+
+// TODO make "compressed versions" where the (m+n)-odd terms (which are zero)
+// are not included.
+
+int ewald32_sigma_long_shiftedpoints ( 
+		complex double *target_sigmalr_y, // must be c->nelem long
+		const qpms_ewald32_constants_t *c,
+		double eta, double k, double unitcell_area,
+		size_t npoints, const point2d *Kpoints_plus_beta,
+		point2d particle_shift
+);
+int ewald32_sigma_long_points_and_shift (
+		complex double *target_sigmalr_y, // must be c->nelem long
+		const qpms_ewald32_constants_t *c,
+		double eta, double k, double unitcell_area,
+		size_t npoints, const point2d *Kpoints,
+		point2d beta,
+		point2d particle_shift
+		);
+int ewald32_sigma_long_shiftedpoints_rordered(
+		complex double *target_sigmalr_y, // must be c->nelem long
+		const qpms_ewald32_constants_t *c,
+		double eta, double k, double unitcell_area,
+		const points2d_rordered_t *Kpoints_plus_beta_rordered,
+		point2d particle_shift
+		);
+
+int ewald32_sigma_short_shiftedpoints(
+		complex double *target_sigmasr_y, // must be c->nelem long
+		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		double eta, double k,
+		size_t npoints, const point2d *Rpoints_plus_particle_shift,
+		point2d particle_shift           // used only in the very end to multiply it by the phase
+		);
+int ewald32_sigma_short_points_and_shift(
+		complex double *target_sigmasr_y, // must be c->nelem long
+		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		double eta, double k,
+		size_t npoints, const point2d *Rpoints, 
+		point2d particle_shift
+		);
+int ewald32_sigma_short_points_rordered(
+		complex double *target_sigmasr_y, // must be c->nelem long
+		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		double eta, double k,
+		const points2d_rordered_t *Rpoints_plus_particle_shift_rordered,
+		point2d particle_shift    // used only in the very end to multiply it by the phase
+		);
+;
+
+
+
 #endif //EWALD_H
