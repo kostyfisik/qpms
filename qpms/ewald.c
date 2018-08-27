@@ -5,6 +5,22 @@
 #include <assert.h>
 #include <string.h>
 #include "tiny_inlines.h"
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_errno.h>
+
+
+// parameters for the quadrature of integral in (4.6)
+#ifndef INTEGRATION_WORKSPACE_LIMIT
+#define INTEGRATION_WORKSPACE_LIMIT 30000
+#endif
+
+#ifndef INTEGRATION_EPSABS
+#define INTEGRATION_EPSABS 0
+#endif
+
+#ifndef INTEGRATION_EPSREL
+#define INTEGRATION_EPSREL 1e-13
+#endif
 
 // sloppy implementation of factorial
 static inline double factorial(const int n) {
@@ -22,7 +38,7 @@ static inline double factorial(const int n) {
 }
 
 static inline complex double csq(complex double x) { return x * x; }
-
+static inline double sq(double x) { return x * x; }
 
 qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax)
 {
@@ -123,7 +139,7 @@ int ewald32_sigma_long_shiftedpoints (
     
     // TODO optimisations: all the j-dependent powers can be done for each j only once, stored in array
     // and just fetched for each n, m pair
-    for(qpms_l_t n = 0; n <= lMax; ++n)
+    for(qpms_l_t n = 1; n <= lMax; ++n)
       for(qpms_m_t m = -n; m <= n; ++m) {
         if((m+n) % 2 != 0) // odd coefficients are zero.
           continue;
@@ -157,18 +173,57 @@ int ewald32_sigma_long_shiftedpoints (
       err[y] *= commonfac;
   return 0;
 }
- 
+
+
+struct sigma2_integrand_params {
+  int n;
+  double k, R;
+};
+
+static double sigma2_integrand(double ksi, void *params) {
+  struct sigma2_integrand_params *p = (struct sigma2_integrand_params *) params;
+  return exp(-sq(p->R * ksi) + sq(p->k / ksi / 2)) * pow(ksi, 2*p->n);
+}
+
+static int ewald32_sr_integral(double r, double k, int n, double eta,
+    double *result, double *err, gsl_integration_workspace *workspace)
+{
+  struct sigma2_integrand_params p;
+
+
+  const double R0 = r; // Maybe could be chosen otherwise, but fuck it for now.
+  p.n = n;
+  eta *= R0;
+  p.k = k * R0;
+  p.R = r / R0;  // i.e. p.R = 1
+
+  gsl_function F;
+  F.function = sigma2_integrand;
+  F.params = &p;
+
+  int retval = gsl_integration_qagiu(&F, eta, INTEGRATION_EPSABS, 
+      INTEGRATION_EPSREL, INTEGRATION_WORKSPACE_LIMIT,
+      workspace, result, err);
+  double normfac = pow(R0, -2*p.n - 1);
+  *result *= normfac;
+  *err *= normfac;
+  return retval;
+}
+
 int ewald32_sigma_short_shiftedpoints(
     complex double *target, // must be c->nelem long
     double *err,
     const qpms_ewald32_constants_t *c, // N.B. not too useful here
     const double eta, const double k,
     const size_t npoints, const point2d *Rpoints_plus_particle_shift,
+    const point2d beta,
     const point2d particle_shift           // used only in the very end to multiply it by the phase
     )
 {
   const qpms_y_t nelem = c->nelem;
   const qpms_l_t lMax = c->lMax;
+  gsl_integration_workspace *workspace = 
+    gsl_integration_workspace_alloc(INTEGRATION_WORKSPACE_LIMIT);
   
   // Manual init of the ewald summation targets
   complex double *target_c = calloc(nelem, sizeof(complex double));
@@ -180,14 +235,29 @@ int ewald32_sigma_short_shiftedpoints(
   }
   
 
-  //// Zde jsem skončil
+// CHOOSE POINT BEGIN
+  for (size_t i = 0; i < npoints; ++i) { // BEGIN POINT LOOP
+    point2d Rpq_shifted = Rpoints_plus_particle_shift[i];
+    double r_pq_shifted = cart2norm(Rpq_shifted);
+// CHOOSE POINT END
+
+    double Rpq_shifted_arg = atan2(Rpq_shifted.x, Rpq_shifted.y); // POINT-DEPENDENT
+    complex double e_beta_Rpq = cexp(I*cart2_dot(beta, Rpq_shifted)); // POINT-DEPENDENT
+    
+    for(qpms_l_t n = 1; n <= lMax; ++n) {
+      imaginary double prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2;
+      double R_pq_pown = pow(r_pq_shifted, n);
+      // TODO the integral here
+      double intres, interr;
+      int retval = ewald32_sr_integral(r_pq_shifted, k, n, eta,
+          &intres, &interr, workspace);
+      if (retval) abort();
+
+      //!!!!!!!!!!!!!!!!!!!!!! ZDE JSEM SKONČIL !!!!!!!!!!!!!!!!!!!!!!
+      // potřeba pořešit legendreovy funkce
 
 
-
-
-
-
-
+  gsl_integration_workspace_free(workspace);
   free(err_c);
   free(target_c);
   return 0;

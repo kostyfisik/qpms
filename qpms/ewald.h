@@ -50,6 +50,10 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
 // if x is (almost) real, it just uses gsl_sf_gamma_inc_e
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result);
 
+#if 0
+// The integral from (4.6); maybe should be static and not here.
+int ewald32_sr_integral(double r, double k, double n, double eta, double *result, double *err, gsl_integration_workspace *workspace);
+#endif
 
 #include "lattices.h"
 
@@ -62,6 +66,7 @@ int ewald32_sigma_long_shiftedpoints_e (
 		const qpms_ewald32_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const point2d *Kpoints_plus_beta,
+		point2d beta,
 		point2d particle_shift
 );
 int ewald32_sigma_long_points_and_shift (
