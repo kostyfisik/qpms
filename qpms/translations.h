@@ -47,8 +47,8 @@ typedef struct qpms_trans_calculator {
 #endif
 #ifdef LATTICESUMS_OLD
 	complex double *hct; // Hankel function coefficient table 
-	double *legendre0; // Zero-argument Legendre functions – this might go outside #ifdef in the end...
 #endif
+	double *legendre0; // Zero-argument Legendre functions – this might go outside #ifdef in the end...
 } qpms_trans_calculator;
 
 

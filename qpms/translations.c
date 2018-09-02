@@ -495,8 +495,8 @@ void qpms_trans_calculator_free(qpms_trans_calculator *c) {
   free(c->B_multipliers);
 #ifdef LATTICESUMS_OLD
   free(c->hct);
-  free(c->legendre0);
 #endif
+  free(c->legendre0);
   free(c);
 }
 
@@ -907,10 +907,10 @@ qpms_trans_calculator
   free(qmaxes);
 #ifdef LATTICESUMS_OLD
   c->hct = hankelcoefftable_init(2*lMax+1);
+#endif
   c->legendre0 = malloc(gsl_sf_legendre_array_n(2*lMax+1) * sizeof(double));
   if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*lMax+1,
               0,-1,c->legendre0)) abort(); // TODO maybe use some "precise" analytical formula instead?
-#endif
   return c;
 }
 

@@ -19,7 +19,8 @@ typedef size_t qpms_y_t;
 
 typedef enum {
 	QPMS_SUCCESS = 0,
-	QPMS_ERROR = 1
+	QPMS_ERROR = 1,
+	QPMS_ENOMEM = 8
 } qpms_errno_t;
 
 // Normalisations
