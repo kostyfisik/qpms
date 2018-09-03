@@ -231,6 +231,11 @@ theorems-starred
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\swv}{\mathscr{H}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -3017,6 +3022,116 @@ reference "eq:prudnikov2 eq 2.12.9.14"
 \end_layout
 
 \begin_layout Section
+Exponentially converging decompositions
+\end_layout
+
+\begin_layout Standard
+(As in Linton, Thompson, Journal of Computational Physics 228 (2009) 1815–1829
+ [LT].)
+\end_layout
+
+\begin_layout Standard
+[LT] offers a better decomposition than above.
+ Let 
+\begin_inset Formula 
+\begin{eqnarray*}
+\sigma_{n}^{m}\left(\vect{\beta}\right) & = & \sum_{\vect R\in\Lambda}^{'}e^{i\vect{\beta}\cdot\vect R}\swv_{n}^{m}\left(\vect R\right),\\
+\swv_{n}^{m}\left(\vect r\right) & = & Y_{n}^{m}\left(\hat{\vect r}\right)h_{n}\left(\left|\vect r\right|\right).
+\end{eqnarray*}
+
+\end_inset
+
+Then, we have a decomposition 
+\begin_inset Formula $\sigma_{n}^{m}=\sigma_{n}^{m(0)}+\sigma_{n}^{m(1)}+\sigma_{n}^{m(2)}$
+\end_inset
+
+.
+ The real-space sum part 
+\begin_inset Formula $\sigma_{n}^{m(2)}$
+\end_inset
+
+ is already 
+\begin_inset Quotes eld
+\end_inset
+
+convention independent
+\begin_inset Quotes erd
+\end_inset
+
+ in [LT(4.5)] (i.e.
+ the result is also expressed in terms of 
+\begin_inset Formula $Y_{n}^{m}$
+\end_inset
+
+, so it is valid regardless of normalisation or CS-phase convention used
+ inside 
+\begin_inset Formula $Y_{n}^{m}$
+\end_inset
+
+):
+\begin_inset Formula 
+\[
+\sigma_{n}^{m(2)}=-\frac{2^{n+1}i}{k^{n+1}\sqrt{\pi}}\sum_{\vect R\in\Lambda}^{'}\left|\vect R\right|^{n}e^{i\vect{\beta}\cdot\vect R}Y_{n}^{m}\left(\vect R\right)\int_{\eta}^{\infty}e^{-\left|\vect R\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2n}\ud\xi.
+\]
+
+\end_inset
+
+However the other parts in [LT] are convention dependend, so let me fix
+ it here.
+ [LT] use the convention [LT(A.7)]
+\begin_inset Formula 
+\begin{eqnarray*}
+P_{n}^{m}\left(0\right) & = & \frac{\left(-1\right)^{\left(n-m\right)/2}\left(n+m\right)!}{2^{n}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!}\qquad n+m\mbox{ even,}\\
+Y_{n}^{m}\left(\theta,\phi\right) & = & \left(-1\right)^{m}\sqrt{\frac{\left(2n+1\right)\left(n-m\right)!}{4\pi\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi},
+\end{eqnarray*}
+
+\end_inset
+
+noting that the former formula is valid also for negative 
+\begin_inset Formula $m$
+\end_inset
+
+ (as can be checked by substituting [LT(A.4)]).
+ Therefore
+\begin_inset Formula 
+\begin{eqnarray*}
+Y_{n}^{m}\left(\frac{\pi}{2},\phi\right) & = & \left(-1\right)^{m}\sqrt{\frac{\left(2n+1\right)\left(n-m\right)!}{4\pi\left(n+m\right)!}}\frac{\left(-1\right)^{\left(n-m\right)/2}\left(n+m\right)!}{2^{n}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!}e^{im\phi}\\
+ & = & \frac{\left(-1\right)^{\left(n+m\right)/2}\sqrt{\left(2n+1\right)\left(n-m\right)!\left(n+m\right)!}}{\sqrt{\pi}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!}e^{im\phi}
+\end{eqnarray*}
+
+\end_inset
+
+ Let us substitute this into [LT(4.5)]
+\begin_inset Formula 
+\begin{eqnarray*}
+\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\left(-1\right)^{\left(n+m\right)/2}\sqrt{\left(2n+1\right)\left(n-m\right)!\left(n+m\right)!}\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\\
+ & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\sqrt{\pi}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!Y_{n}^{m}\left(0,\phi_{\vect{\beta}_{pq}}\right)\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1},
+\end{eqnarray*}
+
+\end_inset
+
+which basically replaces an ugly prefactor with another, similarly ugly
+ one.
+ See [LT] for the meanings of the 
+\begin_inset Formula $pq$
+\end_inset
+
+-indexed symbols.
+\end_layout
+
+\begin_layout Standard
+To have it complete, 
+\begin_inset Formula 
+\[
+\sigma_{n}^{m(0)}=\frac{\delta_{n0}\delta_{m0}}{4\pi}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)=\frac{\delta_{n0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)Y_{n}^{m}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Major TODOs and open questions
 \end_layout
 
@@ -3100,7 +3215,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -3110,7 +3225,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -3123,7 +3238,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -3177,8 +3292,8 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{eqnarray}
-\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
- & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\, g(r)J_{-m}(kr)r
+\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
+ & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\,g(r)J_{-m}(kr)r
 \end{eqnarray}
 
 \end_inset
