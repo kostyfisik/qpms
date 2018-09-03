@@ -3117,6 +3117,15 @@ which basically replaces an ugly prefactor with another, similarly ugly
 \end_inset
 
 -indexed symbols.
+ Note that the latter version does not depend on the sign of 
+\begin_inset Formula $m$
+\end_inset
+
+ (except for that which is already included in 
+\begin_inset Formula $Y_{n}^{m}$
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
