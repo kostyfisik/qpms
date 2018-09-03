@@ -10,6 +10,25 @@
 #include "bessels.h"
 #endif
 
+
+/*
+ * Argument conventions:
+ *
+ * A single wave with indices mu, nu is re-expanded at kdlj into waves with indices m, n,
+ * i.e. in the following functions, the first arguments over which one sums (multiplied
+ * by the waves with new origin).
+ *
+ * HOWEVER, this means that if a field has an expansion with coeffs a(mu, nu)
+ * at the original origin, with the basis at the new origin, the coeffs will be
+ * a(m, n) = \sum_{mu,nu} A(m, n, mu, nu) a(mu, nu).
+ *
+ * With qpms_trans_calculator_get_AB_arrays_buf (and other functions from *AB_arrays*
+ * family), one can choose the stride. And it seems that the former stride argument (now called
+ * destride) and the latter (now called srcstride) are connected to (m,n) and (mu,nu) indices,
+ * respectively. Seems consistent.
+ *
+ */
+
 // TODO replace the xplicit "Taylor" functions with general,
 // taking qpms_normalisation_t argument.
 complex double qpms_trans_single_A_Taylor(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
