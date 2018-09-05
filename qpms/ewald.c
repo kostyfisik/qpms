@@ -28,6 +28,7 @@
 #endif
 
 
+
 // sloppy implementation of factorial
 static inline double factorial(const int n) {
   assert(n >= 0);
@@ -129,6 +130,22 @@ void qpms_ewald32_constants_free(qpms_ewald32_constants_t *c) {
   free(c->s1_constfacs_base);
   free(c->s1_jMaxes);
   free(c);
+}
+
+
+
+int ewald32_sigma0(complex double *result, double *err,
+    const qpms_ewald32_constants_t *c,
+    const double eta, const double k)
+{
+  qpms_csf_result gam;
+  int retval = complex_gamma_inc_e(-0.5, -k/sq(2*eta), &gam);
+  if (0 != retval)
+    abort();
+  *result = gam.val * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
+  if(err) 
+    *err = gam.err * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
+  return 0;
 }
 
 

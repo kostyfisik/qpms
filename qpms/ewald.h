@@ -78,6 +78,12 @@ int ewald32_sr_integral(double r, double k, double n, double eta, double *result
 
 #include "lattices.h"
 
+
+int ewald32_sigma0(complex double *result, double *err,
+		const qpms_ewald32_constants_t *c,
+		double eta, double k
+);
+
 // TODO make "compressed versions" where the (m+n)-odd terms (which are zero)
 // are not included.
 
@@ -114,6 +120,7 @@ int ewald32_sigma_short_shiftedpoints(
 		const qpms_ewald32_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		size_t npoints, const point2d *Rpoints_plus_particle_shift,
+		point2d beta,
 		point2d particle_shift           // used only in the very end to multiply it by the phase
 		);
 int ewald32_sigma_short_points_and_shift(//NI
