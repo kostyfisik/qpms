@@ -29,7 +29,7 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result) {
   }
 
   complex double sumprefac = cpow(z, a) * cexp(-z);
-  double sumprefac_abs = cabs(sumprefac_abs);
+  double sumprefac_abs = cabs(sumprefac);
   complex double sum, sumc; ckahaninit(&sum, &sumc);
   double err, errc; kahaninit(&err, &errc);
 

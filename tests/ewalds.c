@@ -1,3 +1,5 @@
+// c99 -ggdb -Wall -I ../ ewalds.c ../qpms/ewald.c ../qpms/ewaldgammas.c  ../qpms/lattices2d.c -lgsl -lm -lblas
+
 // implementation of the [LT(4.16)] test
 #include <math.h>
 #define M_SQRTPI 1.7724538509055160272981674833411452 
@@ -35,9 +37,11 @@ typedef struct ewaldtest_triang_results {
 
 
 ewaldtest_triang_params paramslist[] = {
-  { 3, {1.1, 0.23}, 2.3, 0.97, 0.3, 1., TRIANGULAR_HORIZONTAL}//,
+  { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_HORIZONTAL},
+  { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
+  { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  30, 30, 1., TRIANGULAR_VERTICAL},
 // end:
-//  { 0,  {0, 0}, 0, 0, 0, 0, 0}
+//  { 0,  {0, 0}, 0, 0, 0, 0, 0, 0, 0}
 };
 
 void ewaldtest_triang_results_free(ewaldtest_triang_results *r) {
@@ -58,12 +62,16 @@ int main() {
     ewaldtest_triang_params p = paramslist[i];
     ewaldtest_triang_results *r = ewaldtest_triang(p);
     // TODO print per-test header here
+    printf("===============================\n");
+    printf("Kmax = %g, Rmax = %g, lMax = %d, eta = %g, k = %g, beta = (%g,%g)\n",
+        p.maxK, p.maxR, p.lMax, p.eta, p.k, p.beta.x, p.beta.y);
+        
     for (qpms_l_t n = 0; n <= p.lMax; ++n) {
       for (qpms_m_t m = -n; m <= n; ++m){
         qpms_y_t y = qpms_mn2y_sc(m,n);
         qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
         // y n m sigma_total (err), regsigmas_416 regsigmas_415_recon
-        printf("%zd %d %d: %.16g%+.16gj (%.3g) %.16g%+.16gj %.16g%+.16g\n",
+        printf("%zd %d %d: %.16g%+.16gj (%.3g) %.16g%+.16gj %.16g%+.16gj\n",
             y, n, m, creal(r->sigmas_total[y]), cimag(r->sigmas_total[y]),
             r->err_sigmas_total[y],
             creal(r->regsigmas_416[y]), cimag(r->regsigmas_416[y]),
