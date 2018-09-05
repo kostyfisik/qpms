@@ -505,6 +505,10 @@ const points2d_rordered_t * triangular_lattice_gen_getpoints(const triangular_la
   return &(g->ps);
 }
 
+int triangular_lattice_gen_extend_to_r(triangular_lattice_gen_t * g, const double maxr) {
+  return triangular_lattice_gen_extend_to_steps(g, maxr/g->a);
+}
+
 int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t * g, int maxsteps) 
 {
   if (maxsteps <= g->priv->maxs)  // nothing needed
@@ -603,6 +607,10 @@ void honeycomb_lattice_gen_free(honeycomb_lattice_gen_t *g) {
   free(g->ps.r_offsets);
   triangular_lattice_gen_free(g->tg);
   free(g);
+}
+
+int honeycomb_lattice_gen_extend_to_r(honeycomb_lattice_gen_t *g, double maxr) {
+  return honeycomb_lattice_gen_extend_to_steps(g, maxr/g->a); /*CHECKME whether g->a is the correct denom.*/
 }
 
 int honeycomb_lattice_gen_extend_to_steps(honeycomb_lattice_gen_t *g, const int maxsteps) {

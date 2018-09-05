@@ -87,13 +87,13 @@ int ewald32_sigma0(complex double *result, double *err,
 // TODO make "compressed versions" where the (m+n)-odd terms (which are zero)
 // are not included.
 
-int ewald32_sigma_long_shiftedpoints_e ( 
+int ewald32_sigma_long_shiftedpoints ( 
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const point2d *Kpoints_plus_beta,
-		point2d beta,
+		//point2d beta,
 		point2d particle_shift
 );
 int ewald32_sigma_long_points_and_shift (//NI

@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <stddef.h>
+#include <stdlib.h>
 #define M_SQRT3 1.7320508075688772935274463415058724
 #define M_SQRT3_2 (M_SQRT3/2)
 #define M_1_SQRT3 0.57735026918962576450914878050195746
@@ -189,6 +190,20 @@ typedef enum {
 	TRIANGULAR_VERTICAL, // there is a lattice base vector parallel to the y-axis
   	TRIANGULAR_HORIZONTAL // there is a lattice base vector parallel to the x-axis
 } TriangularLatticeOrientation;
+
+static inline TriangularLatticeOrientation reverseTriangularLatticeOrientation(TriangularLatticeOrientation o){
+	switch(o) {
+		case TRIANGULAR_VERTICAL:
+			return TRIANGULAR_HORIZONTAL;
+			break;
+		case TRIANGULAR_HORIZONTAL:
+			return TRIANGULAR_VERTICAL;
+			break;
+		default:
+			abort();
+	}
+	abort();
+}
 
 // implementation data structures; not needed in the header file
 typedef struct triangular_lattice_gen_privstuff_t triangular_lattice_gen_privstuff_t;
