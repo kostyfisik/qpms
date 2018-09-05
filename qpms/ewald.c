@@ -4,9 +4,11 @@
 #include "kahansum.h"
 #include <assert.h>
 #include <string.h>
+#include <complex.h>
 #include "tiny_inlines.h"
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
+#include <gsl/gsl_sf_legendre.h>
 
 // parameters for the quadrature of integral in (4.6)
 #ifndef INTEGRATION_WORKSPACE_LIMIT
@@ -112,8 +114,10 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
   }
 
   c->legendre0_csphase = csphase;
-  c->legendre0 = malloc(gsl_sf_legendre_array_n(lMax), sizeof(double));
-  if(GSL_SUCCESS != gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE, lMax, 0, c->legendre0))
+  c->legendre0 = malloc(gsl_sf_legendre_array_n(lMax) * sizeof(double));
+  // N.B. here I use the GSL_SF_LEGENRE_NONE, in order to be consistent with translations.c
+  // Moreover, using this approach (i.e. gsl) takes about 64kB extra memory
+  if(GSL_SUCCESS != gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE, lMax, 0, csphase, c->legendre0))
     abort();
 
   return c;
@@ -279,11 +283,12 @@ int ewald32_sigma_short_shiftedpoints(
     double r_pq_shifted = cart2norm(Rpq_shifted);
 // CHOOSE POINT END
 
+    // This should be imaginary, but gcc does not support:
     double Rpq_shifted_arg = atan2(Rpq_shifted.x, Rpq_shifted.y); // POINT-DEPENDENT
     complex double e_beta_Rpq = cexp(I*cart2_dot(beta, Rpq_shifted)); // POINT-DEPENDENT
     
-    imaginary double prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // TODO put outside the R-loop and multiply in the end
     for(qpms_l_t n = 1; n <= lMax; ++n) {
+      double complex prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // TODO put outside the R-loop and multiply in the end
       double R_pq_pown = pow(r_pq_shifted, n);
       // TODO the integral here
       double intres, interr;
@@ -297,11 +302,12 @@ int ewald32_sigma_short_shiftedpoints(
         double leg = c->legendre0[gsl_sf_legendre_array_index(n, m)];
         qpms_y_t y = qpms_mn2y(m,n);
         if(err)
-          kahanadd(err + y, err_c + y, fabs(leg * (prefacn / I) * R_pq_pown
+          kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
               * interr)); // TODO include also other errors
         ckahanadd(target + y, target_c + y,
             prefacn * R_pq_pown * leg * intres * e_beta_Rpq * e_imf);
       }
+
     }
   }
 
