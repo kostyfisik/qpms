@@ -66,15 +66,15 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
   qpms_ewald32_constants_t *c = malloc(sizeof(qpms_ewald32_constants_t));
   //if (c == NULL) return NULL; // Do I really want to do this?
   c->lMax = lMax;
-  c->nelem = qpms_lMax2nelem(lMax);
-  c->s1_jMaxes = malloc(c->nelem * sizeof(qpms_l_t));
-  c->s1_constfacs = malloc(c->nelem * sizeof(complex double *));
+  c->nelem_sc = qpms_lMax2nelem_sc(lMax);
+  c->s1_jMaxes = malloc(c->nelem_sc * sizeof(qpms_l_t));
+  c->s1_constfacs = malloc(c->nelem_sc * sizeof(complex double *));
   //if (c->s1_jMaxes == NULL) return NULL;
 
   //determine sizes
   size_t s1_constfacs_sz = 0;
-  for (qpms_y_t y = 0; y < c->nelem; ++y) {
-    qpms_l_t n; qpms_m_t m; qpms_y2mn_p(y, &m, &n);
+  for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
+    qpms_l_t n; qpms_m_t m; qpms_y2mn_sc_p(y, &m, &n);
     if ((m + n) % 2 == 0) 
       s1_constfacs_sz += 1 + (c->s1_jMaxes[y] = (n-abs(m))/2);
     else
@@ -82,10 +82,10 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
   }
 
   c->s1_constfacs[0]; //WTF???
-  c->s1_constfacs_base = malloc(c->nelem * sizeof(complex double));
+  c->s1_constfacs_base = malloc(c->nelem_sc * sizeof(complex double));
   size_t s1_constfacs_sz_cumsum = 0;
-  for (qpms_y_t y = 0; y < c->nelem; ++y) {
-    qpms_l_t n; qpms_m_t m; qpms_y2mn_p(y, &m, &n);
+  for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
+    qpms_l_t n; qpms_m_t m; qpms_y2mn_sc_p(y, &m, &n);
     if ((m + n) % 2 == 0) {
       c->s1_constfacs[y] = c->s1_constfacs_base + s1_constfacs_sz_cumsum;
       // and here comes the actual calculation
@@ -151,7 +151,7 @@ int ewald32_sigma0(complex double *result, double *err,
 
 
 int ewald32_sigma_long_shiftedpoints (
-    complex double *target, // must be c->nelem long
+    complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c,
     const double eta, const double k, const double unitcell_area,
@@ -159,16 +159,16 @@ int ewald32_sigma_long_shiftedpoints (
     const point2d particle_shift // target - src
     ) 
 {
-  const qpms_y_t nelem = c->nelem;
+  const qpms_y_t nelem_sc = c->nelem_sc;
   const qpms_l_t lMax = c->lMax;
   
   // Manual init of the ewald summation targets
-  complex double *target_c = calloc(nelem, sizeof(complex double));
-  memset(target, 0, nelem * sizeof(complex double));
+  complex double *target_c = calloc(nelem_sc, sizeof(complex double));
+  memset(target, 0, nelem_sc * sizeof(complex double));
   double *err_c = NULL;
   if (err) {
-    err_c = calloc(nelem, sizeof(double));
-    memset(err, 0, nelem * sizeof(double));
+    err_c = calloc(nelem_sc, sizeof(double));
+    memset(err, 0, nelem_sc * sizeof(double));
   }
 
   const double commonfac = 1/(k*k*unitcell_area); // used in the very end (CFC)
@@ -197,11 +197,11 @@ int ewald32_sigma_long_shiftedpoints (
     
     // TODO optimisations: all the j-dependent powers can be done for each j only once, stored in array
     // and just fetched for each n, m pair
-    for(qpms_l_t n = 1; n <= lMax; ++n)
+    for(qpms_l_t n = 0; n <= lMax; ++n)
       for(qpms_m_t m = -n; m <= n; ++m) {
         if((m+n) % 2 != 0) // odd coefficients are zero.
           continue;
-        qpms_y_t y = qpms_mn2y(m, n);
+        qpms_y_t y = qpms_mn2y_sc(m, n);
         complex double e_imalpha_pq = cexp(I*m*arg_pq);
         complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
         double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
@@ -225,10 +225,10 @@ int ewald32_sigma_long_shiftedpoints (
  
   free(err_c);
   free(target_c);
-  for(qpms_y_t y = 0; y < nelem; ++y) // CFC common factor from above
+  for(qpms_y_t y = 0; y < nelem_sc; ++y) // CFC common factor from above
     target[y] *= commonfac;
   if(err)
-    for(qpms_y_t y = 0; y < nelem; ++y)
+    for(qpms_y_t y = 0; y < nelem_sc; ++y)
       err[y] *= commonfac;
   return 0;
 }
@@ -270,7 +270,7 @@ static int ewald32_sr_integral(double r, double k, int n, double eta,
 }
 
 int ewald32_sigma_short_shiftedpoints(
-    complex double *target, // must be c->nelem long
+    complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c, // N.B. not too useful here
     const double eta, const double k,
@@ -279,18 +279,18 @@ int ewald32_sigma_short_shiftedpoints(
     const point2d particle_shift           // used only in the very end to multiply it by the phase
     )
 {
-  const qpms_y_t nelem = c->nelem;
+  const qpms_y_t nelem_sc = c->nelem_sc;
   const qpms_l_t lMax = c->lMax;
   gsl_integration_workspace *workspace = 
     gsl_integration_workspace_alloc(INTEGRATION_WORKSPACE_LIMIT);
   
   // Manual init of the ewald summation targets
-  complex double *target_c = calloc(nelem, sizeof(complex double));
-  memset(target, 0, nelem * sizeof(complex double));
+  complex double *target_c = calloc(nelem_sc, sizeof(complex double));
+  memset(target, 0, nelem_sc * sizeof(complex double));
   double *err_c = NULL;
   if (err) {
-    err_c = calloc(nelem, sizeof(double));
-    memset(err, 0, nelem * sizeof(double));
+    err_c = calloc(nelem_sc, sizeof(double));
+    memset(err, 0, nelem_sc * sizeof(double));
   }
   
 
@@ -304,7 +304,7 @@ int ewald32_sigma_short_shiftedpoints(
     double Rpq_shifted_arg = atan2(Rpq_shifted.x, Rpq_shifted.y); // POINT-DEPENDENT
     complex double e_beta_Rpq = cexp(I*cart2_dot(beta, Rpq_shifted)); // POINT-DEPENDENT
     
-    for(qpms_l_t n = 1; n <= lMax; ++n) {
+    for(qpms_l_t n = 0; n <= lMax; ++n) {
       double complex prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // TODO put outside the R-loop and multiply in the end
       double R_pq_pown = pow(r_pq_shifted, n);
       // TODO the integral here
@@ -317,7 +317,7 @@ int ewald32_sigma_short_shiftedpoints(
           continue; // nothing needed, already done by memset
         complex double e_imf = cexp(I*m*Rpq_shifted_arg);
         double leg = c->legendre0[gsl_sf_legendre_array_index(n, m)];
-        qpms_y_t y = qpms_mn2y(m,n);
+        qpms_y_t y = qpms_mn2y_sc(m,n);
         if(err)
           kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
               * interr)); // TODO include also other errors
@@ -339,7 +339,7 @@ int ewald32_sigma_short_shiftedpoints(
 
 
 int ewald32_sigma_long_points_and_shift (
-    complex double *target_sigmalr_y, // must be c->nelem long
+    complex double *target_sigmalr_y, // must be c->nelem_sc long
     const qpms_ewald32_constants_t *c,
     double eta, double k, double unitcell_area,
     size_t npoints, const point2d *Kpoints,
@@ -347,21 +347,21 @@ int ewald32_sigma_long_points_and_shift (
     point2d particle_shift
     );
 int ewald32_sigma_long_shiftedpoints_rordered(
-    complex double *target_sigmalr_y, // must be c->nelem long
+    complex double *target_sigmalr_y, // must be c->nelem_sc long
     const qpms_ewald32_constants_t *c,
     double eta, double k, double unitcell_area,
     const points2d_rordered_t *Kpoints_plus_beta_rordered,
     point2d particle_shift
     );
 int ewald32_sigma_short_points_and_shift(
-    complex double *target_sigmasr_y, // must be c->nelem long
+    complex double *target_sigmasr_y, // must be c->nelem_sc long
     const qpms_ewald32_constants_t *c, // N.B. not too useful here
     double eta, double k,
     size_t npoints, const point2d *Rpoints,
     point2d particle_shift
     );
 int ewald32_sigma_short_points_rordered(
-    complex double *target_sigmasr_y, // must be c->nelem long
+    complex double *target_sigmasr_y, // must be c->nelem_sc long
     const qpms_ewald32_constants_t *c, // N.B. not too useful here
     double eta, double k,
     const points2d_rordered_t *Rpoints_plus_particle_shift_rordered,

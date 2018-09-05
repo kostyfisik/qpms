@@ -27,7 +27,7 @@
 /* Object holding the constant factors from [1, (4.5)] */ 
 typedef struct { 
 	qpms_l_t lMax;
-	qpms_y_t nelem;
+	qpms_y_t nelem_sc;
 	qpms_l_t *s1_jMaxes;
 	complex double **s1_constfacs; // indices [y][j] where j is same as in [1, (4.5)]
 	// TODO probably normalisation and equatorial legendre polynomials should be included, too
@@ -88,8 +88,8 @@ int ewald32_sigma0(complex double *result, double *err,
 // are not included.
 
 int ewald32_sigma_long_shiftedpoints_e ( 
-		complex double *target_sigmalr_y, // must be c->nelem long
-		double *target_sigmalr_y_err, // must be c->nelem long or NULL
+		complex double *target_sigmalr_y, // must be c->nelem_sc long
+		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const point2d *Kpoints_plus_beta,
@@ -97,8 +97,8 @@ int ewald32_sigma_long_shiftedpoints_e (
 		point2d particle_shift
 );
 int ewald32_sigma_long_points_and_shift (//NI
-		complex double *target_sigmalr_y, // must be c->nelem long
-		double *target_sigmalr_y_err, // must be c->nelem long or NULL
+		complex double *target_sigmalr_y, // must be c->nelem_sc long
+		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const point2d *Kpoints,
@@ -106,8 +106,8 @@ int ewald32_sigma_long_points_and_shift (//NI
 		point2d particle_shift
 		);
 int ewald32_sigma_long_shiftedpoints_rordered(//NI
-		complex double *target_sigmalr_y, // must be c->nelem long
-		double *target_sigmalr_y_err, // must be c->nelem long or NULL
+		complex double *target_sigmalr_y, // must be c->nelem_sc long
+		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
 		double eta, double k, double unitcell_area,
 		const points2d_rordered_t *Kpoints_plus_beta_rordered,
@@ -115,8 +115,8 @@ int ewald32_sigma_long_shiftedpoints_rordered(//NI
 		);
 
 int ewald32_sigma_short_shiftedpoints(
-		complex double *target_sigmasr_y, // must be c->nelem long
-		double *target_sigmasr_y_err, // must be c->nelem long or NULL
+		complex double *target_sigmasr_y, // must be c->nelem_sc long
+		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		size_t npoints, const point2d *Rpoints_plus_particle_shift,
@@ -124,16 +124,16 @@ int ewald32_sigma_short_shiftedpoints(
 		point2d particle_shift           // used only in the very end to multiply it by the phase
 		);
 int ewald32_sigma_short_points_and_shift(//NI
-		complex double *target_sigmasr_y, // must be c->nelem long
-		double *target_sigmasr_y_err, // must be c->nelem long or NULL
+		complex double *target_sigmasr_y, // must be c->nelem_sc long
+		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		size_t npoints, const point2d *Rpoints, 
 		point2d particle_shift
 		);
 int ewald32_sigma_short_points_rordered(//NI
-		complex double *target_sigmasr_y, // must be c->nelem long
-		double *target_sigmasr_y_err, // must be c->nelem long or NULL
+		complex double *target_sigmasr_y, // must be c->nelem_sc long
+		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		const points2d_rordered_t *Rpoints_plus_particle_shift_rordered,
