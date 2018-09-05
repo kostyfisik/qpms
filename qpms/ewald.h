@@ -12,6 +12,18 @@
  *     Journal of Computational Physics 228 (2009) 1815–1829
  */
 
+/*
+ * N.B.!!! currently, the long-range parts are calculated not according to [1,(4.5)], but rather
+ * according to the spherical-harmonic-normalisation-independent formulation in my notes
+ * notes/ewald.lyx.
+ * Both parts of lattice sums are then calculated with the P_n^|m| e^imf substituted in place
+ * of Y_n^m (this is quite a weird normalisation especially for negative |m|, but it is consistent
+ * with the current implementation of the translation coefficients in translations.c;
+ * in the long run, it might make more sense to replace it everywhere with normalised
+ * Legendre polynomials).
+ */
+
+
 /* Object holding the constant factors from [1, (4.5)] */ 
 typedef struct { 
 	qpms_l_t lMax;
@@ -20,9 +32,18 @@ typedef struct {
 	complex double **s1_constfacs; // indices [y][j] where j is same as in [1, (4.5)]
 	// TODO probably normalisation and equatorial legendre polynomials should be included, too
 	complex double *s1_constfacs_base; // internal pointer holding the memory for the constants
+
+	double *legendre0; /* now with GSL_SF_LEGENDRE_NONE normalisation, because this is what is
+			    * what the multipliers from translations.c count with.
+			    */
+	// gsl_sf_legendre_t legendre0_type;
+	int legendre0_csphase;       /* 1 or -1; csphase of the Legendre polynomials saved in legendre0.
+					This is because I dont't actually consider this fixed in
+					translations.c */
+
 } qpms_ewald32_constants_t;
 
-qpms_ewald32_constants_t *qpms_ewald32_constants_init(qpms_l_t lMax);
+qpms_ewald32_constants_t *qpms_ewald32_constants_init(qpms_l_t lMax, int csphase);
 void qpms_ewald32_constants_free(qpms_ewald32_constants_t *);
 
 
@@ -69,7 +90,7 @@ int ewald32_sigma_long_shiftedpoints_e (
 		point2d beta,
 		point2d particle_shift
 );
-int ewald32_sigma_long_points_and_shift (
+int ewald32_sigma_long_points_and_shift (//NI
 		complex double *target_sigmalr_y, // must be c->nelem long
 		double *target_sigmalr_y_err, // must be c->nelem long or NULL
 		const qpms_ewald32_constants_t *c,
@@ -78,7 +99,7 @@ int ewald32_sigma_long_points_and_shift (
 		point2d beta,
 		point2d particle_shift
 		);
-int ewald32_sigma_long_shiftedpoints_rordered(
+int ewald32_sigma_long_shiftedpoints_rordered(//NI
 		complex double *target_sigmalr_y, // must be c->nelem long
 		double *target_sigmalr_y_err, // must be c->nelem long or NULL
 		const qpms_ewald32_constants_t *c,
@@ -95,7 +116,7 @@ int ewald32_sigma_short_shiftedpoints(
 		size_t npoints, const point2d *Rpoints_plus_particle_shift,
 		point2d particle_shift           // used only in the very end to multiply it by the phase
 		);
-int ewald32_sigma_short_points_and_shift(
+int ewald32_sigma_short_points_and_shift(//NI
 		complex double *target_sigmasr_y, // must be c->nelem long
 		double *target_sigmasr_y_err, // must be c->nelem long or NULL
 		const qpms_ewald32_constants_t *c, // N.B. not too useful here
@@ -103,7 +124,7 @@ int ewald32_sigma_short_points_and_shift(
 		size_t npoints, const point2d *Rpoints, 
 		point2d particle_shift
 		);
-int ewald32_sigma_short_points_rordered(
+int ewald32_sigma_short_points_rordered(//NI
 		complex double *target_sigmasr_y, // must be c->nelem long
 		double *target_sigmasr_y_err, // must be c->nelem long or NULL
 		const qpms_ewald32_constants_t *c, // N.B. not too useful here

@@ -8,7 +8,6 @@
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 
-
 // parameters for the quadrature of integral in (4.6)
 #ifndef INTEGRATION_WORKSPACE_LIMIT
 #define INTEGRATION_WORKSPACE_LIMIT 30000
@@ -21,6 +20,11 @@
 #ifndef INTEGRATION_EPSREL
 #define INTEGRATION_EPSREL 1e-13
 #endif
+
+#ifndef M_SQRTPI
+#define M_SQRTPI 1.7724538509055160272981674833411452
+#endif
+
 
 // sloppy implementation of factorial
 static inline double factorial(const int n) {
@@ -40,7 +44,21 @@ static inline double factorial(const int n) {
 static inline complex double csq(complex double x) { return x * x; }
 static inline double sq(double x) { return x * x; }
 
-qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax)
+
+typedef enum {
+  EWALD32_CONSTANTS_ORIG, // As in [1, (4,5)], NOT USED right now.
+  EWALD32_CONSTANTS_AGNOSTIC /* Not depending on the spherical harmonic sign/normalisation
+                              * convention – the $e^{im\alpha_pq}$ term in [1,(4.5)] being
+                              * replaced by the respective $Y_n^m(\pi/2,\alpha)$ 
+                              * spherical harmonic. See notes/ewald.lyx.
+                              */
+
+} ewald32_constants_option;
+
+static const ewald32_constants_option type = EWALD32_CONSTANTS_AGNOSTIC;
+
+qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, const ewald32_constants_option type */,
+    const int csphase)
 {
   qpms_ewald32_constants_t *c = malloc(sizeof(qpms_ewald32_constants_t));
   //if (c == NULL) return NULL; // Do I really want to do this?
@@ -69,21 +87,40 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax)
       c->s1_constfacs[y] = c->s1_constfacs_base + s1_constfacs_sz_cumsum;
       // and here comes the actual calculation
       for (qpms_l_t j = 0; j <= c->s1_jMaxes[y]; ++j){
-        c->s1_constfacs[y][j] = -0.5 * ipow(n+1) * min1pow((n+m)/2) 
-          * sqrt((2*n + 1) * factorial(n-m) * factorial(n+m))
-          * min1pow(j) * pow(0.5, n-2*j)
-          / (factorial(j) * factorial((n-m)/2-j) * factorial((n+m)/2-j))
-          * pow(0.5, 2*j-1);
+        switch(type) {
+          case EWALD32_CONSTANTS_ORIG: // NOT USED
+            c->s1_constfacs[y][j] = -0.5 * ipow(n+1) * min1pow((n+m)/2) 
+              * sqrt((2*n + 1) * factorial(n-m) * factorial(n+m))
+              * min1pow(j) * pow(0.5, n-2*j)
+              / (factorial(j) * factorial((n-m)/2-j) * factorial((n+m)/2-j))
+              * pow(0.5, 2*j-1);
+            break;
+          case EWALD32_CONSTANTS_AGNOSTIC:
+            c->s1_constfacs[y][j] = -2 * ipow(n+1) * M_SQRTPI   
+              * factorial((n-m)/2) * factorial((n+m)/2)
+              * min1pow(j) 
+              / (factorial(j) * factorial((n-m)/2-j) * factorial((n+m)/2-j));
+            break;
+          default:
+            abort();
+        }
       }
       s1_constfacs_sz_cumsum += 1 + c->s1_jMaxes[y];
     }
     else
       c->s1_constfacs[y] = NULL;
   }
+
+  c->legendre0_csphase = csphase;
+  c->legendre0 = malloc(gsl_sf_legendre_array_n(lMax), sizeof(double));
+  if(GSL_SUCCESS != gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE, lMax, 0, c->legendre0))
+    abort();
+
   return c;
 }
 
 void qpms_ewald32_constants_free(qpms_ewald32_constants_t *c) {
+  free(c->legendre0);
   free(c->s1_constfacs);
   free(c->s1_constfacs_base);
   free(c->s1_jMaxes);
@@ -149,7 +186,8 @@ int ewald32_sigma_long_shiftedpoints (
         double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
         for(qpms_l_t j = 0; j < (n-abs(m))/2; ++j) {
           complex double summand = pow(rbeta_pq/k, n-2*j) 
-            * e_imalpha_pq * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
+            * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] // This line can actually go outside j-loop
+            * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
             * c->s1_constfacs[y][j];
           if(err) {
             // FIXME include also other errors than Gamma_pq's relative error
@@ -244,21 +282,31 @@ int ewald32_sigma_short_shiftedpoints(
     double Rpq_shifted_arg = atan2(Rpq_shifted.x, Rpq_shifted.y); // POINT-DEPENDENT
     complex double e_beta_Rpq = cexp(I*cart2_dot(beta, Rpq_shifted)); // POINT-DEPENDENT
     
+    imaginary double prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // TODO put outside the R-loop and multiply in the end
     for(qpms_l_t n = 1; n <= lMax; ++n) {
-      imaginary double prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2;
       double R_pq_pown = pow(r_pq_shifted, n);
       // TODO the integral here
       double intres, interr;
       int retval = ewald32_sr_integral(r_pq_shifted, k, n, eta,
           &intres, &interr, workspace);
       if (retval) abort();
-
-      //!!!!!!!!!!!!!!!!!!!!!! ZDE JSEM SKONČIL !!!!!!!!!!!!!!!!!!!!!!
-      // potřeba pořešit legendreovy funkce
-
+      for (qpms_m_t m = -n; m <= n; ++m){
+        if((m+n) % 2 != 0) // odd coefficients are zero.
+          continue; // nothing needed, already done by memset
+        complex double e_imf = cexp(I*m*Rpq_shifted_arg);
+        double leg = c->legendre0[gsl_sf_legendre_array_index(n, m)];
+        qpms_y_t y = qpms_mn2y(m,n);
+        if(err)
+          kahanadd(err + y, err_c + y, fabs(leg * (prefacn / I) * R_pq_pown
+              * interr)); // TODO include also other errors
+        ckahanadd(target + y, target_c + y,
+            prefacn * R_pq_pown * leg * intres * e_beta_Rpq * e_imf);
+      }
+    }
+  }
 
   gsl_integration_workspace_free(workspace);
-  free(err_c);
+  if(err) free(err_c);
   free(target_c);
   return 0;
 }
