@@ -16,7 +16,7 @@
 #endif
 
 #ifndef INTEGRATION_EPSABS
-#define INTEGRATION_EPSABS 0
+#define INTEGRATION_EPSABS 1e-13
 #endif
 
 #ifndef INTEGRATION_EPSREL

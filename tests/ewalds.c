@@ -40,6 +40,9 @@ ewaldtest_triang_params paramslist[] = {
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_HORIZONTAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 3, {1.1, 0.23}, 2.3, 0.97, 0.9,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 3, {1.1, 0.23}, 2.3, 0.97, 1.3,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 3, {1.1, 0.23}, 2.3, 0.97, 1.9,  30, 30, 1., TRIANGULAR_VERTICAL},
 // end:
 //  { 0,  {0, 0}, 0, 0, 0, 0, 0, 0, 0}
 };
@@ -71,9 +74,13 @@ int main() {
         qpms_y_t y = qpms_mn2y_sc(m,n);
         qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
         // y n m sigma_total (err), regsigmas_416 regsigmas_415_recon
-        printf("%zd %d %d: %.16g%+.16gj (%.3g) %.16g%+.16gj %.16g%+.16gj\n",
+        printf("%zd %d %d: T:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) \n| predict %.16g%+.16gj \n| actual %.16g%+.16gj\n",
             y, n, m, creal(r->sigmas_total[y]), cimag(r->sigmas_total[y]),
             r->err_sigmas_total[y],
+            creal(r->sigmas_long[y]), cimag(r->sigmas_total[y]),
+            r->err_sigmas_long[y],
+            creal(r->sigmas_short[y]), cimag(r->sigmas_short[y]),
+            r->err_sigmas_short[y],
             creal(r->regsigmas_416[y]), cimag(r->regsigmas_416[y]),
             creal(r->sigmas_total[y])+creal(r->sigmas_total[y_conj]),
             cimag(r->sigmas_total[y])-cimag(r->sigmas_total[y_conj])
