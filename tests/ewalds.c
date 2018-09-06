@@ -68,16 +68,16 @@ int main() {
     printf("===============================\n");
     printf("Kmax = %g, Rmax = %g, lMax = %d, eta = %g, k = %g, beta = (%g,%g)\n",
         p.maxK, p.maxR, p.lMax, p.eta, p.k, p.beta.x, p.beta.y);
-        
+    printf("sigma0: %.16g%+.16gj\n", creal(r->sigma0), cimag(r->sigma0));    
     for (qpms_l_t n = 0; n <= p.lMax; ++n) {
       for (qpms_m_t m = -n; m <= n; ++m){
         qpms_y_t y = qpms_mn2y_sc(m,n);
         qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
         // y n m sigma_total (err), regsigmas_416 regsigmas_415_recon
-        printf("%zd %d %d: T:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) \n| predict %.16g%+.16gj \n| actual %.16g%+.16gj\n",
+        printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n| predict %.16g%+.16gj \n| actual %.16g%+.16gj\n",
             y, n, m, creal(r->sigmas_total[y]), cimag(r->sigmas_total[y]),
             r->err_sigmas_total[y],
-            creal(r->sigmas_long[y]), cimag(r->sigmas_total[y]),
+            creal(r->sigmas_long[y]), cimag(r->sigmas_long[y]),
             r->err_sigmas_long[y],
             creal(r->sigmas_short[y]), cimag(r->sigmas_short[y]),
             r->err_sigmas_short[y],

@@ -144,7 +144,7 @@ int ewald32_sigma0(complex double *result, double *err,
     abort();
   *result = gam.val * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
   if(err) 
-    *err = gam.err * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
+    *err = gam.err * fabs(c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI);
   return 0;
 }
 
