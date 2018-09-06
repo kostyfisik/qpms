@@ -139,7 +139,7 @@ int ewald32_sigma0(complex double *result, double *err,
     const double eta, const double k)
 {
   qpms_csf_result gam;
-  int retval = complex_gamma_inc_e(-0.5, -k/sq(2*eta), &gam);
+  int retval = complex_gamma_inc_e(-0.5, -sq(k/(2*eta)), &gam);
   if (0 != retval)
     abort();
   *result = gam.val * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
