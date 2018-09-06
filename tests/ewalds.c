@@ -42,7 +42,7 @@ ewaldtest_triang_params paramslist[] = {
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  30, 30, 1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.9,  30, 30, 1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 1.3,  30, 30, 1., TRIANGULAR_VERTICAL},
-  { 3, {1.1, 0.23}, 2.3, 0.97, 1.9,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 1.9,  30, 30, 1., TRIANGULAR_VERTICAL},
 // end:
 //  { 0,  {0, 0}, 0, 0, 0, 0, 0, 0, 0}
 };

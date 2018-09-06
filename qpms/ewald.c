@@ -99,7 +99,7 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
               * pow(0.5, 2*j-1);
             break;
           case EWALD32_CONSTANTS_AGNOSTIC:
-            c->s1_constfacs[y][j] = -2 * ipow(n+1) * M_SQRTPI   
+            c->s1_constfacs[y][j] = -2 * ipow(n+1) * M_SQRTPI  // FIXME: Valgrind invalid write 
               * factorial((n-m)/2) * factorial((n+m)/2)
               * min1pow(j) 
               / (factorial(j) * factorial((n-m)/2-j) * factorial((n+m)/2-j));
