@@ -55,7 +55,7 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result) {
   errc *= sumprefac_abs;
   ckahanadd(&sum, &sumc, 1.);
   kahanadd(&err, &errc, DBL_EPSILON);
-  result->err = cabs(sum) * fullgamma.err + err * fullgamma.val;
+  result->err = cabs(sum) * fullgamma.err + err * fabs(fullgamma.val);
   result->val = sum * fullgamma.val; // + sumc*fullgamma.val???
   if (breakswitch)
     return GSL_SUCCESS;
