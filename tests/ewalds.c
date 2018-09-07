@@ -175,7 +175,7 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
         complex double eimf = cexp(I*m*arg_pq);
         results->regsigmas_416[y] +=
           4*M_PI*ipow(n)/p.k/A 
-          * eimf * legendres[gsl_sf_legendre_array_index(n,m)]
+          * eimf * legendres[gsl_sf_legendre_array_index(n,abs(m))]
           / denom;
       }
     }

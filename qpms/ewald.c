@@ -317,7 +317,7 @@ int ewald32_sigma_short_shiftedpoints(
         if((m+n) % 2 != 0) // odd coefficients are zero.
           continue; // nothing needed, already done by memset
         complex double e_imf = cexp(I*m*Rpq_shifted_arg);
-        double leg = c->legendre0[gsl_sf_legendre_array_index(n, m)];
+        double leg = c->legendre0[gsl_sf_legendre_array_index(n, abs(m))];
         qpms_y_t y = qpms_mn2y_sc(m,n);
         if(err)
           kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
