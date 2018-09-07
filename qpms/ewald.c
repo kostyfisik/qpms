@@ -82,7 +82,7 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
   }
 
   c->s1_constfacs[0]; //WTF???
-  c->s1_constfacs_base = malloc(c->nelem_sc * sizeof(complex double));
+  c->s1_constfacs_base = malloc(s1_constfacs_sz * sizeof(complex double));
   size_t s1_constfacs_sz_cumsum = 0;
   for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
     qpms_l_t n; qpms_m_t m; qpms_y2mn_sc_p(y, &m, &n);
@@ -99,7 +99,7 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
               * pow(0.5, 2*j-1);
             break;
           case EWALD32_CONSTANTS_AGNOSTIC:
-            c->s1_constfacs[y][j] = -2 * ipow(n+1) * M_SQRTPI  // FIXME: Valgrind invalid write 
+            c->s1_constfacs[y][j] = -2 * ipow(n+1) * M_SQRTPI  
               * factorial((n-m)/2) * factorial((n+m)/2)
               * min1pow(j) 
               / (factorial(j) * factorial((n-m)/2-j) * factorial((n+m)/2-j));
