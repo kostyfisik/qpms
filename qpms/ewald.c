@@ -81,7 +81,6 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
       c->s1_jMaxes[y] = -1;
   }
 
-  c->s1_constfacs[0]; //WTF???
   c->s1_constfacs_base = malloc(s1_constfacs_sz * sizeof(complex double));
   size_t s1_constfacs_sz_cumsum = 0;
   for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
@@ -176,7 +175,7 @@ int ewald32_sigma_long_shiftedpoints (
   assert(commonfac > 0);
 
   // space for Gamma_pq[j]'s
-  qpms_csf_result Gamma_pq[lMax/2];
+  qpms_csf_result Gamma_pq[lMax/2+1];
 
   // CHOOSE POINT BEGIN
   for (size_t i = 0; i < npoints; ++i) { // BEGIN POINT LOOP
@@ -190,9 +189,9 @@ int ewald32_sigma_long_shiftedpoints (
     // R-DEPENDENT BEGIN
     complex double gamma_pq = lilgamma(rbeta_pq/k);
     complex double z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
-    for(qpms_l_t j = 0; j < lMax/2; ++j) {
+    for(qpms_l_t j = 0; j <= lMax/2; ++j) {
       int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
-      if(retval) abort();
+      if(!(retval==0 ||retval==GSL_EUNDRFLW)) abort();
     }
     // R-DEPENDENT END
     
@@ -206,7 +205,8 @@ int ewald32_sigma_long_shiftedpoints (
         complex double e_imalpha_pq = cexp(I*m*arg_pq);
         complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
         double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
-        for(qpms_l_t j = 0; j < (n-abs(m))/2; ++j) {
+        assert((n-abs(m))/2 == c->s1_jMaxes[y]);
+        for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
           complex double summand = pow(rbeta_pq/k, n-2*j) 
             * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] // This line can actually go outside j-loop
             * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation

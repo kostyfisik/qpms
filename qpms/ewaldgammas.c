@@ -13,6 +13,25 @@
 #define COMPLEXPART_REL_ZERO_LIMIT 1e-14
 #endif
 
+gsl_error_handler_t IgnoreUnderflowsGSLErrorHandler;
+
+void IgnoreUnderflowsGSLErrorHandler (const char * reason, 
+                    const char * file,
+                    const int line, 
+                    const int gsl_errno) {
+  if (gsl_errno == GSL_EUNDRFLW)
+    return;
+
+  gsl_stream_printf ("ERROR", file, line, reason);
+
+  fflush(stdout);
+  fprintf (stderr, "Underflow-ignoring error handler invoked.\n");
+  fflush(stderr);
+
+  abort();
+}
+
+
 // DLMF 8.7.3 (latter expression) for complex second argument
 // BTW if a is large negative, it might take a while to evaluate.
 int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result) {
@@ -22,8 +41,10 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result) {
     GSL_ERROR("Undefined for non-positive integer values", GSL_EDOM);
   }
   gsl_sf_result fullgamma;
-  int retval;
-  if (GSL_SUCCESS != (retval = gsl_sf_gamma_e(a, &fullgamma))){
+  int retval = gsl_sf_gamma_e(a, &fullgamma);
+  if (GSL_EUNDRFLW == retval)
+    result->err += DBL_MIN;
+  else if (GSL_SUCCESS != retval){
     result->val = NAN + NAN*I; result->err = NAN;
     return retval;
   }

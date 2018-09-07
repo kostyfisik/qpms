@@ -61,6 +61,7 @@ void ewaldtest_triang_results_free(ewaldtest_triang_results *r) {
 ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p);
 
 int main() {
+  gsl_set_error_handler(IgnoreUnderflowsGSLErrorHandler);
   for (size_t i = 0; i < sizeof(paramslist)/sizeof(ewaldtest_triang_params); ++i) {
     ewaldtest_triang_params p = paramslist[i];
     ewaldtest_triang_results *r = ewaldtest_triang(p);

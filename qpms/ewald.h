@@ -1,6 +1,7 @@
 #ifndef EWALD_H
 #define EWALD_H
 #include <gsl/gsl_sf_result.h>
+#include <gsl/gsl_errno.h>
 #include <math.h> // for inlined lilgamma
 #include <complex.h>
 #include "qpms_types.h"
@@ -22,6 +23,10 @@
  * in the long run, it might make more sense to replace it everywhere with normalised
  * Legendre polynomials).
  */
+
+
+// Use this handler to ignore underflows of incomplete gamma.
+gsl_error_handler_t IgnoreUnderflowsGSLErrorHandler;
 
 
 /* Object holding the constant factors from [1, (4.5)] */ 
