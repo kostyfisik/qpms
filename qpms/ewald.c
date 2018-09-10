@@ -208,7 +208,7 @@ int ewald32_sigma_long_shiftedpoints (
         assert((n-abs(m))/2 == c->s1_jMaxes[y]);
         for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
           complex double summand = pow(rbeta_pq/k, n-2*j) 
-            * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] // This line can actually go outside j-loop
+            * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
             * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
             * c->s1_constfacs[y][j];
           if(err) {
@@ -322,7 +322,7 @@ int ewald32_sigma_short_shiftedpoints(
           kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
               * interr)); // TODO include also other errors
         ckahanadd(target + y, target_c + y,
-            prefacn * R_pq_pown * leg * intres * e_beta_Rpq * e_imf);
+            prefacn * R_pq_pown * leg * intres * e_beta_Rpq * e_imf * min1pow_m_neg(m));
       }
 
     }

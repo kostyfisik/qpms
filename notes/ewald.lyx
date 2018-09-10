@@ -3104,9 +3104,12 @@ Y_{n}^{m}\left(\frac{\pi}{2},\phi\right) & = & \left(-1\right)^{m}\sqrt{\frac{\l
  Let us substitute this into [LT(4.5)]
 \begin_inset Formula 
 \begin{eqnarray*}
-\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\left(-1\right)^{\left(n+m\right)/2}\sqrt{\left(2n+1\right)\left(n-m\right)!\left(n+m\right)!}\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\\
- & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\sqrt{\pi}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!Y_{n}^{m}\left(0,\phi_{\vect{\beta}_{pq}}\right)\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\\
- & = & -\frac{i^{n+1}}{k\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!Y_{n}^{m}\left(0,\phi_{\vect{\beta}_{pq}}\right)\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1},
+\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\left(-1\right)^{\left(n+m\right)/2}\sqrt{\left(2n+1\right)\left(n-m\right)!\left(n+m\right)!}\times\\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\\
+ & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\sqrt{\pi}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(0,\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\\
+ & = & -\frac{i^{n+1}}{k\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(0,\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1}
 \end{eqnarray*}
 
 \end_inset

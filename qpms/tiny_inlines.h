@@ -4,6 +4,13 @@
 
 static inline int min1pow(int pow) { return (pow % 2) ? -1 : 1; }
 
+
+// This is useful for calculating spherical harmonics with negative m
+// if spharm-normalised legendre functions for positive m are available.
+static inline int min1pow_m_neg(int m) {
+	return (m < 0) ? min1pow(m) : 1;
+}
+
 // this has shitty precision:
 // static inline complex double ipow(int x) { return cpow(I, x); }
 
