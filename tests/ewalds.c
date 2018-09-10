@@ -67,8 +67,8 @@ int main() {
     ewaldtest_triang_results *r = ewaldtest_triang(p);
     // TODO print per-test header here
     printf("===============================\n");
-    printf("Kmax = %g, Rmax = %g, lMax = %d, eta = %g, k = %g, beta = (%g,%g)\n",
-        p.maxK, p.maxR, p.lMax, p.eta, p.k, p.beta.x, p.beta.y);
+    printf("Kmax = %g, Rmax = %g, lMax = %d, eta = %g, k = %g, beta = (%g,%g), csphase = %g\n",
+        p.maxK, p.maxR, p.lMax, p.eta, p.k, p.beta.x, p.beta.y, p.csphase);
     printf("sigma0: %.16g%+.16gj\n", creal(r->sigma0), cimag(r->sigma0));    
     for (qpms_l_t n = 0; n <= p.lMax; ++n) {
       for (qpms_m_t m = -n; m <= n; ++m){
