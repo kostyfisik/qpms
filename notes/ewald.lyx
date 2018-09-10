@@ -3144,6 +3144,120 @@ To have it complete,
 
 \end_layout
 
+\begin_layout Subsection
+Error estimates
+\end_layout
+
+\begin_layout Standard
+For the part of a 2D lattice sum that lies outside of a circle with radius
+ 
+\begin_inset Formula $R$
+\end_inset
+
+ and 
+\begin_inset Formula $f(r)$
+\end_inset
+
+ positive, radial, monotonically decreasing, we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathscr{A}_{\Lambda}\sum_{\begin{array}{c}
+\vect R_{i}\in\Lambda\\
+\left|\vect R_{i}\right|\ge R
+\end{array}}f\left(\left|\vect R_{i}\right|\right)\le2\pi\underbrace{\int_{R_{\mathrm{s}}\left(R,\Lambda\right)}^{\infty}rf(r)\,\ud r}_{\equiv B_{R_{\mathrm{s}}}\left[f\right]},\label{eq:lsum_bound}
+\end{equation}
+
+\end_inset
+
+where the largest 
+\begin_inset Quotes eld
+\end_inset
+
+safe radius
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $R_{\mathrm{s}}\left(R,\Lambda\right)$
+\end_inset
+
+ is probably something like 
+\begin_inset Formula $R-\left|\vect u_{\mathrm{L}}\right|$
+\end_inset
+
+ where 
+\begin_inset Formula $\vect u_{\mathrm{L}}$
+\end_inset
+
+ is the longer primitive lattice vector of 
+\begin_inset Formula $\Lambda$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For the short-range part 
+\begin_inset Formula $\sigma_{n}^{m(2)}$
+\end_inset
+
+, the radially varying part reads 
+\begin_inset Formula $f_{\eta}^{\mathrm{L}}\left(R_{pq}\right)\equiv R_{pq}^{n}\int_{\eta}^{\infty}e^{-R_{pq}^{2}\xi^{2}}e^{k^{2}/4\xi^{2}}\xi^{2n}\ud\xi$
+\end_inset
+
+ and for its integral as in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:lsum_bound"
+
+\end_inset
+
+ we have 
+\begin_inset Formula 
+\begin{eqnarray*}
+B_{R_{\mathrm{s}}}\left[f_{\eta}^{\mathrm{L}}\right] & = & \int_{R_{\mathrm{s}}}^{\infty}r^{n+1}\int_{\eta}^{\infty}e^{-r^{2}\xi^{2}}e^{k^{2}/4\xi^{2}}\xi^{2n}\ud\xi\,\ud r\\
+ & \le & e^{k^{2}/4\eta^{2}}\int_{R_{\mathrm{s}}}^{\infty}\int_{\eta}^{\infty}r^{n+1}e^{-r^{2}\xi^{2}}\xi^{2n}\ud\xi\,\ud r\\
+ & = & e^{k^{2}/4\eta^{2}}\frac{\eta^{2n+1}R_{\mathrm{s}}^{2+n}\left(E_{\frac{1}{2}-n}\left(\eta^{2}R_{\mathrm{s}}^{2}\right)-E_{-\frac{n}{2}}\left(\eta^{2}R_{\mathrm{s}}^{2}\right)\right)}{2\left(n-1\right)}\\
+ & = & e^{k^{2}/4\eta^{2}}\frac{\eta^{2n+1}R_{\mathrm{s}}^{2+n}\left(\left(\eta R_{\mathrm{s}}\right)^{-2n-1}\Gamma\left(n+\frac{1}{2},\eta^{2}R_{\mathrm{s}}^{2}\right)-\left(\eta R_{\mathrm{s}}\right)^{-n-2}\Gamma\left(\frac{n}{2}+1,\eta^{2}R_{\mathrm{s}}^{2}\right)\right)}{2\left(n-1\right)}\\
+ & = & \frac{e^{k^{2}/4\eta^{2}}}{2\left(n-1\right)}\left(R_{\mathrm{s}}^{1-n}\Gamma\left(n+\frac{1}{2},\eta^{2}R_{\mathrm{s}}^{2}\right)-\eta^{n-1}\Gamma\left(\frac{n}{2}+1,\eta^{2}R_{\mathrm{s}}^{2}\right)\right),
+\end{eqnarray*}
+
+\end_inset
+
+where the integral is according to mathematica and the error functions were
+ transformed to incomplete gammas using the relation 
+\begin_inset Formula $\Gamma\left(s,x\right)=x^{s}E_{1-s}\left(x\right)$
+\end_inset
+
+ from Wikipedia or equivalently 
+\begin_inset Formula $\Gamma\left(1-n,z\right)=z^{1-n}E_{n}\left(z\right)$
+\end_inset
+
+ from [DLMF(8.4.13)].
+ Therefore, the upper estimate for the short-range sum error is
+\begin_inset Formula 
+\begin{eqnarray*}
+\left|\sigma_{n}^{m(2)}|_{R_{pq}>R}\right| & \le & \frac{2^{n+1}}{k^{n+1}\sqrt{\pi}}\left|P_{n}^{m}\left(0\right)\right|\frac{2\pi}{\mathscr{A}_{\Lambda}}\frac{e^{k^{2}/4\eta^{2}}}{2\left(n-1\right)}\left(R_{\mathrm{s}}^{1-n}\Gamma\left(n+\frac{1}{2},\eta^{2}R_{\mathrm{s}}^{2}\right)-\eta^{n-1}\Gamma\left(\frac{n}{2}+1,\eta^{2}R_{\mathrm{s}}^{2}\right)\right)\\
+ & = & \frac{2^{n+1}}{k^{n+1}}\left|P_{n}^{m}\left(0\right)\right|\frac{\sqrt{\pi}}{\mathscr{A}_{\Lambda}}\frac{e^{k^{2}/4\eta^{2}}}{n-1}\left(R_{\mathrm{s}}^{1-n}\Gamma\left(n+\frac{1}{2},\eta^{2}R_{\mathrm{s}}^{2}\right)-\eta^{n-1}\Gamma\left(\frac{n}{2}+1,\eta^{2}R_{\mathrm{s}}^{2}\right)\right).
+\end{eqnarray*}
+
+\end_inset
+
+Apparently, this expression is problematic for 
+\begin_inset Formula $n=1$
+\end_inset
+
+; Mathematica gives for that case some ugly expression with 
+\begin_inset Formula $_{2}F_{2}$
+\end_inset
+
+.
+ Hence it might make sense to take a rougher estimate TODO
+\end_layout
+
 \begin_layout Section
 Major TODOs and open questions
 \end_layout
@@ -3228,7 +3342,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -3238,7 +3352,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -3251,7 +3365,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -3305,8 +3419,8 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{eqnarray}
-\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
- & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\,g(r)J_{-m}(kr)r
+\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
+ & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\, g(r)J_{-m}(kr)r
 \end{eqnarray}
 
 \end_inset
