@@ -286,7 +286,7 @@ int ewald32_sigma_short_shiftedpoints(
     gsl_integration_workspace_alloc(INTEGRATION_WORKSPACE_LIMIT);
   
   // Manual init of the ewald summation targets
-  complex double *target_c = calloc(nelem_sc, sizeof(complex double));
+  complex double * const target_c = calloc(nelem_sc, sizeof(complex double));
   memset(target, 0, nelem_sc * sizeof(complex double));
   double *err_c = NULL;
   if (err) {
@@ -297,17 +297,16 @@ int ewald32_sigma_short_shiftedpoints(
 
 // CHOOSE POINT BEGIN
   for (size_t i = 0; i < npoints; ++i) { // BEGIN POINT LOOP
-    point2d Rpq_shifted = Rpoints_plus_particle_shift[i];
-    double r_pq_shifted = cart2norm(Rpq_shifted);
+    const point2d Rpq_shifted = Rpoints_plus_particle_shift[i];
+    const double r_pq_shifted = cart2norm(Rpq_shifted);
 // CHOOSE POINT END
 
-    // This should be imaginary, but gcc does not support:
-    double Rpq_shifted_arg = atan2(Rpq_shifted.x, Rpq_shifted.y); // POINT-DEPENDENT
-    complex double e_beta_Rpq = cexp(I*cart2_dot(beta, Rpq_shifted)); // POINT-DEPENDENT
+    const double Rpq_shifted_arg = atan2(Rpq_shifted.y, Rpq_shifted.x); // POINT-DEPENDENT
+    const complex double e_beta_Rpq = cexp(I*cart2_dot(beta, Rpq_shifted)); // POINT-DEPENDENT
     
     for(qpms_l_t n = 0; n <= lMax; ++n) {
-      double complex prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // TODO put outside the R-loop and multiply in the end
-      double R_pq_pown = pow(r_pq_shifted, n);
+      const double complex prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // TODO put outside the R-loop and multiply in the end
+      const double R_pq_pown = pow(r_pq_shifted, n);
       // TODO the integral here
       double intres, interr;
       int retval = ewald32_sr_integral(r_pq_shifted, k, n, eta,
@@ -316,9 +315,9 @@ int ewald32_sigma_short_shiftedpoints(
       for (qpms_m_t m = -n; m <= n; ++m){
         if((m+n) % 2 != 0) // odd coefficients are zero.
           continue; // nothing needed, already done by memset
-        complex double e_imf = cexp(I*m*Rpq_shifted_arg);
-        double leg = c->legendre0[gsl_sf_legendre_array_index(n, abs(m))];
-        qpms_y_t y = qpms_mn2y_sc(m,n);
+        const complex double e_imf = cexp(I*m*Rpq_shifted_arg);
+        const double leg = c->legendre0[gsl_sf_legendre_array_index(n, abs(m))];
+        const qpms_y_t y = qpms_mn2y_sc(m,n);
         if(err)
           kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
               * interr)); // TODO include also other errors

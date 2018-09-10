@@ -39,7 +39,7 @@ typedef struct ewaldtest_triang_results {
 ewaldtest_triang_params paramslist[] = {
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_HORIZONTAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
-  { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  30, 30, -1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.9,  30, 30, 1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 1.3,  30, 30, 1., TRIANGULAR_VERTICAL},
   { 6, {1.1, 0.23}, 2.3, 0.97, 1.9,  30, 30, 1., TRIANGULAR_VERTICAL},
@@ -75,7 +75,7 @@ int main() {
         qpms_y_t y = qpms_mn2y_sc(m,n);
         qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
         // y n m sigma_total (err), regsigmas_416 regsigmas_415_recon
-        printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n| predict %.16g%+.16gj \n| actual %.16g%+.16gj\n",
+        printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n| predict %.16g%+.16gj \n| actual  %.16g%+.16gj\n",
             y, n, m, creal(r->sigmas_total[y]), cimag(r->sigmas_total[y]),
             r->err_sigmas_total[y],
             creal(r->sigmas_long[y]), cimag(r->sigmas_long[y]),
@@ -109,7 +109,7 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   triangular_lattice_gen_t *Klg = triangular_lattice_gen_init(K_len, reverseTriangularLatticeOrientation(p.orientation), true, 0);
   triangular_lattice_gen_extend_to_r(Klg, p.maxK + K_len);
 
-  point2d *Rpoints = Rlg->ps.base, *Kpoints = Klg->ps.base;
+  point2d *Rpoints = Rlg->ps.base; //point2d  *Kpoints = Klg->ps.base;
   size_t nR = Rlg->ps.r_offsets[Rlg->ps.nrs],
          nK = Klg->ps.r_offsets[Klg->ps.nrs];
 
