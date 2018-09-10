@@ -3199,6 +3199,10 @@ safe radius
 .
 \end_layout
 
+\begin_layout Subsubsection
+Short-range (real-space) sum
+\end_layout
+
 \begin_layout Standard
 For the short-range part 
 \begin_inset Formula $\sigma_{n}^{m(2)}$
@@ -3255,7 +3259,87 @@ Apparently, this expression is problematic for
 \end_inset
 
 .
- Hence it might make sense to take a rougher estimate TODO
+ Hence it might make sense to take a rougher estimate using (for 
+\begin_inset Formula $n=1$
+\end_inset
+
+) 
+\begin_inset Formula 
+\begin{eqnarray*}
+B_{R_{\mathrm{s}}}\left[f_{\eta}^{\mathrm{L}}\right] & = & \int_{R_{\mathrm{s}}}^{\infty}r^{2}\int_{\eta}^{\infty}e^{-r^{2}\xi^{2}}e^{k^{2}/4\xi^{2}}\xi^{2}\ud\xi\,\ud r\\
+ & \le & e^{k^{2}/4\eta^{2}}\int_{R_{\mathrm{s}}}^{\infty}\int_{\eta}^{\infty}e^{-r^{2}\xi^{2}}r^{2}\xi^{2}\ud\xi\,\ud r,
+\end{eqnarray*}
+
+\end_inset
+
+now the integration on the last line is 
+\begin_inset Quotes eld
+\end_inset
+
+symmetric
+\begin_inset Quotes erd
+\end_inset
+
+ w.r.t.
+ 
+\begin_inset Formula $R_{\mathrm{s}}\leftrightarrow\eta$
+\end_inset
+
+, so we can write either TODO; dammit, I should implement the hypergeometric
+ fn instead.
+\begin_inset Formula 
+\[
+B_{R_{\mathrm{s}}}\left[f_{\eta}^{\mathrm{L}}\right]\le e^{k^{2}/4\eta^{2}}\int_{R_{\mathrm{s}}}^{\infty}\int_{\eta}^{\infty}e^{-r^{2}\xi^{2}}r^{2}\xi^{2}\ud\xi\,\ud r
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Long-range (
+\begin_inset Formula $k$
+\end_inset
+
+-space) sum
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $\beta_{pq}>k$
+\end_inset
+
+, we have 
+\begin_inset Formula $\gamma_{pq}=\frac{\beta_{pq}}{k}\sqrt{1-\left(k/\beta_{pq}\right)^{2}}\le\frac{\beta_{pq}}{k}$
+\end_inset
+
+, hence 
+\begin_inset Formula $\Gamma_{j,pq}=\Gamma\left(\frac{1}{2}-j,\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}\right)$
+\end_inset
+
+ and the 
+\begin_inset Formula $\beta_{pq}$
+\end_inset
+
+-dependent part of 
+\begin_inset Formula $\sigma_{n}^{m(1)}$
+\end_inset
+
+ is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}\left(\gamma_{pq}\right)^{2j-1} & = & \left(\beta_{pq}/k\right)^{n-2j}\Gamma\left(\frac{1}{2}-j,\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}\right)\left(\frac{\beta_{pq}^{2}}{k^{2}}-1\right)^{j-\frac{1}{2}}\\
+ & \le & \left(\beta_{pq}/k\right)^{n-2j}\left(\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}\right)^{-j-\frac{1}{2}}e^{-\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}}\left(\frac{\beta_{pq}^{2}}{k^{2}}-1\right)^{j-\frac{1}{2}}\\
+ &  & TODO
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
