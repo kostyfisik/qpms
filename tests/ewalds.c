@@ -1,4 +1,4 @@
-// c99 -ggdb -Wall -I ../ ewalds.c ../qpms/ewald.c ../qpms/ewaldgammas.c  ../qpms/lattices2d.c -lgsl -lm -lblas
+// c99 -ggdb -Wall -I ../ ewalds.c ../qpms/ewald.c ../qpms/ewaldsf.c  ../qpms/lattices2d.c -lgsl -lm -lblas
 
 // implementation of the [LT(4.16)] test
 #include <math.h>
@@ -43,6 +43,13 @@ ewaldtest_triang_params paramslist[] = {
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.9,  30, 30, 1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 1.3,  30, 30, 1., TRIANGULAR_VERTICAL},
   { 6, {1.1, 0.23}, 2.3, 0.97, 1.9,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 2.5,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 3.2,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 3.8,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 4.5,  30, 30, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 4.5,  40, 40, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 2.3,  100, 100, 1., TRIANGULAR_VERTICAL},
+  { 6, {1.1, 0.23}, 2.3, 0.97, 2.9,  100, 100, 1., TRIANGULAR_VERTICAL},
 // end:
 //  { 0,  {0, 0}, 0, 0, 0, 0, 0, 0, 0}
 };
