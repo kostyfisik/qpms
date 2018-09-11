@@ -1,6 +1,7 @@
 #include "ewald.h"
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_sf_result.h>
+#include <gsl/gsl_machine.h> // Maybe I should rather use DBL_EPSILON instead of GSL_DBL_EPSILON.
 #include "kahansum.h"
 #include <math.h>
 #include <complex.h>
@@ -97,4 +98,75 @@ int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
   } else 
     return cx_gamma_inc_series_e(a, x, result);
 }
+
+
+// inspired by GSL's hyperg_2F1_series
+int hyperg_2F2_series(const double a, const double b, const double c, const double d,
+    const double x, gsl_sf_result *result
+    )
+{
+  double sum_pos = 1.0;
+  double sum_neg = 0.0;
+  double del_pos = 1.0;
+  double del_neg = 0.0;
+  double del = 1.0;
+  double del_prev;
+  double k = 0.0;
+  int i = 0;
+
+  if(fabs(c) < GSL_DBL_EPSILON || fabs(d) < GSL_DBL_EPSILON) {
+    result->val = NAN; 
+    result->err = INFINITY;
+    GSL_ERROR ("error", GSL_EDOM);
+  }
+
+  do {
+    if(++i > 30000) {
+      result->val  = sum_pos - sum_neg;
+      result->err  = del_pos + del_neg;
+      result->err += 2.0 * GSL_DBL_EPSILON * (sum_pos + sum_neg);
+      result->err += 2.0 * GSL_DBL_EPSILON * (2.0*sqrt(k)+1.0) * fabs(result->val);
+      GSL_ERROR ("error", GSL_EMAXITER);
+    }
+    del_prev = del;
+    del *= (a+k)*(b+k) * x / ((c+k) * (d+k) * (k+1.0));  /* Gauss series */
+
+    if(del > 0.0) {
+      del_pos  =  del;
+      sum_pos +=  del;
+    }
+    else if(del == 0.0) {
+      /* Exact termination (a or b was a negative integer).
+       */
+      del_pos = 0.0;
+      del_neg = 0.0;
+      break;
+    }
+    else {
+      del_neg  = -del;
+      sum_neg -=  del;
+    }
+
+    /*
+     * This stopping criteria is taken from the thesis
+     * "Computation of Hypergeometic Functions" by J. Pearson, pg. 31
+     * (http://people.maths.ox.ac.uk/porterm/research/pearson_final.pdf)
+     * and fixes bug #45926
+     */
+    if (fabs(del_prev / (sum_pos - sum_neg)) < GSL_DBL_EPSILON &&
+        fabs(del / (sum_pos - sum_neg)) < GSL_DBL_EPSILON)
+      break;
+
+    k += 1.0;
+  } while(fabs((del_pos + del_neg)/(sum_pos-sum_neg)) > GSL_DBL_EPSILON);
+
+  result->val  = sum_pos - sum_neg;
+  result->err  = del_pos + del_neg;
+  result->err += 2.0 * GSL_DBL_EPSILON * (sum_pos + sum_neg);
+  result->err += 2.0 * GSL_DBL_EPSILON * (2.0*sqrt(k) + 1.0) * fabs(result->val);
+
+  return GSL_SUCCESS;
+}
+
+
 

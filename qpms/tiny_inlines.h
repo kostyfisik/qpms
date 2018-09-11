@@ -7,6 +7,8 @@ static inline int min1pow(int pow) { return (pow % 2) ? -1 : 1; }
 
 // This is useful for calculating spherical harmonics with negative m
 // if spharm-normalised legendre functions for positive m are available.
+// TODO: write a function that gets legendre buffer, m, n, and returns the correct spharm
+// and use it in the code (mainly translations.c, ewald.c).
 static inline int min1pow_m_neg(int m) {
 	return (m < 0) ? min1pow(m) : 1;
 }

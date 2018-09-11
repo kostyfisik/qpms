@@ -76,6 +76,11 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
 // if x is (almost) real, it just uses gsl_sf_gamma_inc_e
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result);
 
+
+// hypergeometric 2F2, used to calculate some errors
+int hyperg_2F2_series(const double a, const double b, const double c, const double d,
+    const double x, gsl_sf_result *result);
+
 #if 0
 // The integral from (4.6); maybe should be static and not here.
 int ewald32_sr_integral(double r, double k, double n, double eta, double *result, double *err, gsl_integration_workspace *workspace);
