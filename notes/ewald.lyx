@@ -3209,7 +3209,7 @@ For the short-range part
 \end_inset
 
 , the radially varying part reads 
-\begin_inset Formula $f_{\eta}^{\mathrm{L}}\left(R_{pq}\right)\equiv R_{pq}^{n}\int_{\eta}^{\infty}e^{-R_{pq}^{2}\xi^{2}}e^{k^{2}/4\xi^{2}}\xi^{2n}\ud\xi$
+\begin_inset Formula $f_{\eta}^{\mathrm{S}}\left(R_{pq}\right)\equiv R_{pq}^{n}\int_{\eta}^{\infty}e^{-R_{pq}^{2}\xi^{2}}e^{k^{2}/4\xi^{2}}\xi^{2n}\ud\xi$
 \end_inset
 
  and for its integral as in 
@@ -3222,7 +3222,7 @@ reference "eq:lsum_bound"
  we have 
 \begin_inset Formula 
 \begin{eqnarray*}
-B_{R_{\mathrm{s}}}\left[f_{\eta}^{\mathrm{L}}\right] & = & \int_{R_{\mathrm{s}}}^{\infty}r^{n+1}\int_{\eta}^{\infty}e^{-r^{2}\xi^{2}}e^{k^{2}/4\xi^{2}}\xi^{2n}\ud\xi\,\ud r\\
+B_{R_{\mathrm{s}}}\left[f_{\eta}^{\mathrm{S}}\right] & = & \int_{R_{\mathrm{s}}}^{\infty}r^{n+1}\int_{\eta}^{\infty}e^{-r^{2}\xi^{2}}e^{k^{2}/4\xi^{2}}\xi^{2n}\ud\xi\,\ud r\\
  & \le & e^{k^{2}/4\eta^{2}}\int_{R_{\mathrm{s}}}^{\infty}\int_{\eta}^{\infty}r^{n+1}e^{-r^{2}\xi^{2}}\xi^{2n}\ud\xi\,\ud r\\
  & = & e^{k^{2}/4\eta^{2}}\frac{\eta^{2n+1}R_{\mathrm{s}}^{2+n}\left(E_{\frac{1}{2}-n}\left(\eta^{2}R_{\mathrm{s}}^{2}\right)-E_{-\frac{n}{2}}\left(\eta^{2}R_{\mathrm{s}}^{2}\right)\right)}{2\left(n-1\right)}\\
  & = & e^{k^{2}/4\eta^{2}}\frac{\eta^{2n+1}R_{\mathrm{s}}^{2+n}\left(\left(\eta R_{\mathrm{s}}\right)^{-2n-1}\Gamma\left(n+\frac{1}{2},\eta^{2}R_{\mathrm{s}}^{2}\right)-\left(\eta R_{\mathrm{s}}\right)^{-n-2}\Gamma\left(\frac{n}{2}+1,\eta^{2}R_{\mathrm{s}}^{2}\right)\right)}{2\left(n-1\right)}\\
@@ -3258,8 +3258,48 @@ Apparently, this expression is problematic for
 \begin_inset Formula $_{2}F_{2}$
 \end_inset
 
+, resulting in:
+\begin_inset Formula 
+\[
+B_{R_{\mathrm{s}}}\left[f_{\eta}^{\mathrm{S}}\right]\le e^{k^{2}/4\eta^{2}}\left(\frac{\eta R}{2}{}_{2}F_{2}\left(\begin{array}{cc}
+\frac{1}{2}, & \frac{1}{2}\\
+\frac{3}{2}, & \frac{3}{2}
+\end{array};-\eta^{2}R_{\mathrm{s}}^{2}\right)-\frac{\sqrt{\pi}}{8}\left(\gamma_{\mathrm{E}}-2\mathrm{erfc}\left(\eta R_{\mathrm{s}}\right)+2\log\left(2\eta R_{\mathrm{s}}\right)\right)\right).
+\]
+
+\end_inset
+
+The problem is that evaluation of the 
+\begin_inset Formula $_{2}F_{2}$
+\end_inset
+
+ for large argument is very problematic.
+ However, Mathematica says that the value of the right parenthesis drops
+ below DBL_EPSILON for 
+\begin_inset Formula $\eta R_{\mathrm{s}}>6$
+\end_inset
+
 .
- Hence it might make sense to take a rougher estimate using (for 
+\end_layout
+
+\begin_layout Standard
+Also the expression for 
+\begin_inset Formula $n\ne1$
+\end_inset
+
+ decreases very fast, so as long as the value of 
+\begin_inset Formula $e^{k^{2}/4\eta^{2}}$
+\end_inset
+
+is reasonably low, there should not be much trouble.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Maybe it might make sense to take a rougher estimate using (for 
 \begin_inset Formula $n=1$
 \end_inset
 
@@ -3285,12 +3325,16 @@ symmetric
 \begin_inset Formula $R_{\mathrm{s}}\leftrightarrow\eta$
 \end_inset
 
-, so we can write either TODO; dammit, I should implement the hypergeometric
- fn instead.
+, so we can write either
 \begin_inset Formula 
 \[
 B_{R_{\mathrm{s}}}\left[f_{\eta}^{\mathrm{L}}\right]\le e^{k^{2}/4\eta^{2}}\int_{R_{\mathrm{s}}}^{\infty}\int_{\eta}^{\infty}e^{-r^{2}\xi^{2}}r^{2}\xi^{2}\ud\xi\,\ud r
 \]
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -3334,7 +3378,22 @@ For
 \begin{eqnarray*}
 \left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}\left(\gamma_{pq}\right)^{2j-1} & = & \left(\beta_{pq}/k\right)^{n-2j}\Gamma\left(\frac{1}{2}-j,\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}\right)\left(\frac{\beta_{pq}^{2}}{k^{2}}-1\right)^{j-\frac{1}{2}}\\
  & \le & \left(\beta_{pq}/k\right)^{n-2j}\left(\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}\right)^{-j-\frac{1}{2}}e^{-\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}}\left(\frac{\beta_{pq}^{2}}{k^{2}}-1\right)^{j-\frac{1}{2}}\\
- &  & TODO
+ & = & \left(2\eta\right)^{2j+1}e^{-\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}}k^{-n-1}\beta_{pq}^{n-2j}\left(\frac{\beta_{pq}^{2}}{k^{2}}-1\right)^{-1}\\
+ & = & e^{-\frac{\beta_{pq}^{2}-k^{2}}{4\eta^{2}}}\left(\frac{\beta_{pq}}{k}\right)^{n}\frac{2\eta}{k}\left(\frac{2\eta}{\beta_{pq}}\right)^{2j}\left(\frac{\beta_{pq}^{2}}{k^{2}}-1\right)^{-1}.
+\end{eqnarray*}
+
+\end_inset
+
+The only diverging factor here is apparently 
+\begin_inset Formula $\left(\beta_{pq}/k\right)^{n}$
+\end_inset
+
+; Mathematica and [DMLF] say
+\begin_inset Formula 
+\begin{eqnarray*}
+\int_{B_{\mathrm{s}}}^{\infty}e^{-\frac{\beta^{2}}{4\eta^{2}}}\beta^{n}\beta\ud\beta & = & \frac{B_{\mathrm{s}}^{n+2}}{2}E_{-\frac{n}{2}}\left(\frac{B_{\mathrm{s}}^{2}}{4\eta^{2}}\right)\\
+ & = & \frac{B_{\mathrm{s}}^{n+2}}{2}\left(\frac{B_{\mathrm{s}}^{2}}{4\eta^{2}}\right)^{-1-\frac{n}{2}}\Gamma\left(1+\frac{n}{2},\frac{B_{\mathrm{s}}^{2}}{4\eta^{2}}\right)\\
+ & = & \frac{\left(2\eta\right)^{n+2}}{2}\Gamma\left(1+\frac{n}{2},\frac{B_{\mathrm{s}}^{2}}{4\eta^{2}}\right).
 \end{eqnarray*}
 
 \end_inset
@@ -3426,7 +3485,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -3436,7 +3495,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -3449,7 +3508,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -3503,8 +3562,8 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{eqnarray}
-\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
- & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\, g(r)J_{-m}(kr)r
+\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
+ & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\,g(r)J_{-m}(kr)r
 \end{eqnarray}
 
 \end_inset
