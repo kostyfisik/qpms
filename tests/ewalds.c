@@ -52,17 +52,34 @@ ewaldtest_triang_params paramslist[] = {
   { 6, {1.1, 0.23}, 2.3, 0.97, 2.3,  100, 100, 1., TRIANGULAR_VERTICAL},
   { 6, {1.1, 0.23}, 2.3, 0.97, 2.9,  100, 100, 1., TRIANGULAR_VERTICAL},
 #endif
-  { 2, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
-  { 2, {-1.1, -0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
-  { 2, {0, 1.1}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
-  { 2, {0, -1.1}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
-  { 2, {-1.1, 0}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
-  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
-  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 10, 10, 1., TRIANGULAR_VERTICAL},
-  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 5, 5, 1., TRIANGULAR_VERTICAL},
-  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 2, 2, 1., TRIANGULAR_VERTICAL},
-  { 2, {0.3, 0}, 2.3, 0.97, 0.5, 2, 2, 1., TRIANGULAR_VERTICAL},
-  { 2, {2.7, 0}, 2.3, 0.97, 0.5, 2, 2, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {-1.1, -0.23}, 2.3, 0.97, 0.5,  20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 1.1}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, -1.1}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {-1.1, 0}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 5.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 5.5, 10, 80, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 5.5, 5, 40, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 5.5, 2, 16, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 2.5, 10, 80, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 2.5, 5, 40, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 2.5, 2, 16, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 10, 80, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 5, 40, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 2, 16, 1., TRIANGULAR_VERTICAL},
+  { 2, {0.3, 0}, 2.3, 0.97, 0.5, 2, 16, 1., TRIANGULAR_VERTICAL},
+  { 2, {2.7, 1}, 2.3, 0.97, 0.5, 5, 40, 1., TRIANGULAR_VERTICAL},
+  { 2, {2.7, 1}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {2.7, 1}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {2.7, 1}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {2.7, 1}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
 
 // end:
 //  { 0,  {0, 0}, 0, 0, 0, 0, 0, 0, 0}
@@ -91,6 +108,10 @@ void dump_points2d_rordered(const points2d_rordered_t *ps, char *filename) {
 }
 
 
+static inline double san(double x) {
+  return fabs(x) < 1e-13 ? 0 : x;
+}
+
 ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p);
 
 int main() {
@@ -110,15 +131,15 @@ int main() {
         qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
         // y n m sigma_total (err), regsigmas_416 regsigmas_415_recon
         printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n| predict %.16g%+.16gj \n| actual  %.16g%+.16gj\n",
-            y, n, m, creal(r->sigmas_total[y]), cimag(r->sigmas_total[y]),
+            y, n, m, creal(san(r->sigmas_total[y])), san(cimag(r->sigmas_total[y])),
             r->err_sigmas_total[y],
-            creal(r->sigmas_long[y]), cimag(r->sigmas_long[y]),
+            san(creal(r->sigmas_long[y])), san(cimag(r->sigmas_long[y])),
             r->err_sigmas_long[y],
-            creal(r->sigmas_short[y]), cimag(r->sigmas_short[y]),
+            san(creal(r->sigmas_short[y])), san(cimag(r->sigmas_short[y])),
             r->err_sigmas_short[y],
-            creal(r->regsigmas_416[y]), cimag(r->regsigmas_416[y]),
-            creal(r->sigmas_total[y])+creal(r->sigmas_total[y_conj]),
-            cimag(r->sigmas_total[y])-cimag(r->sigmas_total[y_conj])
+            san(creal(r->regsigmas_416[y])), san(cimag(r->regsigmas_416[y])),
+            san(creal(r->sigmas_total[y]) + creal(r->sigmas_total[y_conj])),
+            san(cimag(r->sigmas_total[y]) - cimag(r->sigmas_total[y_conj]))
         );
       }
     }

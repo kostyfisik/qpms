@@ -35,7 +35,7 @@ void IgnoreUnderflowsGSLErrorHandler (const char * reason,
 
 // DLMF 8.7.3 (latter expression) for complex second argument
 // BTW if a is large negative, it might take a while to evaluate.
-int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result) {
+int cx_gamma_inc_series_e(const double a, const complex double z, qpms_csf_result * result) {
   if (a <= 0 && a == (int) a) {
     result->val = NAN + NAN*I;
     result->err = NAN;
@@ -62,7 +62,7 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result) {
       result->val = NAN + NAN*I; result->err = NAN;
       return retval;
     }
-    complex double summand = - cpow(z, k) / fullgamma_ak.val;
+    complex double summand = - cpow(z, k) / fullgamma_ak.val; // TODO test branch selection here with cimag(z) = -0.0
     ckahanadd(&sum, &sumc, summand);
     double summanderr = fabs(fullgamma_ak.err * cabs(summand / fullgamma_ak.val));
     // TODO add also the rounding error

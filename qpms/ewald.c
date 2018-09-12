@@ -139,6 +139,7 @@ int ewald32_sigma0(complex double *result, double *err,
 {
   qpms_csf_result gam;
   int retval = complex_gamma_inc_e(-0.5, -sq(k/(2*eta)), &gam);
+  gam.val = conj(gam.val); // We take the other branch, cf. [Linton, p. 642 in the middle]
   if (0 != retval)
     abort();
   *result = gam.val * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
@@ -191,6 +192,9 @@ int ewald32_sigma_long_shiftedpoints (
     complex double z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
     for(qpms_l_t j = 0; j <= lMax/2; ++j) {
       int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
+      // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
+      if(creal(z) < 0) 
+        Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
       if(!(retval==0 ||retval==GSL_EUNDRFLW)) abort();
     }
     // R-DEPENDENT END
