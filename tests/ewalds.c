@@ -37,7 +37,8 @@ typedef struct ewaldtest_triang_results {
 
 
 ewaldtest_triang_params paramslist[] = {
-  { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_HORIZONTAL},
+// lMax, beta, k, a, eta, maxR, maxK, csphase, orientation
+#if 0
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.5,  30, 30, -1., TRIANGULAR_VERTICAL},
   { 3, {1.1, 0.23}, 2.3, 0.97, 0.9,  30, 30, 1., TRIANGULAR_VERTICAL},
@@ -50,6 +51,17 @@ ewaldtest_triang_params paramslist[] = {
   { 6, {1.1, 0.23}, 2.3, 0.97, 4.5,  40, 40, 1., TRIANGULAR_VERTICAL},
   { 6, {1.1, 0.23}, 2.3, 0.97, 2.3,  100, 100, 1., TRIANGULAR_VERTICAL},
   { 6, {1.1, 0.23}, 2.3, 0.97, 2.9,  100, 100, 1., TRIANGULAR_VERTICAL},
+#endif
+  { 2, {1.1, 0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
+  { 2, {-1.1, -0.23}, 2.3, 0.97, 0.5,  20, 20, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 1.1}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, -1.1}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
+  { 2, {-1.1, 0}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 20, 20, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 10, 10, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 5, 5, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 0}, 2.3, 0.97, 0.5, 2, 2, 1., TRIANGULAR_VERTICAL},
+
 // end:
 //  { 0,  {0, 0}, 0, 0, 0, 0, 0, 0, 0}
 };
@@ -65,6 +77,18 @@ void ewaldtest_triang_results_free(ewaldtest_triang_results *r) {
   free(r);
 }
 
+
+void dump_points2d_rordered(const points2d_rordered_t *ps, char *filename) {
+  FILE *f = fopen(filename, "w");
+  for (size_t i = 0; i < ps->nrs; ++i) {
+    fprintf(f, "# r = %.16g\n", ps->rs[i]);
+    for (ptrdiff_t j = ps->r_offsets[i]; j < ps->r_offsets[i+1]; ++j)
+      fprintf(f, "%.16g %.16g\n", ps->base[j].x, ps->base[j].y);
+  }
+  fclose(f);
+}
+
+
 ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p);
 
 int main() {
@@ -74,8 +98,8 @@ int main() {
     ewaldtest_triang_results *r = ewaldtest_triang(p);
     // TODO print per-test header here
     printf("===============================\n");
-    printf("Kmax = %g, Rmax = %g, lMax = %d, eta = %g, k = %g, beta = (%g,%g), csphase = %g\n",
-        p.maxK, p.maxR, p.lMax, p.eta, p.k, p.beta.x, p.beta.y, p.csphase);
+    printf("a = %g, K = %g, Kmax = %g, Rmax = %g, lMax = %d, eta = %g, k = %g, beta = (%g,%g), csphase = %g\n",
+        p.a, 4*M_PI/sqrt(3)/p.a, p.maxK, p.maxR, p.lMax, p.eta, p.k, p.beta.x, p.beta.y, p.csphase);
     printf("sigma0: %.16g%+.16gj\n", creal(r->sigma0), cimag(r->sigma0));    
     for (qpms_l_t n = 0; n <= p.lMax; ++n) {
       for (qpms_m_t m = -n; m <= n; ++m){
@@ -99,6 +123,9 @@ int main() {
   }
   return 0;
 }
+
+
+int ewaldtest_counter = 0;
 
 
 ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
@@ -133,6 +160,10 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
 
   points2d_rordered_t *Kpoints_plus_beta = points2d_rordered_shift(&(Klg->ps), p.beta,
       8*DBL_EPSILON, 8*DBL_EPSILON);
+
+  char filename[BUFSIZ];
+  sprintf(filename, "betalattice_%d.out", ewaldtest_counter);
+  dump_points2d_rordered(Kpoints_plus_beta, filename);
 
   point2d particle_shift = {0,0}; // TODO make this a parameter
 
@@ -192,5 +223,6 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   qpms_ewald32_constants_free(c);
   triangular_lattice_gen_free(Klg);
   triangular_lattice_gen_free(Rlg);
+  ++ewaldtest_counter;
   return results;
 }

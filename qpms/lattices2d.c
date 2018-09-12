@@ -66,9 +66,14 @@ points2d_rordered_t points2d_rordered_annulus(const points2d_rordered_t *orig,
   ptrdiff_t imin, imax;
   imin = points2d_rordered_locate_r(orig, minr);
   imax = points2d_rordered_locate_r(orig, maxr);
+  // TODO check 
+  if(imax >= orig->nrs) --imax;
+  if(imax < 0) goto nothing;
+  // END TODO
   if (!inc_minr && (orig->rs[imin] <= minr)) ++imin;
   if (!inc_maxr && (orig->rs[imax] >= maxr)) --imax;
   if (imax < imin) { // it's empty
+nothing:
     p.nrs = 0;
     p.base = NULL;
     p.rs = NULL;
@@ -148,7 +153,7 @@ static points2d_rordered_t *points2d_rordered_frompoints_c(point2d *orig_base, c
   for (size_t i = 0; i < nmemb; ++i) {
     rcur = prn(p->base[i]);
     if (rcur > rcurmax) {
-      p->rs[ri] = rcursum / rcurcount; // average of the accrued r's within tolerance
+      p->rs[ri] = rcursum / (double) rcurcount; // average of the accrued r's within tolerance
       ++ri;
       p->r_offsets[ri] = i; //r_offsets[ri-1] + rcurcount (is the same)
       rcurcount = 0;
@@ -158,6 +163,7 @@ static points2d_rordered_t *points2d_rordered_frompoints_c(point2d *orig_base, c
     rcursum += rcur;
     ++rcurcount;
   }
+  p->rs[ri] = rcursum / (double) rcurcount;
   p->r_offsets[rcount] = nmemb;
 
   return p;
@@ -178,7 +184,7 @@ points2d_rordered_t *points2d_rordered_shift(const points2d_rordered_t *orig, co
   point2d * shifted = malloc(n * sizeof(point2d));
 
   for(size_t i = 0; i < n; ++i) 
-    shifted[i] = cart2_add(orig->base[i], shift);
+    shifted[i] = cart2_add(orig->base[i+orig->r_offsets[0]], shift);
 
   return points2d_rordered_frompoints_c(shifted, n,rtol, atol, false);
 }
