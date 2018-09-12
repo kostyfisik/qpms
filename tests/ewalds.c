@@ -61,6 +61,8 @@ ewaldtest_triang_params paramslist[] = {
   { 2, {1.1, 0}, 2.3, 0.97, 0.5, 10, 10, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 0}, 2.3, 0.97, 0.5, 5, 5, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 0}, 2.3, 0.97, 0.5, 2, 2, 1., TRIANGULAR_VERTICAL},
+  { 2, {0.3, 0}, 2.3, 0.97, 0.5, 2, 2, 1., TRIANGULAR_VERTICAL},
+  { 2, {2.7, 0}, 2.3, 0.97, 0.5, 2, 2, 1., TRIANGULAR_VERTICAL},
 
 // end:
 //  { 0,  {0, 0}, 0, 0, 0, 0, 0, 0, 0}
@@ -103,6 +105,7 @@ int main() {
     printf("sigma0: %.16g%+.16gj\n", creal(r->sigma0), cimag(r->sigma0));    
     for (qpms_l_t n = 0; n <= p.lMax; ++n) {
       for (qpms_m_t m = -n; m <= n; ++m){
+        if ((m+n)%2) continue;
         qpms_y_t y = qpms_mn2y_sc(m,n);
         qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
         // y n m sigma_total (err), regsigmas_416 regsigmas_415_recon
@@ -195,26 +198,29 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
     double legendres[gsl_sf_legendre_array_n(p.lMax)];
     points2d_rordered_t sel = 
       points2d_rordered_annulus(Kpoints_plus_beta, 0, true, p.k, false);
-    point2d *beta_pq_lessthan_k = sel.base + sel.r_offsets[0];
-    size_t beta_pq_lessthan_k_count = sel.r_offsets[sel.nrs] - sel.r_offsets[0];
-    for(size_t i = 0; i < beta_pq_lessthan_k_count; ++i) {
-      point2d beta_pq = beta_pq_lessthan_k[i];
-      double rbeta_pq = cart2norm(beta_pq);
-      double arg_pq = atan2(beta_pq.y, beta_pq.x);
-      double denom = sqrt(p.k*p.k - rbeta_pq*rbeta_pq);
-      if( gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,
-          p.lMax, denom/p.k, p.csphase, legendres) != 0)
-        abort();
-      for (qpms_y_t y = 0; y < nelem_sc; ++y) {
-        qpms_l_t n; qpms_m_t m; 
-        qpms_y2mn_sc_p(y, &m, &n);
-        if ((m+n)%2 != 0)
-          continue;
-        complex double eimf = cexp(I*m*arg_pq);
-        results->regsigmas_416[y] +=
-          4*M_PI*ipow(n)/p.k/A 
-          * eimf * legendres[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m)
-          / denom;
+    if (0 != sel.nrs) 
+    { 
+      point2d *beta_pq_lessthan_k = sel.base + sel.r_offsets[0];
+      size_t beta_pq_lessthan_k_count = sel.r_offsets[sel.nrs] - sel.r_offsets[0];
+      for(size_t i = 0; i < beta_pq_lessthan_k_count; ++i) {
+        point2d beta_pq = beta_pq_lessthan_k[i];
+        double rbeta_pq = cart2norm(beta_pq);
+        double arg_pq = atan2(beta_pq.y, beta_pq.x);
+        double denom = sqrt(p.k*p.k - rbeta_pq*rbeta_pq);
+        if( gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,
+              p.lMax, denom/p.k, p.csphase, legendres) != 0)
+          abort();
+        for (qpms_y_t y = 0; y < nelem_sc; ++y) {
+          qpms_l_t n; qpms_m_t m; 
+          qpms_y2mn_sc_p(y, &m, &n);
+          if ((m+n)%2 != 0)
+            continue;
+          complex double eimf = cexp(I*m*arg_pq);
+          results->regsigmas_416[y] +=
+            4*M_PI*ipow(n)/p.k/A 
+            * eimf * legendres[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m)
+            / denom;
+        }
       }
     }
   }
