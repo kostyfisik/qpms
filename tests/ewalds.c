@@ -213,7 +213,7 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
 
   // Now calculate the reference values [LT(4.16)]
   results->regsigmas_416 = calloc(nelem_sc, sizeof(complex double));
-  results->regsigmas_416[0] = -1/M_SQRTPI; 
+  results->regsigmas_416[0] = -2 * c->legendre0[gsl_sf_legendre_array_index(0,0)];
   
   {
     double legendres[gsl_sf_legendre_array_n(p.lMax)];
