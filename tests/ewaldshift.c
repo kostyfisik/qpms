@@ -98,16 +98,18 @@ int main() {
         qpms_y_t y = qpms_mn2y_sc(m,n);
         qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
         // y n m sigma_total (err), regsigmas_416 regsigmas_415_recon
-        printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n| predict %.16g%+.16gj \n| actual  %.16g%+.16gj\n",
+        printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n"
+            //"| predict %.16g%+.16gj \n| actual  %.16g%+.16gj\n"
+            ,
             y, n, m, creal(san(r->sigmas_total[y])), san(cimag(r->sigmas_total[y])),
             r->err_sigmas_total[y],
             san(creal(r->sigmas_long[y])), san(cimag(r->sigmas_long[y])),
             r->err_sigmas_long[y],
             san(creal(r->sigmas_short[y])), san(cimag(r->sigmas_short[y])),
-            r->err_sigmas_short[y],
-            san(creal(r->regsigmas_416[y])), san(cimag(r->regsigmas_416[y])),
-            san(creal(r->sigmas_total[y]) + creal(r->sigmas_total[y_conj])),
-            san(cimag(r->sigmas_total[y]) - cimag(r->sigmas_total[y_conj]))
+            r->err_sigmas_short[y]
+            //san(creal(r->regsigmas_416[y])), san(cimag(r->regsigmas_416[y])),
+            //san(creal(r->sigmas_total[y]) + creal(r->sigmas_total[y_conj])),
+            //san(cimag(r->sigmas_total[y]) - cimag(r->sigmas_total[y_conj]))
         );
       }
     }
@@ -130,7 +132,7 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   ewaldtest_triang_results *results = malloc(sizeof(ewaldtest_triang_results));
   results->p = p;
 
-  triangular_lattice_gen_t *Rlg = triangular_lattice_gen_init(a, p.orientation, false, 0); // N.B. orig is not included (not directly usable for the honeycomb lattice)
+  triangular_lattice_gen_t *Rlg = triangular_lattice_gen_init(a, p.orientation, true, 0); // N.B. orig is included 
   triangular_lattice_gen_extend_to_r(Rlg, p.maxR + a);
   triangular_lattice_gen_t *Klg = triangular_lattice_gen_init(K_len, reverseTriangularLatticeOrientation(p.orientation), true, 0);
   triangular_lattice_gen_extend_to_r(Klg, p.maxK + K_len);
