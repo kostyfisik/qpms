@@ -79,6 +79,11 @@ ewaldtest_triang_params paramslist[] = {
   { 2, {1.1, 1}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 1}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 1}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  
+  { 2, {0, 3.1}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
 
 
 // end:
@@ -194,7 +199,7 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   if (0!=ewald32_sigma_long_shiftedpoints(results->sigmas_long,
         results->err_sigmas_long, c, p.eta, p.k, A,
         nK, Kpoints_plus_beta->base,
-        //p.beta, 
+        p.beta, 
         particle_shift)) 
     abort();
   if (0!=ewald32_sigma_short_shiftedpoints(

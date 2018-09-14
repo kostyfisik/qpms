@@ -156,7 +156,7 @@ int ewald32_sigma_long_shiftedpoints (
     const qpms_ewald32_constants_t *c,
     const double eta, const double k, const double unitcell_area,
     const size_t npoints, const point2d *Kpoints_plus_beta,
-    //const point2d beta, // not needed
+    const point2d beta, // not needed
     const point2d particle_shift // target - src
     ) 
 {
@@ -181,10 +181,11 @@ int ewald32_sigma_long_shiftedpoints (
   // CHOOSE POINT BEGIN
   for (size_t i = 0; i < npoints; ++i) { // BEGIN POINT LOOP
     point2d beta_pq = Kpoints_plus_beta[i];
+    point2d K_pq = {beta_pq.x - beta.x, beta_pq.y - beta.y};
     double rbeta_pq = cart2norm(beta_pq);
   // CHOOSE POINT END
 
-    complex double phasefac = cexp(I*cart2_dot(beta_pq,particle_shift)); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
+    complex double phasefac = cexp(I*cart2_dot(K_pq,particle_shift)); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
     double arg_pq = atan2(beta_pq.y, beta_pq.x); // POINT-DEPENDENT
 
     // R-DEPENDENT BEGIN

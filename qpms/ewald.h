@@ -103,7 +103,7 @@ int ewald32_sigma_long_shiftedpoints (
 		const qpms_ewald32_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const point2d *Kpoints_plus_beta,
-		//point2d beta,
+		point2d beta,
 		point2d particle_shift
 );
 int ewald32_sigma_long_points_and_shift (//NI

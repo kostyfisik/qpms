@@ -38,15 +38,89 @@ typedef struct ewaldtest_triang_results {
 
 
 ewaldtest_triang_params paramslist[] = {
-// lMax, beta, k, a, eta, maxR, maxK, csphase, orientation
+// lMax, beta, shift, k, a, eta, maxR, maxK, csphase, orientation
+/*
  { 2, {2.7, 1}, {0.5,0.1325}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {2.7, 1}, {0.5,0.1325}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {2.7, 1}, {0.5,0.1325}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {2.7, 1}, {0.5,0.1325}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
   { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {1.1, 1}, {0.5,0.}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, {0.5,0.}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, {0.5,0.}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, {0.5,0.}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+*/
+  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {1.1, 2.1}, {0.5,0.1325}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 2.1}, {0.5,0.1325}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 2.1}, {0.5,0.1325}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1, 2.1}, {0.5,0.1325}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+/*
+  { 2, {0, 3.1}, {0.5,0}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, {0.5,0}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, {0.5,0}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, {0.5,0}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {0, 1.1}, {0.5,0}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 1.1}, {0.5,0}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 1.1}, {0.5,0}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 1.1}, {0.5,0}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {1.1,0}, {0,0.5}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1,0}, {0,0.5}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1,0}, {0,0.5}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1,0}, {0,0.5}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1,0}, {0,0.5}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+*/
+  { 2, {3.1*0.5,-3.1*0.8}, {0.8,0.5}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1*0.5,-3.1*0.8}, {0.8,0.5}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1*0.5,-3.1*0.8}, {0.8,0.5}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1*0.5,-3.1*0.8}, {0.8,0.5}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {1.1*0.5,-1.1*0.8}, {0.8,0.5}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1*0.5,-1.1*0.8}, {0.8,0.5}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1*0.5,-1.1*0.8}, {0.8,0.5}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1*0.5,-1.1*0.8}, {0.8,0.5}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  // Poloviční posun oproti přodchozímu
+  { 2, {3.1*0.5,-3.1*0.8}, {0.4,0.25}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1*0.5,-3.1*0.8}, {0.4,0.25}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1*0.5,-3.1*0.8}, {0.4,0.25}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {3.1*0.5,-3.1*0.8}, {0.4,0.25}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+  { 2, {1.1*0.5,-1.1*0.8}, {0.4,0.25}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1*0.5,-1.1*0.8}, {0.4,0.25}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1*0.5,-1.1*0.8}, {0.4,0.25}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {1.1*0.5,-1.1*0.8}, {0.4,0.25}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+
+
+/*
+  { 2, {0, 3.1}, {0,0.5}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, {0,0.5}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, {0,0.5}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+  { 2, {0, 3.1}, {0,0.5}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+*/
+
+
 
 
 // end:
@@ -142,10 +216,11 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
          nK = Klg->ps.r_offsets[Klg->ps.nrs];
   
   point2d particle_shift = p.particle_shift;
+  point2d minus_ps = {-particle_shift.x, -particle_shift.y};
   point2d Rpoints_plus_shift[nR];
   for(size_t i = 0; i < nR; ++i){
-    Rpoints_plus_shift[i].x = Rpoints[i].x + p.particle_shift.x;
-    Rpoints_plus_shift[i].y = Rpoints[i].y + p.particle_shift.y;
+    Rpoints_plus_shift[i].x = Rpoints[i].x - particle_shift.x;
+    Rpoints_plus_shift[i].y = Rpoints[i].y - particle_shift.y;
   }
 
   qpms_y_t nelem_sc = qpms_lMax2nelem_sc(p.lMax);
@@ -170,8 +245,8 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   if (0!=ewald32_sigma_long_shiftedpoints(results->sigmas_long,
         results->err_sigmas_long, c, p.eta, p.k, A,
         nK, Kpoints_plus_beta->base,
-        //p.beta, 
-        particle_shift)) 
+        p.beta, 
+        particle_shift /*minus_ps*/ )) 
     abort();
   if (0!=ewald32_sigma_short_shiftedpoints(
         results->sigmas_short, results->err_sigmas_short, c,
