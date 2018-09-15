@@ -180,17 +180,17 @@ int ewald32_sigma_long_shiftedpoints (
 
   // CHOOSE POINT BEGIN
   for (size_t i = 0; i < npoints; ++i) { // BEGIN POINT LOOP
-    point2d beta_pq = Kpoints_plus_beta[i];
-    point2d K_pq = {beta_pq.x - beta.x, beta_pq.y - beta.y};
-    double rbeta_pq = cart2norm(beta_pq);
+    const point2d beta_pq = Kpoints_plus_beta[i];
+    const point2d K_pq = {beta_pq.x - beta.x, beta_pq.y - beta.y};
+    const double rbeta_pq = cart2norm(beta_pq);
   // CHOOSE POINT END
 
-    complex double phasefac = cexp(I*cart2_dot(K_pq,particle_shift)); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
-    double arg_pq = atan2(beta_pq.y, beta_pq.x); // POINT-DEPENDENT
+    const complex double phasefac = cexp(I*cart2_dot(K_pq,particle_shift)); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
+    const double arg_pq = atan2(beta_pq.y, beta_pq.x); // POINT-DEPENDENT
 
     // R-DEPENDENT BEGIN
-    complex double gamma_pq = lilgamma(rbeta_pq/k);
-    complex double z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
+    const complex double gamma_pq = lilgamma(rbeta_pq/k);
+    const complex double z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
     for(qpms_l_t j = 0; j <= lMax/2; ++j) {
       int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
       // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
@@ -206,8 +206,8 @@ int ewald32_sigma_long_shiftedpoints (
       for(qpms_m_t m = -n; m <= n; ++m) {
         if((m+n) % 2 != 0) // odd coefficients are zero.
           continue;
-        qpms_y_t y = qpms_mn2y_sc(m, n);
-        complex double e_imalpha_pq = cexp(I*m*arg_pq);
+        const qpms_y_t y = qpms_mn2y_sc(m, n);
+        const complex double e_imalpha_pq = cexp(I*m*arg_pq);
         complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
         double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
         assert((n-abs(m))/2 == c->s1_jMaxes[y]);
