@@ -106,7 +106,7 @@ int ewald32_sigma_long_shiftedpoints (
 		point2d beta,
 		point2d particle_shift
 );
-int ewald32_sigma_long_points_and_shift (//NI
+int ewald32_sigma_long_points_and_shift (
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
@@ -133,12 +133,13 @@ int ewald32_sigma_short_shiftedpoints(
 		point2d beta,
 		point2d particle_shift           // used only in the very end to multiply it by the phase
 		);
-int ewald32_sigma_short_points_and_shift(//NI
+int ewald32_sigma_short_points_and_shift(
 		complex double *target_sigmasr_y, // must be c->nelem_sc long
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		size_t npoints, const point2d *Rpoints, 
+		point2d beta,
 		point2d particle_shift
 		);
 int ewald32_sigma_short_points_rordered(//NI
