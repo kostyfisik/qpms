@@ -19,7 +19,7 @@
 const double s3 = 1.732050807568877293527446341505872366942805253810380628055;
 
 // IMPORTANT: lattice properties here
-const qpms_y_t lMax = 2;
+const qpms_y_t lMax = 3;
 const double REFINDEX = 1.52;
 const double LATTICE_H = 576e-9;
 static const double SCUFF_OMEGAUNIT = 3e14;
@@ -184,7 +184,7 @@ int main (int argc, char **argv) {
           );
       // TODO CHECK B<-A vs. A<-B relation
 
-      fprintf(out, "%.16g\t%.16g\t%16g\t%.16g\t%.16g\t",
+      fprintf(out, "%.16g\t%.16g\t%.16g\t%.16g\t%.16g\t",
           scuffomega, EeV, k0_eff, beta.x, beta.y);
       if(err) fprintf(err, "%.16g\t%.16g\t%16g\t%.16g\t%.16g\t",
           scuffomega, EeV, k0_eff, beta.x, beta.y);
