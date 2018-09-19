@@ -136,33 +136,33 @@ typedef enum {
 } qpms_bessel_t;
 
 // coordinate system types
-typedef struct {
+typedef struct cart3_t {
 	double x, y, z;
 } cart3_t;
 
-typedef struct {
+typedef struct ccart3_t {
 	complex double x, y, z;
 } ccart3_t;
 
-typedef struct {
+typedef struct cart2_t {
 	double x, y;
 } cart2_t;
 
-typedef struct {
+typedef struct sph_t {
 	double r, theta, phi;
 } sph_t;
 
-typedef struct { // Do I really need this???
+typedef struct csph_t { // Do I really need this???
 	complex double r;
 	double	theta, phi;
 } csph_t;
 
 // complex vector components in local spherical basis
-typedef struct {
+typedef struct csphvec_t {
 	complex double rc, thetac, phic; 
 } csphvec_t;
 
-typedef struct {
+typedef struct pol_t {
 	double r, phi;
 } pol_t;
 
