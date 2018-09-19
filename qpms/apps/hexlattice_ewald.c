@@ -3,6 +3,7 @@
 // c99 -o ew -Wall -I ../.. -O2 -ggdb -DLATTICESUMS32 hexlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c -lgsl -lm -lblas 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include <qpms/translations.h>
 #include <qpms/lattices.h>
 #include <gsl/gsl_const_mksa.h>
@@ -68,7 +69,7 @@ int main (int argc, char **argv) {
   size_t kcount = 0;
   size_t klist_capacity = MAXKCOUNT;
   cart2_t *klist = malloc(sizeof(cart2_t) * klist_capacity);
-  while (fscanf(f, "%lf %lf", &(klist[kcount].x), &(klist[kcount].y)) == 2) {
+  while (scanf("%lf %lf", &(klist[kcount].x), &(klist[kcount].y)) == 2) {
     ++kcount;
     if(kcount >= klist_capacity) {
       klist_capacity *= 2;
@@ -204,7 +205,7 @@ int main (int argc, char **argv) {
   if(err) fclose(err);
 
 #ifdef KSTDIN
-  free(klist)
+  free(klist);
 #endif
 
   triangular_lattice_gen_free(Klg);
