@@ -822,7 +822,7 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None):
         if not np.all(ks_current == ks_muster):
             raise ValueError("%s contains different k-vectors than %s"%(filename, freqfilenames[0]))
         curWdata = data[:,5:]
-        curWs = curWdata[:,::2] + 1j*Wdata[:,1::2]
+        curWs = curWdata[:,::2] + 1j*curWdata[:,1::2]
         curWs.shape = (nk_muster, nparticles, nparticles, 2, nelem, nelem)
         allWs[succread] = curWs
         cur_freqs_weirdunits = np.array(data[:,0])
