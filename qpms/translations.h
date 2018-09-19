@@ -10,6 +10,10 @@
 #include "bessels.h"
 #endif
 
+#ifdef LATTICESUMS32
+#include "ewald.h"
+#endif
+
 
 /*
  * Argument conventions:
@@ -28,6 +32,15 @@
  * respectively. Seems consistent.
  *
  */
+
+/*
+ * r_ge_d argument:
+ *
+ * If r_ge_d == true, the translation coefficients are calculated using regular bessel functions, 
+ * regardless of what J argument is.
+ *
+ */
+
 
 // TODO replace the xplicit "Taylor" functions with general,
 // taking qpms_normalisation_t argument.
@@ -63,6 +76,10 @@ typedef struct qpms_trans_calculator {
 	double *tau0;
 	// Spherical Bessel function coefficients:
 	// TODO
+#endif
+
+#ifdef LATTICESUMS32
+	qpms_ewald32_constants_t *e32c;
 #endif
 #ifdef LATTICESUMS_OLD
 	complex double *hct; // Hankel function coefficient table 
@@ -136,6 +153,45 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_arrays(const qpms_trans_calculat
 		sph_t k_sph, qpms_bessel_t J /* Only J=3 valid for now */,
 		qpms_l_t longrange_order_cutoff, unsigned kappa, double cv, double k0);
 #endif // LATTICESUMS_OLD
+
+
+#ifdef LATTICESUMS32
+// for the time being there are only those relatively low-level quick&dirty functions
+// according to what has been implemented from ewald.h; 
+// TODO more high-level functions with more advanced lattice generators etc. (after
+// the prerequisities from lattices2d.h are implememted)
+
+#if 0 // NI
+int qpms_trans_calculator_e32_long_points_and_shift(const qpms_trans_calculator *c,
+		complex double *Adest_long, double *Aerr_long,
+		complex double *Bdest_long, double *Berr_long,
+		double eta, double k, double unitcell_area,
+		size_t npoints, const cart2_t *Kpoints,
+		cart2_t beta,
+		cart2_t particle_shift
+		);
+
+int qpms_trans_calculator_e32_short_points_and_shift(const qpms_trans_calculator *c,
+		complex double *Adest_short, double *Aerr_short,
+		complex double *Bdest_short, double *Berr_short,
+		double eta, double k,
+		size_t npoints, const cart2_t *Rpoints,
+		cart2_t beta,
+		cart2_t particle_shift
+		);
+#endif 
+
+int qpms_trans_calculator_e32_both_points_and_shift(const qpms_trans_calculator *c,
+		complex double *Adest, double *Aerr,
+		complex double *Bdest, double *Berr,
+		const ptrdiff_t deststride, const ptrdiff_t srcstride,
+		const double eta, const double k,
+		const size_t nRpoints, const cart2_t *Rpoints,
+		const size_t nKpoints, const cart2_t *Kpoinst,
+		const cart2_t beta,
+		const cart2_t particle_shift
+		);
+#endif //LATTICESUMS32
 
 
 
