@@ -1,4 +1,5 @@
 // c99 -o ew_altin -DALTIN -Wall -I ../.. -O2 -ggdb -DLATTICESUMS32 hexlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c -lgsl -lm -lblas 
+// c99 -o ew_kin -DALTIN -DKSTDIN -Wall -I ../.. -O2 -ggdb -DLATTICESUMS32 hexlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c -lgsl -lm -lblas 
 // c99 -o ew -Wall -I ../.. -O2 -ggdb -DLATTICESUMS32 hexlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c -lgsl -lm -lblas 
 #include <stdio.h>
 #include <math.h>
@@ -9,7 +10,9 @@
 
 
 #define MAXOMEGACOUNT 1000
-#define MAXKCOUNT 100
+#define MAXKCOUNT 100 // serves as klist default buffer size if KSTDIN is defined
+#define KMINCOEFF 0.998 // not used if KSTDIN defined
+#define KMAXCOEFF 1.002 // not used if KSTDIN defined
 #define KLAYERS 20
 #define RLAYERS 20
 
@@ -36,7 +39,6 @@ int main (int argc, char **argv) {
   char *errfile = NULL;
   if (argc > 3)
     errfile = argv[3];
-  cart2_t klist[MAXKCOUNT];
 
 #ifdef ALTIN // omega is provided on command line
   char *omegastr = argv[1];
@@ -52,6 +54,7 @@ int main (int argc, char **argv) {
   }
   fclose(f);
 #endif
+
   /*f = fopen(kfile, "r");
   int kcount = 100;
   while (fscanf(f, "%lf %lf", &(klist[kcount].x), &(klist[kcount].y)) == 2) {
@@ -61,11 +64,26 @@ int main (int argc, char **argv) {
   fclose(f);
   */
 
+#ifdef KSTDIN
+  size_t kcount = 0;
+  size_t klist_capacity = MAXKCOUNT;
+  cart2_t *klist = malloc(sizeof(cart2_t) * klist_capacity);
+  while (fscanf(f, "%lf %lf", &(klist[kcount].x), &(klist[kcount].y)) == 2) {
+    ++kcount;
+    if(kcount >= klist_capacity) {
+      klist_capacity *= 2;
+      klist = realloc(klist, sizeof(cart2_t) * klist_capacity);
+      if (klist == NULL) abort();
+    }
+  }
+#else
+  cart2_t klist[MAXKCOUNT];
   int kcount = MAXKCOUNT;
   for (int i = 0; i <  kcount; ++i) { // TODO this should depend on orientation...
     klist[i].x = 0;
-    klist[i].y = 2. * 4. * M_PI / 3. / LATTICE_A / kcount * i;
+    klist[i].y = (4.* M_PI / 3. / LATTICE_A) * (KMINCOEFF + (KMAXCOEFF-KMINCOEFF)/kcount*i);
   }
+#endif
 
   const double refindex = REFINDEX;
   const double h = LATTICE_H;
@@ -94,11 +112,11 @@ int main (int argc, char **argv) {
   const point2d pshift0 = {0, 0};
   point2d pshiftAB = {0, 0}, pshiftBA = {0,0};
   if(rs_orientation == TRIANGULAR_VERTICAL) { // CHECKSIGN
-    pshiftAB.x = h;
-    pshiftBA.x = -h;
+    pshiftAB.x = h/2;
+    pshiftBA.x = -h/2;
   } else { // CHECKSIGN
-    pshiftAB.y = -h;
-    pshiftBA.y = h;
+    pshiftAB.y = -h/2;
+    pshiftBA.y = h/2;
   }
 
   qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_POWER); // vai POWER_CS?
@@ -184,6 +202,10 @@ int main (int argc, char **argv) {
 
   fclose(out);
   if(err) fclose(err);
+
+#ifdef KSTDIN
+  free(klist)
+#endif
 
   triangular_lattice_gen_free(Klg);
   triangular_lattice_gen_free(Rlg);
