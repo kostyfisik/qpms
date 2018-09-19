@@ -73,13 +73,21 @@ int main (int argc, char **argv) {
   const double unitcell_area = s3*a*a/2.;
   const double rec_a = 4*M_PI/s3/a;
 
+  //fprintf(stderr, "%.16g\n", rec_a);
+
   triangular_lattice_gen_t *Rlg = triangular_lattice_gen_init(a, rs_orientation, true, 0);
   triangular_lattice_gen_extend_to_steps(Rlg, RLAYERS);
   triangular_lattice_gen_t *Klg = triangular_lattice_gen_init(rec_a, reverseTriangularLatticeOrientation(rs_orientation), true, 0);
   triangular_lattice_gen_extend_to_steps(Klg, KLAYERS);
 
+  points2d_rordered_t Rselwo0 = points2d_rordered_annulus(&(Rlg->ps), 0, false, INFINITY, false);
+
   const point2d *Rpoints = Rlg->ps.base;
   size_t nR = Rlg->ps.r_offsets[Rlg->ps.nrs];
+  // TODO automatic skip of the zero point directly in translations.c
+  const point2d *Rpoints_wo0 = Rselwo0.base + Rselwo0.r_offsets[0];
+  size_t nR_wo0 = Rselwo0.r_offsets[Rselwo0.nrs] - Rselwo0.r_offsets[0];
+  assert(nR - nR_wo0 == 1);
   const point2d *Kpoints = Klg->ps.base;
   size_t nK = Klg->ps.r_offsets[Klg->ps.nrs];
 
@@ -131,7 +139,7 @@ int main (int argc, char **argv) {
           &(W[0][0][0][0][0]), err ? &(Werr[0][0][0][0][0]) : NULL, // Adest, Aerr,
           &(W[0][0][1][0][0]), err ? &(Werr[0][0][1][0][0]) : NULL, // Bdest, Berr,
           deststride, srcstride,
-          eta, k0_eff, unitcell_area, nR, Rpoints, nK, Kpoints, beta, pshift0
+          eta, k0_eff, unitcell_area, nR_wo0, Rpoints_wo0, nK, Kpoints, beta, pshift0
           );
       // B<-B
       for(qpms_y_t desty = 0; desty < c->nelem; ++desty) 

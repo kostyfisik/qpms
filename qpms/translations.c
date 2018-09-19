@@ -1163,7 +1163,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
     const ptrdiff_t deststride, const ptrdiff_t srcstride,
     /* qpms_bessel_t J*/ // assume QPMS_HANKEL_PLUS
     const double eta, const double k, const double unitcell_area,
-    const size_t nRpoints, const cart2_t *Rpoints,
+    const size_t nRpoints, const cart2_t *Rpoints, // n.b. can't contain 0; TODO automatic recognition and skip
     const size_t nKpoints, const cart2_t *Kpoints,
     const cart2_t beta,
     const cart2_t particle_shift
