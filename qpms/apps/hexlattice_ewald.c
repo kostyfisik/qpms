@@ -1,3 +1,4 @@
+// c99 -o ew_altin -DALTIN -Wall -I ../.. -O2 -ggdb -DLATTICESUMS32 hexlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c -lgsl -lm -lblas 
 // c99 -o ew -Wall -I ../.. -O2 -ggdb -DLATTICESUMS32 hexlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c -lgsl -lm -lblas 
 #include <stdio.h>
 #include <math.h>
@@ -27,17 +28,22 @@ static const TriangularLatticeOrientation rs_orientation = TRIANGULAR_VERTICAL;
 int main (int argc, char **argv) {
   const double LATTICE_A = s3*LATTICE_H;
   const double INVLATTICE_A = 4*M_PI / s3 / LATTICE_A;
-  
-  char *omegafile = argv[1];
+
+  if (argc < 3) abort();
+
   // char *kfile = argv[2]; // not used
-  char *outfile = argv[3];
+  char *outfile = argv[2];
   char *errfile = NULL;
-  if (argc > 4)
-    errfile = argv[4];
-  //char *outlongfile = argv[4];
-  //char *outshortfile = argv[5];
-  double scuffomegas[MAXOMEGACOUNT];
+  if (argc > 3)
+    errfile = argv[3];
   cart2_t klist[MAXKCOUNT];
+
+#ifdef ALTIN // omega is provided on command line
+  char *omegastr = argv[1];
+  const double scuffomega = strtod(omegastr, NULL);
+#else
+  char *omegafile = argv[1];
+  double scuffomegas[MAXOMEGACOUNT];
   FILE *f = fopen(omegafile, "r");
   size_t omegacount = 0;
   while (fscanf(f, "%lf", scuffomegas + omegacount) == 1){
@@ -45,6 +51,7 @@ int main (int argc, char **argv) {
     ++omegacount;
   }
   fclose(f);
+#endif
   /*f = fopen(kfile, "r");
   int kcount = 100;
   while (fscanf(f, "%lf %lf", &(klist[kcount].x), &(klist[kcount].y)) == 2) {
@@ -93,8 +100,12 @@ int main (int argc, char **argv) {
   if (errfile)
     err = fopen(errfile, "w");
 
+#ifndef ALTIN
   for (size_t omegai = 0; omegai < omegacount; ++omegai) {
     const double scuffomega = scuffomegas[omegai];
+#else
+  {
+#endif
     const double omega = scuffomega * SCUFF_OMEGAUNIT;
     const double EeV = omega * hbar / eV;
     const double k0_vac = omega / c0;
