@@ -186,6 +186,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
 		complex double *Bdest, double *Berr,
 		const ptrdiff_t deststride, const ptrdiff_t srcstride,
 		const double eta, const double k,
+		const double unitcell_area,
 		const size_t nRpoints, const cart2_t *Rpoints,
 		const size_t nKpoints, const cart2_t *Kpoinst,
 		const cart2_t beta,

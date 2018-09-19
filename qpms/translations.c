@@ -1162,22 +1162,22 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
     complex double * const Bdest, double * const Berr,
     const ptrdiff_t deststride, const ptrdiff_t srcstride,
     /* qpms_bessel_t J*/ // assume QPMS_HANKEL_PLUS
-    const double eta, const double k, 
+    const double eta, const double k, const double unitcell_area,
     const size_t nRpoints, const cart2_t *Rpoints,
-    const size_t nKpoints, const cart2_t *Kpoinst,
+    const size_t nKpoints, const cart2_t *Kpoints,
     const cart2_t beta,
     const cart2_t particle_shift
     )
 {
 
   const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e32c->lMax);
-  const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
+  //const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
   const bool doerr = Aerr || Berr;
   const bool do_sigma0 = ((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
 
   complex double *sigmas_short = malloc(sizeof(complex double)*nelem2_sc);
   complex double *sigmas_long = malloc(sizeof(complex double)*nelem2_sc);
-  complex double *sigmas_total = malloc(sizeof(complex double)*nelem_sc);
+  complex double *sigmas_total = malloc(sizeof(complex double)*nelem2_sc);
   double *serr_short, *serr_long, *serr_total;
   if(doerr) {
     serr_short = malloc(sizeof(double)*nelem2_sc);
@@ -1187,7 +1187,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
 
   int retval;
   retval = ewald32_sigma_long_points_and_shift(sigmas_long, serr_long,
-      c->e32c, eta, k, nKpoints, Kpoints, beta, particle_shift);
+      c->e32c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
   if (retval) abort();
 
   retval = ewald32_sigma_short_points_and_shift(sigmas_short, serr_short,
@@ -1216,7 +1216,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
         ptrdiff_t desti = 0, srci = 0;
         for (qpms_l_t n = 1; n <= c->lMax; ++n) for (qpms_m_t m = -n; m <= n; ++m) {
           for (qpms_l_t nu = 1; nu <= c->lMax; ++nu) for (qpms_m_t mu = -nu; mu <= nu; ++mu){
-            const size_t i = qpms_trans_calculator_index_mnmu(c, m, n, mu, nu);
+            const size_t i = qpms_trans_calculator_index_mnmunu(c, m, n, mu, nu);
             const size_t qmax = c->A_multipliers[i+1] - c->A_multipliers[i] - 1;
             complex double Asum, Asumc; ckahaninit(&Asum, &Asumc);
             double Asumerr, Asumerrc; if(Aerr) kahaninit(&Asumerr, &Asumerrc);
@@ -1258,7 +1258,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
       }
       break;
     default:
-      abort()
+      abort();
   }
 
   free(sigmas_short);
