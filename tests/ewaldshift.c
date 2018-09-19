@@ -10,6 +10,14 @@
 #include <stdio.h>
 #include <float.h>
 #include <gsl/gsl_sf_legendre.h>
+#include <gsl/gsl_const_mksa.h>
+
+
+static const double eV = GSL_CONST_MKSA_ELECTRON_CHARGE;
+static const double c0 = GSL_CONST_MKSA_SPEED_OF_LIGHT;
+static const double hbar = GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR;
+
+
 typedef struct ewaldtest_triang_params {
   qpms_l_t lMax;
   point2d beta; 
@@ -39,6 +47,10 @@ typedef struct ewaldtest_triang_results {
 
 ewaldtest_triang_params paramslist[] = {
 // lMax, beta, shift, k, a, eta, maxR, maxK, csphase, orientation
+  {3, {2.7/576e-9, 1/576e-9}, {576e-9/2,0}, 4.1*M_PI/576e-9, 576e-9, 1/576e-9, 40*576e-9, 40/576e-9, 1., TRIANGULAR_VERTICAL},
+  {3, {2.7/576e-9, 1/576e-9}, {576e-9/2,0}, 4.1*M_PI/576e-9, 576e-9, 2/576e-9, 40*576e-9, 40/576e-9, 1., TRIANGULAR_VERTICAL},
+  {3, {2.7/576e-9, 1/576e-9}, {576e-9/2,0}, 4.1*M_PI/576e-9, 576e-9, 3/576e-9, 40*576e-9, 40/576e-9, 1., TRIANGULAR_VERTICAL},
+  {3, {2.7/576e-9, 1/576e-9}, {576e-9/2,0}, 4.1*M_PI/576e-9, 576e-9, 4/576e-9, 40*576e-9, 40/576e-9, 1., TRIANGULAR_VERTICAL},
 /*
  { 2, {2.7, 1}, {0.5,0.1325}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {2.7, 1}, {0.5,0.1325}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
