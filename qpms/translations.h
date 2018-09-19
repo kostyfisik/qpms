@@ -181,7 +181,7 @@ int qpms_trans_calculator_e32_short_points_and_shift(const qpms_trans_calculator
 		);
 #endif 
 
-int qpms_trans_calculator_e32_both_points_and_shift(const qpms_trans_calculator *c,
+int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_trans_calculator *c,
 		complex double *Adest, double *Aerr,
 		complex double *Bdest, double *Berr,
 		const ptrdiff_t deststride, const ptrdiff_t srcstride,
