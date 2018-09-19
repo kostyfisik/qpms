@@ -180,7 +180,8 @@ def nelem2lMax(nelem):
     else:
         return lMax
 
-
+def lMax2nelem(lMax):
+    return lMax * (lMax+2)
 
 def lpy(nmax, z):
     # TODO TRUEVECTORIZE
@@ -781,4 +782,110 @@ def loadWfile(fileName, lMax = None, fatForm = True):
             'Ws' : Ws,
             'freqs_weirdunits' : freqs_weirdunits,
             }
+
+def processWfiles_sameKs(freqfilenames, destfilename, lMax = None):
+    '''Processes translation operator data in different files; each file is supposed to contain one frequency.
+    The Ks in the different files are expected to be exactly the same and in the same order; 
+    the result is sorted by frequencies and saved to npz file;
+    The representation is always "thin", i.e. the elements which are zero due to z-symmetry are skipped'''
+    nparticles = 2 #TODO generalize
+    
+    um = 1e-6 # micrometre in SI units
+    
+    nfiles = len(freqfilenames)
+    
+    if (nfiles < 1): return ValueError("At least one filename has to be passed")
+    
+    #Check the first file to get the "constants" set
+    filename = freqfilenames[0]
+    data = np.loadtxt(filename)
+    nk_muster = data.shape[0]
+    Wdata = data[:,5:]
+    if (lMax is None):
+        nelem = int((Wdata.shape[1]/nparticles**2)**.5/2)
+        lMax = nelem2lMax(nelem)
+    else:
+        nelem = lMax2nelem(lMax)
+    ks_muster = np.array(data[:,3:5], copy=True)
+    
+    allWs = np.empty((nfiles, nk_muster, nparticles, nparticles, 2, nelem, nelem,), dtype=complex)
+    k0s = np.empty((nfiles,))
+    freqs_weirdunits = np.empty((nfiles,))
+    EeVs = np.empty((nfiles,))
+    succread = 0
+    
+    for filename in freqfilenames:
+        data = np.loadtxt(filename)
+        if data.shape[0] != nk_muster:
+            raise ValueError("%s contains different number of lines than %s"%(filename, freqfilenames[0]))
+        ks_current = np.array(data[:,3:5])
+        if not np.all(ks_current == ks_muster):
+            raise ValueError("%s contains different k-vectors than %s"%(filename, freqfilenames[0]))
+        curWdata = data[:,5:]
+        curWs = curWdata[:,::2] + 1j*Wdata[:,1::2]
+        curWs.shape = (nk_muster, nparticles, nparticles, 2, nelem, nelem)
+        allWs[succread] = curWs
+        cur_freqs_weirdunits = np.array(data[:,0])
+        if not np.all(cur_freqs_weirdunits == cur_freqs_weirdunits[0]):
+            raise ValueError("%s contains various frequencies; we require only one frequency per file"%(filename))
+        freqs_weirdunits[succread] = cur_freqs_weirdunits[0]
+        k0s[succread] = data[0,2] # TODO check this as well?
+        EeVs[succread] = data[0,1]
+        succread += 1
+    freqs = freqs_weirdunits * c / um
+
+
+    #TODO TODO TODO sort everything by omega
+    
+    np.savez(destfilename,
+             lMax = lMax,
+             nelem = nelem,
+             npart = nparticles,
+             nfreqs = succread,
+             nk = nk_muster,
+             freqs = freqs[:succread],
+             freqs_weirdunits = freqs_weirdunits[:succread],
+             EeVs_orig = EeVs[:succread],
+             k0s = k0s[:succread],
+             ks = ks_muster,
+             Wdata = allWs[:succread]
+            )
+    return
+
+
+
+def loadWfile_processed(fileName, lMax = None, fatForm = True):
+    data = np.load(fileName);
+    nk = data['nk'][()]
+    nfreqs = data['nfreqs'][()]
+    nparticles = data['npart'][()]
+    Ws = data['Wdata']
+    if lMax is not None:
+        nelem = lMax2nelem(lMax)
+        Ws = Ws[...,:nelem,:nelem]
+    else:
+        lMax = data['lMax'][()]
+        nelem = lMax2nelem(lMax)
+    if fatForm: #indices: (...,) destparticle, desttype, desty, srcparticle, srctype, srcy
+        Ws2 = np.moveaxis(Ws, [-5,-4,-3,-2,-1], [-4,-2,-5,-3,-1] )
+        fatWs = np.empty(Ws2.shape[:-5]+(nparticles, 2,nelem, nparticles, 2, nelem),dtype=complex)
+        fatWs[...,:,0,:,:,0,:] = Ws2[...,0,:,:,:,:] #A
+        fatWs[...,:,1,:,:,1,:] = Ws2[...,0,:,:,:,:] #A
+        fatWs[...,:,1,:,:,0,:] = Ws2[...,1,:,:,:,:] #B
+        fatWs[...,:,0,:,:,1,:] = Ws2[...,1,:,:,:,:] #B
+        Ws = fatWs
+    return{
+        'lMax': lMax,
+        'nelem': nelem,
+        'npart': nparticles,
+        'nfreqs': nfreqs,
+        'nk' : nk,
+        'freqs': data['freqs'],
+        'freqs_weirdunits': data['freqs_weirdunits'],
+        'EeVs_orig': data['EeVs_orig'],
+        'k0s': data['k0s'],
+        'ks': data['ks'],
+        'Ws': Ws,
+    }
+    
 
