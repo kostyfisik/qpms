@@ -783,11 +783,16 @@ def loadWfile(fileName, lMax = None, fatForm = True):
             'freqs_weirdunits' : freqs_weirdunits,
             }
 
-def processWfiles_sameKs(freqfilenames, destfilename, lMax = None):
-    '''Processes translation operator data in different files; each file is supposed to contain one frequency.
+def processWfiles_sameKs(freqfilenames, destfilename, lMax = None, f='npz'):
+    '''
+    Processes translation operator data in different files; each file is supposed to contain one frequency.
     The Ks in the different files are expected to be exactly the same and in the same order; 
     the result is sorted by frequencies and saved to npz file;
-    The representation is always "thin", i.e. the elements which are zero due to z-symmetry are skipped'''
+    The representation is always "thin", i.e. the elements which are zero due to z-symmetry are skipped
+    F is either 'npz' or 'd' 
+    'npz' creates npz archive, 'd' creates a directory with individual npy files, where the W-matrix data
+    are writen using memmap.
+    '''
     nparticles = 2 #TODO generalize
     
     um = 1e-6 # micrometre in SI units
@@ -808,7 +813,17 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None):
         nelem = lMax2nelem(lMax)
     ks_muster = np.array(data[:,3:5], copy=True)
     
-    allWs = np.empty((nfiles, nk_muster, nparticles, nparticles, 2, nelem, nelem,), dtype=complex)
+    if f == 'npz':
+        allWs = np.empty((nfiles, nk_muster, nparticles, nparticles, 2, nelem, nelem,), dtype=complex)
+    elif f == 'd':
+        j = os.path.join
+        d = destfilename
+        try:
+            os.mkdir(destfilename)
+        except FileExistsError as exc:
+            pass
+        allWs = np.lib.format.open_memmap(filename=j(d,"Wdata.npy"), dtype=complex, shape=(nfiles, nk_muster, nparticles, nparticles,2,nelem,nelem,),mode='w+')
+    else: raise ValueError("f has to be either 'npz' or 'd'")
     k0s = np.empty((nfiles,))
     freqs_weirdunits = np.empty((nfiles,))
     EeVs = np.empty((nfiles,))
@@ -832,12 +847,11 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None):
         k0s[succread] = data[0,2] # TODO check this as well?
         EeVs[succread] = data[0,1]
         succread += 1
+    allWs.close()
     freqs = freqs_weirdunits * c / um
 
-
-    #TODO TODO TODO sort everything by omega
-    
-    np.savez(destfilename,
+    if f == 'npz':
+        np.savez(destfilename,
              lMax = lMax,
              nelem = nelem,
              npart = nparticles,
@@ -850,16 +864,54 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None):
              ks = ks_muster,
              Wdata = allWs[:succread]
             )
+    elif f == 'd':
+        np.save(j(d,'lMax.npy'), lMax)
+        np.save(j(d,'nelem.npy'), nelem)
+        np.save(j(d,'npart.npy'), nparticles)
+        np.save(j(d,'nfreqs.npy'), succread)
+        np.save(j(d,'nk.npy'), nk_muster)
+        np.save(j(d,'freqs.npy'), freqs[:succread])
+        np.save(j(d,'freqs_weirdunits.npy'), freqs_weirdunits[:succread])
+        np.save(j(d,'EeVs_orig.npy'), EeVs[:succread])
+        np.save(j(d,'k0s.npy'), k0s[:succread])
+        np.save(j(d,'ks.npy'), ks_muster)
+        # Wdata already saved
     return
 
 
 
-def loadWfile_processed(fileName, lMax = None, fatForm = True):
-    data = np.load(fileName);
-    nk = data['nk'][()]
-    nfreqs = data['nfreqs'][()]
-    nparticles = data['npart'][()]
-    Ws = data['Wdata']
+def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = None):
+    if os.path.isdir(fileName): # .npy files in a directory
+        p = filename
+        j = os.path.join
+        nk = np.load(j(p,'nk.npy'))[()]
+        nfreqs = np.load(j(p,'nfreqs.npy'))[()]
+        nparticles = np.load(j(p,'npart.npy'))[()]
+        Ws = np.load(j(p,'Wdata.npy'), mode='r')
+        ks = np.load(j(p,'ks.npy'))
+        freqs = np.load(j(p,'freqs.npy'))
+        k0s = np.load(j(p,'k0s.npy'))
+        EeVs_orig = np.load(j(p,'EeVs_orig.npy'))
+        freqs_weirdunits = np.load(j(p,'freqs_weirdunits.npy'))
+    else: # npz file
+        data = np.load(fileName, mode='r')
+        nk = data['nk'][()]
+        nfreqs = data['nfreqs'][()]
+        nparticles = data['npart'][()]
+        Ws = data['Wdata']
+        ks = data['ks']
+        freqs = data['freqs']
+        k0s = data['k0s']
+        EeVs_orig = data['EeVs_orig']
+        freqs_weirdunits = data['freqs_weirdunits']
+    if midk_halfwidth is not None:
+        k_mid_i = nk // 2
+        if midk_halfwidth < k_mid_i:
+            maxk_i = k_mid_i + midk_halfwidth
+            mink_i = k_mid_i - midk_halfwidth
+            nk = 2*midk_halfwidth+1
+            Ws = Ws[:,mink_i:(maxk_i+1)]
+            ks = ks[mink_i:(maxk_i+1)]
     if lMax is not None:
         nelem = lMax2nelem(lMax)
         Ws = Ws[...,:nelem,:nelem]
@@ -880,11 +932,11 @@ def loadWfile_processed(fileName, lMax = None, fatForm = True):
         'npart': nparticles,
         'nfreqs': nfreqs,
         'nk' : nk,
-        'freqs': data['freqs'],
-        'freqs_weirdunits': data['freqs_weirdunits'],
-        'EeVs_orig': data['EeVs_orig'],
-        'k0s': data['k0s'],
-        'ks': data['ks'],
+        'freqs': freqs,
+        'freqs_weirdunits': freqs_weirdunits,
+        'EeVs_orig': EeVs_orig,
+        'k0s': k0s,
+        'ks': ks,
         'Ws': Ws,
     }
     
