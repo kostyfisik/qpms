@@ -11,7 +11,7 @@
 
 
 #define MAXOMEGACOUNT 1000
-#define MAXKCOUNT 100 // serves as klist default buffer size if KSTDIN is defined
+#define MAXKCOUNT 20 // serves as klist default buffer size if KSTDIN is defined
 #define KMINCOEFF 0.998 // not used if KSTDIN defined
 #define KMAXCOEFF 1.002 // not used if KSTDIN defined
 #define KLAYERS 20
@@ -137,7 +137,7 @@ int main (int argc, char **argv) {
     const double EeV = omega * hbar / eV;
     const double k0_vac = omega / c0;
     const double k0_eff  = k0_vac * refindex;
-    const double eta = 4*rec_a; // FIXME quite arbitrary
+    const double eta = 5.224/a; // FIXME quite arbitrary, but this one should work
 
     // indices : destpart (A/B-particle), srcpart (A/B-particle), coeff type (A/B- type), desty, srcy
     complex double W[2][2][2][c->nelem][c->nelem];
@@ -207,6 +207,8 @@ int main (int argc, char **argv) {
 #ifdef KSTDIN
   free(klist);
 #endif
+
+  qpms_trans_calculator_free(c);
 
   triangular_lattice_gen_free(Klg);
   triangular_lattice_gen_free(Rlg);
