@@ -8,6 +8,7 @@ from scipy.special import lpmn, lpmv, sph_jn, sph_yn, poch, gammaln
 from scipy.misc import factorial
 import math
 import cmath
+import os
 
 """
 '''
@@ -847,7 +848,7 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None, f='npz'):
         k0s[succread] = data[0,2] # TODO check this as well?
         EeVs[succread] = data[0,1]
         succread += 1
-    allWs.close()
+    del allWs
     freqs = freqs_weirdunits * c / um
 
     if f == 'npz':
@@ -882,19 +883,19 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None, f='npz'):
 
 def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = None):
     if os.path.isdir(fileName): # .npy files in a directory
-        p = filename
+        p = fileName
         j = os.path.join
         nk = np.load(j(p,'nk.npy'))[()]
         nfreqs = np.load(j(p,'nfreqs.npy'))[()]
         nparticles = np.load(j(p,'npart.npy'))[()]
-        Ws = np.load(j(p,'Wdata.npy'), mode='r')
+        Ws = np.load(j(p,'Wdata.npy'), mmap_mode='r')
         ks = np.load(j(p,'ks.npy'))
         freqs = np.load(j(p,'freqs.npy'))
         k0s = np.load(j(p,'k0s.npy'))
         EeVs_orig = np.load(j(p,'EeVs_orig.npy'))
         freqs_weirdunits = np.load(j(p,'freqs_weirdunits.npy'))
     else: # npz file
-        data = np.load(fileName, mode='r')
+        data = np.load(fileName, mmap_mode='r')
         nk = data['nk'][()]
         nfreqs = data['nfreqs'][()]
         nparticles = data['npart'][()]
