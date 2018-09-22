@@ -3,6 +3,7 @@
 // implementation of the [LT(4.16)] test
 #include <math.h>
 #define M_SQRTPI 1.7724538509055160272981674833411452 
+#define M_SQRT3 1.7320508075688772935274463415058724
 #include <qpms/ewald.h>
 #include <qpms/tiny_inlines.h>
 #include <qpms/indexing.h>
@@ -37,6 +38,16 @@ typedef struct ewaldtest_triang_results {
 } ewaldtest_triang_results;
 
 
+/*
+const double a = 582e-9;
+const double inv_a = 4*M_PI/a/M_SQRT3;
+const double Klen = 4*M_PI/a/3;
+*/
+
+#define AA (582.e-9)
+#define INV_A (4*M_PI/AA/M_SQRT3)
+#define KLEN (4*M_PI/AA/3)
+
 ewaldtest_triang_params paramslist[] = {
 // lMax, beta, shift, k, a, eta, maxR, maxK, csphase, orientation
 /*
@@ -55,10 +66,21 @@ ewaldtest_triang_params paramslist[] = {
   { 2, {1.1, 1}, {0.5,0.}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 1}, {0.5,0.}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
 */
-  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
-  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
-  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 2.5, 20, 160, 1., TRIANGULAR_VERTICAL},
-  { 2, {1.1, 1}, {0.5,0.1325}, 2.3, 0.97, 3.5, 20, 160, 1., TRIANGULAR_VERTICAL},
+
+
+//  { 3, {0,KLEN}, {0,0}, 2.62 * 4 * M_PI/3/AA, AA, 0.5 / AA, 20*AA, 160/AA, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,KLEN}, {0,0}, 2.62 * 4 * M_PI/3/AA, AA, 2.5 / AA, 20*AA, 160/AA, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,KLEN}, {0,0}, 2.62 * 4 * M_PI/3/AA, AA, 4.5 / AA, 20*AA, 160/AA, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,KLEN}, {0,0}, 2.62 * 4 * M_PI/3/AA, AA, 6.5 / AA, 20*AA, 160/AA, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,KLEN}, {0,0}, 2.62 * 4 * M_PI/3/AA, AA, 8.5 / AA, 20*AA, 160/AA, 1., TRIANGULAR_VERTICAL},
+/*
+  { 3, {0,Klen}, {0,0}, 2.62 * 4 * M_PI/3/a, a, 0.5 / a, 20*a, 2*M_PI*160/a, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,Klen}, {0,0}, 2.62 * 4 * M_PI/3/a, a, 2.5 / a, 20*a, 2*M_PI*160/a, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,Klen}, {0,0}, 2.62 * 4 * M_PI/3/a, a, 4.5 / a, 20*a, 2*M_PI*160/a, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,Klen}, {0,0}, 2.62 * 4 * M_PI/3/a, a, 6.5 / a, 20*a, 2*M_PI*160/a, 1., TRIANGULAR_VERTICAL},
+  { 3, {0,Klen}, {0,0}, 2.62 * 4 * M_PI/3/a, a, 8.5 / a, 20*a, 2*M_PI*160/a, 1., TRIANGULAR_VERTICAL},
+*/
+
 
   { 2, {1.1, 2.1}, {0.5,0.1325}, 2.3, 0.97, 0.5, 20, 160, 1., TRIANGULAR_VERTICAL},
   { 2, {1.1, 2.1}, {0.5,0.1325}, 2.3, 0.97, 1.5, 20, 160, 1., TRIANGULAR_VERTICAL},
@@ -234,9 +256,19 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   triangular_lattice_gen_extend_to_r(Klg, p.maxK + K_len);
 
   point2d *Rpoints = Rlg->ps.base; 
+  size_t nR = Rlg->ps.r_offsets[Rlg->ps.nrs];
+  
+  if (fabs(p.particle_shift.x) ==0 && fabs(p.particle_shift.y) == 0) {
+    points2d_rordered_t Rpos = points2d_rordered_annulus(&(Rlg->ps), 0, false, INFINITY, false);
+    Rpoints = Rpos.base + Rpos.r_offsets[0];
+    nR = Rpos.r_offsets[Rpos.nrs] - Rpos.r_offsets[0];
+  }
+
+
+
+
   point2d  *Kpoints = Klg->ps.base;
-  size_t nR = Rlg->ps.r_offsets[Rlg->ps.nrs],
-         nK = Klg->ps.r_offsets[Klg->ps.nrs];
+  size_t nK = Klg->ps.r_offsets[Klg->ps.nrs];
   
   point2d particle_shift = p.particle_shift;
   point2d minus_ps = {-particle_shift.x, -particle_shift.y};
@@ -245,6 +277,8 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
     Rpoints_plus_shift[i].x = Rpoints[i].x - particle_shift.x;
     Rpoints_plus_shift[i].y = Rpoints[i].y - particle_shift.y;
   }
+
+  
 
   qpms_y_t nelem_sc = qpms_lMax2nelem_sc(p.lMax);
 
