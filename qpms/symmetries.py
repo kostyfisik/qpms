@@ -158,9 +158,11 @@ def normalize(v):
        return v*np.nan
     return v / norm
 
-def gen_hexlattice_Kpoint_svwf_rep_projectors(lMax,psi):
+def gen_hexlattice_Kpoint_svwf_rep_projectors(lMax,psi, do_bases = False):
     nelem = lMax * (lMax+2)
     projectors = dict()
+    if do_bases:
+        bases = dict()
     for repi, W in gen_hexlattice_Kpoint_svwf_rep(lMax,psi).items():
         totalvecs = 0
         tmplist = list()
@@ -191,10 +193,18 @@ def gen_hexlattice_Kpoint_svwf_rep_projectors(lMax,psi):
                         #        print(index, x)
                         #print('----------')
         theprojector = np.zeros((2,2,nelem,2,2,nelem), dtype = float) 
+        if do_bases:
+            thebasis = np.zeros((len(tmplist), 2,2,nelem), dtype=complex)
+            for i, v in enumerate(tmplist):
+                thebasis[i] = v
+            bases[repi] = thebasis
         for v in tmplist:
             theprojector += (v[:,:,:,ň,ň,ň] * v.conjugate()[ň,ň,ň,:,:,:]).real # TODO check is it possible to have imaginary elements?
         for x in [0, 1, -1,sqrt(0.5),-sqrt(0.5),0.5,-0.5]:
             theprojector[np.isclose(theprojector,x)]=x
         projectors[repi] = theprojector
-    return projectors
+    if do_bases:
+        return projectors, bases
+    else:
+        return projectors
 
