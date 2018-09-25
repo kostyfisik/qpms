@@ -605,7 +605,7 @@ reference "eq:Tmatrix definition"
 -coefficients which describe the multipole excitations of the particles
 \begin_inset Formula 
 \begin{equation}
-\coeffs_{n}=T_{n}\left(\coeffr_{\mathrm{ext}(n)}+\sum_{n'\ne n}S_{n,n'}\coeffs_{n'}\right).\label{eq:multiple scattering per particle a}
+\coeffs_{n}-T_{n}\sum_{n'\ne n}S_{n,n'}\coeffs_{n'}=T_{n}\coeffr_{\mathrm{ext}(n)}.\label{eq:multiple scattering per particle a}
 \end{equation}
 
 \end_inset
@@ -639,6 +639,205 @@ name "sub:Periodic-systems"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+In an infinite periodic array of nanoparticles, the excitations of the nanoparti
+cles take the quasiperiodic Bloch-wave form
+\begin_inset Formula 
+\[
+\coeffs_{i\alpha}=e^{i\vect k\cdot\vect R_{i}}\coeffs_{\alpha}
+\]
+
+\end_inset
+
+(assuming the incident external field has the same periodicity, 
+\begin_inset Formula $\coeffr_{\mathrm{ext}(i\alpha)}=e^{i\vect k\cdot\vect R_{i}}p_{\mathrm{ext}\left(\alpha\right)}$
+\end_inset
+
+) where 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is the index of a particle inside one unit cell and 
+\begin_inset Formula $\vect R_{i},\vect R_{i'}\in\Lambda$
+\end_inset
+
+ are the lattice vectors corresponding to the sites (labeled by multiindices
+ 
+\begin_inset Formula $i,i'$
+\end_inset
+
+) of a Bravais lattice 
+\begin_inset Formula $\Lambda$
+\end_inset
+
+.
+ The multiple-scattering problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:multiple scattering per particle a"
+
+\end_inset
+
+ then takes the form
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\coeffs_{i\alpha}=T_{\alpha}\left(\coeffr_{\mathrm{ext}(i\alpha)}+\sum_{(i',\alpha')\ne\left(i,\alpha\right)}S_{i\alpha,i'\alpha}\coeffs_{i'\alpha'}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\coeffs_{i\alpha}-T_{\alpha}\sum_{(i',\alpha')\ne\left(i,\alpha\right)}S_{i\alpha,i'\alpha'}e^{i\vect k\cdot\left(\vect R_{i'}-\vect R_{i}\right)}\coeffs_{i\alpha'}=T_{\alpha}\coeffr_{\mathrm{ext}(i\alpha)}
+\]
+
+\end_inset
+
+or, labeling 
+\begin_inset Formula $W_{\alpha\alpha'}=\sum_{i';(i',\alpha')\ne\left(i,\alpha\right)}S_{i\alpha,i'\alpha'}e^{i\vect k\cdot\left(\vect R_{i'}-\vect R_{i}\right)}=\sum_{i';(i',\alpha')\ne\left(0,\alpha\right)}S_{0\alpha,i'\alpha'}e^{i\vect k\cdot\vect R_{i'}}$
+\end_inset
+
+ and using the quasiperiodicity,
+\begin_inset Formula 
+\begin{equation}
+\sum_{\alpha'}\left(\delta_{\alpha\alpha'}\mathbb{I}-T_{\alpha}W_{\alpha\alpha'}\right)\coeffs_{\alpha'}=T_{\alpha}\coeffr_{\mathrm{ext}(\alpha)},\label{eq:multiple scattering per particle a periodic}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+\coeffs_{\alpha}-T_{\alpha}\sum_{\alpha'}W_{\alpha\alpha'}\coeffs_{\alpha'}=T_{\alpha}\coeffr_{\mathrm{ext}(\alpha)},\label{eq:multiple scattering per particle a periodic-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+which reduces the linear problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:multiple scattering per particle a"
+
+\end_inset
+
+ to interactions between particles inside single unit cell.
+ A problematic part is the evaluation of the translation operator lattice
+ sums 
+\begin_inset Formula $W_{\alpha\alpha'}$
+\end_inset
+
+; this is performed using exponentially convergent Ewald-type representations
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In an infinite periodic system, a nonlossy mode supports itself without
+ external driving, i.e.
+ such mode is described by excitation coefficients 
+\begin_inset Formula $a_{\alpha}$
+\end_inset
+
+ that satisfy eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:multiple scattering per particle a periodic-2"
+
+\end_inset
+
+ with zero right-hand side.
+ That can happen if the block matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)=\left\{ \delta_{\alpha\alpha'}\mathbb{I}-T_{\alpha}\left(\vect{\omega}\right)W_{\alpha\alpha'}\left(\omega,\vect k\right)\right\} _{\alpha\alpha'}$
+\end_inset
+
+ from the left hand side of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:multiple scattering per particle a periodic"
+
+\end_inset
+
+ is singular (here we explicitely note the 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ depence).
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+In other words, the energy bands of the lattice are given by 
+\begin_inset Formula 
+\[
+\det M\left(\omega,\vect k\right)=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For lossy nanoparticles, however, perfect propagating modes will not exist
+ and 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ will never be perfectly singular.
+ Therefore in practice, we get the bands by scanning over 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ to search for 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ which have an 
+\begin_inset Quotes sld
+\end_inset
+
+almost zero
+\begin_inset Quotes srd
+\end_inset
+
+ singular value.
 \end_layout
 
 \begin_layout Standard
