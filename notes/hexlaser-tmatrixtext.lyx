@@ -1,0 +1,247 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language swedish
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\lang english
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ush}[2]{Y_{#1,#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\svwfr}[3]{\mathbf{u}_{#1,#2}^{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\svwfs}[3]{\mathbf{v}_{#1,#2}^{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffsi}[3]{a_{#1,#2}^{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffsip}[4]{a_{#1}^{#2,#3,#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffri}[3]{p_{#1,#2}^{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffrip}[4]{p_{#1}^{#2,#3,#4}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this approach, scattering properties of single nanoparticles are first
+ computed in terms of vector sperical wavefunctions (VSWFs)—the field incident
+ onto the 
+\begin_inset Formula $n$
+\end_inset
+
+-th nanoparticle from external sources can be expanded as 
+\begin_inset Formula 
+\[
+\vect E_{n}^{\mathrm{inc}}(\vect r)=\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{t=\mathrm{E},\mathrm{M}}\coeffrip nlmt\svwfr lmt\left(\vect r_{n}\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\vect r_{n}=\vect r-\vect R_{n}$
+\end_inset
+
+, 
+\begin_inset Formula $\vect R_{n}$
+\end_inset
+
+ being the position of the centre of 
+\begin_inset Formula $n$
+\end_inset
+
+-th nanoparticle and 
+\begin_inset Formula $\svwfr lmt$
+\end_inset
+
+ are the regular VSWFs which can be expressed in terms of regular spherical
+ Bessel functions of 
+\begin_inset Formula $j_{k}\left(\left|\vect r_{n}\right|\right)$
+\end_inset
+
+ and spherical harmonics 
+\begin_inset Formula $\ush km\left(\hat{\vect r}_{n}\right)$
+\end_inset
+
+; the expressions can be found e.g.
+ in REF 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+few words about different conventions?
+\end_layout
+
+\end_inset
+
+.
+ On the other hand, the field scattered by the particle can be expanded
+ in terms of singular VSWFs 
+\begin_inset Formula $\svwfs lmt$
+\end_inset
+
+ which differ from the regular ones by regular spherical Bessel functions
+ being replaced with spherical Hankel functions 
+\begin_inset Formula $h_{k}^{(1)}\left(\left|\vect r_{n}\right|\right)$
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+\vect E_{n}^{\mathrm{scat}}=\sum_{l,m,t}\coeffsip nlmt\svwfs lmt\left(\vect r_{n}\right).
+\]
+
+\end_inset
+
+The expansion coefficients 
+\begin_inset Formula $\coeffsip nlmt$
+\end_inset
+
+, 
+\begin_inset Formula $t=\mathrm{E},\mathrm{M}$
+\end_inset
+
+ are related to the electric and magnetic multipole polarisation amplitudes
+ of the nanoparticle.
+ 
+\end_layout
+
+\begin_layout Standard
+At a given frequency, assuming the system is linear, the relation between
+ the expansion coefficients in the VSWF bases is given by the so-called
+ 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, 
+\begin_inset Formula 
+\[
+\coeffsip nlmt=\sum_{l,m,t}T_{n}^{l,m,t;l',m',t'}\coeffrip n{l'}{m'}{t'}.
+\]
+
+\end_inset
+
+The 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix is given by the shape and composition of the particle and fully
+ describes its scattering properties.
+ In theory it is infinite-dimensional, but in practice (at least for subwaveleng
+th nanoparticles) its elements drop very quickly to negligible values with
+ growing degree indices 
+\begin_inset Formula $l,l'$
+\end_inset
+
+, enabling to take into account only the elements up to some finite degree,
+ 
+\begin_inset Formula $l,l'\le l_{\mathrm{max}}$
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document
