@@ -134,14 +134,157 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\coeffripext}[4]{p_{\mathrm{ext}(#1)}^{#2,#3,#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\transop}{S}
 \end_inset
 
 
 \end_layout
 
+\begin_layout Section
+
+\lang english
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:T-matrix-simulations"
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-In this approach, scattering properties of single nanoparticles are first
+
+\lang english
+In order to get more detailed insight into the mode structure of the lattice
+ around the lasing 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point – most importantly, how much do the mode frequencies at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-points differ from the empty lattice model – we performed multiple-scattering
+ 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mackowski_analysis_1991"
+
+\end_inset
+
+ for an infinite lattice based on our systems' geometry.
+ We give a brief overview of this method in the subsections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:The-multiple-scattering-problem"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Periodic-systems"
+
+\end_inset
+
+ below.
+ 
+\lang finnish
+The top advantage of the multiple-scattering 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix approach is its computational efficiency for large finite systems
+ of nanoparticles.
+ In the lattice mode analysis in this work, however, we use it here for
+ another reason, specifically the relative ease of describing symmetries
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schulz_point-group_1999"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+The 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a single nanoparticle was computed using the scuff-tmatrix applicatio
+n from the SCUFF-EM suite~
+\lang finnish
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SCUFF2,reid_efficient_2015"
+
+\end_inset
+
+
+\lang english
+ and the system was solved up to the 
+\begin_inset Formula $l_{\mathrm{max}}=3$
+\end_inset
+
+ (octupolar) degree of electric and magnetic spherical multipole.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+We did not find any deviation from the empty lattice diffracted orders exceeding
+ the numerical precision of the computation (about 2 meV).
+ This is most likely due to the frequencies in our experiment being far
+ below the resonances of the nanoparticles, with the largest elements of
+ the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix being of the order of 
+\begin_inset Formula $10^{-3}$
+\end_inset
+
+ (for power-normalised waves).
+ The nanoparticles are therefore almost transparent, but still suffice to
+ provide feedback for lasing.
+ 
+\end_layout
+
+\begin_layout Subsection
+The multiple-scattering problem
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:The-multiple-scattering-problem"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix approach, scattering properties of single nanoparticles are first
  computed in terms of vector sperical wavefunctions (VSWFs)—the field incident
  onto the 
 \begin_inset Formula $n$
@@ -181,7 +324,7 @@ where
 \end_inset
 
 ; the expressions can be found e.g.
- in REF 
+ in [REF] 
 \begin_inset Note Note
 status open
 
@@ -191,7 +334,7 @@ few words about different conventions?
 
 \end_inset
 
-.
+(care must be taken because of varying normalisation and phase conventions).
  On the other hand, the field scattered by the particle can be (outside
  the particle's circumscribing sphere) expanded in terms of singular VSWFs
  
@@ -206,7 +349,7 @@ few words about different conventions?
 , 
 \begin_inset Formula 
 \begin{equation}
-\vect E_{n}^{\mathrm{scat}}=\sum_{l,m,t}\coeffsip nlmt\svwfs lmt\left(\vect r_{n}\right).\label{eq:E_scat}
+\vect E_{n}^{\mathrm{scat}}\left(\vect r\right)=\sum_{l,m,t}\coeffsip nlmt\svwfs lmt\left(\vect r_{n}\right).\label{eq:E_scat}
 \end{equation}
 
 \end_inset
@@ -234,7 +377,7 @@ At a given frequency, assuming the system is linear, the relation between
 -matrix, 
 \begin_inset Formula 
 \begin{equation}
-\coeffsip nlmt=\sum_{l',m',t'}T_{n}^{l,m,t;l',m',t'}\coeffrip n{l'}{m'}{t'}.\label{eq:Tmatrix definition}
+\coeffsip nlmt=\sum_{l',m',t'}T_{n}^{lmt;l'm't'}\coeffrip n{l'}{m'}{t'}.\label{eq:Tmatrix definition}
 \end{equation}
 
 \end_inset
@@ -262,7 +405,14 @@ th nanoparticles) its elements drop very quickly to negligible values with
 \end_inset
 
 -matrix can be calculated numerically using various methods; here we used
- the scuff-tmatrix tool from the SCUFF-EM suite [REF].
+ the scuff-tmatrix tool from the SCUFF-EM suite 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SCUFF2,reid_efficient_2015"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -276,9 +426,226 @@ The singular SVWFs originating at
 
  in terms of regular SVWFs,
 \begin_inset Formula 
+\begin{equation}
+\svwfs lmt\left(\vect r_{n}\right)=\sum_{l',m',t'}\transop^{l'm't';lmt}\left(\vect R_{n'}-\vect R_{n}\right)\svwfr{l'}{m'}{t'}\left(\vect r_{n'}\right),\qquad\left|\vect r_{n'}\right|<\left|\vect R_{n'}-\vect R_{n}\right|.\label{eq:translation op def}
+\end{equation}
+
+\end_inset
+
+Analytical expressions for the translation operator 
+\begin_inset Formula $\transop^{lmt;l'm't'}\left(\vect R_{n'}-\vect R_{n}\right)$
+\end_inset
+
+ can be found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xu_efficient_1998"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If we write the field incident onto 
+\begin_inset Formula $n$
+\end_inset
+
+-th nanoparticle as the sum of fields scattered from all the other nanoparticles
+ and an external field 
+\begin_inset Formula $\vect E_{0}$
+\end_inset
+
+, 
+\begin_inset Formula 
 \[
-\svwfs lmt\left(\vect r_{n}\right)=\sum_{l',m',t'}
+\vect E_{n}^{\mathrm{inc}}\left(\vect r\right)=\vect E_{0}\left(\vect r\right)+\sum_{n'\ne n}\vect E_{n'}^{\mathrm{scat}}\left(\vect r\right)
 \]
+
+\end_inset
+
+and use eqs.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:E_inc"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation op def"
+
+\end_inset
+
+, we obtain a set of linear equations for the electromagnetic response (multiple
+ scattering) of the whole set of nanoparticles,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\vect E_{n}^{\mathrm{inc}}\left(\vect r\right)=\vect E_{0}\left(\vect r\right)+\sum_{n'\ne n}\vect E_{n'}^{\mathrm{scat}}\left(\vect r\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\sum_{l,m,t}\coeffrip nlmt\svwfr lmt\left(\vect r_{n}\right)=\sum_{l,m,t}\coeffripext nlmt\svwfr lmt\left(\vect r_{n}\right)+\sum_{n'\ne n}\sum_{l,m,t}\coeffsip{n'}lmt\svwfs lmt\left(\vect r_{n'}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\sum_{l,m,t}\coeffrip nlmt\svwfr lmt\left(\vect r_{n}\right)=\sum_{l,m,t}\coeffripext nlmt\svwfr lmt\left(\vect r_{n}\right)+\sum_{n'\ne n}\sum_{l,m,t}\coeffsip{n'}lmt\sum_{l',m',t'}\transop^{l'm't';lmt}\left(\vect R_{n}-\vect R_{n'}\right)\svwfr{l'}{m'}{t'}\left(\vect r_{n}\right)
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\sum_{l,m,t}\coeffrip nlmt\svwfr lmt\left(\vect r_{n}\right)=\sum_{l,m,t}\coeffripext nlmt\svwfr lmt\left(\vect r_{n}\right)+\sum_{n'\ne n}\sum_{l,m,t}\sum_{l',m',t'}\coeffsip{n'}{l'}{m'}{t'}\transop^{lmt;l'm't'}\left(\vect R_{n}-\vect R_{n'}\right)\svwfr lmt\left(\vect r_{n}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+\coeffrip nlmt=\coeffripext nlmt+\sum_{n'\ne n}\sum_{l',m',t'}\coeffsip{n'}{l'}{m'}{t'}\transop^{lmt;l'm't'}\left(\vect R_{n}-\vect R_{n'}\right)
+\]
+
+\end_inset
+
+(
+\begin_inset Formula $\coeffsip{n'}{l'}{m'}{t'}=\sum_{l'',m'',t''}T_{n'}^{l'm't';l''m''t''}\coeffrip{n'}{l''}{m''}{t''}$
+\end_inset
+
+)
+\begin_inset Formula 
+\[
+\coeffrip nlmt=\coeffripext nlmt+\sum_{n'\ne n}\sum_{l',m',t'}\transop^{lmt;l'm't'}\left(\vect R_{n}-\vect R_{n'}\right)\sum_{l'',m'',t''}T_{n'}^{l'm't';l''m''t''}\coeffrip{n'}{l''}{m''}{t''}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\coeffrip nlmt=\coeffripext nlmt+\sum_{n'\ne n}\sum_{l',m',t'}\transop^{lmt;l'm't'}\left(\vect R_{n}-\vect R_{n'}\right)\sum_{l'',m'',t''}T_{n'}^{l'm't';l''m''t''}\coeffrip{n'}{l''}{m''}{t''},\label{eq:multiplescattering element-wise}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\coeffripext nlmt$
+\end_inset
+
+ are the expansion coefficients of the external field around the 
+\begin_inset Formula $n$
+\end_inset
+
+-th particle, 
+\begin_inset Formula $\vect E_{0}\left(\vect r\right)=\sum_{l,m,t}\coeffripext nlmt\svwfr lmt\left(\vect r_{n}\right).$
+\end_inset
+
+ It is practical to get rid of the SVWF indices, rewriting 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:multiplescattering element-wise"
+
+\end_inset
+
+ in a per-particle matrix form
+\begin_inset Formula 
+\begin{equation}
+\coeffr_{n}=\coeffr_{\mathrm{ext}(n)}+\sum_{n'\ne n}S_{n,n'}T_{n'}p_{n'}\label{eq:multiple scattering per particle p}
+\end{equation}
+
+\end_inset
+
+and to reformulate the problem using 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Tmatrix definition"
+
+\end_inset
+
+ in terms of the 
+\begin_inset Formula $\coeffs$
+\end_inset
+
+-coefficients which describe the multipole excitations of the particles
+\begin_inset Formula 
+\begin{equation}
+\coeffs_{n}=T_{n}\left(\coeffr_{\mathrm{ext}(n)}+\sum_{n'\ne n}S_{n,n'}\coeffs_{n'}\right).\label{eq:multiple scattering per particle a}
+\end{equation}
+
+\end_inset
+
+Knowing 
+\begin_inset Formula $T_{n},S_{n,n'},\coeffr_{\mathrm{ext}(n)}$
+\end_inset
+
+, the nanoparticle excitations 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+ can be solved by standard linear algebra methods.
+ The total scattered field anywhere outside the particles' circumscribing
+ spheres is then obtained by summing the contributions 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:E_scat"
+
+\end_inset
+
+ from all particles.
+\end_layout
+
+\begin_layout Subsection
+Periodic systems and mode analysis
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Periodic-systems"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "hexarray-theory"
+options "plain"
 
 \end_inset
 
