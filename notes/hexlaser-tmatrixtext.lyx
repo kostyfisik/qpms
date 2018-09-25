@@ -104,12 +104,22 @@
 
 
 \begin_inset FormulaMacro
-\newcommand{\coeffsi}[3]{a_{#1,#2}^{#3}}
+\newcommand{\coeffs}{a}
 \end_inset
 
 
 \begin_inset FormulaMacro
-\newcommand{\coeffsip}[4]{a_{#1}^{#2,#3,#4}}
+\newcommand{\coeffsi}[3]{\coeffs_{#1,#2}^{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffsip}[4]{\coeffs_{#1}^{#2,#3,#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffr}{p}
 \end_inset
 
 
@@ -120,6 +130,11 @@
 
 \begin_inset FormulaMacro
 \newcommand{\coeffrip}[4]{p_{#1}^{#2,#3,#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\transop}{S}
 \end_inset
 
 
@@ -134,9 +149,9 @@ In this approach, scattering properties of single nanoparticles are first
 
 -th nanoparticle from external sources can be expanded as 
 \begin_inset Formula 
-\[
-\vect E_{n}^{\mathrm{inc}}(\vect r)=\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{t=\mathrm{E},\mathrm{M}}\coeffrip nlmt\svwfr lmt\left(\vect r_{n}\right)
-\]
+\begin{equation}
+\vect E_{n}^{\mathrm{inc}}(\vect r)=\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{t=\mathrm{E},\mathrm{M}}\coeffrip nlmt\svwfr lmt\left(\vect r_{n}\right)\label{eq:E_inc}
+\end{equation}
 
 \end_inset
 
@@ -177,8 +192,9 @@ few words about different conventions?
 \end_inset
 
 .
- On the other hand, the field scattered by the particle can be expanded
- in terms of singular VSWFs 
+ On the other hand, the field scattered by the particle can be (outside
+ the particle's circumscribing sphere) expanded in terms of singular VSWFs
+ 
 \begin_inset Formula $\svwfs lmt$
 \end_inset
 
@@ -189,9 +205,9 @@ few words about different conventions?
 
 , 
 \begin_inset Formula 
-\[
-\vect E_{n}^{\mathrm{scat}}=\sum_{l,m,t}\coeffsip nlmt\svwfs lmt\left(\vect r_{n}\right).
-\]
+\begin{equation}
+\vect E_{n}^{\mathrm{scat}}=\sum_{l,m,t}\coeffsip nlmt\svwfs lmt\left(\vect r_{n}\right).\label{eq:E_scat}
+\end{equation}
 
 \end_inset
 
@@ -217,9 +233,9 @@ At a given frequency, assuming the system is linear, the relation between
 
 -matrix, 
 \begin_inset Formula 
-\[
-\coeffsip nlmt=\sum_{l,m,t}T_{n}^{l,m,t;l',m',t'}\coeffrip n{l'}{m'}{t'}.
-\]
+\begin{equation}
+\coeffsip nlmt=\sum_{l',m',t'}T_{n}^{l,m,t;l',m',t'}\coeffrip n{l'}{m'}{t'}.\label{eq:Tmatrix definition}
+\end{equation}
 
 \end_inset
 
@@ -241,6 +257,32 @@ th nanoparticles) its elements drop very quickly to negligible values with
 \end_inset
 
 .
+ The 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix can be calculated numerically using various methods; here we used
+ the scuff-tmatrix tool from the SCUFF-EM suite [REF].
+\end_layout
+
+\begin_layout Standard
+The singular SVWFs originating at 
+\begin_inset Formula $\vect R_{n}$
+\end_inset
+
+ can be then re-expanded around another origin (nanoparticle location) 
+\begin_inset Formula $\vect R_{n'}$
+\end_inset
+
+ in terms of regular SVWFs,
+\begin_inset Formula 
+\[
+\svwfs lmt\left(\vect r_{n}\right)=\sum_{l',m',t'}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \end_body
