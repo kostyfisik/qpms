@@ -59,16 +59,15 @@ zflip_perm = Permutation(3,4, size=5) # horizontal mirror
 D3h_srcgens = [rot3_perm,xflip_perm,zflip_perm]
 D3h_permgroup = PermutationGroup(rot3_perm,xflip_perm,zflip_perm) # D3h
 
-#srcgens = [a,b,c]
 D3h_irreps = {
     # Bradley, Cracknell p. 61
-    'E1' : generate_grouprep(D3h_permgroup, epsilon, D3h_srcgens, [alif, lam, epsilon], immultop = np.dot, imcmp = np.allclose),
-    'E2' : generate_grouprep(D3h_permgroup, epsilon, D3h_srcgens, [alif, lam, -epsilon], immultop = np.dot, imcmp = np.allclose),
-    # Bradley, Cracknell p. 59,
-    'A1p' : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,1,1]),
-    'A2p' : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,-1,1]),
-    'A1pp' : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,1,-1]),
-    'A2pp' : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,-1,-1]),
+    "E'" : generate_grouprep(D3h_permgroup, epsilon, D3h_srcgens, [alif, lam, epsilon], immultop = np.dot, imcmp = np.allclose),
+    "E''" : generate_grouprep(D3h_permgroup, epsilon, D3h_srcgens, [alif, lam, -epsilon], immultop = np.dot, imcmp = np.allclose),
+    # Bradley, Cracknell p. 59, or Dresselhaus, Table A.14 (p. 482)
+    "A1'" : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,1,1]),
+    "A2'" : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,-1,1]),
+    "A1''" : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,-1,-1]),
+    "A2''" : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,1,-1]),
 }
 
 
@@ -79,6 +78,12 @@ def mmult_ptypty(a, b):
     
 #TODO lepší název fce
 def gen_point_D3h_svwf_rep(lMax):
+    '''
+    Gives the projection operators $P_kl('\Gamma')$ from Dresselhaus (4.28)
+    for all irreps $\Gamma$ of D3h.;
+    as an array with indices [k,l,t,y,t,y]
+    '''
+
     my, ny = qpms.get_mn_y(lMax)
     nelem = len(my)
     C3_yy = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,2*pi/3]))
