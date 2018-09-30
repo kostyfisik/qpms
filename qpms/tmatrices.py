@@ -223,6 +223,26 @@ def apply_ndmatrix_left(matrix,tensor,axes):
     matrix = np.moveaxis(matrix, range(N), axes)
     return matrix
 
+def apply_ndmatrix_right(tensor, matrix, axes):
+    """
+    Right-side analogue of apply_ndmatrix_lift.
+    Multiplies a tensor with a 2N-dimensional matrix, conserving the axis order.
+    """
+    N = len(axes)
+    matrix = np.tensordot(tensor, matrix, axes = (range(N), axes))
+    matrix = np.moveaxis(matrix, [-N+axn for axn in range(N)], axes)
+    return matrix
+
+def ndmatrix_Hconj(matrix):
+    """
+    For 2N-dimensional matrix, swap the first N and last N matrix, and complex conjugate.
+    """
+    twoN = len(matrix.shape)
+    if not twoN % 2 == 0:
+        raise ValueError("The matrix has to have even number of axes.")
+    N = twoN//2
+    matrix = np.moveaxis(matrix, range(N), range(N, 2*N))
+    return matrix.conj()
 
 def symz_indexarrays(lMax, npart = 1):
     """
