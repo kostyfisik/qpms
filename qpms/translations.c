@@ -1241,7 +1241,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
              for(qpms_l_t q = 0; q <= qmax; ++q) {
               const qpms_l_t p_ = n + nu - 2*q + 1;
               const qpms_y_t y_sc = qpms_mn2y_sc(mu_m, p_); 
-              const complex double multiplier = c->A_multipliers[i][q-BQ_OFFSET];
+              const complex double multiplier = c->B_multipliers[i][q-BQ_OFFSET];
               complex double sigma = sigmas_total[y_sc];
               ckahanadd(&Bsum, &Bsumc, multiplier * sigma);
               if (Berr) kahanadd(&Bsumerr, &Bsumerrc, multiplier * serr_total[y_sc]);

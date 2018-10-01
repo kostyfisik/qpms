@@ -229,7 +229,7 @@ def apply_ndmatrix_right(tensor, matrix, axes):
     Multiplies a tensor with a 2N-dimensional matrix, conserving the axis order.
     """
     N = len(axes)
-    matrix = np.tensordot(tensor, matrix, axes = (range(N), axes))
+    matrix = np.tensordot(tensor, matrix, axes = (axes, range(N)))
     matrix = np.moveaxis(matrix, [-N+axn for axn in range(N)], axes)
     return matrix
 
