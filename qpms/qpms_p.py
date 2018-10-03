@@ -880,8 +880,24 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None, f='npz'):
     return
 
 
+def loadWfile_info(fileName, lMax = None, midk_halfwidth = None, freqlimits = None):
+    """
+    Returns all the relevant data from the W file except for the W values themselves
+    """
+    slovnik = loadWfile_processed(fileName, lMax = lMax, fatForm = False, midk_halfwidth=midk_halfwidth, freqlimits=freqlimits)
+    slovnik['Ws'] = None
+    return slovnik
 
-def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = None):
+def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = None, freqlimits = None, iteratechunk = None):
+    """
+    midk_halfwidth: int
+        if given, takes only the "middle" k-value by index nk//2 and midk_halfwidth values from both sides
+    freqlimit: pair of doubles; 
+        if given, only the values from the given frequency range (in Hz) are returned to save RAM
+        N.B.: the frequencies in the processed file are expected to be sorted!
+    iteratechunk: positive int ; NI
+        if given, this works as a generator with only iteratechunk frequencies processed and returned at each iteration to save memory
+    """
     if os.path.isdir(fileName): # .npy files in a directory
         p = fileName
         j = os.path.join
@@ -919,26 +935,68 @@ def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = 
     else:
         lMax = data['lMax'][()]
         nelem = lMax2nelem(lMax)
-    if fatForm: #indices: (...,) destparticle, desttype, desty, srcparticle, srctype, srcy
-        Ws2 = np.moveaxis(Ws, [-5,-4,-3,-2,-1], [-4,-2,-5,-3,-1] )
-        fatWs = np.empty(Ws2.shape[:-5]+(nparticles, 2,nelem, nparticles, 2, nelem),dtype=complex)
-        fatWs[...,:,0,:,:,0,:] = Ws2[...,0,:,:,:,:] #A
-        fatWs[...,:,1,:,:,1,:] = Ws2[...,0,:,:,:,:] #A
-        fatWs[...,:,1,:,:,0,:] = Ws2[...,1,:,:,:,:] #B
-        fatWs[...,:,0,:,:,1,:] = Ws2[...,1,:,:,:,:] #B
-        Ws = fatWs
-    return{
-        'lMax': lMax,
-        'nelem': nelem,
-        'npart': nparticles,
-        'nfreqs': nfreqs,
-        'nk' : nk,
-        'freqs': freqs,
-        'freqs_weirdunits': freqs_weirdunits,
-        'EeVs_orig': EeVs_orig,
-        'k0s': k0s,
-        'ks': ks,
-        'Ws': Ws,
-    }
-    
+    if freqlimits is not None:
+        minind = np.searchsorted(freqs, freqlimits[0], size='left')
+        maxind = np.searchsorted(freqs, freqlimits[1], size='right')
+        freqs = freqs[minind:maxind]
+        Ws = Ws[minind:maxind]
+        k0s = k0s[minind:maxind]
+        EeVs_orig = EeVs_orig[minind:maxind]
+        freqs_weirdunints = freqs_weirdunits[minint:maxind]
+        nfreqs = maxind-minind
+    if iteratechunk is None: # everyting at once
+        if fatForm: #indices: (...,) destparticle, desttype, desty, srcparticle, srctype, srcy
+            Ws2 = np.moveaxis(Ws, [-5,-4,-3,-2,-1], [-4,-2,-5,-3,-1] )
+            fatWs = np.empty(Ws2.shape[:-5]+(nparticles, 2,nelem, nparticles, 2, nelem),dtype=complex)
+            fatWs[...,:,0,:,:,0,:] = Ws2[...,0,:,:,:,:] #A
+            fatWs[...,:,1,:,:,1,:] = Ws2[...,0,:,:,:,:] #A
+            fatWs[...,:,1,:,:,0,:] = Ws2[...,1,:,:,:,:] #B
+            fatWs[...,:,0,:,:,1,:] = Ws2[...,1,:,:,:,:] #B
+            Ws = fatWs
+        return{
+                'lMax': lMax,
+                'nelem': nelem,
+                'npart': nparticles,
+                'nfreqs': nfreqs,
+                'nk' : nk,
+                'freqs': freqs,
+                'freqs_weirdunits': freqs_weirdunits,
+                'EeVs_orig': EeVs_orig,
+                'k0s': k0s,
+                'ks': ks,
+                'Ws': Ws,
+                }
+    else:
+        def gen(lMax, nelem, nparticles, nfreqs, nk, freqs, freqs_weirdunits, EeVs_orig, k0s, ks, Ws, iteratechunk):
+            starti = 0
+            while(starti < nfreqs):
+                stopi = min(starti+iteratechunk, nfreqs)
+                chunkWs = Ws[starti:stopi]
+                if fatForm: #indices: (...,) destparticle, desttype, desty, srcparticle, srctype, srcy
+                    Ws2 = np.moveaxis(chunkWs, [-5,-4,-3,-2,-1], [-4,-2,-5,-3,-1] )
+                    fatWs = np.empty(Ws2.shape[:-5]+(nparticles, 2,nelem, nparticles, 2, nelem),dtype=complex)
+                    fatWs[...,:,0,:,:,0,:] = Ws2[...,0,:,:,:,:] #A
+                    fatWs[...,:,1,:,:,1,:] = Ws2[...,0,:,:,:,:] #A
+                    fatWs[...,:,1,:,:,0,:] = Ws2[...,1,:,:,:,:] #B
+                    fatWs[...,:,0,:,:,1,:] = Ws2[...,1,:,:,:,:] #B
+                    chunkWs = fatWs
+                yield {
+                        'lMax': lMax,
+                        'nelem': nelem,
+                        'npart': nparticles,
+                        'nfreqs': stopi-starti,
+                        'nk' : nk,
+                        'freqs': freqs[starti:stopi],
+                        'freqs_weirdunits': freqs_weirdunits[starti:stopi],
+                        'EeVs_orig': EeVs_orig[starti:stopi],
+                        'k0s': k0s[starti:stopi],
+                        'ks': ks,
+                        'Ws': chunkWs,
+                        'chunk_range': (starti, stopi),
+                        'nfreqs_total': nfreqs
+                        }
+                starti += iteratechunk
+        return gen(lMax, nelem, nparticles, nfreqs, nk, freqs, freqs_weirdunits, EeVs_orig, k0s, ks, Ws, iteratechunk)
+
+
 

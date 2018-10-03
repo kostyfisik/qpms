@@ -77,7 +77,7 @@ def mmult_ptypty(a, b):
     return(qpms.apply_ndmatrix_left(a, b, (-6,-5,-4)))
     
 #TODO lepší název fce
-def gen_point_D3h_svwf_rep(lMax):
+def gen_point_D3h_svwf_rep(lMax, vflip = 'x'):
     '''
     Gives the projection operators $P_kl('\Gamma')$ from Dresselhaus (4.28)
     for all irreps $\Gamma$ of D3h.;
@@ -89,11 +89,12 @@ def gen_point_D3h_svwf_rep(lMax):
     C3_yy = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,2*pi/3]))
     C3_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * C3_yy, 2,1)
     zfl_tyty = qpms.zflip_tyty(lMax)
-    yfl_tyty = qpms.yflip_tyty(lMax)
-    xfl_tyty = qpms.xflip_tyty(lMax)
+    #yfl_tyty = qpms.yflip_tyty(lMax)
+    #xfl_tyty = qpms.xflip_tyty(lMax)
+    vfl_tyty = qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax)
     I_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * np.eye(nelem), 2,1)
     order = D3h_permgroup.order()
-    sphrep_full = generate_grouprep(D3h_permgroup, I_tyty, D3h_srcgens, [C3_tyty, xfl_tyty, zfl_tyty], 
+    sphrep_full = generate_grouprep(D3h_permgroup, I_tyty, D3h_srcgens, [C3_tyty, vfl_tyty, zfl_tyty], 
                            immultop = mmult_tyty, imcmp = np.allclose)
     sphreps = dict()
     for repkey, matrixrep in D3h_irreps.items():
@@ -118,21 +119,23 @@ def gen_point_D3h_svwf_rep(lMax):
         sphreps[repkey] = sphrep
     return sphreps
         
-def gen_hexlattice_Kpoint_svwf_rep(lMax, psi):
+def gen_hexlattice_Kpoint_svwf_rep(lMax, psi, vflip = 'x'):
     my, ny = qpms.get_mn_y(lMax)
     nelem = len(my)
     C3_yy = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,2*pi/3]))
     C3_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * C3_yy, 2,1)
     zfl_tyty = qpms.zflip_tyty(lMax)
-    yfl_tyty = qpms.yflip_tyty(lMax)
-    xfl_tyty = qpms.xflip_tyty(lMax)
+    #yfl_tyty = qpms.yflip_tyty(lMax)
+    #xfl_tyty = qpms.xflip_tyty(lMax)
+    vfl_tyty = qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax)
     I_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * np.eye(nelem), 2,1)
     hex_C3_K_ptypty = np.diag([exp(-psi*1j*2*pi/3),exp(+psi*1j*2*pi/3)])[:,ň,ň,:,ň,ň] * C3_tyty[ň,:,:,ň,:,:]
     hex_zfl_ptypty = np.eye(2)[:,ň,ň,:,ň,ň] * zfl_tyty[ň,:,:,ň,:,:]
-    hex_xfl_ptypty = np.array([[0,1],[1,0]])[:,ň,ň,:,ň,ň] * xfl_tyty[ň,:,:,ň,:,:]
+    #hex_xfl_ptypty = np.array([[0,1],[1,0]])[:,ň,ň,:,ň,ň] * xfl_tyty[ň,:,:,ň,:,:]
+    hex_vfl_ptypty = np.array([[0,1],[1,0]])[:,ň,ň,:,ň,ň] * vfl_tyty[ň,:,:,ň,:,:]
     hex_I_ptypty = np.eye((2*2*nelem)).reshape((2,2,nelem,2,2,nelem))
     order = D3h_permgroup.order()
-    hex_K_sphrep_full = generate_grouprep(D3h_permgroup, hex_I_ptypty, D3h_srcgens, [hex_C3_K_ptypty, hex_xfl_ptypty, hex_zfl_ptypty], 
+    hex_K_sphrep_full = generate_grouprep(D3h_permgroup, hex_I_ptypty, D3h_srcgens, [hex_C3_K_ptypty, hex_vfl_ptypty, hex_zfl_ptypty], 
                            immultop = mmult_ptypty, imcmp = np.allclose)
     hex_K_sphreps = dict()
     for repkey, matrixrep in D3h_irreps.items():
@@ -163,12 +166,12 @@ def normalize(v):
        return v*np.nan
     return v / norm
 
-def gen_hexlattice_Kpoint_svwf_rep_projectors(lMax,psi, do_bases = False):
+def gen_hexlattice_Kpoint_svwf_rep_projectors(lMax, psi, vflip='x', do_bases=False):
     nelem = lMax * (lMax+2)
     projectors = dict()
     if do_bases:
         bases = dict()
-    for repi, W in gen_hexlattice_Kpoint_svwf_rep(lMax,psi).items():
+    for repi, W in gen_hexlattice_Kpoint_svwf_rep(lMax,psi,vflip=vflip).items():
         totalvecs = 0
         tmplist = list()
         for p in (0,1):
