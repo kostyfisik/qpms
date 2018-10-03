@@ -219,17 +219,39 @@ key "schulz_point-group_1999"
 \end_inset
 
 .
+ A brief theoretical overview of the method is presented in subsections
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:The-multiple-scattering-problem"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Periodic-systems"
+
+\end_inset
+
+ below.
 \end_layout
 
 \begin_layout Standard
+Fig.
+ xxx(a) shows the dispersions around the 
+\begin_inset Formula $\Kp$
+\end_inset
 
+-point for the cylindrical nanoparticles used in our experiment.
+ 
 \lang english
 The 
 \begin_inset Formula $T$
 \end_inset
 
--matrix of a single nanoparticle was computed using the scuff-tmatrix applicatio
-n from the SCUFF-EM suite~
+-matrix of a single cylindrical nanoparticle was computed using the scuff-tmatri
+x application from the SCUFF-EM suite~
 \lang finnish
 
 \begin_inset CommandInset citation
@@ -245,16 +267,56 @@ key "SCUFF2,reid_efficient_2015"
 \end_inset
 
  (octupolar) degree of electric and magnetic spherical multipole.
+ For comparison, Fig.
+ xxx(b) shows the dispersions for a system where the cylindrical nanoparticles
+ were replaced with spherical ones with radius of 
+\begin_inset Formula $40\,\mathrm{nm}$
+\end_inset
+
+, whose 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix was calculated semi-analytically using the Lorenz-Mie theory.
+ In both cases, we used gold with interpolated tabulated values of refraction
+ index 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "johnson_optical_1972"
+
+\end_inset
+
+ for the nanoparticles and constant reffraction index of 1.52 for the background
+ medium.
+ In both cases, the diffracted orders do split into separate bands according
+ to the 
+\lang finnish
+
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point
+\lang english
+ irreducible representations (cf.
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sm:symmetries"
+
+\end_inset
+
+), but the splitting is extremely weak – not exceeding 
+\begin_inset Formula $1\,\mathrm{meV}$
+\end_inset
+
+ for the spherical and even less for the cylindrical nanoparticles.
 \end_layout
 
 \begin_layout Standard
 
 \lang english
-We did not find any deviation from the empty lattice diffracted orders exceeding
- the numerical precision of the computation (about 2 meV).
- This is most likely due to the frequencies in our experiment being far
- below the resonances of the nanoparticles, with the largest elements of
- the 
+This is most likely due to the frequencies in our experiment being far below
+ the resonances of the nanoparticles, with the largest elements of the 
 \begin_inset Formula $T$
 \end_inset
 
@@ -264,7 +326,7 @@ We did not find any deviation from the empty lattice diffracted orders exceeding
 
  (for power-normalised waves).
  The nanoparticles are therefore almost transparent, but still suffice to
- provide feedback for lasing.
+ provide enough feedback for lasing.
  
 \end_layout
 
@@ -838,6 +900,267 @@ almost zero
 \end_inset
 
  singular value.
+\end_layout
+
+\begin_layout Section
+
+\lang english
+Symmetries
+\begin_inset CommandInset label
+LatexCommand label
+name "sm:symmetries"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A general overview of utilizing group theory to find lattice modes at high-symme
+try points of the Brillouin zone can be found e.g.
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "chapters 10–11"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+; here we use the same notation.
+\end_layout
+
+\begin_layout Standard
+We analyse the symmetries of the system in the same SVWF representation
+ as used in the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix formalism introduced above.
+ We are interested in the modes at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point of the hexagonal lattice, which has the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ point symmetry.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The symmetry makes the 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ matrix defined above invariant to the symmetry operations at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point,
+\begin_inset Formula 
+\[
+RM\left(\omega,\vect K\right)R^{-1}=M\left(\omega,\vect K\right),\qquad R\in D_{3h}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ The six irreducible representations (irreps) of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ group are known and are available in the literature in their explicit forms.
+ In order to find and classify the modes, we need to find a decomposition
+ of the lattice mode representation 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}=\Gamma^{\mathrm{equiv.}}\otimes\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ into the irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The characters of the equivalence representation 
+\begin_inset Formula $\Gamma^{\mathrm{equiv.}}$
+\end_inset
+
+ are given by the formula 
+\begin_inset Formula $\chi^{\mathrm{equiv.}}=\sum_{\alpha}\delta_{R_{\alpha}\vect r_{\alpha},\vect r_{\alpha}}e^{i\vect K_{m}\cdot\vect r_{\alpha}}$
+\end_inset
+
+ where 
+\begin_inset Formula $\vect r_{\alpha}$
+\end_inset
+
+ are the positions of the nanoparticles with respect 
+\end_layout
+
+\end_inset
+
+The equivalence representation 
+\begin_inset Formula $\Gamma^{\mathrm{equiv.}}$
+\end_inset
+
+ is the 
+\begin_inset Formula $E'$
+\end_inset
+
+ representation as can be deduced from 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (11.19)"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+, eq.
+ (11.19) and the character table for 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ operates on a space spanned by the VSWFs around each nanoparticle in the
+ unit cell (the effects of point group operations on VSWFs are described
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schulz_point-group_1999"
+
+\end_inset
+
+).
+ This space can be then decomposed into invariant subspaces of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ using the projectors 
+\begin_inset Formula $\hat{P}_{ab}^{\left(\Gamma\right)}$
+\end_inset
+
+ defined by 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (4.28)"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+.
+ This way, we obtain a symmetry adapted basis 
+\begin_inset Formula $\left\{ \vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}\right\} $
+\end_inset
+
+ as linear combinations of VSWFs 
+\begin_inset Formula $\svwfs lm{p,t}$
+\end_inset
+
+ around the constituting nanoparticles (labeled 
+\begin_inset Formula $p$
+\end_inset
+
+),
+\begin_inset Formula 
+\[
+\vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}=\sum_{l,m,p,t}U_{\Gamma,r,i}^{p,t,l,m}\svwfs lm{p,t},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ stands for one of the six different irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+, 
+\begin_inset Formula $r$
+\end_inset
+
+ labels the different realisations of the same irrep, and the last index
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ going from 1 to 
+\begin_inset Formula $d_{\Gamma}$
+\end_inset
+
+ (the dimensionality of 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) labels the different partners of the same given irrep.
+ The number of how many times is each irrep contained in 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}$
+\end_inset
+
+ (i.e.
+ the range of index 
+\begin_inset Formula $r$
+\end_inset
+
+ for given 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) depends on the multipole degree cutoff 
+\begin_inset Formula $l_{\mathrm{max}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Each mode at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point shall lie in the irreducible spaces of only one of the six possible
+ irreps and it can be shown via 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (2.51)"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+ that, at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point, the matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ defined above takes a block-diagonal form in the symmetry-adapted basis,
+\begin_inset Formula 
+\[
+M\left(\omega,\vect K\right)_{\Gamma,r,i;\Gamma',r',j}^{\mathrm{s.a.b.}}=\frac{\delta_{\Gamma\Gamma'}\delta_{ij}}{d_{\Gamma}}\sum_{q}M\left(\omega,\vect K\right)_{\Gamma,r,q;\Gamma',r',q}^{\mathrm{s.a.b.}}.
+\]
+
+\end_inset
+
+ This enables us to decompose the matrix according to the irreps and to
+ solve the singular value problem in each irrep separately, as done in Fig.
+ xxx.
 \end_layout
 
 \begin_layout Standard
