@@ -936,13 +936,13 @@ def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = 
         lMax = data['lMax'][()]
         nelem = lMax2nelem(lMax)
     if freqlimits is not None:
-        minind = np.searchsorted(freqs, freqlimits[0], size='left')
-        maxind = np.searchsorted(freqs, freqlimits[1], size='right')
+        minind = np.searchsorted(freqs, freqlimits[0], side='left')
+        maxind = np.searchsorted(freqs, freqlimits[1], side='right')
         freqs = freqs[minind:maxind]
         Ws = Ws[minind:maxind]
         k0s = k0s[minind:maxind]
         EeVs_orig = EeVs_orig[minind:maxind]
-        freqs_weirdunints = freqs_weirdunits[minint:maxind]
+        freqs_weirdunints = freqs_weirdunits[minind:maxind]
         nfreqs = maxind-minind
     if iteratechunk is None: # everyting at once
         if fatForm: #indices: (...,) destparticle, desttype, desty, srcparticle, srctype, srcy

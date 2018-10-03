@@ -11,9 +11,9 @@
 
 
 #define MAXOMEGACOUNT 1000
-#define MAXKCOUNT 20 // serves as klist default buffer size if KSTDIN is defined
-#define KMINCOEFF 0.998 // not used if KSTDIN defined
-#define KMAXCOEFF 1.002 // not used if KSTDIN defined
+#define MAXKCOUNT 200 // 200 // serves as klist default buffer size if KSTDIN is defined
+#define KMINCOEFF 0.783 //0.9783 // 0.783 // not used if KSTDIN defined
+#define KMAXCOEFF 1.217 //1.0217 // 1.217 // not used if KSTDIN defined
 #define KLAYERS 20
 #define RLAYERS 20
 
@@ -113,14 +113,14 @@ int main (int argc, char **argv) {
   const point2d pshift0 = {0, 0};
   point2d pshiftAB = {0, 0}, pshiftBA = {0,0};
   if(rs_orientation == TRIANGULAR_VERTICAL) { // CHECKSIGN
-    pshiftAB.x = h/2;
-    pshiftBA.x = -h/2;
+    pshiftAB.x = h;///2;
+    pshiftBA.x = -h;///2;
   } else { // CHECKSIGN
-    pshiftAB.y = -h/2;
-    pshiftBA.y = h/2;
+    pshiftAB.y = -h;///2;
+    pshiftBA.y = h;///2;
   }
 
-  qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_POWER); // vai POWER_CS?
+  qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_POWER_CS); // vai POWER_CS?
 
   FILE *out = fopen(outfile, "w");
   FILE *err = NULL;
