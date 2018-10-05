@@ -152,7 +152,7 @@ def _scuffTMatrixConvert_EM_01(EM):
     else:
         return None
 
-def loadScuffTMatrices(fileName, normalisation = 1, version = 'old'):
+def loadScuffTMatrices(fileName, normalisation = 1, version = 'old', freqscale = None):
     """
     TODO doc
 
@@ -198,6 +198,9 @@ def loadScuffTMatrices(fileName, normalisation = 1, version = 'old'):
         TMatrices[:,:,:,:,:] = TMatrices[:,:,:,:,:] * np.sqrt(ny*(ny+1))[ň,ň,ň,ň,:] / np.sqrt(ny*(ny+1))[ň,ň,:,ň,ň]
     elif normalisation == 2: # Kristensson?
         pass
+    if freqscale is not None:
+        freqs *= freqscale
+        freqs_weirdunits *= freqscale
     return (TMatrices, freqs, freqs_weirdunits, lMax)
 
 
