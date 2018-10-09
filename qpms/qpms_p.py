@@ -805,15 +805,18 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None, f='npz'):
     #Check the first file to get the "constants" set
     filename = freqfilenames[0]
     data = np.loadtxt(filename)
+    if len(data.shape) == 1:
+        data = np.reshape(data, (1,) + data.shape)
     nk_muster = data.shape[0]
-    Wdata = data[:,5:]
+    Wdata = data[...,5:]
+ 
     if (lMax is None):
         nelem = int((Wdata.shape[1]/nparticles**2)**.5/2)
         lMax = nelem2lMax(nelem)
     else:
         nelem = lMax2nelem(lMax)
-    ks_muster = np.array(data[:,3:5], copy=True)
-    
+    ks_muster = np.array(data[...,3:5], copy=True)
+   
     if f == 'npz':
         allWs = np.empty((nfiles, nk_muster, nparticles, nparticles, 2, nelem, nelem,), dtype=complex)
     elif f == 'd':
@@ -832,13 +835,15 @@ def processWfiles_sameKs(freqfilenames, destfilename, lMax = None, f='npz'):
     
     for filename in freqfilenames:
         data = np.loadtxt(filename)
+        if len(data.shape) == 1:
+            data = np.reshape(data, (1,) + data.shape)
         if data.shape[0] != nk_muster:
             raise ValueError("%s contains different number of lines than %s"%(filename, freqfilenames[0]))
         ks_current = np.array(data[:,3:5])
         if not np.all(ks_current == ks_muster):
             raise ValueError("%s contains different k-vectors than %s"%(filename, freqfilenames[0]))
-        curWdata = data[:,5:]
-        curWs = curWdata[:,::2] + 1j*curWdata[:,1::2]
+        curWdata = data[...,5:]
+        curWs = curWdata[...,::2] + 1j*curWdata[...,1::2]
         curWs.shape = (nk_muster, nparticles, nparticles, 2, nelem, nelem)
         allWs[succread] = curWs
         cur_freqs_weirdunits = np.array(data[:,0])
