@@ -650,3 +650,95 @@ int honeycomb_lattice_gen_extend_to_steps(honeycomb_lattice_gen_t *g, const int 
   return 0;
 }
 
+
+
+// THE NICE PART
+
+
+/*
+ * Lagrange-Gauss reduction of a 2D basis.
+ * The output shall satisfy |out1| <= |out2| <= |out2 - out1|
+ */
+void l2d_reduceBasis(cart2_t b1, cart2_t b2, cart2_t *out1, cart2_t *out2){
+  double B1 = cart2_dot(b1, b1);
+  double mu = cart2_dot(b1, b2) / B1;
+  b2 = cart2_substract(b2, cart2_scale(round(mu), b1));
+  double B2 = cart2_dot(b2, b2);
+  while(B2 < B1) {
+    cart2_t b2t = b1;
+    b1 = b2;
+    b2 = b2t;
+    B1 = B2;
+    mu = cart2_dot(b1, b2) / B1;
+    b2 = cart2_substract(b2, cart2_scale(round(mu), b1));
+    B2 = cart2_dot(b2, b2);
+  }
+  *out1 = b1;
+  *out2 = b2;
+}
+
+/*
+ * This gives the "ordered shortest triple" of base vectors (each pair from the triple
+ * is a base) and there may not be obtuse angle between o1, o2 and between o2, o3
+ */
+void l2d_shortestBase3(cart2_t b1, cart2_t b2, cart2_t *o1, cart2_t *o2, cart2_t *o3){
+  l2d_reduceBasis(b1, b2, &b1, &b2);
+  *o1 = b1;
+  if (l2d_is_obtuse_r(b1, b2, 0)) {
+    *o3 = b2;
+    *o2 = cart2_add(b2, b1);
+  } else {
+    *o2 = b2;
+    *o3 = cart2_substract(b2, b1);
+  }
+}
+
+// Determines whether angle between inputs is obtuse
+bool l2d_is_obtuse_r(cart2_t b1, cart2_t b2, double rtol) {
+  const double B1 = cart2_normsq(b1);
+  const double B2 = cart2_normsq(b2);
+  const cart2_t b3 = cart2_substract(b2, b1);
+  const double B3 = cart2_normsq(b3);
+  const double eps = rtol * (B1 + B2); // TODO check what kind of quantity this should be. Maybe rtol should relate to lengths, not lengths**2
+  return (B3 - B2 - B1 > eps);
+}
+
+
+# if 0
+/*
+ * TODO doc
+ * return value is 4 or 6.
+ */
+int l2d_shortestBase46(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_t *o3, cart2_t *o4, cart2_t *o5, cart2_t *o6, double rtol);
+
+// variant
+int l2d_shortestBase46_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
+
+// Determines whether angle between inputs is obtuse
+bool l2d_is_obtuse_r(cart2_t i1, cart2_t i2, double rtol);
+
+/*
+ * Given two basis vectors, returns 2D Bravais lattice type.
+ */
+LatticeType l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol);
+
+// Other functions in lattices2d.py: TODO?
+// range2D()
+// generateLattice()
+// generateLatticeDisk()
+// cutWS()
+// filledWS()
+// change_basis()
+
+/*
+ * Given basis vectors, returns the corners of the Wigner-Seits unit cell (W1, W2, -W1, W2)
+ * for rectangular and square lattice or (w1, w2, w3, -w1, -w2, -w3) otherwise.
+ */
+int l2d_cellCornersWS(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_t *o3, cart2_t *o4, cart2_t *o5, cart2_t *o6, double rtol);
+// variant
+int l2d_cellCornersWS_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
+
+// Reciprocal bases
+void l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+void l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+#endif

@@ -27,6 +27,10 @@ static inline double cart2_dot(const cart2_t a, const cart2_t b) {
 	return a.x * b.x + a.y * b.y;
 }
 
+static inline double cart2_normsq(const cart2_t a) {
+	return cart2_dot(a, a);
+}
+
 static inline double cart2norm(const cart2_t v) {
 	return sqrt(v.x*v.x + v.y*v.y);
 }

@@ -81,7 +81,8 @@ int l2d_shortestBase46(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_
 int l2d_shortestBase46_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 
 // Determines whether angle between inputs is obtuse
-bool l2d_is_obtuse(cart2_t i1, cart2_t i2, double rtol);
+bool l2d_is_obtuse_r(cart2_t i1, cart2_t i2, double rtol);
+bool l2d_is_obtuse(cart2_t i1, cart2_t i2);
 
 /* 
  * Given two basis vectors, returns 2D Bravais lattice type.
