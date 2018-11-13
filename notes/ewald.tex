@@ -1,0 +1,598 @@
+%% LyX 2.1.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[10pt,english]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont[Mapping=tex-text,Numbers=OldStyle]{TeX Gyre Pagella}
+\usepackage[a5paper]{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=1cm,rmargin=1cm}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{esint}
+\usepackage[unicode=true,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{pdftitle={Accelerating lattice mode calculations with T-matrix method},
+ pdfauthor={Marek Nečada}}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\newcommand{\lyxmathsym}[1]{\ifmmode\begingroup\def\b@ld{bold}
+  \text{\ifx\math@version\b@ld\bfseries\fi#1}\endgroup\else#1\fi}
+
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{unicode-math}
+
+% Toto je trik, jimž se z fontspec získá familyname pro následující
+\ExplSyntaxOn
+\DeclareExpandableDocumentCommand{\getfamilyname}{m}
+ {
+  \use:c { g__fontspec_ \cs_to_str:N #1 _family }
+ }
+\ExplSyntaxOff
+
+% definujeme novou rodinu, jež se volá pomocí \MyCyr pro běžné použití, avšak pro účely \DeclareSymbolFont je nutno získat název pomocí getfamilyname definovaného výše
+\newfontfamily\MyCyr{CMU Serif}
+
+\DeclareSymbolFont{cyritletters}{EU1}{\getfamilyname\MyCyr}{m}{it}
+\newcommand{\makecyrmathletter}[1]{%
+  \begingroup\lccode`a=#1\lowercase{\endgroup
+  \Umathcode`a}="0 \csname symcyritletters\endcsname\space #1
+}
+\count255="409
+\loop\ifnum\count255<"44F
+  \advance\count255 by 1
+  \makecyrmathletter{\count255}
+\repeat
+
+\renewcommand{\lyxmathsym}[1]{#1}
+
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{russian}
+\newfontfamily\russianfont[Script=Cyrillic]{URW Palladio L}
+%\newfontfamily\russianfont[Script=Cyrillic]{DejaVu Sans}
+
+\makeatother
+
+\usepackage{xunicode}
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\begin{document}
+\global\long\def\uoft#1{\mathfrak{F}#1}
+\global\long\def\uaft#1{\mathfrak{\mathbb{F}}#1}
+\global\long\def\usht#1#2{\mathbb{S}_{#1}#2}
+\global\long\def\bsht#1#2{\mathrm{S}_{#1}#2}
+\global\long\def\pht#1#2{\mathfrak{\mathbb{H}}_{#1}#2}
+\global\long\def\vect#1{\mathbf{#1}}
+\global\long\def\ud{\mathrm{d}}
+\global\long\def\basis#1{\mathfrak{#1}}
+\global\long\def\dc#1{\lyxmathsym{Ш}_{#1}}
+\global\long\def\rec#1{#1^{-1}}
+\global\long\def\recb#1{#1^{\widehat{-1}}}
+\global\long\def\ints{\mathbb{Z}}
+\global\long\def\nats{\mathbb{N}}
+\global\long\def\reals{\mathbb{R}}
+\global\long\def\ush#1#2{Y_{#1,#2}}
+\global\long\def\hgfr{\mathbf{F}}
+\global\long\def\hgf{F}
+\global\long\def\ph{\mathrm{ph}}
+\global\long\def\kor#1{\underline{#1}}
+\global\long\def\koru#1{\utilde{#1}}
+
+
+
+\title{Accelerating lattice mode calculations with $T$-matrix method}
+
+
+\author{Marek Nečada}
+\maketitle
+\begin{abstract}
+The $T$-matrix approach is the method of choice for simulating optical
+response of a reasonably small system of compact linear scatterers
+on isotropic background. However, its direct utilisation for problems
+with infinite lattices is problematic due to slowly converging sums
+over the lattice. Here I develop a way to compute the problematic
+sums in the reciprocal space, making the $T$-matrix method very suitable
+for infinite periodic systems as well.
+\end{abstract}
+
+\section{Formulation of the problem}
+
+Assume a system of compact EM scatterers in otherwise homogeneous
+and isotropic medium, and assume that the system, i.e. both the medium
+and the scatterers, have linear response. A scattering problem in
+such system can be written as
+\[
+A_{\alpha}=T_{\alpha}P_{\alpha}=T_{\alpha}(\sum_{\beta}S_{\alpha\leftarrow\beta}A_{\beta}+P_{0\alpha})
+\]
+where $T_{\alpha}$ is the $T$-matrix for scatterer α, $A_{\alpha}$
+is its vector of the scattered wave expansion coefficient (the multipole
+indices are not explicitely indicated here) and $P_{\alpha}$ is the
+local expansion of the incoming sources. $S_{\alpha\leftarrow\beta}$
+is ... and ... is ...
+
+...
+
+\[
+\sum_{\beta}(\delta_{\alpha\beta}-T_{\alpha}S_{\alpha\leftarrow\beta})A_{\beta}=T_{\alpha}P_{0\alpha}.
+\]
+
+
+Now suppose that the scatterers constitute an infinite lattice
+
+\[
+\sum_{\vect b\beta}(\delta_{\vect{ab}}\delta_{\alpha\beta}-T_{\vect a\alpha}S_{\vect a\alpha\leftarrow\vect b\beta})A_{\vect b\beta}=T_{\vect a\alpha}P_{0\vect a\alpha}.
+\]
+Due to the periodicity, we can write $S_{\vect a\alpha\leftarrow\vect b\beta}=S_{\alpha\leftarrow\beta}(\vect b-\vect a)$
+and $T_{\vect a\alpha}=T_{\alpha}$. In order to find lattice modes,
+we search for solutions with zero RHS
+\[
+\sum_{\vect b\beta}(\delta_{\vect{ab}}\delta_{\alpha\beta}-T_{\alpha}S_{\vect a\alpha\leftarrow\vect b\beta})A_{\vect b\beta}=0
+\]
+and we assume periodic solution $A_{\vect b\beta}(\vect k)=A_{\vect a\beta}e^{i\vect k\cdot\vect r_{\vect b-\vect a}}$,
+yielding
+\begin{eqnarray*}
+\sum_{\vect b\beta}(\delta_{\vect{ab}}\delta_{\alpha\beta}-T_{\alpha}S_{\vect a\alpha\leftarrow\vect b\beta})A_{\vect a\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b-\vect a}} & = & 0,\\
+\sum_{\vect b\beta}(\delta_{\vect{0b}}\delta_{\alpha\beta}-T_{\alpha}S_{\vect 0\alpha\leftarrow\vect b\beta})A_{\vect 0\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b}} & = & 0,\\
+\sum_{\beta}(\delta_{\alpha\beta}-T_{\alpha}\underbrace{\sum_{\vect b}S_{\vect 0\alpha\leftarrow\vect b\beta}e^{i\vect k\cdot\vect r_{\vect b}}}_{W_{\alpha\beta}(\vect k)})A_{\vect 0\beta}\left(\vect k\right) & = & 0,\\
+A_{\vect 0\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\beta}W_{\alpha\beta}\left(\vect k\right)A_{\vect 0\beta}\left(\vect k\right) & = & 0.
+\end{eqnarray*}
+Therefore, in order to solve the modes, we need to compute the ``lattice
+Fourier transform'' of the translation operator,
+\begin{equation}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect b}S_{\vect 0\alpha\leftarrow\vect b\beta}e^{i\vect k\cdot\vect r_{\vect b}}.\label{eq:W definition}
+\end{equation}
+
+
+
+\section{Computing the Fourier sum of the translation operator}
+
+The problem evaluating (\ref{eq:W definition}) is the asymptotic
+behaviour of the translation operator, $S_{\vect 0\alpha\leftarrow\vect b\beta}\sim\left|\vect r_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect r_{\vect b}\right|}$
+that makes the convergence of the sum quite problematic for any $d>1$-dimensional
+lattice.%
+\footnote{Note that $d$ here is dimensionality of the lattice, not the space
+it lies in, which I for certain reasons assume to be three. (TODO
+few notes on integration and reciprocal lattices in some appendix)%
+} In electrostatics, one can solve this problem with Ewald summation.
+Its basic idea is that if what asymptoticaly decays poorly in the
+direct space, will perhaps decay fast in the Fourier space. I use
+the same idea here, but everything will be somehow harder than in
+electrostatics.
+
+Let us re-express the sum in (\ref{eq:W definition}) in terms of
+integral with a delta comb
+
+\begin{equation}
+W_{\alpha\beta}(\vect k)=\int\ud^{d}\vect r\dc{\basis u}(\vect r)S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})e^{i\vect k\cdot\vect r}.\label{eq:W integral}
+\end{equation}
+The translation operator $S$ is now a function defined in the whole
+3d space; $\vect r_{\alpha},\vect r_{\beta}$ are the displacements
+of scatterers $\alpha$ and $\beta$ in a unit cell. The arrow notation
+$S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})$ means ``translation
+operator for spherical waves originating in $\vect r+\vect r_{\beta}$
+evaluated in $\vect r_{\alpha}$'' and obviously $S$ is in fact
+a function of a single 3d argument, $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})=S(\vect 0\leftarrow\vect r+\vect r_{\beta}-\vect r_{\alpha})=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha})$.
+Expression (\ref{eq:W integral}) can be rewritten as
+\[
+W_{\alpha\beta}(\vect k)=\left(2\pi\right)^{\frac{d}{2}}\uaft{(\dc{\basis u}S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0))\left(\vect k\right)}
+\]
+where changed the sign of $\vect r/\vect{\bullet}$ has been swapped
+under integration, utilising evenness of $\dc{\basis u}$. Fourier
+transform of product is convolution of Fourier transforms, so (using
+formula (\ref{eq:Dirac comb uaFt}) for the Fourier transform of Dirac
+comb)
+\begin{eqnarray}
+W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\nonumber \\
+ & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\recb{\basis u}}^{(d)}\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)\left(\vect k\right)\nonumber \\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right).\label{eq:W sum in reciprocal space}
+\end{eqnarray}
+As such, this is not extremely helpful because the the \emph{whole}
+translation operator $S$ has singularities in origin, hence its Fourier
+transform $\uaft S$ will decay poorly. 
+
+However, Fourier transform is linear, so we can in principle separate
+$S$ in two parts, $S=S^{\textup{L}}+S^{\textup{S}}$. $S^{\textup{S}}$
+is a short-range part that decays sufficiently fast with distance
+so that its direct-space lattice sum converges well; $S^{\textup{S}}$
+must as well contain all the singularities of $S$ in the origin.
+The other part, $S^{\textup{L}}$, will retain all the slowly decaying
+terms of $S$ but it also has to be smooth enough in the origin, so
+that its Fourier transform $\uaft{S^{\textup{L}}}$ decays fast enough.
+(The same idea lies behind the Ewald summation in electrostatics.)
+Using the linearity of Fourier transform and formulae (\ref{eq:W definition})
+and (\ref{eq:W sum in reciprocal space}), the operator $W_{\alpha\beta}$
+can then be re-expressed as
+\begin{eqnarray}
+W_{\alpha\beta}\left(\vect k\right) & = & W_{\alpha\beta}^{\textup{S}}\left(\vect k\right)+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right)\nonumber \\
+W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect 0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
+\end{eqnarray}
+where both sums should converge nicely.
+
+
+\section{Finding a good decomposition}
+
+The remaining challenge is therefore finding a suitable decomposition
+$S^{\textup{L}}+S^{\textup{S}}$ such that both $S^{\textup{S}}$
+and $\uaft{S^{\textup{L}}}$ decay fast enough with distance and are
+expressable analytically. With these requirements, I do not expect
+to find gaussian asymptotics as in the electrostatic Ewald formula—having
+$\sim x^{-t}$, $t>d$ asymptotics would be nice, making the sums
+in (\ref{eq:W Short definition}), (\ref{eq:W Long definition}) absolutely
+convergent.
+
+The translation operator $S$ for compact scatterers in 3d can be
+expressed as
+\[
+S_{l',m',t'\leftarrow l,m,t}\left(\vect r\leftarrow\vect 0\right)=\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect r},\phi_{\vect r}\right)z_{p}^{(J)}\left(k_{0}\left|\vect r\right|\right)
+\]
+where $Y_{l,m}\left(\theta,\phi\right)$ are the spherical harmonics,
+$z_{p}^{(J)}\left(r\right)$ some of the Bessel or Hankel functions
+(probably $h_{p}^{(1)}$ in all meaningful cases; TODO) and $c_{p}^{l,m,t\leftarrow l',m',t'}$
+are some ugly but known coefficients (REF Xu 1996, eqs. 76,77). 
+
+The spherical Hankel functions can be expressed analytically as (REF
+DLMF 10.49.6, 10.49.1) 
+\begin{equation}
+h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\right)!}{2^{k}k!\left(n-k\right)!},\label{eq:spherical Hankel function series}
+\end{equation}
+ so if we find a way to deal with the radial functions $s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$,
+$q=1,2$ in 2d case or $q=1,2,3$ in 3d case, we get absolutely convergent
+summations in the direct space.
+
+
+\subsection{2d}
+
+Assume that all scatterers are placed in the plane $\vect z=0$, so
+that the 2d Fourier transform of the long-range part of the translation
+operator in terms of Hankel transforms, according to (\ref{eq:Fourier v. Hankel tf 2d}),
+reads
+
+\begin{multline*}
+\uaft{S_{l',m',t'\leftarrow l,m,t}^{\textup{L}}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\\
+\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\frac{\pi}{2},0\right)e^{i(m'-m)\phi}i^{m'-m}\pht{m'-m}{h_{p}^{(1)\textup{L}}\left(k_{0}\vect{\bullet}\right)}\left(\left|\vect k\right|\right)
+\end{multline*}
+Here $h_{p}^{(1)\textup{L}}=h_{p}^{(1)}-h_{p}^{(1)\textup{S}}$ is
+a long range part of a given spherical Hankel function which has to
+be found and which contains all the terms with far-field ($r\to\infty$)
+asymptotics proportional to$\sim e^{ik_{0}r}\left(k_{0}r\right)^{-q}$,
+$q\le Q$ where $Q$ is at least two in order to achieve absolute
+convergence of the direct-space sum, but might be higher in order
+to speed the convergence up.
+
+Obviously, all the terms $\propto s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$,
+$q>Q$ of the spherical Hankel function (\ref{eq:spherical Hankel function series})
+can be kept untouched as part of $h_{p}^{(1)\textup{S}}$, as they
+decay fast enough.
+
+The remaining task is therefore to find a suitable decomposition of
+$s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$, $q\le Q$ into
+short-range and long-range parts, $s_{k_{0},q}(r)=s_{k_{0},q}^{\textup{S}}(r)+s_{k_{0},q}^{\textup{L}}(r)$,
+such that $s_{k_{0},q}^{\textup{L}}(r)$ contains all the slowly decaying
+asymptotics and its Hankel transforms decay desirably fast as well,
+$\pht n{s_{k_{0},q}^{\textup{L}}}\left(k\right)=o(z^{-Q})$, $z\to\infty$.
+The latter requirement calls for suitable regularisation functions—$s_{q}^{\textup{L}}$
+must be sufficiently smooth in the origin, so that 
+\begin{equation}
+\pht n{s_{k_{0},q}^{\textup{L}}}\left(k\right)=\int_{0}^{\infty}s_{k_{0},q}^{\textup{L}}\left(r\right)rJ_{n}\left(kr\right)\ud r=\int_{0}^{\infty}s_{k_{0},q}\left(r\right)\rho\left(r\right)rJ_{n}\left(kr\right)\ud r\label{eq:2d long range regularisation problem statement}
+\end{equation}
+ exists and decays fast enough. $J_{\nu}(r)\sim\left(r/2\right)^{\nu}/\Gamma\left(\nu+1\right)$
+(REF DLMF 10.7.3) near the origin, so the regularisation function
+should be $\rho(r)=o(r^{q-n-1})$ only to make $\pht n{s_{q}^{\textup{L}}}$
+converge. The additional decay speed requirement calls for at least
+$\rho(r)=o(r^{q-n+Q-1})$, I guess. At the same time, $\rho(r)$ must
+converge fast enough to one for $r\to\infty$.
+
+The electrostatic Ewald summation uses regularisation with $1-e^{-cr^{2}}$.
+However, such choice does not seem to lead to an analytical solution
+(really? could not something be dug out of DLMF 10.22.54?) for the
+current problem (\ref{eq:2d long range regularisation problem statement}).
+But it turns out that the family of functions
+\begin{equation}
+\rho_{\kappa,c}(r)\equiv\left(1-e^{-cr}\right)^{\text{\ensuremath{\kappa}}},\quad c>0,\kappa\in\nats\label{eq:binom regularisation function}
+\end{equation}
+might lead to satisfactory results; see below. 
+
+
+\subsubsection{Hankel transforms of the long-range parts, „binomial“ regularisation\label{sub:Hankel-transforms-binom-reg}}
+
+Let 
+
+\begin{eqnarray}
+\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & \equiv & \int_{0}^{\infty}\frac{e^{ik_{0}r}}{\left(k_{0}r\right)^{q}}J_{n}\left(kr\right)\left(1-e^{-cr}\right)^{\kappa}r\,\ud r\nonumber \\
+ & = & k_{0}^{-q}\int_{0}^{\infty}r^{1-q}J_{n}\left(kr\right)\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}e^{-(\sigma c-ik_{0})r}\ud r\nonumber \\
+ & \underset{\equiv}{\textup{form.}} & \sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\pht n{s_{q,k_{0}}^{\textup{L}1,\sigma c}}\left(k\right).\label{eq:2D Hankel transform of regularized outgoing wave, decomposition}
+\end{eqnarray}
+From {[}REF DLMF 10.22.49{]} one digs 
+\begin{multline}
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}\Gamma\left(2-q+n\right)}{2^{n}k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\hgfr\left(\frac{2-q+n}{2},\frac{3-q+n}{2};1+n;\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right),\\
+\Re\left(2-q+n\right)>0,\Re(c-ik_{0}\pm k)\ge0,\label{eq:2D Hankel transform of exponentially suppressed outgoing wave as 2F1}
+\end{multline}
+and using {[}REF DLMF 15.9.17{]} and  {[}REF DLMF 14.9.5{]}
+
+{\footnotesize{}
+\begin{multline}
+\pht n{s_{q,k_{0}}^{\textup{L}1,c}}\left(k\right)=\frac{k^{n}\Gamma\left(2-q+n\right)}{k_{0}^{q}\left(c-ik_{0}\right)^{2-q+n}}\left(\frac{-k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{-\frac{n}{2}}\left(1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}\right)^{\frac{q}{2}-1}P_{q}^{-n}\left(\frac{1}{\sqrt{1+\frac{k^{2}}{\left(c-ik_{0}\right)^{2}}}}\right),\\
+k>0\wedge k_{0}>0\wedge c\ge0\wedge\lnot\left(c=0\wedge k_{0}=k\right)\label{eq:2D Hankel transform of exponentially suppressed outgoing wave expanded}
+\end{multline}
+}with principal branches of the hypergeometric functions, associated
+Legendre functions, and fractional powers. The conditions from (\ref{eq:2D Hankel transform of exponentially suppressed outgoing wave as 2F1})
+should hold, but we will use (\ref{eq:2D Hankel transform of exponentially suppressed outgoing wave expanded})
+formally even if they are violated, with the hope that the divergences
+eventually cancel in (\ref{eq:2D Hankel transform of regularized outgoing wave, decomposition}).
+
+One problematic element here is the gamma function $\text{Γ}\left(2-q+n\right)$
+which is singular if the arguments are negative integers, i.e. if
+$q-n\ge3$; but at least the necessary minimum of $q=1,2$ would be
+covered this way. The associated Legendre function can be expressed
+as a finite ``polynomial'' if $q\ge n$. In other cases, different
+expressions can be obtained from \ref{eq:2D Hankel transform of exponentially suppressed outgoing wave as 2F1}
+using various transformation formulae from either DLMF or \begin{russian}Прудников\end{russian}. 
+
+In fact, Mathematica is usually able to calculate the transforms for
+specific values of $\kappa,q,n$, but it did not find any general
+formula for me. The resulting expressions are finite sums of algebraic
+functions, Table \ref{tab:Asymptotical-behaviour-Mathematica} shows
+how fast they decay with growing $k$ for some parameters. The only
+case where Mathematica did not help at all is $q=2,n=0$, which is
+unfortunately important. But if I have not made some mistake, the
+expression (\ref{eq:2D Hankel transform of exponentially suppressed outgoing wave expanded})
+is applicable for this case.
+
+\begin{table}
+\begin{centering}
+{\footnotesize{}}%
+\begin{tabular}{cc|ccc}
+\multicolumn{2}{c|}{{\footnotesize{}$\kappa=0$}} &  & {\footnotesize{}$n$} & \tabularnewline
+\multicolumn{1}{c}{} &  & {\footnotesize{}0} & {\footnotesize{}1} & {\footnotesize{}2}\tabularnewline
+\hline 
+\multirow{2}{*}{{\footnotesize{}$q$}} & {\footnotesize{}1} & {\footnotesize{}2} & {\footnotesize{}1} & {\footnotesize{}1}\tabularnewline
+ & {\footnotesize{}2} & {\footnotesize{}x} & {\footnotesize{}w} & {\footnotesize{}0}\tabularnewline
+\end{tabular}{\footnotesize{} \hspace*{\fill}}%
+\begin{tabular}{cc|ccccc}
+\multicolumn{2}{c|}{{\footnotesize{}$\kappa=1$}} & \multicolumn{5}{c}{{\footnotesize{}$n$}}\tabularnewline
+ &  & {\footnotesize{}0} & {\footnotesize{}1} & {\footnotesize{}2} & {\footnotesize{}3} & {\footnotesize{}4}\tabularnewline
+\hline 
+\multirow{2}{*}{{\footnotesize{}$q$}} & {\footnotesize{}1} & {\footnotesize{}w} & {\footnotesize{}3} & {\footnotesize{}2} & {\footnotesize{}2} & {\footnotesize{}2}\tabularnewline
+ & {\footnotesize{}2} & {\footnotesize{}x} & {\footnotesize{}1} & {\footnotesize{}w} & {\footnotesize{}1} & {\footnotesize{}1}\tabularnewline
+\end{tabular}{\footnotesize{} \hspace*{\fill}}%
+\begin{tabular}{cc|ccccc}
+\multicolumn{2}{c|}{{\footnotesize{}$\kappa=2$}} & \multicolumn{5}{c}{{\footnotesize{}$n$}}\tabularnewline
+ &  & {\footnotesize{}0} & {\footnotesize{}1} & {\footnotesize{}2} & {\footnotesize{}3} & {\footnotesize{}4}\tabularnewline
+\hline 
+\multirow{2}{*}{{\footnotesize{}$q$}} & {\footnotesize{}1} & {\footnotesize{}0/w} & {\footnotesize{}3} & {\footnotesize{}4} & {\footnotesize{}3} & {\footnotesize{}3}\tabularnewline
+ & {\footnotesize{}2} & {\footnotesize{}x} & {\footnotesize{}3} & {\footnotesize{}2} & {\footnotesize{}2} & {\footnotesize{}1}\tabularnewline
+\end{tabular}
+\par\end{centering}{\footnotesize \par}
+
+\protect\caption{Asymptotical behaviour of some (\ref{eq:2D Hankel transform of regularized outgoing wave, decomposition})
+obtained by Mathematica for $k\to\infty$. The table entries are the
+$N$ of $\protect\pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right)=o\left(1/k^{N}\right)$.
+The special entry ``x'' means that Mathematica was not able to calculate
+the integral, and ``w'' denotes that the first returned term was
+not simply of the kind $(\ldots)k^{-N-1}$.\label{tab:Asymptotical-behaviour-Mathematica}}
+\end{table}
+
+
+
+
+
+\subsection{3d (TODO)}
+
+\begin{multline*}
+\uaft{S_{l',m',t'\leftarrow l,m,t}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\\
+\sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect k},\phi_{\vect k}\right)\left(-i\right)^{p}\usht p{z_{p}^{(J)}}\left(\left|\vect k\right|\right)
+\end{multline*}
+
+
+
+\section{Major TODOs and open questions}
+\begin{itemize}
+\item Check if (\ref{eq:2D Hankel transform of exponentially suppressed outgoing wave expanded})
+gives a satisfactory result for the case $q=2,n=0$.
+\item Analyse the behaviour $k\to k_{0}$.
+\item Find a general algorithm for generating the expressions of the Hankel
+transforms.
+\item Three-dimensional case.
+\end{itemize}
+
+\section{(Appendix) Fourier vs. Hankel transform}
+
+
+\subsection{Three dimensions}
+
+Given a nice enough function $f$ of a real 3d variable, assume its
+factorisation into radial and angular parts 
+\[
+f(\vect r)=\sum_{l,m}f_{l,m}(\left|\vect r\right|)\ush lm\left(\theta_{\vect r},\phi_{\vect r}\right).
+\]
+Acording to (REF Baddour 2010, eqs. 13, 16), its Fourier transform
+can then be expressed in terms of Hankel transforms (CHECK normalisation
+of $j_{n}$, REF Baddour (1)) 
+\[
+\uaft f(\vect k)=\frac{4\pi}{\left(2\pi\right)^{\frac{3}{2}}}\sum_{l,m}\left(-i\right)^{l}\left(\bsht{f_{l,m}}{}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right)
+\]
+where the spherical Hankel transform $\bsht l{}$ of degree $l$ is
+defined as (REF Baddour eq. 2)
+\[
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\]
+Using this convention, the inverse spherical Hankel transform is given
+by (REF Baddour eq. 3)
+\[
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+\]
+so it is not unitary. 
+
+An unitary convention would look like this:
+\begin{equation}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\end{equation}
+Then $\usht l{}^{-1}=\usht l{}$ and the unitary, angular-momentum
+Fourier transform reads
+\begin{eqnarray}
+\uaft f(\vect k) & = & \frac{4\pi}{\left(2\pi\right)^{\frac{3}{2}}}\sqrt{\frac{\pi}{2}}\sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right)\nonumber \\
+ & = & \sum_{l,m}\left(-i\right)^{l}\left(\usht l{f_{l,m}}\right)\left(\left|\vect k\right|\right)\ush lm\left(\theta_{\vect k},\phi_{\vect k}\right).\label{eq:Fourier v. Hankel tf 3d}
+\end{eqnarray}
+Cool.
+
+
+\subsection{Two dimensions}
+
+Similarly in 2d, let the expansion of $f$ be 
+\[
+f\left(\vect r\right)=\sum_{m}f_{m}\left(\left|\vect r\right|\right)e^{im\phi_{\vect r}},
+\]
+its Fourier transform is then (CHECK this, it is taken from the Wikipedia
+article on Hankel transform) 
+\begin{equation}
+\uaft f\left(\vect k\right)=\sum_{m}i^{m}e^{im\phi_{\vect k}}\pht mf_{m}\left(\left|\vect k\right|\right)\label{eq:Fourier v. Hankel tf 2d}
+\end{equation}
+where the Hankel transform of order $m$ is defined as
+\begin{equation}
+\pht mg\left(k\right)=\int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}
+\end{equation}
+which is already self-inverse, $\pht m{}^{-1}=\pht m{}$ (hence also
+unitary).
+
+
+\section{(Appendix) Multidimensional Dirac comb}
+
+
+\subsection{1D}
+
+This is all from Wikipedia
+
+
+\subsubsection{Definitions}
+
+\begin{eqnarray*}
+\lyxmathsym{Ш}(t) & \equiv & \sum_{k=-\infty}^{\infty}\delta(t-k)\\
+\lyxmathsym{Ш}_{T}(t) & \equiv & \sum_{k=-\infty}^{\infty}\delta(t-kT)=\frac{1}{T}\lyxmathsym{Ш}\left(\frac{t}{T}\right)
+\end{eqnarray*}
+
+
+
+\subsubsection{Fourier series representation}
+
+\begin{equation}
+\lyxmathsym{Ш}_{T}(t)=\sum_{n=-\infty}^{\infty}e^{2\pi int/T}\label{eq:1D Dirac comb Fourier series}
+\end{equation}
+
+
+
+\subsubsection{Fourier transform}
+
+With unitary ordinary frequency Ft., i.e.
+
+\[
+\uoft f(\vect{\xi})\equiv\int_{\mathbb{R}^{n}}f(\vect x)e^{-2\pi i\vect x\cdot\vect{\xi}}\ud^{n}\vect x
+\]
+we have 
+\begin{equation}
+\uoft{\lyxmathsym{Ш}_{T}}(f)=\frac{1}{T}\lyxmathsym{Ш}_{\frac{1}{T}}(f)=\sum_{n=-\infty}^{\infty}e^{-i2\pi fnT}\label{eq:1D Dirac comb Ft ordinary freq}
+\end{equation}
+ and with unitary angular frequency Ft., i.e.
+\begin{equation}
+\uaft f(\vect k)\equiv\frac{1}{\left(2\pi\right)^{n/2}}\int_{\mathbb{R}^{n}}f(\vect x)e^{-i\vect x\cdot\vect k}\ud^{n}\vect x\label{eq:Ft unitary angular frequency}
+\end{equation}
+we have (CHECK)
+\[
+\uaft{\lyxmathsym{Ш}_{T}}(\omega)=\frac{\sqrt{2\pi}}{T}\lyxmathsym{Ш}_{\frac{2\pi}{T}}(\omega)=\frac{1}{\sqrt{2\pi}}\sum_{n=-\infty}^{\infty}e^{-i\omega nT}
+\]
+
+
+
+\subsection{Dirac comb for multidimensional lattices}
+
+
+\subsubsection{Definitions}
+
+Let $d$ be the dimensionality of the real vector space in question,
+and let $\basis u\equiv\left\{ \vect u_{i}\right\} _{i=1}^{d}$ denote
+a basis for some lattice in that space. Let the corresponding lattice
+delta comb be
+\[
+\dc{\basis u}\left(\vect x\right)\equiv\sum_{n_{1}=-\infty}^{\infty}\ldots\sum_{n_{d}=-\infty}^{\infty}\delta\left(\vect x-\sum_{i=1}^{d}n_{i}\vect u_{i}\right).
+\]
+
+
+Furthemore, let $\rec{\basis u}\equiv\left\{ \rec{\vect u}_{i}\right\} _{i=1}^{d}$
+be the reciprocal lattice basis, that is the basis satisfying $\vect u_{i}\cdot\rec{\vect u_{j}}=\delta_{ij}$.
+This slightly differs from the usual definition of a reciprocal basis,
+here denoted $\recb{\basis u}\equiv\left\{ \recb{\vect u_{i}}\right\} _{i=1}^{d}$,
+which satisfies $\vect u_{i}\cdot\recb{\vect u_{j}}=2\pi\delta_{ij}$
+instead.
+
+
+\subsubsection{Factorisation of a multidimensional lattice delta comb}
+
+By simple drawing, it can be seen that 
+\[
+\dc{\basis u}(\vect x)=c_{\basis u}\prod_{i=1}^{d}\dc{}\left(\vect x\cdot\rec{\vect u_{i}}\right)
+\]
+where $c_{\basis u}$ is some numerical volume factor. In order to
+determine $c_{\basis u}$, let us consider only the ``zero tooth''
+of the comb, leading to
+\[
+\delta^{d}(\vect x)=c_{\basis u}\prod_{i=1}^{d}\delta\left(\vect x\cdot\rec{\vect u_{i}}\right).
+\]
+From the scaling property of delta function, $\delta(ax)=\left|a\right|^{-1}\delta(x)$,
+we get
+\[
+\delta^{d}(\vect x)=c_{\basis u}\prod_{i=1}^{d}\left\Vert \rec{\vect u_{i}}\right\Vert ^{-1}\delta\left(\vect x\cdot\frac{\rec{\vect u_{i}}}{\left\Vert \rec{\vect u_{i}}\right\Vert }\right).
+\]
+
+
+From the Osgood's book (p. 375):
+
+\[
+\dc A(\vect x)=\frac{1}{\left|\det A\right|}\dc{}^{(d)}\left(A^{-1}\vect x\right)
+\]
+
+
+
+\subsubsection{Fourier series representation}
+
+
+
+
+\subsubsection{Fourier transform (OK)}
+
+From the Osgood's book https://see.stanford.edu/materials/lsoftaee261/chap8.pdf,
+p. 379
+
+\[
+\uoft{\dc{\basis u}}\left(\vect{\xi}\right)=\left|\det\rec{\basis u}\right|\dc{\rec{\basis u}}^{(d)}\left(\vect{\xi}\right).
+\]
+And consequently, for unitary/angular frequency it is
+
+\begin{eqnarray}
+\uaft{\dc{\basis u}}\left(\vect k\right) & = & \frac{1}{\left(2\pi\right)^{\frac{d}{2}}}\uoft{\dc{\basis u}}\left(\frac{\vect k}{2\pi}\right)\nonumber \\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\dc{\rec{\basis u}}^{(d)}\left(\frac{\vect k}{2\pi}\right)\nonumber \\
+ & = & \left(2\pi\right)^{\frac{d}{2}}\left|\det\rec{\basis u}\right|\dc{\recb{\basis u}}\left(\vect k\right)\nonumber \\
+ & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\dc{\recb{\basis u}}\left(\vect k\right).\label{eq:Dirac comb uaFt}
+\end{eqnarray}
+
+
+
+
+
+\subsubsection{Convolution}
+
+\[
+\left(f\ast\dc{\basis u}\right)(\vect x)=\sum_{\vect t\in\basis u\ints^{d}}f(\vect x-\vect t)
+\]
+
+
+
+\end{document}
