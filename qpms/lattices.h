@@ -33,6 +33,83 @@ static inline point2d point2d_fromxy(const double x, const double y) {
 	return p;
 }
 
+
+
+/*
+ * GENERIC LATTICE POINT GENERATOR TYPE PGenSph
+ * ============================================
+ *
+ * A bit of OOP-in-C brainfuck here.
+ * 
+ * The basic principle of operation is following:
+ * Instead of a list (array) of points, an initialized PGenSph object 
+ * is passed to a function that does something over a set of points.
+ * Each time PGenSph-type object is "called", it returns PGenSphReturnData, 
+ * which contains a point in spherical coordinates (sph_t) and some metadata.
+ *
+ * After the last generated point, the generator frees all internal memory
+ * and returns PGenSphReturnData with PGEN_NOTDONE flag unset (the rest
+ * shall be considered invalid data).
+ * The caller can also decide not to use the rest and end getting the points
+ * even when the PGEN_NOTDONE was set in the last returned data.
+ * In such case, the caller shall call PGenSph_destroy() manually.
+ *
+ * MEMORY MANAGEMENT POLICY
+ * ------------------------
+ * The basic PGenSph structure shall be allocated on stack (it's only two pointers),
+ * everything internal goes on heap.
+ */
+
+struct PGenSph;  // full definition below
+
+typedef enum PGenPointFlags {
+	PGEN_NOTDONE = 2, // The most important flag: when this is not set, the interation ended – other data returned should be considered nonsense and at this point, the generator should have de-allocated all internal memory.
+	PGEN_NEWR = 1, // The r-coordinate is different than in the previous generated point (so radial parts of the calculation have to be redone);
+	PGEN_AT_Z = 4, // This is set if we are at the z-axis (theta is either 0 or M_PI)
+	PGEN_AT_XY = 8, // This is set if we are at the xy-plane (theta is M_PI2)
+	PGEN_DONE = 0, // convenience value, not an actual flag
+} PGenPointFlags;
+
+typedef struct PGenSphReturnData {
+  PGenPointFlags flags; // metatada
+  sph_t point_sph; // the actual point data
+} PGenSphReturnData;
+
+static const PGenSphReturnData PGenSphDoneVal = {PGEN_DONE, {0,0,0}}; // convenience constant for use in the exctractor implementations
+
+typedef struct PGenSphClassInfo { // static PGenSph info
+	char * const name; // mainly for debugging purposes
+	PGenSphReturnData (*next)(struct PGenSph *); // This contains the actual generator procedure (TODO shouldn't I rather point to stateData?)
+	void (*destructor)(struct PGenSph *); // Destructor to be called by next() at iteration end, or by the caller if ending the generation prematurely
+} PGenSphClassInfo;
+
+// TOP DATA STRUCTURE DEFINITION HERE
+typedef struct PGenSph {
+	const PGenSphClassInfo * const c;
+	void *stateData; // shall be NULL if invalid (destroyed)
+} PGenSph;
+
+static inline void PGenSph_destroy(PGenSph *g) {
+	g->c->destructor(g);
+	assert(g->stateData == NULL); // this should be done by the destructor
+}
+
+static inline PGenSphReturnData PGenSph_next(PGenSph *g) {
+	// TODO maybe some asserts around here
+	return g->c->next(g);
+}
+
+
+/*
+ * Some basic lattice generators implementing the abstract interface above (implemented in latticegens.c).
+ */
+
+// This one simply iterates over an existing array of Point2d
+extern const PGenSphClassInfo PGenSph_FromPoint2DArray; // TODO Do I even need this to be declared here?
+PGenSph PGenSph_FromPoints2DArray_new(const point2d *points, size_t len);
+
+
+
 /*
  * THE NICE PART (adaptation of lattices2d.py)
  * ===========================================
