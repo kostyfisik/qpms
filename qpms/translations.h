@@ -10,10 +10,9 @@
 #include "bessels.h"
 #endif
 
-#ifdef LATTICESUMS32
+#if defined LATTICESUMS32 || defined LATTICESUMS31
 #include "ewald.h"
 #endif
-
 
 /*
  * Argument conventions:
@@ -78,7 +77,7 @@ typedef struct qpms_trans_calculator {
 	// TODO
 #endif
 
-#ifdef LATTICESUMS32
+#if defined LATTICESUMS32 || defined LATTICESUMS31
 	qpms_ewald32_constants_t *e32c;
 #endif
 #ifdef LATTICESUMS_OLD
@@ -188,11 +187,28 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
 		const double eta, const double k,
 		const double unitcell_area,
 		const size_t nRpoints, const cart2_t *Rpoints,
-		const size_t nKpoints, const cart2_t *Kpoinst,
+		const size_t nKpoints, const cart2_t *Kpoints,
 		const cart2_t beta,
 		const cart2_t particle_shift
 		);
 #endif //LATTICESUMS32
+
+#ifdef LATTICESUMS31
+// e31z means that the particles are positioned along the z-axis;
+// their positions and K-values are then denoted by a single z-coordinate
+in qpms_trans_calculator_get_AB_arrays_e31z_bost_points_and_shift(const qpms_trans_calculator *c,
+		complex double *Adest, double *Aerr,
+		complex double *Bdest, double *Berr,
+		const ptrdiff_t deststride, const ptrdiff_t srcstride,
+		const double eta, const double k,
+		const double unitcell_area, // just lattice period
+		const size_t nRpoints, const cart2_t *Rpoints,
+		const size_t nKpoints, const cart2_t *Kpoints,
+		const double beta,
+		const double particle_shift
+		);
+#endif
+
 
 
 

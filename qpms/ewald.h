@@ -42,6 +42,8 @@ typedef struct {
 			    * what the multipliers from translations.c count with.
 			    */
 	// gsl_sf_legendre_t legendre0_type;
+	double *legendre_plus1; // needed? TODO; in any case, nonzero only for m=0
+	double *legendre_minus1; // needed? TODO; in any case, nonzero only for m=0
 	int legendre0_csphase;       /* 1 or -1; csphase of the Legendre polynomials saved in legendre0.
 					This is because I dont't actually consider this fixed in
 					translations.c */
@@ -151,6 +153,30 @@ int ewald32_sigma_short_points_rordered(//NI
 		point2d particle_shift    // used only in the very end to multiply it by the phase
 		);
 
+
+// 1D sums aligned along z-axis
+int ewald31z_sigma_long_points_and_shift (
+		complex double *target_sigmalr_y, // must be c->nelem_sc long
+		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
+		const qpms_ewald32_constants_t *c,
+		double eta, double k, double unitcell_area,
+		size_t npoints, const double *Kpoints,
+		double beta,
+		double particle_shift
+		);
+int ewald31z_sigma_short_points_and_shift(
+		complex double *target_sigmasr_y, // must be c->nelem_sc long
+		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
+		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		double eta, double k,
+		size_t npoints, const double *Rpoints, 
+		double beta,
+		double particle_shift
+		);
+int ewald31z_sigma0(complex double *result, double *err, 
+		const qpms_ewald32_constants_t *c,
+		double eta, double k
+		); // exactly the same as ewald32_sigma0
 
 
 #endif //EWALD_H

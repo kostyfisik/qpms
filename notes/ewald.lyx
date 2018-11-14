@@ -142,6 +142,12 @@ theorems-starred
 
 
 \begin_inset FormulaMacro
+\newcommand{\sgn}{\operatorname{sgn}}
+{\mathrm{sgn}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\pht}[2]{\mathfrak{\mathbb{H}}_{#1}#2}
 \end_inset
 
@@ -646,11 +652,15 @@ W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\bas
 where both sums should converge nicely.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
 \begin_layout Section
-Finding a good decomposition
+Finding a good decomposition – deprecated
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The remaining challenge is therefore finding a suitable decomposition 
 \begin_inset Formula $S^{\textup{L}}+S^{\textup{S}}$
 \end_inset
@@ -690,7 +700,7 @@ reference "eq:W Long definition"
  absolutely convergent.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The translation operator 
 \begin_inset Formula $S$
 \end_inset
@@ -724,9 +734,26 @@ where
  
 \end_layout
 
-\begin_layout Standard
-The spherical Hankel functions can be expressed analytically as (REF DLMF
- 10.49.6, 10.49.1) 
+\begin_layout Plain Layout
+The spherical Hankel functions can be expressed analytically as 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "10.49.6, 10.49.1"
+key "NIST:DLMF"
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(REF DLMF 10.49.6, 10.49.1)
+\end_layout
+
+\end_inset
+
+ 
 \begin_inset Formula 
 \begin{equation}
 h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\right)!}{2^{k}k!\left(n-k\right)!},\label{eq:spherical Hankel function series}
@@ -753,7 +780,7 @@ h_{n}^{(1)}(r)=e^{ir}\sum_{k=0}^{n}\frac{i^{k-n-1}}{r^{k+1}}\frac{\left(n+k\righ
 2d
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Assume that all scatterers are placed in the plane 
 \begin_inset Formula $\vect z=0$
 \end_inset
@@ -769,7 +796,7 @@ reference "eq:Fourier v. Hankel tf 2d"
 , reads
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{multline*}
 \uaft{S_{l',m',t'\leftarrow l,m,t}^{\textup{L}}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\\
@@ -803,7 +830,7 @@ Here
  sum, but might be higher in order to speed the convergence up.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Obviously, all the terms 
 \begin_inset Formula $\propto s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
 \end_inset
@@ -826,7 +853,7 @@ reference "eq:spherical Hankel function series"
 , as they decay fast enough.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The remaining task is therefore to find a suitable decomposition of 
 \begin_inset Formula $s_{k_{0},q}(r)=e^{ik_{0}r}\left(k_{0}r\right)^{-q}$
 \end_inset
@@ -896,7 +923,7 @@ The remaining task is therefore to find a suitable decomposition of
 .
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The electrostatic Ewald summation uses regularisation with 
 \begin_inset Formula $1-e^{-cr^{2}}$
 \end_inset
@@ -923,7 +950,7 @@ reference "eq:2d long range regularisation problem statement"
 might lead to satisfactory results; see below.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -983,7 +1010,7 @@ s_{q}^{\textup{L}}\left(x\right)\equiv s_{q}(x)\tilde{\rho}_{\kappa,č}(x)=e^{ix
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -1019,7 +1046,7 @@ name "sub:Hankel-transforms-binom-reg"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Let 
 \begin_inset Note Note
 status open
@@ -1043,7 +1070,7 @@ reference "eq:binom regularisation function"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{eqnarray}
 \pht n{s_{q,k_{0}}^{\textup{L}\kappa,c}}\left(k\right) & \equiv & \int_{0}^{\infty}\frac{e^{ik_{0}r}}{\left(k_{0}r\right)^{q}}J_{n}\left(kr\right)\left(1-e^{-cr}\right)^{\kappa}r\,\ud r\nonumber \\
@@ -1053,7 +1080,25 @@ reference "eq:binom regularisation function"
 
 \end_inset
 
-From [REF DLMF 10.22.49] one digs 
+From
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [REF DLMF 10.22.49]
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "10.22.49"
+key "NIST:DLMF"
+
+\end_inset
+
+ one digs 
 \begin_inset Note Note
 status open
 
@@ -1095,10 +1140,28 @@ status open
 
 \end_inset
 
- [REF DLMF 14.9.5]
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "14.9.5"
+key "NIST:DLMF"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[REF DLMF 14.9.5]
 \end_layout
 
-\begin_layout Standard
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Note Note
 status collapsed
 
@@ -1609,7 +1672,7 @@ reference "eq:2D Hankel transform of regularized outgoing wave, decomposition"
 .
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status collapsed
 
@@ -1692,7 +1755,7 @@ end{russian}
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 In fact, Mathematica is usually able to calculate the transforms for specific
  values of 
 \begin_inset Formula $\kappa,q,n$
@@ -1720,7 +1783,7 @@ reference "tab:Asymptotical-behaviour-Mathematica"
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Float table
 wide false
 sideways false
@@ -2747,11 +2810,11 @@ Case
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 As shown in a separate note,
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 \pht 0{s_{2,k_{0}}^{\textup{L}\kappa,c}}\left(k\right)=-\sum_{\sigma=0}^{\kappa}\left(-1\right)^{\sigma}\binom{\kappa}{\sigma}\frac{1}{k_{0}^{2}}\sinh^{-1}\left(\frac{\sigma c-ik_{0}}{k}\right)
@@ -2778,7 +2841,7 @@ Case
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 As shown in separate note (check whether copied correctly)
 \begin_inset Formula 
 \[
@@ -2806,7 +2869,7 @@ Case
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 As shown in separate note (check whether copied correctly)
 \lang finnish
 
@@ -2843,7 +2906,7 @@ for
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Note Note
 status open
 
@@ -3009,12 +3072,17 @@ reference "eq:prudnikov2 eq 2.12.9.14"
 3d (TODO)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{multline*}
 \uaft{S_{l',m',t'\leftarrow l,m,t}\left(\vect{\bullet}\leftarrow\vect 0\right)}(\vect k)=\\
 \sum_{p}c_{p}^{l',m',t'\leftarrow l,m,t}\ush p{m'-m}\left(\theta_{\vect k},\phi_{\vect k}\right)\left(-i\right)^{p}\usht p{z_{p}^{(J)}}\left(\left|\vect k\right|\right)
 \end{multline*}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -3027,11 +3095,34 @@ Exponentially converging decompositions
 
 \begin_layout Standard
 (As in Linton, Thompson, Journal of Computational Physics 228 (2009) 1815–1829
- [LT].)
+ [LT] 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_one-_2009"
+
+\end_inset
+
+.)
 \end_layout
 
 \begin_layout Standard
-[LT] offers a better decomposition than above.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[LT]
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_one-_2009"
+
+\end_inset
+
+ offers an exponentially convergent decomposition.
  Let 
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -3070,15 +3161,66 @@ convention independent
 
 ):
 \begin_inset Formula 
-\[
-\sigma_{n}^{m(2)}=-\frac{2^{n+1}i}{k^{n+1}\sqrt{\pi}}\sum_{\vect R\in\Lambda}^{'}\left|\vect R\right|^{n}e^{i\vect{\beta}\cdot\vect R}Y_{n}^{m}\left(\vect R\right)\int_{\eta}^{\infty}e^{-\left|\vect R\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2n}\ud\xi.
-\]
+\begin{equation}
+\sigma_{n}^{m(2)}=-\frac{2^{n+1}i}{k^{n+1}\sqrt{\pi}}\sum_{\vect R\in\Lambda}^{'}\left|\vect R\right|^{n}e^{i\vect{\beta}\cdot\vect R}Y_{n}^{m}\left(\vect R\right)\int_{\eta}^{\infty}e^{-\left|\vect R\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2n}\ud\xi.\label{eq:Ewald in 3D short-range part}
+\end{equation}
 
 \end_inset
 
-However the other parts in [LT] are convention dependend, so let me fix
- it here.
- [LT] use the convention [LT(A.7)]
+However the other parts in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_one-_2009"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[LT]
+\end_layout
+
+\end_inset
+
+ are convention dependend, so let me fix it here.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[LT]
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_one-_2009"
+
+\end_inset
+
+ use the convention 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(A.7)"
+key "linton_one-_2009"
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[LT(A.7)]
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{eqnarray*}
 P_{n}^{m}\left(0\right) & = & \frac{\left(-1\right)^{\left(n-m\right)/2}\left(n+m\right)!}{2^{n}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!}\qquad n+m\mbox{ even,}\\
@@ -3091,7 +3233,25 @@ noting that the former formula is valid also for negative
 \begin_inset Formula $m$
 \end_inset
 
- (as can be checked by substituting [LT(A.4)]).
+ (as can be checked by substituting 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(A.4)"
+key "linton_one-_2009"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[LT(A.4)]
+\end_layout
+
+\end_inset
+
+).
  Therefore
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -3101,22 +3261,57 @@ Y_{n}^{m}\left(\frac{\pi}{2},\phi\right) & = & \left(-1\right)^{m}\sqrt{\frac{\l
 
 \end_inset
 
- Let us substitute this into [LT(4.5)]
+ Let us substitute this into 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [LT(4.5)] 
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4.5)"
+key "linton_one-_2009"
+
+\end_inset
+
+
 \begin_inset Formula 
-\begin{eqnarray*}
-\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\left(-1\right)^{\left(n+m\right)/2}\sqrt{\left(2n+1\right)\left(n-m\right)!\left(n+m\right)!}\times\\
- &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\\
- & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\sqrt{\pi}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\\
- &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(0,\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\\
- & = & -\frac{i^{n+1}}{k\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\\
- &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(0,\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1}
-\end{eqnarray*}
+\begin{eqnarray}
+\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\left(-1\right)^{\left(n+m\right)/2}\sqrt{\left(2n+1\right)\left(n-m\right)!\left(n+m\right)!}\times\nonumber \\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\nonumber \\
+ & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\sqrt{\pi}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\nonumber \\
+ & = & -\frac{i^{n+1}}{k\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1}\label{eq:2D Ewald in 3D long-range part}
+\end{eqnarray}
 
 \end_inset
 
 which basically replaces an ugly prefactor with another, similarly ugly
  one.
- See [LT] for the meanings of the 
+ See 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_one-_2009"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [LT]
+\end_layout
+
+\end_inset
+
+ for the meanings of the 
 \begin_inset Formula $pq$
 \end_inset
 
@@ -3135,13 +3330,28 @@ which basically replaces an ugly prefactor with another, similarly ugly
 \begin_layout Standard
 To have it complete, 
 \begin_inset Formula 
-\[
-\sigma_{n}^{m(0)}=\frac{\delta_{n0}\delta_{m0}}{4\pi}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)=\frac{\delta_{n0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)Y_{n}^{m}.
-\]
+\begin{equation}
+\sigma_{n}^{m(0)}=\frac{\delta_{n0}\delta_{m0}}{4\pi}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)=\frac{\delta_{n0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)Y_{n}^{m}.\label{eq:Ewald in 3D origin part}
+\end{equation}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+N.B.
+ Apparently, the formulae might be valid regardless of coordinate system
+ orientation (then the spherical harmonic arguments would be of course general
+ 
+\begin_inset Formula $Y_{n}^{m}\left(\theta,\phi\right)$
+\end_inset
+
+, 
+\begin_inset Formula $Y_{n}^{m}\left(\theta_{b_{pq}},\phi_{\vect{\beta}_{pq}}\right)$
+\end_inset
+
+ accordingly; but CHECK).
 \end_layout
 
 \begin_layout Subsection
@@ -3240,7 +3450,25 @@ where the integral is according to mathematica and the error functions were
 \begin_inset Formula $\Gamma\left(1-n,z\right)=z^{1-n}E_{n}\left(z\right)$
 \end_inset
 
- from [DLMF(8.4.13)].
+ from 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "8.4.13"
+key "NIST:DLMF"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [DLMF(8.4.13)]
+\end_layout
+
+\end_inset
+
+.
  Therefore, the upper estimate for the short-range sum error is
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -3388,7 +3616,24 @@ The only diverging factor here is apparently
 \begin_inset Formula $\left(\beta_{pq}/k\right)^{n}$
 \end_inset
 
-; Mathematica and [DMLF] say
+; Mathematica and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST:DLMF"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+[DMLF]
+\end_layout
+
+\end_inset
+
+ say
 \begin_inset Formula 
 \begin{eqnarray*}
 \int_{B_{\mathrm{s}}}^{\infty}e^{-\frac{\beta^{2}}{4\eta^{2}}}\beta^{n}\beta\ud\beta & = & \frac{B_{\mathrm{s}}^{n+2}}{2}E_{-\frac{n}{2}}\left(\frac{B_{\mathrm{s}}^{2}}{4\eta^{2}}\right)\\
@@ -3406,6 +3651,80 @@ The only diverging factor here is apparently
 \end_layout
 
 \begin_layout Standard
+For 1D chains, one can use almost the same formulae as above – the main
+ difference is that there are different exponents in some terms of the long-rang
+e part so that 
+\begin_inset Formula $\sigma_{n[1\mathrm{d}]}^{m(1)}/\sigma_{n[2\mathrm{d}]}^{m(1)}=k\gamma_{pq}/2\sqrt{\pi}$
+\end_inset
+
+ (see 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4.62)"
+key "linton_lattice_2010"
+
+\end_inset
+
+), so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{2k\sqrt{\pi}\mathscr{A}}\left(-1\right)^{\left(n+m\right)/2}\sqrt{\left(2n+1\right)\left(n-m\right)!\left(n+m\right)!}\times\nonumber \\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j}\nonumber \\
+ & = & -\frac{i^{n+1}}{2k\mathscr{A}}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j}\nonumber \\
+ & = & -\frac{i^{n+1}}{\mathscr{A}}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
+ &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j}\label{eq:1D Ewald in 3D long-range part}
+\end{eqnarray}
+
+\end_inset
+
+and of course, in this case the unit cell 
+\begin_inset Quotes eld
+\end_inset
+
+volume
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\mathscr{A}$
+\end_inset
+
+ has the dimension of length instead of 
+\begin_inset Formula $\mbox{length}^{2}$
+\end_inset
+
+.
+ Eqs.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D short-range part"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D origin part"
+
+\end_inset
+
+ for 
+\begin_inset Formula $\sigma_{n}^{m(2)},\sigma_{n}^{m(0)}$
+\end_inset
+
+ can be used directly without modifications.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 One-dimensional lattice sums are provided in [REF LT, sect.
  3].
  However, these are the 
@@ -3429,6 +3748,11 @@ non-shifted
 
 where we used 
 \begin_inset Formula $P_{n}^{m}\left(\pm1\right)=\left(\pm1\right)^{n}\delta_{m0}$
+\end_inset
+
+.
+\end_layout
+
 \end_inset
 
 
@@ -3985,6 +4309,17 @@ reference "eq:1D Dirac comb Ft ordinary freq"
 
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "Ewald summation,Tables"
+options "plain"
 
 \end_inset
 
