@@ -99,6 +99,9 @@ static inline PGenSphReturnData PGenSph_next(PGenSph *g) {
 	return g->c->next(g);
 }
 
+static inline bool PGenSph_notDone(PGenSphReturnData data) {
+	return data.flags & PGEN_NOTDONE ? true : false;
+}
 
 /*
  * Some basic lattice generators implementing the abstract interface above (implemented in latticegens.c).

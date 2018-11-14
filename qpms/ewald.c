@@ -245,7 +245,7 @@ int ewald32_sigma_long_points_and_shift (
     const qpms_ewald32_constants_t *c,
     const double eta, const double k, const double unitcell_area,
     const size_t npoints, const point2d *Kpoints,
-    const point2d beta, // not needed
+    const point2d beta, 
     const point2d particle_shift // target - src
     ) 
 {
@@ -269,7 +269,7 @@ int ewald32_sigma_long_points_and_shift (
 
   // CHOOSE POINT BEGIN
   for (size_t i = 0; i < npoints; ++i) { // BEGIN POINT LOOP
-    // Only these following two lines differ from ewald32_sigma_long_points_and_shift()!!! 
+    // Only these following two lines differ from ewald32_sigma_long_points_and_shift()!!!  WTFCOMMENT?!
     const point2d K_pq = Kpoints[i]; 
     const point2d beta_pq = {K_pq.x + beta.x, K_pq.y + beta.y};
     const double rbeta_pq = cart2norm(beta_pq);

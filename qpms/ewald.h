@@ -11,6 +11,8 @@
  * according to:
  * [1] C.M. Linton, I. Thompson
  *     Journal of Computational Physics 228 (2009) 1815–1829
+ * [2] C.M.Linton
+ *     SIAM Review Vol 52, No. 4, pp. 630–674
  */
 
 /*
@@ -90,8 +92,17 @@ int ewald32_sr_integral(double r, double k, double n, double eta, double *result
 
 #include "lattices.h"
 
+// General functions acc. to [2], sec. 4.6 – currently valid for 2D and 1D lattices in 3D space
 
-int ewald32_sigma0(complex double *result, double *err,
+int ewald3_sigma0(complex double *result, double *err,
+		const qpms_ewald32_constants_t *c,
+		double eta, double k
+);
+
+/// !!!!!!!!!!!!!!! ZDE JSEM SKONČIL !!!!!!!!!!!!!!!!!!!!!!.
+
+
+int ewald32_sigma0(complex double *result, double *err, // actually, this should be only alias for ewald3_sigma0
 		const qpms_ewald32_constants_t *c,
 		double eta, double k
 );
