@@ -3759,6 +3759,73 @@ where we used
 \end_layout
 
 \begin_layout Section
+Half-spaces and edge modes
+\end_layout
+
+\begin_layout Subsection
+1D
+\end_layout
+
+\begin_layout Standard
+Let us first consider the 
+\begin_inset Quotes eld
+\end_inset
+
+simple
+\begin_inset Quotes erd
+\end_inset
+
+ case without sublattices, so for example, let a set of identical particles
+ particles be placed with spacing 
+\begin_inset Formula $d$
+\end_inset
+
+ on the positive 
+\begin_inset Formula $z$
+\end_inset
+
+-halfaxis, so their coordinates are in the set 
+\begin_inset Formula $C_{0}=C+\left\{ \vect 0\right\} =d\nats\hat{\vect{\mathbf{z}}}+\left\{ \vect 0\right\} $
+\end_inset
+
+.
+ The scattering problem on the particle placed at 
+\begin_inset Formula $\vect n\in C$
+\end_inset
+
+ can then be described in the per-particle-matrix form as
+\begin_inset Formula 
+\[
+p_{\vect n}-p_{\vect n}^{(0)}=\sum_{\vect n'\in C_{0}\backslash\{\vect n\}}S_{\vect n\leftarrow\vect n'}Tp_{\vect n'},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $T$
+\end_inset
+
+ is the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, 
+\begin_inset Formula $S_{\vect n\leftarrow\vect n'}$
+\end_inset
+
+ the translation operator and 
+\begin_inset Formula $p_{\vect n}^{(0)}$
+\end_inset
+
+ the expansion of the external exciting fields, which can be set to zero
+ in order to find the system's eigenmodes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Section
 Major TODOs and open questions
 \end_layout
 
@@ -3791,6 +3858,11 @@ Find a general algorithm for generating the expressions of the Hankel transforms
 
 \begin_layout Itemize
 Three-dimensional case.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
