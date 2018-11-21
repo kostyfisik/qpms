@@ -113,7 +113,7 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
       c->s1_constfacs[y] = NULL;
   }
 
-  c->legendre0_csphase = csphase;
+  c->legendre_csphase = csphase;
   c->legendre0 = malloc(gsl_sf_legendre_array_n(lMax) * sizeof(double));
   // N.B. here I use the GSL_SF_LEGENRE_NONE, in order to be consistent with translations.c
   c->legendre_normconv = GSL_SF_LEGENDRE_NONE;
@@ -506,11 +506,11 @@ int ewald32_sigma_short_points_and_shift(
 }
 
 int ewald3_sigma_short( 
-                complex double *target_sigmasr_y, // must be c->nelem_sc long
-                double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
+                complex double *target, // must be c->nelem_sc long
+                double *err, // must be c->nelem_sc long or NULL
                 const qpms_ewald32_constants_t *c,
                 const double eta, const double k,
-                const LatticeDimesionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
+                const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
                 PGenSph *pgen_R, const bool pgen_generates_shifted_points
                 /* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
                  * so the function assumes that the generated points correspond to the unshifted Bravais lattice,
@@ -547,14 +547,13 @@ int ewald3_sigma_short(
   double intres[lMax+1], interr[lMax+1];
 
 // CHOOSE POINT BEGIN
-  while ((pgen_retdata = PGenSph_next(pgen_R)) & PGEN_NOTDONE) { // BEGIN POINT LOOP
+  while ((pgen_retdata = PGenSph_next(pgen_R)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
 // CHOOSE POINT END
     cart3_t Rpq_shifted_cart; // I will need both sph and cart representations anyway...
     sph_t Rpq_shifted_sph;
     if (pgen_generates_shifted_points) {
-      TODO;
-      Rpq_shifted_sph = ...;
-      Rpq_shifted_cart = ...;
+      Rpq_shifted_sph = pgen_retdata.point_sph;
+      Rpq_shifted_cart = sph2cart(Rpq_shifted_sph);
     } else { // as in the old _points_and_shift functions
       //const point2d Rpq_shifted = Rpoints_plus_particle_shift[i];
       const sph_t bravais_point_sph = pgen_retdata.point_sph;
@@ -569,7 +568,7 @@ int ewald3_sigma_short(
     const double r_pq_shifted = Rpq_shifted_sph.r;
 
     // if the radius is the same as in previous cycle, most of the calculations can be recycled
-    const bool new_r_pq_shifted = (!pgen_generates_shifted_points) || (retdata.flags & PGEN_NEWR);
+    const bool new_r_pq_shifted = (!pgen_generates_shifted_points) || (pgen_retdata.flags & PGEN_NEWR);
     if (!new_r_pq_shifted) assert(r_pq_shifted_prev == r_pq_shifted);
 
     const complex double e_beta_Rpq = cexp(I*cart3_dot(beta, Rpq_shifted_cart)); // POINT-DEPENDENT
@@ -592,7 +591,7 @@ int ewald3_sigma_short(
         legendre_array = c->legendre0;
         break;
       default:
-        if(GSL_SUCCESS != gsl_sf_legendre_array_e(legendre_buf, lMax, cos(Rpq_shifted_theta), csphase, c->legendre_minus1))
+        if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, cos(Rpq_shifted_theta), c->legendre_csphase, legendre_buf))
         abort();
         legendre_array = legendre_buf;
         break;
@@ -613,7 +612,7 @@ int ewald3_sigma_short(
           if((m+n) % 2 != 0) // odd coefficients are zero.
             continue; // nothing needed, already done by memset
           e_imf = cexp(I*m*Rpq_shifted_arg); // profiling TODO: calculate outside the n-loop?
-        } else if (speedup_regime == LAT_1D_IN_3D_XYONLY) { // 1D lattice along the z axis
+        } else if (speedup_regime == LAT_1D_IN_3D_ZONLY) { // 1D lattice along the z axis
           if (m != 0) // m-non-zero coefficients are zero
             continue; // nothing needed, already done by memset
           e_imf = 1;
@@ -626,9 +625,9 @@ int ewald3_sigma_short(
         const qpms_y_t y = qpms_mn2y_sc(m,n);
         if(err)
           kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
-              * interr)); // TODO include also other errors
+              * interr[n])); // TODO include also other errors
         ckahanadd(target + y, target_c + y,
-            prefacn * R_pq_pown * leg * intres * e_beta_Rpq * e_imf * min1pow_m_neg(m));
+            prefacn * R_pq_pown * leg * intres[n] * e_beta_Rpq * e_imf * min1pow_m_neg(m));
       }
 
     }
