@@ -116,10 +116,14 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
   c->legendre0_csphase = csphase;
   c->legendre0 = malloc(gsl_sf_legendre_array_n(lMax) * sizeof(double));
   // N.B. here I use the GSL_SF_LEGENRE_NONE, in order to be consistent with translations.c
+  c->legendre_normconv = GSL_SF_LEGENDRE_NONE;
   // Moreover, using this approach (i.e. gsl) takes about 64kB extra memory
-  if(GSL_SUCCESS != gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE, lMax, 0, csphase, c->legendre0))
+  if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, 0, csphase, c->legendre0))
     abort();
-
+  if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, +1, csphase, c->legendre_plus1))
+    abort();
+  if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, -1, csphase, c->legendre_minus1))
+    abort();
   return c;
 }
 
@@ -133,7 +137,7 @@ void qpms_ewald32_constants_free(qpms_ewald32_constants_t *c) {
 
 
 
-int ewald32_sigma0(complex double *result, double *err,
+int ewald3_sigma0(complex double *result, double *err,
     const qpms_ewald32_constants_t *c,
     const double eta, const double k)
 {
@@ -146,6 +150,13 @@ int ewald32_sigma0(complex double *result, double *err,
   if(err) 
     *err = gam.err * fabs(c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI);
   return 0;
+}
+
+int ewald32_sigma0(complex double *result, double *err,
+    const qpms_ewald32_constants_t *c,
+    const double eta, const double k)
+{
+  return ewald3_sigma0(result, err, c, eta, k);
 }
 
 
@@ -494,31 +505,153 @@ int ewald32_sigma_short_points_and_shift(
   return 0;
 }
 
+int ewald3_sigma_short( 
+                complex double *target_sigmasr_y, // must be c->nelem_sc long
+                double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
+                const qpms_ewald32_constants_t *c,
+                const double eta, const double k,
+                const LatticeDimesionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
+                PGenSph *pgen_R, const bool pgen_generates_shifted_points
+                /* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
+                 * so the function assumes that the generated points correspond to the unshifted Bravais lattice,
+                 * and adds particle_shift to the generated points before calculations.
+                 * If true, it assumes that they are already shifted (if calculating interaction between
+                 * different particles in the unit cell).
+                 */,
+                const cart3_t beta,
+                const cart3_t particle_shift
+                )
+{
+  const qpms_y_t nelem_sc = c->nelem_sc;
+  const qpms_l_t lMax = c->lMax;
+  gsl_integration_workspace *workspace = 
+    gsl_integration_workspace_alloc(INTEGRATION_WORKSPACE_LIMIT);
+
+  double legendre_buf[gsl_sf_legendre_array_n(c->lMax)]; // work space for the legendre polynomials (used only in the general case)
+  
+  // Manual init of the ewald summation targets
+  complex double * const target_c = calloc(nelem_sc, sizeof(complex double));
+  memset(target, 0, nelem_sc * sizeof(complex double));
+  double *err_c = NULL;
+  if (err) {
+    err_c = calloc(nelem_sc, sizeof(double));
+    memset(err, 0, nelem_sc * sizeof(double));
+  }
+  
+
+  PGenSphReturnData pgen_retdata;
+#ifndef NDEBUG
+  double r_pq_shifted_prev;
+#endif
+  // recyclable variables if r_pq_shifted stays the same:
+  double intres[lMax+1], interr[lMax+1];
+
+// CHOOSE POINT BEGIN
+  while ((pgen_retdata = PGenSph_next(pgen_R)) & PGEN_NOTDONE) { // BEGIN POINT LOOP
+// CHOOSE POINT END
+    cart3_t Rpq_shifted_cart; // I will need both sph and cart representations anyway...
+    sph_t Rpq_shifted_sph;
+    if (pgen_generates_shifted_points) {
+      TODO;
+      Rpq_shifted_sph = ...;
+      Rpq_shifted_cart = ...;
+    } else { // as in the old _points_and_shift functions
+      //const point2d Rpq_shifted = Rpoints_plus_particle_shift[i];
+      const sph_t bravais_point_sph = pgen_retdata.point_sph;
+      const cart3_t bravais_point_cart = sph2cart(bravais_point_sph);
+      Rpq_shifted_cart = cart3_add(bravais_point_cart, cart3_scale(-1, particle_shift)); // CHECKSIGN!!!
+      Rpq_shifted_sph = cart2sph(Rpq_shifted_cart);
+    }
+
+    // TODO eliminate and use the Rpq_shifted_sph members directly (but in compiler optimizations we trust)
+    const double Rpq_shifted_arg = Rpq_shifted_sph.phi; //atan2(Rpq_shifted.y, Rpq_shifted.x); // POINT-DEPENDENT
+    const double Rpq_shifted_theta = Rpq_shifted_sph.theta; // POINT-DEPENDENT
+    const double r_pq_shifted = Rpq_shifted_sph.r;
+
+    // if the radius is the same as in previous cycle, most of the calculations can be recycled
+    const bool new_r_pq_shifted = (!pgen_generates_shifted_points) || (retdata.flags & PGEN_NEWR);
+    if (!new_r_pq_shifted) assert(r_pq_shifted_prev == r_pq_shifted);
+
+    const complex double e_beta_Rpq = cexp(I*cart3_dot(beta, Rpq_shifted_cart)); // POINT-DEPENDENT
+    LatticeDimensionality speedup_regime = 0;
+    if ((latdim & LAT_2D_IN_3D_XYONLY) == LAT_2D_IN_3D_XYONLY) speedup_regime = LAT_2D_IN_3D_XYONLY;
+    if ((latdim & LAT_1D_IN_3D_ZONLY)  == LAT_1D_IN_3D_ZONLY)  speedup_regime = LAT_1D_IN_3D_ZONLY;
+
+    const double * legendre_array;
+
+    switch(speedup_regime) {
+      // speedup checks for special geometries and Legendre polynomials
+      case LAT_1D_IN_3D_ZONLY:
+        assert((pgen_retdata.flags & PGEN_AT_Z) == PGEN_AT_Z);
+        assert(Rpq_shifted_theta == M_PI || Rpq_shifted_theta == 0);
+        legendre_array = (Rpq_shifted_theta == 0) ? c->legendre_plus1 : c->legendre_minus1; // CHECKSIGN
+        break;
+      case LAT_2D_IN_3D_XYONLY:
+        assert((pgen_retdata.flags &PGEN_AT_XY) == PGEN_AT_XY);
+        assert(Rpq_shifted_theta == M_PI_2);
+        legendre_array = c->legendre0;
+        break;
+      default:
+        if(GSL_SUCCESS != gsl_sf_legendre_array_e(legendre_buf, lMax, cos(Rpq_shifted_theta), csphase, c->legendre_minus1))
+        abort();
+        legendre_array = legendre_buf;
+        break;
+    }
+    
+    for(qpms_l_t n = 0; n <= lMax; ++n) {
+      const double complex prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // profiling TODO put outside the R-loop and multiply in the end?
+      const double R_pq_pown = pow(r_pq_shifted, n); // profiling TODO: maybe put this into the new_r_pq_shifted condition as well?
+      if (new_r_pq_shifted) {
+        int retval = ewald32_sr_integral(r_pq_shifted, k, n, eta,
+            intres + n, interr + n, workspace);
+        if (retval) abort();
+      } // otherwise recycle the integrals
+      for (qpms_m_t m = -n; m <= n; ++m){
+        complex double e_imf;
+        // SPEEDUPS for some special geometries
+        if(speedup_regime == LAT_2D_IN_3D_XYONLY) { //2D lattice inside the xy plane
+          if((m+n) % 2 != 0) // odd coefficients are zero.
+            continue; // nothing needed, already done by memset
+          e_imf = cexp(I*m*Rpq_shifted_arg); // profiling TODO: calculate outside the n-loop?
+        } else if (speedup_regime == LAT_1D_IN_3D_XYONLY) { // 1D lattice along the z axis
+          if (m != 0) // m-non-zero coefficients are zero
+            continue; // nothing needed, already done by memset
+          e_imf = 1;
+        } else { // general 1D/2D/3D lattice in 3D space
+          e_imf = cexp(I*m*Rpq_shifted_arg);
+        }
+
+        const double leg = legendre_array[gsl_sf_legendre_array_index(n, abs(m))];
+
+        const qpms_y_t y = qpms_mn2y_sc(m,n);
+        if(err)
+          kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
+              * interr)); // TODO include also other errors
+        ckahanadd(target + y, target_c + y,
+            prefacn * R_pq_pown * leg * intres * e_beta_Rpq * e_imf * min1pow_m_neg(m));
+      }
+
+    }
+#ifndef NDEBUG
+    r_pq_shifted_prev = r_pq_shifted;
+#endif
+  }
+
+  gsl_integration_workspace_free(workspace);
+  if(err) free(err_c);
+  free(target_c);
+  return 0;
+}
+
 
  
 #if 0
 
-
-int ewald32_sigma_long_points_and_shift (
-    complex double *target_sigmalr_y, // must be c->nelem_sc long
-    const qpms_ewald32_constants_t *c,
-    double eta, double k, double unitcell_area,
-    size_t npoints, const point2d *Kpoints,
-    point2d beta,
-    point2d particle_shift
-    );
 int ewald32_sigma_long_shiftedpoints_rordered(
     complex double *target_sigmalr_y, // must be c->nelem_sc long
     const qpms_ewald32_constants_t *c,
     double eta, double k, double unitcell_area,
     const points2d_rordered_t *Kpoints_plus_beta_rordered,
-    point2d particle_shift
-    );
-int ewald32_sigma_short_points_and_shift(
-    complex double *target_sigmasr_y, // must be c->nelem_sc long
-    const qpms_ewald32_constants_t *c, // N.B. not too useful here
-    double eta, double k,
-    size_t npoints, const point2d *Rpoints,
     point2d particle_shift
     );
 int ewald32_sigma_short_points_rordered(

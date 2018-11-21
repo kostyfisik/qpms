@@ -10,7 +10,20 @@
  *
  */
 
-
+typedef enum LatticeDimensionality {
+	LAT1D = 1,
+	LAT2D = 2,
+	LAT3D = 4,
+	SPACE1D = 8,
+	SPACE2D = 16,
+	SPACE3D = 32,
+	LAT_1D_IN_3D = 33,
+	LAT_2D_IN_3D = 34,
+	LAT_3D_IN_3D = 40,
+	// special coordinate arrangements (indicating possible optimisations)
+	LAT_1D_IN_3D_ZONLY = 97, // LAT1D | SPACE3D | 64
+	LAT_2D_IN_3D_XYONLY = 162 // LAT2D | SPACE3D | 128
+} LatticeDimensionality;
 
 #include <math.h>
 #include <stdbool.h>
@@ -32,6 +45,7 @@ static inline point2d point2d_fromxy(const double x, const double y) {
 	p.y = y;
 	return p;
 }
+
 
 
 

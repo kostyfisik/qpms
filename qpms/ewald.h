@@ -43,7 +43,7 @@ typedef struct {
 	double *legendre0; /* now with GSL_SF_LEGENDRE_NONE normalisation, because this is what is
 			    * what the multipliers from translations.c count with.
 			    */
-	// gsl_sf_legendre_t legendre0_type;
+	gsl_sf_legendre_t legendre_normconv;
 	double *legendre_plus1; // needed? TODO; in any case, nonzero only for m=0
 	double *legendre_minus1; // needed? TODO; in any case, nonzero only for m=0
 	int legendre0_csphase;       /* 1 or -1; csphase of the Legendre polynomials saved in legendre0.
@@ -99,6 +99,40 @@ int ewald3_sigma0(complex double *result, double *err,
 		double eta, double k
 );
 
+int ewald3_sigma_short(
+		complex double *target_sigmasr_y, // must be c->nelem_sc long
+		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
+		const qpms_ewald32_constants_t *c,
+		const double eta, const double k,
+		const LatticeDimesionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
+		PGenSph *pgen_R, const bool pgen_generates_shifted_points 
+		/* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
+		 * so the function assumes that the generated points correspond to the unshifted Bravais lattice,
+		 * and adds particle_shift to the generated points before calculations.
+		 * If true, it assumes that they are already shifted (if calculating interaction between
+		 * different particles in the unit cell).
+		 */,
+		const cart3_t beta,
+		const cart3_t particle_shift
+		);
+
+int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, depending on latdim
+		complex double *target_sigmalr_y, // must be c->nelem_sc long
+		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
+		const qpms_ewald32_constants_t *c,
+		const double eta, const double k,
+	        const double unitcell_volume /* with the corresponding lattice dimensionality */,
+		const LatticeDimesionality latdim,
+		PGenSph *pgen_K, const bool pgen_generates_shifted_points 
+		/* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
+		 * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
+		 * and adds beta to the generated points before calculations.
+		 * If true, it assumes that they are already shifted.
+		 */,
+		const cart3_t beta,
+		const cart3_t particle_shift
+		);
+		
 /// !!!!!!!!!!!!!!! ZDE JSEM SKONČIL !!!!!!!!!!!!!!!!!!!!!!.
 
 
