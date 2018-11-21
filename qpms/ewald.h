@@ -1,10 +1,13 @@
 #ifndef EWALD_H
 #define EWALD_H
 #include <gsl/gsl_sf_result.h>
+#include <stdlib.h>
+#include <gsl/gsl_sf_legendre.h>
 #include <gsl/gsl_errno.h>
 #include <math.h> // for inlined lilgamma
 #include <complex.h>
 #include "qpms_types.h"
+#include "lattices.h"
 
 /* 
  * Implementation of two-dimensional lattice sum in three dimensions
@@ -43,10 +46,10 @@ typedef struct {
 	double *legendre0; /* now with GSL_SF_LEGENDRE_NONE normalisation, because this is what is
 			    * what the multipliers from translations.c count with.
 			    */
-	gsl_sf_legendre_t legendre_normconv;
 	double *legendre_plus1; // needed? TODO; in any case, nonzero only for m=0
 	double *legendre_minus1; // needed? TODO; in any case, nonzero only for m=0
-	int legendre0_csphase;       /* 1 or -1; csphase of the Legendre polynomials saved in legendre0.
+	gsl_sf_legendre_t legendre_normconv;
+	int legendre_csphase;       /* 1 or -1; csphase of the Legendre polynomials saved in legendre0 etc.
 					This is because I dont't actually consider this fixed in
 					translations.c */
 
@@ -104,7 +107,7 @@ int ewald3_sigma_short(
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
 		const double eta, const double k,
-		const LatticeDimesionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
+		const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
 		PGenSph *pgen_R, const bool pgen_generates_shifted_points 
 		/* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
 		 * so the function assumes that the generated points correspond to the unshifted Bravais lattice,
@@ -122,7 +125,7 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		const qpms_ewald32_constants_t *c,
 		const double eta, const double k,
 	        const double unitcell_volume /* with the corresponding lattice dimensionality */,
-		const LatticeDimesionality latdim,
+		const LatticeDimensionality latdim,
 		PGenSph *pgen_K, const bool pgen_generates_shifted_points 
 		/* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
 		 * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
