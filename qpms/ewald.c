@@ -340,6 +340,132 @@ int ewald32_sigma_long_points_and_shift (
   return 0;
 }
 
+int ewald3_21_xy_sigma_long (
+    complex double *target, // must be c->nelem_sc long
+    double *err,
+    const qpms_ewald32_constants_t *c,
+    const double unitcell_volume /* with the corresponding lattice dimensionality */,
+    const LatticeDimensionality latdim,
+    PGenSph *pgen_K, const bool pgen_generates_shifted_points
+    /* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
+     * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
+     * and adds beta to the generated points before calculations.
+     * If true, it assumes that they are already shifted.
+     */,
+    const cart3_t beta,
+    const cart3_t particle_shift
+    )
+
+{
+  const qpms_y_t nelem_sc = c->nelem_sc;
+  const qpms_l_t lMax = c->lMax;
+  
+  // Manual init of the ewald summation targets
+  complex double *target_c = calloc(nelem_sc, sizeof(complex double));
+  memset(target, 0, nelem_sc * sizeof(complex double));
+  double *err_c = NULL;
+  if (err) {
+    err_c = calloc(nelem_sc, sizeof(double));
+    memset(err, 0, nelem_sc * sizeof(double));
+  }
+
+  const double commonfac = 1/(k*k*unitcell_area); // used in the very end (CFC)
+  assert(commonfac > 0);
+
+  PGenSingleReturnData pgen_retdata;
+#ifndef NDEBUG
+  double rbeta_pq_prev;
+#endif
+  // recycleable values if rbeta_pq stays the same:
+  complex double gamma_pq;
+  complex double z;
+  // space for Gamma_pq[j]'s
+  qpms_csf_result Gamma_pq[lMax/2+1];
+
+  // CHOOSE POINT BEGIN
+  while ((pgen_retdata = PGenSph_next(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
+    cart3_t K_pq_cart;
+    sph_t beta_pq_sph;
+    if (pgen_generates_shifted_points) {
+      beta_pq_sph = pgen_retdata.point_sph;
+      const cart3_t beta_pq_cart = sph2cart(beta_pq_sph);
+      K_pq_cart = cart3_add(cart3_scale(-1, beta), beta_pq_cart);
+    } else { // as in the old _points_and_shift functions
+      const sph_t K_pq_sph = pgen_retdata.point_sph;
+      K_pq_cart = sph2cart(K_pq_sph);
+      const cart3_t beta_pq_cart = cart3_add(K_pq_cart, beta);
+      beta_pq_sph = cart2sph(beta_pq_cart);
+    }
+
+    const double rbeta_pq = beta_pq_sph.r;
+    const double arg_pq = beta_pq_sph.phi;
+    const double beta_pq_theta = beta_pq_sph.theta;
+
+  // CHOOSE POINT END
+
+    const complex double phasefac = cexp(I*cart3_dot(K_pq_cart,particle_shift)); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
+
+    const bool new_rbeta_pq = (!pgen_generates_shifted_points) || (pgen_retdata.flags & PGEN_NEWR);
+    if (!new_rbeta_pq) assert(rbeta_pq == rbeta_pq_prev);
+
+    // R-DEPENDENT BEGIN
+    if (new_rbeta_pq) {
+      gamma_pq = lilgamma(rbeta_pq/k);
+      z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
+      for(qpms_l_t j = 0; j <= lMax/2; ++j) {
+        int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
+        // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
+        if(creal(z) < 0) 
+          Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
+        if(!(retval==0 ||retval==GSL_EUNDRFLW)) abort();
+      }
+      // --------------- ZDE JSEM SKONČIL. TODO NEZAPOMEŇ TAKY POŘEŠIT PŘÍPAD 1D VS 2D
+    }
+    // R-DEPENDENT END
+    
+    // TODO optimisations: all the j-dependent powers can be done for each j only once, stored in array
+    // and just fetched for each n, m pair
+    for(qpms_l_t n = 0; n <= lMax; ++n)
+      for(qpms_m_t m = -n; m <= n; ++m) {
+        if((m+n) % 2 != 0) // odd coefficients are zero.
+          continue;
+        const qpms_y_t y = qpms_mn2y_sc(m, n);
+        const complex double e_imalpha_pq = cexp(I*m*arg_pq);
+        complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
+        double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
+        assert((n-abs(m))/2 == c->s1_jMaxes[y]);
+        for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
+          complex double summand = pow(rbeta_pq/k, n-2*j) 
+            * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
+            * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
+            * c->s1_constfacs[y][j];
+          if(err) {
+            // FIXME include also other errors than Gamma_pq's relative error
+             kahanadd(&jsum_err, &jsum_err_c, Gamma_pq[j].err * cabs(summand));
+          }
+          summand *= Gamma_pq[j].val; // GGG
+          ckahanadd(&jsum, &jsum_c, summand);
+        }
+        jsum *= phasefac; // PFC
+        ckahanadd(target + y, target_c + y, jsum);
+        if(err) kahanadd(err + y, err_c + y, jsum_err);
+      }
+#ifndef NDEBUG
+    rbeta_pq_prev = rbeta_pq;
+#endif
+  } // END POINT LOOP
+ 
+  free(err_c);
+  free(target_c);
+  for(qpms_y_t y = 0; y < nelem_sc; ++y) // CFC common factor from above
+    target[y] *= commonfac;
+  if(err)
+    for(qpms_y_t y = 0; y < nelem_sc; ++y)
+      err[y] *= commonfac;
+  return 0;
+}
+
+
 
 struct sigma2_integrand_params {
   int n;
