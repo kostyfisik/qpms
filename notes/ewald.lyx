@@ -242,6 +242,11 @@ theorems-starred
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\expint}{\mathrm{E}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -628,7 +633,7 @@ reference "eq:W definition"
 
 \end_inset
 
- and 
+ and legendre
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:W sum in reciprocal space"
@@ -3721,6 +3726,70 @@ reference "eq:Ewald in 3D origin part"
 \end_layout
 
 \begin_layout Standard
+Another possibility is to consider the chain to be aligned along the 
+\begin_inset Formula $z$
+\end_inset
+
+-axis and to apply the formula 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4.64)"
+key "linton_lattice_2010"
+
+\end_inset
+
+ instead.
+ Let us rewrite it again in the spherical-harmonic-normalisation-agnostic
+ way (N.B.
+ the relations 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4.10)"
+key "linton_lattice_2010"
+
+\end_inset
+
+ 
+\begin_inset Formula $\sigma_{n}^{m}=\left(-1\right)^{m}\hat{\tau}_{n}^{m}$
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(A.5)"
+key "linton_lattice_2010"
+
+\end_inset
+
+ 
+\begin_inset Formula $P_{n}^{m}\left(\pm1\right)=\left(\pm1\right)^{n}\delta_{m0}$
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(A.8)"
+key "linton_lattice_2010"
+
+\end_inset
+
+ 
+\begin_inset Formula $Y_{n}^{m}\left(\theta,\phi\right)=\left(-1\right)^{m}\sqrt{\frac{\left(2n+1\right)\left(n-m\right)!}{4\pi\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}$
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{eqnarray*}
+\sigma_{n}^{m} & = & -\frac{i^{n+1}}{k^{n+1}a}\delta_{m0}\sqrt{\frac{2n+1}{4\pi}}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\expint_{j+1}\left(\frac{k^{2}\gamma^{\mu}}{4\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\\
+ & = & -\frac{i^{n+1}}{k^{n+1}a}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\expint_{j+1}\left(\frac{k^{2}\gamma^{\mu}}{4\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -3914,7 +3983,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -3924,7 +3993,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -3937,7 +4006,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -3991,8 +4060,8 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{eqnarray}
-\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
- & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\, g(r)J_{-m}(kr)r
+\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
+ & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\,g(r)J_{-m}(kr)r
 \end{eqnarray}
 
 \end_inset

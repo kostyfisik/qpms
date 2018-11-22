@@ -355,8 +355,9 @@ int ewald3_21_xy_sigma_long (
     const cart3_t beta,
     const cart3_t particle_shift
     )
-
 {
+  assert((latdim & LAT_XYONLY) && (latdim & SPACE3D));
+  assert((latdim & LAT1D) || (latdim & LAT2D));
   const qpms_y_t nelem_sc = c->nelem_sc;
   const qpms_l_t lMax = c->lMax;
   
@@ -379,6 +380,7 @@ int ewald3_21_xy_sigma_long (
   // recycleable values if rbeta_pq stays the same:
   complex double gamma_pq;
   complex double z;
+  double factor1d = 1; // the "additional" factor for the 1D case (then it is not 1)
   // space for Gamma_pq[j]'s
   qpms_csf_result Gamma_pq[lMax/2+1];
 
@@ -408,6 +410,7 @@ int ewald3_21_xy_sigma_long (
     const bool new_rbeta_pq = (!pgen_generates_shifted_points) || (pgen_retdata.flags & PGEN_NEWR);
     if (!new_rbeta_pq) assert(rbeta_pq == rbeta_pq_prev);
 
+
     // R-DEPENDENT BEGIN
     if (new_rbeta_pq) {
       gamma_pq = lilgamma(rbeta_pq/k);
@@ -417,9 +420,10 @@ int ewald3_21_xy_sigma_long (
         // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
         if(creal(z) < 0) 
           Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
-        if(!(retval==0 ||retval==GSL_EUNDRFLW)) abort();
+        if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
       }
-      // --------------- ZDE JSEM SKONČIL. TODO NEZAPOMEŇ TAKY POŘEŠIT PŘÍPAD 1D VS 2D
+      if (latdim & LAT1D)
+        factor1d = k * M_SQRT1_2 * .5 * gamma_pq;
     }
     // R-DEPENDENT END
     
@@ -446,7 +450,7 @@ int ewald3_21_xy_sigma_long (
           summand *= Gamma_pq[j].val; // GGG
           ckahanadd(&jsum, &jsum_c, summand);
         }
-        jsum *= phasefac; // PFC
+        jsum *= phasefac * factor1d; // PFC
         ckahanadd(target + y, target_c + y, jsum);
         if(err) kahanadd(err + y, err_c + y, jsum_err);
       }
@@ -465,6 +469,115 @@ int ewald3_21_xy_sigma_long (
   return 0;
 }
 
+
+// 1D chain along the z-axis; not many optimisations here as the same
+// shifted beta radius could be recycled only once anyways
+int ewald3_1_z_sigma_long (
+    complex double *target, // must be c->nelem_sc long
+    double *err,
+    const qpms_ewald32_constants_t *c,
+    const double unitcell_volume /* length in this case */,
+    const LatticeDimensionality latdim,
+    PGenSph *pgen_K, const bool pgen_generates_shifted_points
+    /* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
+     * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
+     * and adds beta to the generated points before calculations.
+     * If true, it assumes that they are already shifted.
+     */,
+    const cart3_t beta,
+    const cart3_t particle_shift
+    )
+{
+  assert(LatticeDimensionality_checkflags(latdim, LAT_1D_IN_3D_ZONLY));
+  assert(beta.x == 0 && beta.y == 0);
+  assert(particle_shift.x == 0 && particle_shift.y == 0);
+  const double beta_z = beta.z;
+  const double particle_shift_z = particle_shift_z;
+  const qpms_y_t nelem_sc = c->nelem_sc;
+  const qpms_l_t lMax = c->lMax;
+  
+  // Manual init of the ewald summation targets
+  complex double *target_c = calloc(nelem_sc, sizeof(complex double));
+  memset(target, 0, nelem_sc * sizeof(complex double));
+  double *err_c = NULL;
+  if (err) {
+    err_c = calloc(nelem_sc, sizeof(double));
+    memset(err, 0, nelem_sc * sizeof(double));
+  }
+
+  PGenSingleReturnData pgen_retdata;
+  // CHOOSE POINT BEGIN
+  while ((pgen_retdata = PGenSph_next(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
+    assert(pgen_retdata.flags & PGEN_AT_Z);
+    double K_z, beta_mu_z;
+    if (pgen_generates_shifted_points) {
+      beta_mu_z = ((pgen_retdata.point_sph.theta == 0) ?
+        pgen_retdata.point_sph.r : -pgen_retdata.point_sph.r); //!!!CHECKSIGN!!!
+      K_z = beta_mu_z - beta_z;
+    } else { // as in the old _points_and_shift functions
+      K_z = ((pgen_retdata.point_sph.theta == 0) ?
+          pgen_retdata.point_sph.r : -pgen_retdata.point_sph.r); // !!!CHECKSIGN!!!
+      beta_mu_z = K_z + beta_z;
+    }
+  // CHOOSE POINT END
+
+    const complex double phasefac = cexp(I * K_z * particle_shift_z); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
+
+    // R-DEPENDENT BEGIN
+    gamma_pq = lilgamma(rbeta_pq/k);
+    z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
+    for(qpms_l_t j = 0; j <= lMax/2; ++j) {
+      int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
+      // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
+      if(creal(z) < 0) 
+        Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
+      if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
+    }
+    if (latdim & LAT1D)
+      factor1d = k * M_SQRT1_2 * .5 * gamma_pq;
+    // R-DEPENDENT END
+    
+    // TODO optimisations: all the j-dependent powers can be done for each j only once, stored in array
+    // and just fetched for each n, m pair
+    for(qpms_l_t n = 0; n <= lMax; ++n)
+      for(qpms_m_t m = -n; m <= n; ++m) {
+        if((m+n) % 2 != 0) // odd coefficients are zero.
+          continue;
+        const qpms_y_t y = qpms_mn2y_sc(m, n);
+        const complex double e_imalpha_pq = cexp(I*m*arg_pq);
+        complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
+        double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
+        assert((n-abs(m))/2 == c->s1_jMaxes[y]);
+        for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
+          complex double summand = pow(rbeta_pq/k, n-2*j) 
+            * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
+            * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
+            * c->s1_constfacs[y][j];
+          if(err) {
+            // FIXME include also other errors than Gamma_pq's relative error
+             kahanadd(&jsum_err, &jsum_err_c, Gamma_pq[j].err * cabs(summand));
+          }
+          summand *= Gamma_pq[j].val; // GGG
+          ckahanadd(&jsum, &jsum_c, summand);
+        }
+        jsum *= phasefac * factor1d; // PFC
+        ckahanadd(target + y, target_c + y, jsum);
+        if(err) kahanadd(err + y, err_c + y, jsum_err);
+      }
+#ifndef NDEBUG
+    rbeta_pq_prev = rbeta_pq;
+#endif
+  } // END POINT LOOP
+ 
+  free(err_c);
+  free(target_c);
+  for(qpms_y_t y = 0; y < nelem_sc; ++y) // CFC common factor from above
+    target[y] *= commonfac;
+  if(err)
+    for(qpms_y_t y = 0; y < nelem_sc; ++y)
+      err[y] *= commonfac;
+  return 0;
+}
 
 
 struct sigma2_integrand_params {

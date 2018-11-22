@@ -21,9 +21,16 @@ typedef enum LatticeDimensionality {
 	LAT_2D_IN_3D = 34,
 	LAT_3D_IN_3D = 40,
 	// special coordinate arrangements (indicating possible optimisations)
+	LAT_ZONLY = 64,
+	LAT_XYONLY = 128,
 	LAT_1D_IN_3D_ZONLY = 97, // LAT1D | SPACE3D | 64
 	LAT_2D_IN_3D_XYONLY = 162 // LAT2D | SPACE3D | 128
 } LatticeDimensionality;
+
+inline static bool LatticeDimensionality_checkflags(
+		LatticeDimensionality a, LatticeDimensionality flags_a_has_to_contain) {
+	return ((a & flags_a_has_to_contain) == flags_a_has_to_contain);
+}
 
 #include <math.h>
 #include <stdbool.h>
