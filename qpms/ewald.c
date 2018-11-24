@@ -619,6 +619,33 @@ int ewald3_1_z_sigma_long (
   return 0;
 }
 
+int ewald3_sigma_long (
+    complex double *target, // must be c->nelem_sc long
+    double *err,
+    const qpms_ewald32_constants_t *c,
+    const double eta, const double k,
+    const double unitcell_volume /* with the corresponding lattice dimensionality */,
+    const LatticeDimensionality latdim,
+    PGenSph *pgen_K, const bool pgen_generates_shifted_points
+    /* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
+     * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
+     * and adds beta to the generated points before calculations.
+     * If true, it assumes that they are already shifted.
+     */,
+    const cart3_t beta,
+    const cart3_t particle_shift
+    )
+{
+  assert(latdim & SPACE3D);
+  if (latdim & LAT_XYONLY)
+    return ewald3_21_xy_sigma_long(target, err, c, eta, k, unitcell_volume,
+        latdim, pgen_K, pgen_generates_shifted_points, beta, particle_shift);
+  else if (latdim & LAT_ZONLY)
+    return ewald3_1_z_sigma_long(target, err, c, eta, k, unitcell_volume,
+        latdim, pgen_K, pgen_generates_shifted_points, beta, particle_shift);
+  // TODO 3D case and general 2D case
+  else abort(); // NOT IMPLEMENTED
+} 
 
 struct sigma2_integrand_params {
   int n;
