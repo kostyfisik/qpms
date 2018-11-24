@@ -23,6 +23,7 @@
  * according to the spherical-harmonic-normalisation-independent formulation in my notes
  * notes/ewald.lyx.
  * Both parts of lattice sums are then calculated with the P_n^|m| e^imf substituted in place
+ *                                             // (N.B. or P_n^|m| e^imf (-1)^m for negative m) 
  * of Y_n^m (this is quite a weird normalisation especially for negative |m|, but it is consistent
  * with the current implementation of the translation coefficients in translations.c;
  * in the long run, it might make more sense to replace it everywhere with normalised
@@ -40,8 +41,30 @@ typedef struct {
 	qpms_y_t nelem_sc;
 	qpms_l_t *s1_jMaxes;
 	complex double **s1_constfacs; // indices [y][j] where j is same as in [1, (4.5)]
-	// TODO probably normalisation and equatorial legendre polynomials should be included, too
+	/* These are the actual numbers now: (in the EWALD32_CONSTANTS_AGNOSTIC version)
+	 * for m + n EVEN:
+	 *
+	 * s1_constfacs[y(m,n)][j] = 
+	 *
+	 *   -2 * I**(n+1) * sqrt(π) * ((n-m)/2)! * ((n+m)/2)! * (-1)**j 
+	 *   -----------------------------------------------------------
+	 *              j! * ((n-m)/2 - j)! * ((n+m)/2 + j)!
+	 *
+	 * for m + n ODD:
+	 *
+	 * s1_constfacs[y(m,n)][j] = 0
+	 */
 	complex double *s1_constfacs_base; // internal pointer holding the memory for the constants
+	// similarly for the 1D z-axis aligned case; now the indices are [n][j] (as m == 0)
+	complex double **s1_constfacs_1Dz; 
+	/* These are the actual numbers now:
+	 * s1_consstfacs_1Dz[n][j] =
+	 *   
+	 *     -I**(n+1) (-1)**j * n!
+	 *   --------------------------
+	 *   j! * 2**(2*j) * (n - 2*j)!
+	 */
+	complex double *s1_constfacs_1Dz_base;
 
 	double *legendre0; /* now with GSL_SF_LEGENDRE_NONE normalisation, because this is what is
 			    * what the multipliers from translations.c count with.
@@ -82,6 +105,10 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
 // Incomplete gamma for complex second argument
 // if x is (almost) real, it just uses gsl_sf_gamma_inc_e
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result);
+
+// Exponential integral for complex second argument
+// If x is (almost) positive real, it just uses gsl_sf_expint_En_e
+int complex_expint_n_e(int n, complex double x, qpms_csf_result *result);
 
 
 // hypergeometric 2F2, used to calculate some errors

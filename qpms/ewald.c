@@ -9,6 +9,7 @@
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf_legendre.h>
+#include <gsl/gsl_sf_expint.h>
 
 // parameters for the quadrature of integral in (4.6)
 #ifndef INTEGRATION_WORKSPACE_LIMIT
@@ -71,6 +72,7 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
   c->s1_constfacs = malloc(c->nelem_sc * sizeof(complex double *));
   //if (c->s1_jMaxes == NULL) return NULL;
 
+  // ----- the "xy-plane constants" ------
   //determine sizes
   size_t s1_constfacs_sz = 0;
   for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
@@ -113,6 +115,34 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
       c->s1_constfacs[y] = NULL;
   }
 
+  // ------ the "z-axis constants" -----
+  // determine sizes
+  size_t s1_constfacs_1Dz_sz;
+  {
+    const qpms_l_t sz_n_lMax = lMax/2 + 1;  // number of different j's for n = lMax
+    s1_constfacs_1Dz_sz = (lMax % 2) ? isq(sz_n_lMax) + sz_n_lMax
+                                     : isq(sz_n_lMax);
+  }
+  c->s1_constfacs_1Dz_base = malloc(s1_constfacs_1Dz_sz * sizeof(complex double));
+
+  size_t s1_constfacs_1Dz_sz_cumsum = 0;
+  for (qpms_l_t n = 0; n <= lMax; ++n) {
+    c->s1_constfacs_1Dz[n] = c->s1_constfacs_1Dz_base + s1_constfacs_1Dz_sz_cumsum;
+    for (qpms_l_t j = 0; j <= n/2; ++j) {
+      switch(type) {
+        case EWALD32_CONSTANTS_AGNOSTIC:
+          c->s1_constfacs[n][j] = -ipow(n+1) * min1pow(j) * factorial(n)
+            / (factorial(j) * pow(2, 2*j) * factorial(n - 2*j));
+          break;
+        default:
+          abort(); // wrong type argument or not implemented
+      }
+    }
+    s1_constfacs_1Dz_sz_cumsum += 1 + n / 2;
+  }
+  assert(s1_constfacs_1Dz_sz == s1_constfacs_1Dz_sz_cumsum);
+
+
   c->legendre_csphase = csphase;
   c->legendre0 = malloc(gsl_sf_legendre_array_n(lMax) * sizeof(double));
   // N.B. here I use the GSL_SF_LEGENRE_NONE, in order to be consistent with translations.c
@@ -131,6 +161,7 @@ void qpms_ewald32_constants_free(qpms_ewald32_constants_t *c) {
   free(c->legendre0);
   free(c->s1_constfacs);
   free(c->s1_constfacs_base);
+  free(c->s1_constfacs_1Dz_base);
   free(c->s1_jMaxes);
   free(c);
 }
@@ -344,6 +375,7 @@ int ewald3_21_xy_sigma_long (
     complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c,
+    const double eta, const double k,
     const double unitcell_volume /* with the corresponding lattice dimensionality */,
     const LatticeDimensionality latdim,
     PGenSph *pgen_K, const bool pgen_generates_shifted_points
@@ -370,10 +402,10 @@ int ewald3_21_xy_sigma_long (
     memset(err, 0, nelem_sc * sizeof(double));
   }
 
-  const double commonfac = 1/(k*k*unitcell_area); // used in the very end (CFC)
+  const double commonfac = 1/(k*k*unitcell_volume); // used in the very end (CFC)
   assert(commonfac > 0);
 
-  PGenSingleReturnData pgen_retdata;
+  PGenSphReturnData pgen_retdata;
 #ifndef NDEBUG
   double rbeta_pq_prev;
 #endif
@@ -476,7 +508,8 @@ int ewald3_1_z_sigma_long (
     complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c,
-    const double unitcell_volume /* length in this case */,
+    const double eta, const double k,
+    const double unitcell_volume /* length (periodicity) in this case */,
     const LatticeDimensionality latdim,
     PGenSph *pgen_K, const bool pgen_generates_shifted_points
     /* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
@@ -505,7 +538,13 @@ int ewald3_1_z_sigma_long (
     memset(err, 0, nelem_sc * sizeof(double));
   }
 
-  PGenSingleReturnData pgen_retdata;
+  const double commonfac = 1/(k*unitcell_volume); // multiplied in the very end (CFC)
+  assert(commonfac > 0);
+
+  // space for Gamma_pq[j]'s (I rewrite the exp. ints. E_n in terms of Gamma fns., cf. my ewald.lyx notes, (eq:1D_z_LRsum).
+  qpms_csf_result Gamma_pq[lMax/2+1];
+
+  PGenSphReturnData pgen_retdata;
   // CHOOSE POINT BEGIN
   while ((pgen_retdata = PGenSph_next(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
     assert(pgen_retdata.flags & PGEN_AT_Z);
@@ -519,13 +558,14 @@ int ewald3_1_z_sigma_long (
           pgen_retdata.point_sph.r : -pgen_retdata.point_sph.r); // !!!CHECKSIGN!!!
       beta_mu_z = K_z + beta_z;
     }
+    double rbeta_mu = fabs(beta_mu_z);
   // CHOOSE POINT END
 
     const complex double phasefac = cexp(I * K_z * particle_shift_z); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
 
     // R-DEPENDENT BEGIN
-    gamma_pq = lilgamma(rbeta_pq/k);
-    z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
+    complex double gamma_pq = lilgamma(rbeta_mu/k);  // For real beta and k this is real or pure imaginary ...
+    const complex double z = csq(gamma_pq*k/(2*eta));// ... so the square (this) is in fact real.
     for(qpms_l_t j = 0; j <= lMax/2; ++j) {
       int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
       // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
@@ -533,26 +573,29 @@ int ewald3_1_z_sigma_long (
         Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
       if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
     }
-    if (latdim & LAT1D)
-      factor1d = k * M_SQRT1_2 * .5 * gamma_pq;
     // R-DEPENDENT END
-    
     // TODO optimisations: all the j-dependent powers can be done for each j only once, stored in array
-    // and just fetched for each n, m pair
-    for(qpms_l_t n = 0; n <= lMax; ++n)
-      for(qpms_m_t m = -n; m <= n; ++m) {
-        if((m+n) % 2 != 0) // odd coefficients are zero.
-          continue;
-        const qpms_y_t y = qpms_mn2y_sc(m, n);
-        const complex double e_imalpha_pq = cexp(I*m*arg_pq);
+    // and just fetched for each n
+    for(qpms_l_t n = 0; n <= lMax; ++n) {
+        const qpms_y_t y = qpms_mn2y_sc(0, n);
         complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
         double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
-        assert((n-abs(m))/2 == c->s1_jMaxes[y]);
-        for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
-          complex double summand = pow(rbeta_pq/k, n-2*j) 
-            * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
-            * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
-            * c->s1_constfacs[y][j];
+        for(qpms_l_t j = 0; j <= n/2; ++j) {
+          complex double summand = pow(rbeta_mu/k, n-2*j) 
+            * ((beta_mu_z > 0) ? // TODO this can go outsize the j-loop
+                c->legendre_plus1[gsl_sf_legendre_array_index(n,0)] :
+                (c->legendre_minus1[gsl_sf_legendre_array_index(n,0)] * min1pow(n))
+              )
+            // * min1pow_m_neg(m) // not needed as m == 0
+            * cpow(gamma_pq, 2*j) // * Gamma_pq[j] bellow (GGG) after error computation
+            * c->s1_constfacs_1Dz[n][j];
+              /* s1_consstfacs_1Dz[n][j] =
+               *
+               *     -I**(n+1) (-1)**j * n!
+               *   --------------------------
+               *   j! * 2**(2*j) * (n - 2*j)!
+               */   
+
           if(err) {
             // FIXME include also other errors than Gamma_pq's relative error
              kahanadd(&jsum_err, &jsum_err_c, Gamma_pq[j].err * cabs(summand));
@@ -560,13 +603,10 @@ int ewald3_1_z_sigma_long (
           summand *= Gamma_pq[j].val; // GGG
           ckahanadd(&jsum, &jsum_c, summand);
         }
-        jsum *= phasefac * factor1d; // PFC
+        jsum *= phasefac; // PFC
         ckahanadd(target + y, target_c + y, jsum);
         if(err) kahanadd(err + y, err_c + y, jsum_err);
       }
-#ifndef NDEBUG
-    rbeta_pq_prev = rbeta_pq;
-#endif
   } // END POINT LOOP
  
   free(err_c);

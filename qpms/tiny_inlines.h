@@ -13,6 +13,17 @@ static inline int min1pow_m_neg(int m) {
 	return (m < 0) ? min1pow(m) : 1;
 }
 
+
+#if 0
+#ifdef __GSL_SF_LEGENDRE_H__
+static inline complex double
+spharm_eval(gsl_sf_legendre_t P_normconv, int P_csphase, qpms_l_t l, qpms_m_t m, double P_n_abs_m, complex double exp_imf) {
+
+	return;
+}
+#endif
+#endif
+
 // this has shitty precision:
 // static inline complex double ipow(int x) { return cpow(I, x); }
 
@@ -31,5 +42,7 @@ static inline complex double ipow(int x) {
       abort();
   }
 }
+
+static inline int isq(int x) {return x * x;}
 
 #endif // TINY_INLINES_H

@@ -1,5 +1,6 @@
 #include "ewald.h"
 #include <gsl/gsl_sf_gamma.h>
+#include <gsl/gsl_sf_expint.h>
 #include <gsl/gsl_sf_result.h>
 #include <gsl/gsl_machine.h> // Maybe I should rather use DBL_EPSILON instead of GSL_DBL_EPSILON.
 #include "kahansum.h"
@@ -99,6 +100,24 @@ int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
     return cx_gamma_inc_series_e(a, x, result);
 }
 
+// Exponential integral for complex argument; !UNTESTED! and probably not needed, as I expressed everything in terms of inc. gammas anyways.
+int complex_expint_n_e(int n, complex double x, qpms_csf_result *result) {
+  if (creal(x) >= 0 &&
+    (0 == fabs(cimag(x)) || // x is real positive; just use the real fun
+    fabs(cimag(x)) < fabs(creal(x)) * COMPLEXPART_REL_ZERO_LIMIT)) {
+    gsl_sf_result real_expint_result;
+    int retval = gsl_sf_expint_En_e(n, creal(x), &real_expint_result);
+    result->val = real_expint_result.val;
+    result->err = real_expint_result.err;
+    return retval;
+  } else {
+    int retval = complex_gamma_inc_e(-n+1, x, result);
+    complex double f = cpow(x, 2*n-2);
+    retval.val *= f;
+    retval.err *= cabs(f);
+    return retval;
+  }
+}
 
 // inspired by GSL's hyperg_2F1_series
 int hyperg_2F2_series(const double a, const double b, const double c, const double d,

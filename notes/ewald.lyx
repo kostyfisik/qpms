@@ -3814,11 +3814,11 @@ key "linton_lattice_2010"
 
 , therefore 
 \begin_inset Formula 
-\begin{eqnarray*}
-\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\left(\frac{k\gamma_{\mu}}{2\eta}\right)^{2j}\Gamma\left(-j,\frac{k^{2}\gamma_{\mu}^{2}}{2\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\\
- & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\left(\frac{k\gamma_{\mu}}{2}\right)^{2j}\underbrace{\Gamma\left(-j,\frac{k^{2}\gamma_{\mu}^{2}}{2\eta^{2}}\right)}_{\Gamma_{j,\mu}}\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\\
- & = & -\frac{i^{n+1}}{k\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}n!\left(\tilde{\beta}_{\mu}/k\right)^{n-2j}\Gamma_{j,\mu}}{j!2^{2j}\left(n-2j\right)!}\left(\gamma_{\mu}\right)^{2j}.
-\end{eqnarray*}
+\begin{eqnarray}
+\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\left(\frac{k\gamma_{\mu}}{2\eta}\right)^{2j}\Gamma\left(-j,\frac{k^{2}\gamma_{\mu}^{2}}{2\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\nonumber \\
+ & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\left(\frac{k\gamma_{\mu}}{2}\right)^{2j}\underbrace{\Gamma\left(-j,\frac{k^{2}\gamma_{\mu}^{2}}{2\eta^{2}}\right)}_{\Gamma_{j,\mu}}\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\nonumber \\
+ & = & -\frac{i^{n+1}}{k\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}n!\left(\tilde{\beta}_{\mu}/k\right)^{n-2j}\Gamma_{j,\mu}}{j!2^{2j}\left(n-2j\right)!}\left(\gamma_{\mu}\right)^{2j}.\label{eq:1D_z_LRsum}
+\end{eqnarray}
 
 \end_inset
 
