@@ -3291,7 +3291,7 @@ key "linton_one-_2009"
  &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\nonumber \\
  & = & -\frac{i^{n+1}}{2k^{2}\mathscr{A}}\sqrt{\pi}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
  &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j-1}\nonumber \\
- & = & -\frac{i^{n+1}}{k\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
+ & = & -\frac{i^{n+1}}{k^{2}\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
  &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1}\label{eq:2D Ewald in 3D long-range part}
 \end{eqnarray}
 
@@ -3680,7 +3680,7 @@ key "linton_lattice_2010"
  &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}e^{im\phi_{\vect{\beta}_{pq}}}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j}\nonumber \\
  & = & -\frac{i^{n+1}}{2k\mathscr{A}}2^{n+1}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
  &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/2k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\frac{\gamma_{pq}}{2}\right)^{2j}\nonumber \\
- & = & -\frac{i^{n+1}}{\mathscr{A}}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
+ & = & -\frac{i^{n+1}}{k\mathscr{A}}\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\nonumber \\
  &  & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j}\label{eq:1D Ewald in 3D long-range part}
 \end{eqnarray}
 
@@ -3780,8 +3780,44 @@ key "linton_lattice_2010"
 )
 \begin_inset Formula 
 \begin{eqnarray*}
-\sigma_{n}^{m} & = & -\frac{i^{n+1}}{k^{n+1}a}\delta_{m0}\sqrt{\frac{2n+1}{4\pi}}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\expint_{j+1}\left(\frac{k^{2}\gamma^{\mu}}{4\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\\
- & = & -\frac{i^{n+1}}{k^{n+1}a}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\expint_{j+1}\left(\frac{k^{2}\gamma^{\mu}}{4\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}
+\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}\delta_{m0}\sqrt{\frac{2n+1}{4\pi}}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\expint_{j+1}\left(\frac{k^{2}\gamma^{\mu}}{4\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\\
+ & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\expint_{j+1}\left(\frac{k^{2}\gamma^{\mu}}{4\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}.
+\end{eqnarray*}
+
+\end_inset
+
+Here, 
+\begin_inset Formula $\tilde{\beta}_{\mu}$
+\end_inset
+
+ seems to be again just 
+\begin_inset Formula $\tilde{\beta}_{\mu}=\beta+K_{\mu}$
+\end_inset
+
+, i.e.
+ the shifted reciprocal lattice point (projected onto the 
+\begin_inset Formula $z$
+\end_inset
+
+-axis).
+ From 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4.64)"
+key "linton_lattice_2010"
+
+\end_inset
+
+ 
+\begin_inset Formula $\expint_{j+1}\left(\frac{k^{2}\gamma_{\mu}^{2}}{4\eta^{2}}\right)=\left(\frac{k\gamma_{\mu}}{2\eta}\right)^{2j}\Gamma\left(-j,\frac{k^{2}\gamma_{\mu}^{2}}{2\eta^{2}}\right)$
+\end_inset
+
+, therefore 
+\begin_inset Formula 
+\begin{eqnarray*}
+\sigma_{n}^{m(1)} & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\eta^{2j}\left(\frac{k\gamma_{\mu}}{2\eta}\right)^{2j}\Gamma\left(-j,\frac{k^{2}\gamma_{\mu}^{2}}{2\eta^{2}}\right)\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\\
+ & = & -\frac{i^{n+1}}{k^{n+1}\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}}{j!}\left(\frac{k\gamma_{\mu}}{2}\right)^{2j}\underbrace{\Gamma\left(-j,\frac{k^{2}\gamma_{\mu}^{2}}{2\eta^{2}}\right)}_{\Gamma_{j,\mu}}\frac{n!\tilde{\beta}_{\mu}^{n-2j}}{\left(n-2j\right)!}\\
+ & = & -\frac{i^{n+1}}{k\mathscr{A}}Y_{n}^{m}\left(\hat{\vect z}\sgn\tilde{\beta}_{\mu}\right)\delta_{m0}\left(\sgn\tilde{\beta}_{\mu}\right)^{-n}\sum_{\mu\in\ints}\sum_{j=0}^{\left[n/2\right]}\frac{\left(-1\right)^{j}n!\left(\tilde{\beta}_{\mu}/k\right)^{n-2j}\Gamma_{j,\mu}}{j!2^{2j}\left(n-2j\right)!}\left(\gamma_{\mu}\right)^{2j}.
 \end{eqnarray*}
 
 \end_inset
@@ -3983,7 +4019,7 @@ where the spherical Hankel transform
  2)
 \begin_inset Formula 
 \[
-\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).
+\bsht lg(k)\equiv\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).
 \]
 
 \end_inset
@@ -3993,7 +4029,7 @@ Using this convention, the inverse spherical Hankel transform is given by
  3)
 \begin_inset Formula 
 \[
-g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\,k^{2}\bsht lg(k)j_{l}(k),
+g(r)=\frac{2}{\pi}\int_{0}^{\infty}\ud k\, k^{2}\bsht lg(k)j_{l}(k),
 \]
 
 \end_inset
@@ -4006,7 +4042,7 @@ so it is not unitary.
 An unitary convention would look like this:
 \begin_inset Formula 
 \begin{equation}
-\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\,r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
+\usht lg(k)\equiv\sqrt{\frac{2}{\pi}}\int_{0}^{\infty}\ud r\, r^{2}g(r)j_{l}\left(kr\right).\label{eq:unitary 3d Hankel tf definition}
 \end{equation}
 
 \end_inset
@@ -4060,8 +4096,8 @@ where the Hankel transform of order
  is defined as
 \begin_inset Formula 
 \begin{eqnarray}
-\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\,g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
- & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\,g(r)J_{-m}(kr)r
+\pht mg\left(k\right) & = & \int_{0}^{\infty}\ud r\, g(r)J_{m}(kr)r\label{eq:unitary 2d Hankel tf definition}\\
+ & = & \left(-1\right)^{m}\int_{0}^{\infty}\ud r\, g(r)J_{-m}(kr)r
 \end{eqnarray}
 
 \end_inset
