@@ -1,6 +1,16 @@
 #ifndef LATTICES_H
 #define LATTICES_H
 
+#include <math.h>
+#include <stdbool.h>
+#include <assert.h>
+#include <stddef.h>
+#include <stdlib.h>
+#define M_SQRT3 1.7320508075688772935274463415058724
+#define M_SQRT3_2 (M_SQRT3/2)
+#define M_1_SQRT3 0.57735026918962576450914878050195746
+
+
 
 /* IMPORTANT TODO
  * ==============
@@ -31,16 +41,6 @@ inline static bool LatticeDimensionality_checkflags(
 		LatticeDimensionality a, LatticeDimensionality flags_a_has_to_contain) {
 	return ((a & flags_a_has_to_contain) == flags_a_has_to_contain);
 }
-
-#include <math.h>
-#include <stdbool.h>
-#include <assert.h>
-#include <stddef.h>
-#include <stdlib.h>
-#define M_SQRT3 1.7320508075688772935274463415058724
-#define M_SQRT3_2 (M_SQRT3/2)
-#define M_1_SQRT3 0.57735026918962576450914878050195746
-
 
 // fuck, I already had had suitable type
 #include "vectors.h"
@@ -132,6 +132,15 @@ static inline bool PGenSph_notDone(PGenSphReturnData data) {
 extern const PGenSphClassInfo PGenSph_FromPoint2DArray; // TODO Do I even need this to be declared here?
 PGenSph PGenSph_FromPoints2DArray_new(const point2d *points, size_t len);
 
+extern const PGenSphClassInfo PGenSph_zAxis;
+typedef enum PGenSph_zAxis_incrementDirection{
+    //PGENSPH_ZAXIS_POSITIVE_INC, // not implemented
+    //PGENSPH_ZAXIS_NEGATIVE_INC, // not implemented
+    PGENSPH_ZAXIS_INC_FROM_ORIGIN,
+    PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN
+} PGenSph_zAxis_incrementDirection;
+PGenSph PGenSph_zAxis_new_minMaxR(double period, double offset, double minR, bool inc_minR, double maxR, bool inc_maxR,
+    PGenSph_zAxis_incrementDirection incdir);
 
 
 /*

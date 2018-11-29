@@ -117,28 +117,45 @@ const PGenSphClassInfo PGenSph_FromPoint2DArray = {
 
 extern const PGenSphClassInfo PGenSph_zAxis; // forward declaration needed by constructor (may be placed in header file instead)
 
+/* // This had to go to the header file:
 enum PGenSph_zAxis_incrementDirection{
     //PGENSPH_ZAXIS_POSITIVE_INC, // not implemented
     //PGENSPH_ZAXIS_NEGATIVE_INC, // not implemented
     PGENSPH_ZAXIS_INC_FROM_ORIGIN,
     PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN
-};    
+};
+*/
 
 // Internal state structure
 typedef struct PGenSph_zAxis_StateData {
   long ptindex;
-  long stopindex;
+  //long stopindex;
   double minR, maxR;
   bool inc_minR, inc_maxR;
   double a; // lattice period
+  double offset; // offset of the zeroth lattice point from origin (will be normalised to interval [-a/2,a/2]
   enum PGenSph_zAxis_incrementDirection incdir;
-  bool skip_origin;
+  //bool skip_origin;
 } PGenSph_zAxis_StateData;
+
+static inline long ptindex_inc(long i) {
+  if (i > 0)
+    return -i;
+  else
+    return -i + 1;
+}
+
+static inline long ptindex_dec(long i) {
+  if (i > 0)
+    return -i + 1;
+  else
+    return -i;
+}
 
 // Constructor, specified by maximum and maximum absolute value
 PGenSph PGenSph_zAxis_new_minMaxR(double period, double offset, double minR, bool inc_minR, double maxR, bool inc_maxR, 
     PGenSph_zAxis_incrementDirection incdir) {
-  PGenSph_zAxis_StateData *s = g->stateData = malloc(sizeof(PGenSph_zAxis_StateData));
+  PGenSph_zAxis_StateData *s = malloc(sizeof(PGenSph_zAxis_StateData));
   s->minR = minR;
   s->maxR = maxR;
   s->inc_minR = inc_minR;
@@ -149,15 +166,30 @@ PGenSph PGenSph_zAxis_new_minMaxR(double period, double offset, double minR, boo
   if (offset_normalised > period / 2) offset_normalised -= period; // and to interval [-period/2, period/2]
   s->offset = offset_normalised;
   if (offset_normalised > 0) // reverse the direction so that the conditions in _next() are hit in correct order
-    period *= -1;
-  // !!!!!!!! ZDE JSEM SKONČIL !!!!!!!!!!!!!!
+        period *= -1;  
+  switch(s->incdir) {
+    double curR;
+    case PGENSPH_ZAXIS_INC_FROM_ORIGIN:
+      s->ptindex = floor(minR / fabs(period));
+      while ( (curR = fabs(s->offset + s->ptindex * period)) < minR || (!inc_minR && curR <= minR))
+        s->ptindex = ptindex_inc(s->ptindex);
+      break;
+    case PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN:
+      s->ptindex = - ceil(minR / fabs(period));
+      while ( (curR = fabs(s->offset + s->ptindex * period)) > maxR || (!inc_minR && curR >= maxR))
+        s->ptindex = ptindex_dec(s->ptindex);
+      break;
+    default:
+      abort(); // invalid argument / not implemented
+  }
+  s->a = period;
   
-  PGenSph g = {&PGenSph_zAxis, (void *) stateData};
+  PGenSph g = {&PGenSph_zAxis, (void *) s};
   return g;
 }
 
 // Dectructor
-void PGenSph_zAxis_dectructor(PGenSph *g) {
+void PGenSph_zAxis_destructor(PGenSph *g) {
   free(g->stateData);
   g->stateData = NULL;
 }
@@ -172,21 +204,16 @@ PGenSphReturnData PGenSph_zAxis_next(PGenSph *g) {
   bool theEnd = false;
   switch (s->incdir) {
     case PGENSPH_ZAXIS_INC_FROM_ORIGIN:
-      if (r < s->maxR || (inc_maxR && r == s->maxR)) {
-        if (s->ptindex > 0)
-          s->ptindex *= -1;
-        else
-          s->ptindex = -s->ptindex + 1;
-      } else theEnd = true;
+      if (r < s->maxR || (s->inc_maxR && r == s->maxR)) 
+        s->ptindex = ptindex_inc(s->ptindex);
+      else theEnd = true;
       break; 
     case PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN:
-      if (r > s->minR || (inc_minR && r == s->minR)) {
+      if (r > s->minR || (s->inc_minR && r == s->minR)) {
         if (s->ptindex == 0) // handle "underflow"
           s->minR = INFINITY;
-        else if (s->ptindex > 0)
-          s->ptindex = -s->ptindex - 1;
-        else // s->ptindex < 0
-          s->ptindex *= -1;
+        else
+          s->ptindex = ptindex_dec(s->ptindex);
       } else theEnd = true;
       break;
     default:
