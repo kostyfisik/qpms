@@ -175,7 +175,7 @@ PGenSph PGenSph_zAxis_new_minMaxR(double period, double offset, double minR, boo
         s->ptindex = ptindex_inc(s->ptindex);
       break;
     case PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN:
-      s->ptindex = - ceil(minR / fabs(period));
+      s->ptindex = - ceil(maxR / fabs(period));
       while ( (curR = fabs(s->offset + s->ptindex * period)) > maxR || (!inc_minR && curR >= maxR))
         s->ptindex = ptindex_dec(s->ptindex);
       break;

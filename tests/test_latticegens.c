@@ -1,5 +1,5 @@
 //c99 -o test_latticegens -ggdb -Wall -I ../ test_latticegens.c ../qpms/latticegens.c -lm
-
+#define QPMS_VECTORS_NICE_TRANSFORMATIONS
 #include <qpms/lattices.h>
 #include <stdio.h>
 
@@ -34,5 +34,15 @@ int main(int argc, char **argv) {
   dump_PGenSph(&g);
   DO_AND_PRINT(test3b, g = PGenSph_zAxis_new_minMaxR(0.2, 0.05, 5.05, false, 7.05, false, PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN))
   dump_PGenSph(&g);
+  DO_AND_PRINT(test4a, g = PGenSph_zAxis_new_minMaxR(0.2, 0.0, 0, false, 1, false, PGENSPH_ZAXIS_INC_FROM_ORIGIN))
+  dump_PGenSph(&g);
+  DO_AND_PRINT(test4b, g = PGenSph_zAxis_new_minMaxR(0.2, 0.0, 0, false, 1, false, PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN))
+  dump_PGenSph(&g);
+  DO_AND_PRINT(test5a, g = PGenSph_zAxis_new_minMaxR(0.2, 0.0, 0, true, 1, true, PGENSPH_ZAXIS_INC_FROM_ORIGIN))
+  dump_PGenSph(&g);
+  DO_AND_PRINT(test5b, g = PGenSph_zAxis_new_minMaxR(0.2, 0.0, 0, true, 1, true, PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN))
+  dump_PGenSph(&g);
+
+
 }
 

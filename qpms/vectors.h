@@ -57,7 +57,11 @@ static inline sph_t cart2sph(const cart3_t cart) {
 
 static inline cart3_t sph2cart(const sph_t sph) {
 	cart3_t cart;
-	double sin_th = sin(sph.theta);
+	double sin_th = 
+#ifdef QPMS_VECTORS_NICE_TRANSFORMATIONS
+	   (sph.theta == M_PI) ? 0 :
+#endif
+		sin(sph.theta);
 	cart.x = sph.r * sin_th * cos(sph.phi);
 	cart.y = sph.r * sin_th * sin(sph.phi);
 	cart.z = sph.r * cos(sph.theta);
