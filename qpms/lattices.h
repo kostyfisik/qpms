@@ -106,7 +106,7 @@ typedef struct PGenSphClassInfo { // static PGenSph info
 
 // TOP DATA STRUCTURE DEFINITION HERE
 typedef struct PGenSph {
-	const PGenSphClassInfo * const c;
+	const PGenSphClassInfo * /*const*/ c;
 	void *stateData; // shall be NULL if invalid (destroyed)
 } PGenSph;
 
