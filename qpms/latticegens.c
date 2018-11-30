@@ -236,5 +236,121 @@ const PGenSphClassInfo PGenSph_zAxis = {
   PGenSph_zAxis_destructor
 };
 
+#if 0
+//==== PGenSph_xyWeb ====
+// 2D lattice generator in the "spiderweb" style, generated in the "perimetre" order,
+// not strictly ordered (or limited) by distance from origin.
+// The minR and maxR here refer to the TODO WWHAT
+
+extern const PGenSphClassInfo PGenSph_xyWeb; // forward declaration needed by constructor (may be placed in header file instead)
+
+// Internal state structure
+typedef struct PGenSph_xyWeb_StateData {
+  long i, j;
+  //long stopindex;
+  double minR, maxR;
+  bool inc_minR, inc_maxR;
+  cart2_t b1, b2; // lattice vectors
+  cart2_t offset; // offset of the zeroth lattice point from origin (will be normalised to the WS cell)
+} PGenSph_xyWeb_StateData;
+
+// Constructor
+PGenSph PGenSph_xyWeb_new(...) {
+  g->stateData = malloc(sizeof(PGenSph_xyWeb_StateData));
+  ...
+  PGenSph g = {&PGenSph_xyWeb, (void *) stateData};
+  return g;
+}
+
+// Dectructor
+void PGenSph_xyWeb_dectructor(PGenSph *g) {
+  ...
+  free(g->stateData);
+  g->stateData = NULL;
+}
+
+// Extractor
+PGenSphReturnData PGenSph_xyWeb_next(PGenSph *g) {
+  if (g->stateData == NULL) // already destroyed
+    return PGenSphDoneVal;
+  else {
+    PGenSph_xyWeb_StateData *s = (PGenSph_xyWeb_StateData *) g->stateData;
+    if (... /* there are still points to be generated */) {
+      ...
+      PGenSphReturnData retval = {.../*flags*/, .../*thePoint*/};
+      return retval;
+    } else {
+      PGenSph_destroy(g);
+      return PGenSphDoneVal;
+    }
+  }
+}
+
+// Class metadata structure; TODO maybe this can rather be done by macro.
+const PGenSphClassInfo PGenSph_xyWeb = {
+  "PGenSph_xyWeb",
+  PGenSph_xyWeb_next,
+  PGenSph_xyWeb_destructor
+};
+
+#endif // 0    
+
+
+
+#if 0
+//==== PGenSph_xyPlane ==== //TODO
+
+extern const PGenSphClassInfo PGenSph_xyPlane; // forward declaration needed by constructor (may be placed in header file instead)
+
+// Internal state structure
+typedef struct PGenSph_xyPlane_StateData {
+  long i, j;
+  //long stopindex;
+  double minR, maxR;
+  bool inc_minR, inc_maxR;
+  cart2_t b1, b2; // lattice vectors
+  cart2_t offset; // offset of the zeroth lattice point from origin (will be normalised to the WS cell)
+} PGenSph_xyPlane_StateData;
+
+// Constructor
+PGenSph PGenSph_xyPlane_new(...) {
+  g->stateData = malloc(sizeof(PGenSph_xyPlane_StateData));
+  ...
+  PGenSph g = {&PGenSph_xyPlane, (void *) stateData};
+  return g;
+}
+
+// Dectructor
+void PGenSph_xyPlane_dectructor(PGenSph *g) {
+  ...
+  free(g->stateData);
+  g->stateData = NULL;
+}
+
+// Extractor
+PGenSphReturnData PGenSph_xyPlane_next(PGenSph *g) {
+  if (g->stateData == NULL) // already destroyed
+    return PGenSphDoneVal;
+  else {
+    PGenSph_xyPlane_StateData *s = (PGenSph_xyPlane_StateData *) g->stateData;
+    if (... /* there are still points to be generated */) {
+      ...
+      PGenSphReturnData retval = {.../*flags*/, .../*thePoint*/};
+      return retval;
+    } else {
+      PGenSph_destroy(g);
+      return PGenSphDoneVal;
+    }
+  }
+}
+
+// Class metadata structure; TODO maybe this can rather be done by macro.
+const PGenSphClassInfo PGenSph_xyPlane = {
+  "PGenSph_xyPlane",
+  PGenSph_xyPlane_next,
+  PGenSph_xyPlane_destructor
+};
+
+#endif // 0    
 
 

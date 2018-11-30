@@ -153,6 +153,7 @@ PGenSph PGenSph_zAxis_new_minMaxR(double period, double offset, double minR, boo
 
 #define BASIS_RTOL 1e-13
 
+// Bravais lattice types
 typedef enum {
 	OBLIQUE = 1,
 	RECTANGULAR = 2,
@@ -167,8 +168,14 @@ typedef enum {
 	ISOSCELE_TRIANGULAR=RHOMBIC,
 	RIGHT_ISOSCELE_TRIANGULAR=SQUARE,
 	HEXAGONAL=EQUILATERAL_TRIANGULAR
-} LatticeType;
+} LatticeType2;
 
+#if 0
+// Wallpaper groups
+typedef enum {
+	TODO
+} SpaceGroup2;
+#endif
 
 /*
  * Lagrange-Gauss reduction of a 2D basis.
@@ -197,7 +204,7 @@ bool l2d_is_obtuse(cart2_t i1, cart2_t i2);
 /* 
  * Given two basis vectors, returns 2D Bravais lattice type.
  */
-LatticeType l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol);
+LatticeType2 l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol);
 
 // Other functions in lattices2d.py: TODO?
 // range2D()
