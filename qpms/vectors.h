@@ -35,6 +35,21 @@ static inline double cart2norm(const cart2_t v) {
 	return sqrt(v.x*v.x + v.y*v.y);
 }
 
+static inline pol_t cart2pol(const cart2_t cart) {
+	pol_t pol;
+	pol.r = cart2norm(cart);
+	pol.phi = atan2(cart.y, cart.x);
+	return pol;
+}
+
+static inline sph_t pol2sph_equator(const pol_t pol) {
+	sph_t sph;
+	sph.r = pol.r;
+	sph.phi = pol.phi;
+	sph.theta = M_PI_2;
+	return sph;
+}
+
 static inline sph_t cart22sph(const cart2_t cart) {
 	sph_t sph;
 	sph.r = cart2norm(cart);
@@ -43,9 +58,18 @@ static inline sph_t cart22sph(const cart2_t cart) {
 	return sph;
 }
 
+static inline cart3_t cart22cart3xy(const cart2_t a) {
+	cart3_t c;
+	c.x = a.x;
+	c.y = a.y;
+	c.z = 0;
+	return c;
+}
+
 static inline double cart3norm(const cart3_t v) {
 	return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
+
 
 static inline sph_t cart2sph(const cart3_t cart) {
 	sph_t sph;
@@ -65,6 +89,13 @@ static inline cart3_t sph2cart(const sph_t sph) {
 	cart.x = sph.r * sin_th * cos(sph.phi);
 	cart.y = sph.r * sin_th * sin(sph.phi);
 	cart.z = sph.r * cos(sph.theta);
+	return cart;
+}
+
+static inline cart2_t pol2cart(const pol_t pol) {
+	cart2_t cart;
+	cart.x = pol.r * cos(pol.phi);
+	cart.y = pol.r * sin(pol.phi);
 	return cart;
 }
 
