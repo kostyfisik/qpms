@@ -57,15 +57,15 @@ static inline point2d point2d_fromxy(const double x, const double y) {
 
 
 /*
- * GENERIC LATTICE POINT GENERATOR TYPE PGenSph
+ * GENERIC LATTICE POINT GENERATOR TYPE PGen
  * ============================================
  *
  * A bit of OOP-in-C brainfuck here.
  * 
  * The basic principle of operation is following:
- * Instead of a list (array) of points, an initialized PGenSph object 
+ * Instead of a list (array) of points, an initialized PGen object 
  * is passed to a function that does something over a set of points.
- * Each time PGenSph-type object is "called", it returns PGenSphReturnData, 
+ * Each time PGen-type object is "called", it returns PGenReturnData, 
  * which contains a point in spherical coordinates (sph_t) and some metadata.
  *
  * After the last generated point, the generator frees all internal memory
@@ -73,15 +73,15 @@ static inline point2d point2d_fromxy(const double x, const double y) {
  * shall be considered invalid data).
  * The caller can also decide not to use the rest and end getting the points
  * even when the PGEN_NOTDONE was set in the last returned data.
- * In such case, the caller shall call PGenSph_destroy() manually.
+ * In such case, the caller shall call PGen_destroy() manually.
  *
  * MEMORY MANAGEMENT POLICY
  * ------------------------
- * The basic PGenSph structure shall be allocated on stack (it's only two pointers),
+ * The basic PGen structure shall be allocated on stack (it's only two pointers),
  * everything internal goes on heap.
  */
 
-struct PGenSph;  // full definition below
+struct PGen;  // full definition below
 
 typedef enum PGenPointFlags {
 	PGEN_NOTDONE = 2, // The most important flag: when this is not set, the interation ended – other data returned should be considered nonsense and at this point, the generator should have de-allocated all internal memory.
@@ -91,37 +91,101 @@ typedef enum PGenPointFlags {
 	PGEN_DONE = 0, // convenience value, not an actual flag
 } PGenPointFlags;
 
+typedef struct PGenZReturnData {
+  PGenPointFlags flags; // metatada
+  double point_z;
+} PGenZReturnData;
+
+typedef struct PGenPolReturnData {
+  PGenPointFlags flags; // metatada
+  pol_t point_pol;
+} PGenPolReturnData;
+
 typedef struct PGenSphReturnData {
   PGenPointFlags flags; // metatada
   sph_t point_sph; // the actual point data
 } PGenSphReturnData;
 
-static const PGenSphReturnData PGenSphDoneVal = {PGEN_DONE, {0,0,0}}; // convenience constant for use in the exctractor implementations
+typedef struct PGenCart2ReturnData {
+  PGenPointFlags flags; // metatada
+  cart2_t point_cart2; // the actual point data
+} PGenCart2ReturnData;
+
+typedef struct PGenCart3ReturnData {
+  PGenPointFlags flags; // metatada
+  cart3_t point_cart3; // the actual point data
+} PGenCart3ReturnData;
+
+// convenience constants for use in the extractor implementations
+static const PGenZReturnData PGenZDoneVal = {PGEN_DONE, 0}; 
+static const PGenPolReturnData PGenPolDoneVal = {PGEN_DONE, {0,0}}; 
+static const PGenSphReturnData PGenSphDoneVal = {PGEN_DONE, {0,0,0}}; 
+static const PGenCart2ReturnData PGenCart2DoneVal = {PGEN_DONE, {0,0}};
+static const PGenCart3ReturnData PGenCart3DoneVal = {PGEN_DONE, {0,0,0}};
 
 typedef struct PGenSphClassInfo { // static PGenSph info
 	char * const name; // mainly for debugging purposes
-	PGenSphReturnData (*next)(struct PGenSph *); // This contains the actual generator procedure (TODO shouldn't I rather point to stateData?)
-	void (*destructor)(struct PGenSph *); // Destructor to be called by next() at iteration end, or by the caller if ending the generation prematurely
-} PGenSphClassInfo;
+	int dimensionality; // lower-dimensional can be converted to higher-D, not vice versa
+	// TODO info about native coordinate system
+	PGenZReturnData (*next_z)(struct PGen *);
+	PGenPolReturnData (*next_pol)(struct PGen *); // This contains the actual generator procedure (TODO shouldn't I rather point to stateData?)
+	PGenSphReturnData (*next_sph)(struct PGen *);
+	PGenCart2ReturnData (*next_cart2)(struct PGen *);
+	PGenCart3ReturnData (*next_cart3)(struct PGen *);
+	void (*destructor)(struct PGen *); // Destructor to be called by next() at iteration end, or by the caller if ending the generation prematurely
+} PGenClassInfo;
 
 // TOP DATA STRUCTURE DEFINITION HERE
-typedef struct PGenSph {
-	const PGenSphClassInfo * /*const*/ c;
+typedef struct PGen {
+	const PGenClassInfo * /*const*/ c;
 	void *stateData; // shall be NULL if invalid (destroyed)
-} PGenSph;
+} PGen;
 
-static inline void PGenSph_destroy(PGenSph *g) {
+static inline void PGen_destroy(PGen *g) {
 	g->c->destructor(g);
 	assert(g->stateData == NULL); // this should be done by the destructor
 }
 
-static inline PGenSphReturnData PGenSph_next(PGenSph *g) {
+static inline PGenSphReturnData PGen_next_sph(PGen *g) {
 	// TODO maybe some asserts around here
-	return g->c->next(g);
+	if (g->c->next_sph) 
+		return g->c->next_sph(g);
+	else abort(); // the current point generator does not support this type of output
+}
+
+static inline PGenCart3ReturnData PGen_next_cart3(PGen *g) {
+	// TODO maybe some asserts around here
+	if (g->c->next_cart3) 
+		return g->c->next_cart3(g);
+	else abort(); // the current point generator does not support this type of output
+}
+
+static inline PGenCart2ReturnData PGen_next_cart2(PGen *g) {
+	// TODO maybe some asserts around here
+	if (g->c->next_cart2) 
+		return g->c->next_cart2(g);
+	else abort(); // the current point generator does not support this type of output
 }
 
 static inline bool PGenSph_notDone(PGenSphReturnData data) {
 	return data.flags & PGEN_NOTDONE ? true : false;
+}
+static inline bool PGenCart3_notDone(PGenCart3ReturnData data) {
+	return data.flags & PGEN_NOTDONE ? true : false;
+}
+
+static inline PGenCart3ReturnData PGenReturnDataConv_sph_cart3(PGenSphReturnData sphdata){
+	PGenCart3ReturnData c3data;
+	c3data.flags = sphdata.flags;
+	c3data.point_cart3 = sph2cart(sphdata.point_sph);
+	return c3data; 
+}
+
+static inline PGenSphReturnData PGenReturnDataConv_cart3_sph(PGenCart3ReturnData c){
+	PGenSphReturnData s;
+	s.flags = c.flags;
+	s.point_sph = cart2sph(c.point_cart3);
+	return s; 
 }
 
 /*
@@ -129,18 +193,18 @@ static inline bool PGenSph_notDone(PGenSphReturnData data) {
  */
 
 // This one simply iterates over an existing array of Point2d
-extern const PGenSphClassInfo PGenSph_FromPoint2DArray; // TODO Do I even need this to be declared here?
-PGenSph PGenSph_FromPoints2DArray_new(const point2d *points, size_t len);
+extern const PGenClassInfo PGen_FromPoint2DArray; // TODO Do I even need this to be declared here?
+PGen PGen_FromPoints2DArray_new(const point2d *points, size_t len);
 
-extern const PGenSphClassInfo PGenSph_zAxis;
-typedef enum PGenSph_zAxis_incrementDirection{
-    //PGENSPH_ZAXIS_POSITIVE_INC, // not implemented
-    //PGENSPH_ZAXIS_NEGATIVE_INC, // not implemented
-    PGENSPH_ZAXIS_INC_FROM_ORIGIN,
-    PGENSPH_ZAXIS_INC_TOWARDS_ORIGIN
-} PGenSph_zAxis_incrementDirection;
-PGenSph PGenSph_zAxis_new_minMaxR(double period, double offset, double minR, bool inc_minR, double maxR, bool inc_maxR,
-    PGenSph_zAxis_incrementDirection incdir);
+extern const PGenClassInfo PGen_1D;
+typedef enum PGen_1D_incrementDirection{
+    //PGEN_1D_POSITIVE_INC, // not implemented
+    //PGEN_1D_NEGATIVE_INC, // not implemented
+    PGEN_1D_INC_FROM_ORIGIN,
+    PGEN_1D_INC_TOWARDS_ORIGIN
+} PGen_1D_incrementDirection;
+PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bool inc_minR, double maxR, bool inc_maxR,
+    PGen_1D_incrementDirection incdir);
 
 
 /*
