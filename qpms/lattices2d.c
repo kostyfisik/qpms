@@ -704,13 +704,36 @@ bool l2d_is_obtuse_r(cart2_t b1, cart2_t b2, double rtol) {
 }
 
 
-# if 0
 /*
  * TODO doc
  * return value is 4 or 6.
  */
-int l2d_shortestBase46(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_t *o3, cart2_t *o4, cart2_t *o5, cart2_t *o6, double rtol);
+int l2d_shortestBase46(const cart2_t i1, const cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_t *o3, cart2_t *o4, cart2_t *o5, cart2_t *o6, double rtol){
+  cart2_t b1, b2, b3;
+  l2d_reduceBasis(i1, i2, &b1, &b2);
+  const double b1s = cart2_normsq(b1);
+  const double b2s = cart2_normsq(b2);
+  b3 = cart2_substract(b2, b1);
+  const double b3s = cart2_normsq(b3);
+  const double eps = rtol * (b1s + b2s); // TODO check the same as in l2d_is_obtuse_r
+  if(fabs(b3s-b2s-b1s) < eps) {
+    *o1 = b1; *o2 = b2; *o3 = cart2_scale(-1, b1); *o4 = cart2_scale(-1, b2);
+    return 4;
+  }
+  else {
+    if (b3s-b2s-b1s > eps) { //obtuse 
+      b3 = b2;
+      b2 = cart2_add(b2, b1);
+    }
+    *o1 = b1; *o2 = b2; *o3 = b3;
+    *o4 = cart2_scale(-1, b1);
+    *o5 = cart2_scale(-1, b2);
+    *o6 = cart2_scale(-1, b3);
+    return 6;
+  }
+}
 
+# if 0
 // variant
 int l2d_shortestBase46_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 
@@ -741,4 +764,18 @@ int l2d_cellCornersWS_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 // Reciprocal bases
 void l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
 void l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+
 #endif
+
+// returns the radius of inscribed circle of a hexagon (or rectangle/square if applicable) created by the shortest base triple
+double l2d_hexWebInCircleRadius(cart2_t i1, cart2_t i2) {
+  cart2_t b1, b2, b3;
+  l2d_shortestBase3(i1, i2, &b1, &b2, &b3);
+  const double r1 = cart2norm(b1), r2 = cart2norm(b2), r3 = cart2norm(b3);
+  const double p = (r1+r2+r3)*0.5;
+  return 2*sqrt(p*(p-r1)*(p-r2)*(p-r3))/r3; // CHECK is r3 guaranteed to be longest?
+}
+
+
+
+
