@@ -2,6 +2,56 @@
 #include <limits.h>
 #include <math.h>
 
+// generic converting extractors
+
+PGenPolReturnData PGen_next_pol_from_cart2(PGen *g) {
+  const PGenCart2ReturnData c = PGen_next_cart2(g);
+  if (c.flags & PGEN_DONE)
+    return PGenPolDoneVal;
+  else {
+    PGenPolReturnData p;
+    p.flags = c.flags;
+    p.point_pol = cart2pol(c.point_cart2);
+    return p;
+  }
+}
+
+PGenCart2ReturnData PGen_next_cart2_from_pol(PGen *g) {
+  const PGenPolReturnData p = PGen_next_pol(g);
+  if (p.flags & PGEN_DONE)
+    return PGenCart2DoneVal;
+  else {
+    PGenCart2ReturnData c;
+    c.flags = p.flags;
+    c.point_cart2 = pol2cart(p.point_pol);
+    return c;
+  }
+}
+
+PGenSphReturnData PGen_next_sph_from_cart3(PGen *g) {
+  const PGenCart3ReturnData c = PGen_next_cart3(g);
+  if (c.flags & PGEN_DONE)
+    return PGenSphDoneVal;
+  else {
+    PGenSphReturnData s;
+    s.flags = c.flags;
+    s.point_sph = cart2sph(c.point_cart3);
+    return s;
+  }
+}
+
+PGenCart3ReturnData PGen_next_cart3_from_sph(PGen *g) {
+  const PGenSphReturnData s = PGen_next_sph(g);
+  if (s.flags & PGEN_DONE)
+    return PGenCart3DoneVal;
+  else {
+    PGenCart3ReturnData c;
+    c.flags = s.flags;
+    c.point_cart3 = sph2cart(s.point_sph);
+    return c;
+  }
+}
+
 // here, various "classes" of the PGenSph point generators are implemented.
 
 
@@ -119,7 +169,7 @@ PGenCart2ReturnData PGen_FromPoint2DArray_next_cart2(PGen *g) {
     if (s->currentIndex < s->len) {
       cart2_t thePoint = s->base[s->currentIndex];
       ++(s->currentIndex);
-      PGenCart2ReturnData retval = {(PGEN_AT_XY | PGEN_NEWR), thePoint};
+      PGenCart2ReturnData retval = {(PGEN_NOTDONE | PGEN_AT_XY | PGEN_NEWR), thePoint};
       return retval;
     } else {
       PGen_destroy(g);
@@ -323,7 +373,6 @@ const PGenClassInfo PGen_1D = {
   PGen_1D_destructor
 };
 
-#if 0
 //==== PGen_xyWeb ====
 // 2D lattice generator in the "spiderweb" style, generated in the "perimetre" order,
 // not strictly ordered (or limited) by distance from origin.
@@ -336,24 +385,39 @@ typedef struct PGen_xyWeb_StateData {
   long i, j;
   unsigned short phase; // 0 to 5
   long layer;
+  long last_layer; // generation stops when layer > last_layer
   double layer_min_height; // this * layer is what minR and maxR are compared to
   double minR, maxR;
   bool inc_minR, inc_maxR;
   cart2_t b1, b2; // lattice vectors
-  cart2_t offset; // offset of the zeroth lattice point from origin (will be normalised to the WS cell)
+  cart2_t offset; // offset of the zeroth lattice point from origin (TODO will be normalised to the WS cell)
+  // TODO type rectangular vs. triangular
+  LatticeType2 lt;
 } PGen_xyWeb_StateData;
 
 // Constructor
-PGen PGen_xyWeb_new(...) {
-  g->stateData = malloc(sizeof(PGen_xyWeb_StateData));
-  ...
-  PGen g = {&PGen_xyWeb, (void *) stateData};
+PGen PGen_xyWeb_new(cart2_t b1, cart2_t b2, double rtol, cart2_t offset, double minR, bool inc_minR, double maxR, bool inc_maxR) {
+  PGen_xyWeb_StateData *s =  malloc(sizeof(PGen_xyWeb_StateData));
+  s->minR = minR; s->maxR = maxR;
+  s->inc_minR = inc_minR;
+  s->inc_maxR = inc_maxR;
+  l2d_reduceBasis(b1, b2, &(s->b1), &(s->b2));
+  s->offset = offset; // TODO shorten into the WS cell ?
+  s->lt = l2d_classifyLattice(s->b1, s->b2, rtol);
+  s->layer_min_height = l2d_hexWebInCircleRadius(s->b1, s->b2);
+  s->layer = ceil(s->minR/s->layer_min_height);
+  if(!inc_minR && (s->layer * s->layer_min_height)  <= minR)
+    ++(s->layer); 
+  s->i = s->layer; s->j = 0; s->phase = 0; // init indices
+  s->last_layer = floor(s->maxR/s->layer_min_height);
+  if(!inc_maxR && (s->last_layer * s->layer_min_height) >= maxR)
+    --(s->last_layer);
+  PGen g = {&PGen_xyWeb, (void *) s};
   return g;
 }
 
-// Dectructor
-void PGen_xyWeb_dectructor(PGen *g) {
-  ...
+// Destructor
+void PGen_xyWeb_destructor(PGen *g) {
   free(g->stateData);
   g->stateData = NULL;
 }
@@ -361,16 +425,90 @@ void PGen_xyWeb_dectructor(PGen *g) {
 // Extractor (2D cartesian, native)
 PGenCart2ReturnData PGen_xyWeb_next_cart2(PGen *g) {
   if (g->stateData == NULL) // already destroyed
-    return PGenDoneVal;
+    return PGenCart2DoneVal;
   else {
-    PGen_xyWeb_StateData *s = (PGen_xyWeb_StateData *) g->stateData;
-    if (... /* there are still points to be generated */) {
-      ...
-      PGenReturnData retval = {.../*flags*/, .../*thePoint*/};
+    PGen_xyWeb_StateData * const s = (PGen_xyWeb_StateData *) g->stateData;
+    assert(s->layer >= 0);
+    if (s->layer <= s->last_layer) {
+      const cart2_t thePoint = cart2_add(s->offset,
+          cart2_add(cart2_scale(s->i, s->b1), cart2_scale(s->j, s->b2)));
+      if(s->layer == 0) // origin is unique, proceed with next layer
+        ++s->layer;
+      else if(s->lt & (SQUARE | RECTANGULAR)) {
+        // rectangular or square lattice, four perimeters
+        switch(s->phase) {
+          case 0: // initial i = l, j = 0
+            --s->i;
+            ++s->j;
+            if(s->i <= 0) ++s->phase;
+            break;
+          case 1: // initial i = 0, j = l
+            --s->i;
+            --s->j;
+            if(s->j <= 0) ++s->phase;
+            break;
+          case 2: // initial i = -l, j = 0
+            ++s->i;
+            --s->j;
+            if(s->i >= 0) ++s->phase;
+            break;
+          case 3: // initial i = 0, j = -l
+            ++s->i;
+            ++s->j;
+            if(s->j >= 0) ++s->phase;
+            break;
+          default:
+            abort();
+        }
+        if(s->phase == 4) { // phase overflow, start new layer
+          ++s->layer;
+          s->phase = 0;
+          s->i = s->layer;
+          s->j = 0;
+        }
+      } else { // non-rectangular lattice, six perimeters
+        switch(s->phase) {
+          case 0:
+            --s->i;
+            ++s->j;
+            if(s->i <= 0) ++s->phase;
+            break;
+          case 1:
+            --s->i;
+            if(s->i + s->j <= 0) ++s->phase;
+            break;
+          case 2:
+            --s->j;
+            if(s->j <= 0) ++s->phase;
+            break;
+          case 3:
+            ++s->i;
+            --s->j;
+            if(s->i >= 0) ++s->phase;
+            break;
+          case 4:
+            ++s->i;
+            if(s->i + s->j >= 0) ++s->phase;
+            break;
+          case 5:
+            ++s->j;
+            if(s->j >= 0) ++s->phase;
+            break;
+          default:
+            abort();
+        }
+        if(s->phase == 6) { // phase overflow, start next layer
+          ++s->layer;
+          s->phase = 0;
+          s->i = s->layer;
+          s->j = 0;
+        }
+      }
+      PGenCart2ReturnData retval = {(PGEN_NOTDONE | PGEN_AT_XY | PGEN_NEWR), thePoint};
       return retval;
     } else {
       PGen_destroy(g);
-      return PGenDoneVal;
+      return PGenCart2DoneVal;
     }
   }
 }
@@ -378,9 +516,13 @@ PGenCart2ReturnData PGen_xyWeb_next_cart2(PGen *g) {
 // Class metadata structure; TODO maybe this can rather be done by macro.
 const PGenClassInfo PGen_xyWeb = {
   "PGen_xyWeb",
-  PGen_xyWeb_next,
+  2,
+  NULL,//PGen_xyWeb_next_z,
+  NULL,//PGen_xyWeb_next_pol,
+  NULL,//PGen_xyWeb_next_sph,
+  PGen_xyWeb_next_cart2,
+  NULL,//PGen_xyWeb_next_cart3,
   PGen_xyWeb_destructor
 };
 
-#endif // 0    
 

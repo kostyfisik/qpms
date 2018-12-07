@@ -153,6 +153,13 @@ static inline PGenSphReturnData PGen_next_sph(PGen *g) {
 	else abort(); // the current point generator does not support this type of output
 }
 
+static inline PGenPolReturnData PGen_next_pol(PGen *g) {
+	// TODO maybe some asserts around here
+	if (g->c->next_pol) 
+		return g->c->next_pol(g);
+	else abort(); // the current point generator does not support this type of output
+}
+
 static inline PGenCart3ReturnData PGen_next_cart3(PGen *g) {
 	// TODO maybe some asserts around here
 	if (g->c->next_cart3) 
@@ -205,6 +212,11 @@ typedef enum PGen_1D_incrementDirection{
 } PGen_1D_incrementDirection;
 PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bool inc_minR, double maxR, bool inc_maxR,
     PGen_1D_incrementDirection incdir);
+
+
+extern const PGenClassInfo PGen_xyWeb;
+PGen PGen_xyWeb_new(cart2_t b1, cart2_t b2, double rtol, cart2_t offset, 
+		double minR, bool inc_minR, double maxR, bool inc_maxR);
 
 
 /*
