@@ -432,8 +432,12 @@ PGenCart2ReturnData PGen_xyWeb_next_cart2(PGen *g) {
     if (s->layer <= s->last_layer) {
       const cart2_t thePoint = cart2_add(s->offset,
           cart2_add(cart2_scale(s->i, s->b1), cart2_scale(s->j, s->b2)));
-      if(s->layer == 0) // origin is unique, proceed with next layer
+      if(s->layer == 0) { // origin is unique, proceed with next layer
         ++s->layer;
+        s->phase = 0;
+        s->i = s->layer;
+        s->j = 0;
+      }
       else if(s->lt & (SQUARE | RECTANGULAR)) {
         // rectangular or square lattice, four perimeters
         switch(s->phase) {

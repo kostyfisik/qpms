@@ -733,6 +733,39 @@ int l2d_shortestBase46(const cart2_t i1, const cart2_t i2,  cart2_t *o1, cart2_t
   }
 }
 
+/*
+ * Given two basis vectors, returns 2D Bravais lattice type.
+ */
+LatticeType2 l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol)
+{
+  l2d_reduceBasis(b1, b2, &b1, &b2);
+  cart2_t b3 = cart2_substract(b2, b1);
+  double b1s = cart2_normsq(b1), b2s = cart2_normsq(b2), b3s = cart2_normsq(b3);
+  double eps = rtol * (b2s + b1s); //FIXME what should eps be?
+  // avoid obtuse angle between b1 and b2. TODO this should be yet tested
+  // TODO use is_obtuse here?
+  if (b3s - b2s - b1s > eps) {
+    b3 = b2;
+    b2 = cart2_add(b2, b1);
+    // N.B. now the assumption |b3| >= |b2| is no longer valid
+    // b3 = cart2_substract(b2, b1)
+    b2s = cart2_normsq(b2); 
+    b3s = cart2_normsq(b3);
+  }
+  if (fabs(b2s-b1s) < eps || fabs(b2s - b3s) < eps) { // isoscele
+    if (fabs(b3s-b1s) <  eps)
+      return EQUILATERAL_TRIANGULAR;
+    else if (fabs(b3s - 2*b1s))
+      return SQUARE;
+    else
+      return RHOMBIC;
+  } else if (fabs(b3s-b2s-b1s) < eps)
+    return RECTANGULAR;
+  else
+    return OBLIQUE;
+}
+
+
 # if 0
 // variant
 int l2d_shortestBase46_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
@@ -740,10 +773,6 @@ int l2d_shortestBase46_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 // Determines whether angle between inputs is obtuse
 bool l2d_is_obtuse_r(cart2_t i1, cart2_t i2, double rtol);
 
-/*
- * Given two basis vectors, returns 2D Bravais lattice type.
- */
-LatticeType l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol);
 
 // Other functions in lattices2d.py: TODO?
 // range2D()
