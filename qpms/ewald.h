@@ -135,7 +135,7 @@ int ewald3_sigma_short(
 		const qpms_ewald32_constants_t *c,
 		const double eta, const double k,
 		const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
-		PGenSph *pgen_R, const bool pgen_generates_shifted_points 
+		PGen *pgen_R, const bool pgen_generates_shifted_points 
 		/* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
 		 * so the function assumes that the generated points correspond to the unshifted Bravais lattice,
 		 * and adds particle_shift to the generated points before calculations.
@@ -153,7 +153,7 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		const double eta, const double k,
 	        const double unitcell_volume /* with the corresponding lattice dimensionality */,
 		const LatticeDimensionality latdim,
-		PGenSph *pgen_K, const bool pgen_generates_shifted_points 
+		PGen *pgen_K, const bool pgen_generates_shifted_points 
 		/* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
 		 * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
 		 * and adds beta to the generated points before calculations.
