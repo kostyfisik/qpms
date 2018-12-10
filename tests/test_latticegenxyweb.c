@@ -1,4 +1,4 @@
-//c99 -o test_latticegenxyweb -ggdb -Wall -I ../ test_latticegenxyweb.c ../qpms/latticegens.c -lm
+//c99 -o test_latticegenxyweb -ggdb -Wall -I ../ test_latticegenxyweb.c ../qpms/latticegens.c  ../qpms/lattices2d.c -lm 
 #define QPMS_VECTORS_NICE_TRANSFORMATIONS
 #include <qpms/lattices.h>
 #include <stdio.h>
@@ -46,6 +46,9 @@ int main(int argc, char **argv) {
   b1.x = 1.342, b1.y = 4.3121; b2.x = -1.83, b2.y = 1.4;
   g = PGen_xyWeb_new(b1, b2, 1e-13, offset, 0, true, 8, false);
   dump_PGenCart2("oblique1.xydump", &g);
+  g = PGen_xyWeb_new(b1, b2, 1e-13, offset, 0, false, 8, false);
+  dump_PGenCart2("oblique1_noorig.xydump", &g);
+
 
   return 0;
 
