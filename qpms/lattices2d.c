@@ -790,11 +790,32 @@ int l2d_cellCornersWS(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_t
 // variant
 int l2d_cellCornersWS_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 
-// Reciprocal bases
-void l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
-void l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
-
 #endif
+
+// Reciprocal bases; returns 0 on success, TODO non-zero if b1 and b2 are parallel
+int l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2) {
+  l2d_reduceBasis(b1, b2, &b1, &b2);
+  const double det = b1.x * b2.y - b1.y * b2.x;
+  if (!det) {
+    rb1->x = rb1->y = rb2->x = rb2->y = NAN;
+    return QPMS_ERROR; // TODO more specific error code
+  } else {
+    rb1->x =  b2.y / det;
+    rb1->y = -b1.y / det;
+    rb2->x = -b2.x / det;
+    rb2->y =  b1.x / det;
+    return QPMS_SUCCESS;
+  }
+}
+
+int l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2) {
+  int retval = l2d_reciprocalBasis1(b1, b2, rb1, rb2);
+  if (retval == QPMS_SUCCESS) {
+    *rb1 = cart2_scale(2 * M_PI, *rb1);
+    *rb2 = cart2_scale(2 * M_PI, *rb2);
+  }
+  return retval;
+};
 
 // returns the radius of inscribed circle of a hexagon (or rectangle/square if applicable) created by the shortest base triple
 double l2d_hexWebInCircleRadius(cart2_t i1, cart2_t i2) {
