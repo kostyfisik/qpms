@@ -166,6 +166,24 @@ typedef struct pol_t {
 	double r, phi;
 } pol_t;
 
+typedef union anycoord_point_t {
+	double z;
+	cart3_t cart3;
+	cart2_t cart2;
+	sph_t sph;
+	pol_t pol;
+} anycoord_point_t;
+
+typedef enum { 
+	// IF EVER CHANGING THE CONSTANT VALUES HERE, 
+	// CHECK THAT THEY DO NOT CLASH WITH THOSE IN PGenPointFlags!
+	QPMS_COORDS_CART1 = 64,
+	QPMS_COORDS_POL = 128,
+	QPMS_COORDS_SPH = 256,
+	QPMS_COORDS_CART2 = 512,
+	QPMS_COORDS_CART3 = 1024,
+} qpms_coord_system_t;
+
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES

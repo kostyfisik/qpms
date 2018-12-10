@@ -89,30 +89,42 @@ typedef enum PGenPointFlags {
 	PGEN_AT_Z = 4, // This is set if we are at the z-axis (theta is either 0 or M_PI)
 	PGEN_AT_XY = 8, // This is set if we are at the xy-plane (theta is M_PI2)
 	PGEN_DONE = 0, // convenience value, not an actual flag
+	PGEN_COORDS_CART1 = QPMS_COORDS_CART1,
+	PGEN_COORDS_CART2 = QPMS_COORDS_CART2,
+	PGEN_COORDS_CART3 = QPMS_COORDS_CART3,
+	PGEN_COORDS_POL = QPMS_COORDS_POL,
+	PGEN_COORDS_SPH = QPMS_COORDS_SPH,
+	PGEN_COORDS_BITRANGE = PGEN_COORDS_CART1 |
+		PGEN_COORDS_CART2 | PGEN_COORDS_CART3 | PGEN_COORDS_POL | PGEN_COORDS_SPH
 } PGenPointFlags;
 
+typedef struct PGenReturnData { // Generic return type that might contain point represented in any of the supported coordinate systems
+	PGenPointFlags flags; // metadata; must contain info about the coordinate system
+	anycoord_point_t point;
+} PGenReturnData;
+
 typedef struct PGenZReturnData {
-  PGenPointFlags flags; // metatada
+  PGenPointFlags flags; // metadata
   double point_z;
 } PGenZReturnData;
 
 typedef struct PGenPolReturnData {
-  PGenPointFlags flags; // metatada
+  PGenPointFlags flags; // metadata
   pol_t point_pol;
 } PGenPolReturnData;
 
 typedef struct PGenSphReturnData {
-  PGenPointFlags flags; // metatada
+  PGenPointFlags flags; // metadata
   sph_t point_sph; // the actual point data
 } PGenSphReturnData;
 
 typedef struct PGenCart2ReturnData {
-  PGenPointFlags flags; // metatada
+  PGenPointFlags flags; // metadata
   cart2_t point_cart2; // the actual point data
 } PGenCart2ReturnData;
 
 typedef struct PGenCart3ReturnData {
-  PGenPointFlags flags; // metatada
+  PGenPointFlags flags; // metadata
   cart3_t point_cart3; // the actual point data
 } PGenCart3ReturnData;
 
@@ -125,8 +137,9 @@ static const PGenCart3ReturnData PGenCart3DoneVal = {PGEN_DONE, {0,0,0}};
 
 typedef struct PGenSphClassInfo { // static PGenSph info
 	char * const name; // mainly for debugging purposes
-	int dimensionality; // lower-dimensional can be converted to higher-D, not vice versa
-	// TODO info about native coordinate system
+	int dimensionality; // lower-dimensional can be converted to higher-D, not vice versa; bit redundant with the following, whatever.
+	PGenPointFlags native_point_flags; // info about native coordinate system
+	PGenReturnData (*next)(struct PGen *);
 	PGenZReturnData (*next_z)(struct PGen *);
 	PGenPolReturnData (*next_pol)(struct PGen *); // This contains the actual generator procedure (TODO shouldn't I rather point to stateData?)
 	PGenSphReturnData (*next_sph)(struct PGen *);
