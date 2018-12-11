@@ -801,8 +801,8 @@ int l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2) {
     return QPMS_ERROR; // TODO more specific error code
   } else {
     rb1->x =  b2.y / det;
-    rb1->y = -b1.y / det;
-    rb2->x = -b2.x / det;
+    rb1->y = -b2.x / det;
+    rb2->x = -b1.y / det;
     rb2->y =  b1.x / det;
     return QPMS_SUCCESS;
   }
