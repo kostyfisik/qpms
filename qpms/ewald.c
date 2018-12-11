@@ -902,7 +902,8 @@ int ewald3_sigma_short(
         break;
       case LAT_2D_IN_3D_XYONLY:
         assert((pgen_retdata.flags &PGEN_AT_XY) == PGEN_AT_XY);
-        assert(Rpq_shifted_theta == M_PI_2);
+        assert(fabs(Rpq_shifted_theta - M_PI_2) < DBL_EPSILON * 1024);
+        // assert(Rpq_shifted_theta == M_PI_2); // FIXME this should work as well
         legendre_array = c->legendre0;
         break;
       default:

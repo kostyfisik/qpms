@@ -1,4 +1,4 @@
-// c99 -ggdb -Wall -I ../ ewaldshift2.c ../qpms/ewald.c ../qpms/ewaldsf.c  ../qpms/lattices2d.c -lgsl -lm -lblas
+// c99 -o ewaldshift2 -ggdb -Wall -I ../ ewaldshift2.c ../qpms/ewald.c ../qpms/ewaldsf.c  ../qpms/lattices2d.c -lgsl -lm -lblas
 
 // implementation of the [LT(4.16)] test
 #include <math.h>
