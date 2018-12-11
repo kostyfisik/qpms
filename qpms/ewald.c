@@ -124,6 +124,7 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
                                      : isq(sz_n_lMax);
   }
   c->s1_constfacs_1Dz_base = malloc(s1_constfacs_1Dz_sz * sizeof(complex double));
+  c->s1_constfacs_1Dz = malloc((lMax+1)*sizeof(complex double *));
 
   size_t s1_constfacs_1Dz_sz_cumsum = 0;
   for (qpms_l_t n = 0; n <= lMax; ++n) {
@@ -131,7 +132,7 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
     for (qpms_l_t j = 0; j <= n/2; ++j) {
       switch(type) {
         case EWALD32_CONSTANTS_AGNOSTIC:
-          c->s1_constfacs[n][j] = -ipow(n+1) * min1pow(j) * factorial(n)
+          c->s1_constfacs_1Dz[n][j] = -ipow(n+1) * min1pow(j) * factorial(n)
             / (factorial(j) * pow(2, 2*j) * factorial(n - 2*j));
           break;
         default:
@@ -145,6 +146,8 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
 
   c->legendre_csphase = csphase;
   c->legendre0 = malloc(gsl_sf_legendre_array_n(lMax) * sizeof(double));
+  c->legendre_plus1 = malloc(gsl_sf_legendre_array_n(lMax) * sizeof(double));
+  c->legendre_minus1 = malloc(gsl_sf_legendre_array_n(lMax) * sizeof(double));
   // N.B. here I use the GSL_SF_LEGENRE_NONE, in order to be consistent with translations.c
   c->legendre_normconv = GSL_SF_LEGENDRE_NONE;
   // Moreover, using this approach (i.e. gsl) takes about 64kB extra memory
@@ -159,9 +162,12 @@ qpms_ewald32_constants_t *qpms_ewald32_constants_init(const qpms_l_t lMax /*, co
 
 void qpms_ewald32_constants_free(qpms_ewald32_constants_t *c) {
   free(c->legendre0);
+  free(c->legendre_plus1);
+  free(c->legendre_minus1);
   free(c->s1_constfacs);
   free(c->s1_constfacs_base);
   free(c->s1_constfacs_1Dz_base);
+  free(c->s1_constfacs_1Dz);
   free(c->s1_jMaxes);
   free(c);
 }
@@ -378,7 +384,7 @@ int ewald3_21_xy_sigma_long (
     const double eta, const double k,
     const double unitcell_volume /* with the corresponding lattice dimensionality */,
     const LatticeDimensionality latdim,
-    PGenSph *pgen_K, const bool pgen_generates_shifted_points
+    PGen *pgen_K, const bool pgen_generates_shifted_points
     /* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
      * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
      * and adds beta to the generated points before calculations.
@@ -417,7 +423,8 @@ int ewald3_21_xy_sigma_long (
   qpms_csf_result Gamma_pq[lMax/2+1];
 
   // CHOOSE POINT BEGIN
-  while ((pgen_retdata = PGenSph_next(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
+  // TODO mayby PGen_next_sph is not the best coordinate system choice here
+  while ((pgen_retdata = PGen_next_sph(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
     cart3_t K_pq_cart;
     sph_t beta_pq_sph;
     if (pgen_generates_shifted_points) {
@@ -511,7 +518,7 @@ int ewald3_1_z_sigma_long (
     const double eta, const double k,
     const double unitcell_volume /* length (periodicity) in this case */,
     const LatticeDimensionality latdim,
-    PGenSph *pgen_K, const bool pgen_generates_shifted_points
+    PGen *pgen_K, const bool pgen_generates_shifted_points
     /* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
      * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
      * and adds beta to the generated points before calculations.
@@ -546,7 +553,8 @@ int ewald3_1_z_sigma_long (
 
   PGenSphReturnData pgen_retdata;
   // CHOOSE POINT BEGIN
-  while ((pgen_retdata = PGenSph_next(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
+  // TODO FIXME USE PGen_next_z
+  while ((pgen_retdata = PGen_next_sph(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
     assert(pgen_retdata.flags & PGEN_AT_Z);
     double K_z, beta_mu_z;
     if (pgen_generates_shifted_points) {
@@ -626,7 +634,7 @@ int ewald3_sigma_long (
     const double eta, const double k,
     const double unitcell_volume /* with the corresponding lattice dimensionality */,
     const LatticeDimensionality latdim,
-    PGenSph *pgen_K, const bool pgen_generates_shifted_points
+    PGen *pgen_K, const bool pgen_generates_shifted_points
     /* If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift,
      * so the function assumes that the generated points correspond to the unshifted reciprocal Bravais lattice,
      * and adds beta to the generated points before calculations.
@@ -817,7 +825,7 @@ int ewald3_sigma_short(
                 const qpms_ewald32_constants_t *c,
                 const double eta, const double k,
                 const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
-                PGenSph *pgen_R, const bool pgen_generates_shifted_points
+                PGen *pgen_R, const bool pgen_generates_shifted_points
                 /* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
                  * so the function assumes that the generated points correspond to the unshifted Bravais lattice,
                  * and adds particle_shift to the generated points before calculations.
@@ -853,7 +861,8 @@ int ewald3_sigma_short(
   double intres[lMax+1], interr[lMax+1];
 
 // CHOOSE POINT BEGIN
-  while ((pgen_retdata = PGenSph_next(pgen_R)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
+// TODO check whether _next_sph is the optimal coordinate system choice here
+  while ((pgen_retdata = PGen_next_sph(pgen_R)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
 // CHOOSE POINT END
     cart3_t Rpq_shifted_cart; // I will need both sph and cart representations anyway...
     sph_t Rpq_shifted_sph;

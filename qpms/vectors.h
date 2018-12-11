@@ -8,6 +8,9 @@
 
 //static inline double vectors_h_sq(double x) {return x*x;}
 
+static const cart2_t CART2_ZERO = {0, 0};
+static const cart3_t CART3_ZERO = {0, 0, 0};
+
 static inline cart2_t cart2_add(const cart2_t a, const cart2_t b) {
 	cart2_t res = {a.x+b.x, a.y+b.y};
 	return res;
@@ -63,6 +66,11 @@ static inline cart3_t cart22cart3xy(const cart2_t a) {
 	c.x = a.x;
 	c.y = a.y;
 	c.z = 0;
+	return c;
+}
+
+static inline cart2_t cart3xy2cart2(const cart3_t a) {
+	cart2_t c = {a.x, a.y};
 	return c;
 }
 

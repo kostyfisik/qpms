@@ -113,8 +113,8 @@ int complex_expint_n_e(int n, complex double x, qpms_csf_result *result) {
   } else {
     int retval = complex_gamma_inc_e(-n+1, x, result);
     complex double f = cpow(x, 2*n-2);
-    retval.val *= f;
-    retval.err *= cabs(f);
+    result->val *= f;
+    result->err *= cabs(f);
     return retval;
   }
 }

@@ -159,6 +159,12 @@ static inline void PGen_destroy(PGen *g) {
 	assert(g->stateData == NULL); // this should be done by the destructor
 }
 
+static inline PGenZReturnData PGen_next_z(PGen *g) {
+	if (g->c->next_z)
+		return g->c->next_z(g);
+	else abort();
+}
+
 static inline PGenSphReturnData PGen_next_sph(PGen *g) {
 	// TODO maybe some asserts around here
 	if (g->c->next_sph) 
