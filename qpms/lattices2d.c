@@ -827,5 +827,11 @@ double l2d_hexWebInCircleRadius(cart2_t i1, cart2_t i2) {
 }
 
 
+double l2d_unitcell_area(cart2_t b1, cart2_t b2) {
+  l2d_reduceBasis(b1, b2, &b1, &b2);
+  const double det = b1.x * b2.y - b1.y * b2.x;
+  return fabs(det);
+}
+  
 
 
