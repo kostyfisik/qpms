@@ -1154,6 +1154,125 @@ int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
 }
 
 
+
+#ifdef LATTICESUMS31
+int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_trans_calculator *c,
+    complex double * const Adest, double * const Aerr,
+    complex double * const Bdest, double * const Berr,
+    const ptrdiff_t deststride, const ptrdiff_t srcstride,
+    /* qpms_bessel_t J*/ // assume QPMS_HANKEL_PLUS
+    const double eta, const double k, const double unitcell_area,
+    const size_t nRpoints, const cart2_t *Rpoints, // n.b. can't contain 0; TODO automatic recognition and skip
+    const size_t nKpoints, const cart2_t *Kpoints,
+    const double beta,//DIFF21
+    const double particle_shift//DIFF21
+    )
+{
+
+  const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e32c->lMax);
+  //const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
+  const bool doerr = Aerr || Berr;
+  const bool do_sigma0 = (particle_shift == 0)//DIFF21((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
+
+  complex double *sigmas_short = malloc(sizeof(complex double)*nelem2_sc);
+  complex double *sigmas_long = malloc(sizeof(complex double)*nelem2_sc);
+  complex double *sigmas_total = malloc(sizeof(complex double)*nelem2_sc);
+  double *serr_short, *serr_long, *serr_total;
+  if(doerr) {
+    serr_short = malloc(sizeof(double)*nelem2_sc);
+    serr_long = malloc(sizeof(double)*nelem2_sc);
+    serr_total = malloc(sizeof(double)*nelem2_sc);
+  } else serr_short = serr_long = serr_total = NULL;
+
+  int retval;
+  retval = ewald31z_sigma_long_points_and_shift(sigmas_long, serr_long, //DIFF21
+      c->e32c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
+  if (retval) abort();
+
+  retval = ewald31z_sigma_short_points_and_shift(sigmas_short, serr_short, //DIFF21
+      c->e32c, eta, k, nRpoints, Rpoints, beta, particle_shift);
+  if (retval) abort();
+
+  for(qpms_y_t y = 0; y < nelem2_sc; ++y)
+    sigmas_total[y] = sigmas_short[y] + sigmas_long[y];
+  if (doerr) for(qpms_y_t y = 0; y < nelem2_sc; ++y)
+    serr_total[y]  = serr_short[y] + serr_long[y];
+
+  complex double sigma0 = 0; double sigma0_err = 0;
+  if (do_sigma0) {
+    retval = ewald31z_sigma0(&sigma0, &sigma0_err, c->e32c, eta, k);//DIFF21
+    if(retval) abort();
+    const qpms_l_t y = qpms_mn2y_sc(0,0);
+    sigmas_total[y] += sigma0;
+    if(doerr) serr_total[y] += sigma0_err;
+  }
+  
+  switch(qpms_normalisation_t_normonly(c->normalisation)) {
+    case QPMS_NORMALISATION_TAYLOR:
+    case QPMS_NORMALISATION_POWER:
+    case QPMS_NORMALISATION_NONE:
+      {
+        ptrdiff_t desti = 0, srci = 0;
+        for (qpms_l_t n = 1; n <= c->lMax; ++n) for (qpms_m_t m = -n; m <= n; ++m) {
+          for (qpms_l_t nu = 1; nu <= c->lMax; ++nu) for (qpms_m_t mu = -nu; mu <= nu; ++mu){
+            const size_t i = qpms_trans_calculator_index_mnmunu(c, m, n, mu, nu);
+            const size_t qmax = c->A_multipliers[i+1] - c->A_multipliers[i] - 1;
+            complex double Asum, Asumc; ckahaninit(&Asum, &Asumc);
+            double Asumerr, Asumerrc; if(Aerr) kahaninit(&Asumerr, &Asumerrc);
+            
+            const qpms_m_t mu_m  = mu - m;
+            // TODO skip if ... (N.B. skip will be different for 31z and 32)
+            for(qpms_l_t q = 0; q <= qmax; ++q) {
+              const qpms_l_t p = n + nu - 2*q;
+              const qpms_y_t y_sc = qpms_mn2y_sc(mu_m, p); 
+              const complex double multiplier = c->A_multipliers[i][q];
+              complex double sigma = sigmas_total[y_sc];
+              ckahanadd(&Asum, &Asumc, multiplier * sigma);
+              if (Aerr) kahanadd(&Asumerr, &Asumerrc, multiplier * serr_total[y_sc]);
+            }
+
+            *(Adest + deststride * desti + srcstride * srci) = Asum;
+            if (Aerr) *(Aerr + deststride * desti + srcstride * srci) = Asumerr;
+            
+            // TODO skip if ...
+            complex double Bsum, Bsumc; ckahaninit(&Bsum, &Bsumc);
+            double Bsumerr, Bsumerrc; if(Berr) kahaninit(&Bsumerr, &Bsumerrc);
+             for(qpms_l_t q = 0; q <= qmax; ++q) {
+              const qpms_l_t p_ = n + nu - 2*q + 1;
+              const qpms_y_t y_sc = qpms_mn2y_sc(mu_m, p_); 
+              const complex double multiplier = c->B_multipliers[i][q-BQ_OFFSET];
+              complex double sigma = sigmas_total[y_sc];
+              ckahanadd(&Bsum, &Bsumc, multiplier * sigma);
+              if (Berr) kahanadd(&Bsumerr, &Bsumerrc, multiplier * serr_total[y_sc]);
+            }
+
+            *(Bdest + deststride * desti + srcstride * srci) = Bsum;
+            if (Berr) *(Berr + deststride * desti + srcstride * srci) = Bsumerr;
+
+            ++srci;
+          }
+          ++desti;
+          srci = 0;
+        }
+      }
+      break;
+    default:
+      abort();
+  }
+
+  free(sigmas_short);
+  free(sigmas_long);
+  free(sigmas_total);
+  if(doerr) {
+    free(serr_short);
+    free(serr_long);
+    free(serr_total);
+  }
+  return 0;
+}
+#endif LATTICESUMS_31
+
+
 #ifdef LATTICESUMS32
 
 int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_trans_calculator *c,
@@ -1271,48 +1390,28 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
   return 0;
 }
 
-#if 0
-int qpms_trans_calculator_e32_long_points_and_shift(const qpms_trans_calculator *c,
-                complex double *Adest_long, double *Aerr_long,
-                complex double *Bdest_long, double *Berr_long,
-                double eta, double k, double unitcell_area,
-                size_t npoints, const cart2_t *Kpoints,
-                cart2_t beta,
-                cart2_t particle_shift
-                )
-{
-  
-}
 
-int qpms_trans_calculator_e32_short_points_and_shift(const qpms_trans_calculator *c,
-                complex double *Adest_short, double *Aerr_short,
-                complex double *Bdest_short, double *Berr_short,
-                double eta, double k,
-                size_t npoints, const cart2_t *Rpoints,
-                cart2_t beta,
-                cart2_t particle_shift
-                };
-#endif // 0
-#endif // LATTICESUMS32
-
-#ifdef LATTICESUMS31
-int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_trans_calculator *c,
+// N.B. alternative point generation strategy toggled by macro GEN_RSHIFTEDPOINTS
+// and GEN_KSHIFTEDPOINTS.
+// The results should be the same. The performance can slightly differ (especially
+// if some optimizations in the point generators are implemented.)
+int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
     complex double * const Adest, double * const Aerr,
     complex double * const Bdest, double * const Berr,
     const ptrdiff_t deststride, const ptrdiff_t srcstride,
     /* qpms_bessel_t J*/ // assume QPMS_HANKEL_PLUS
-    const double eta, const double k, const double unitcell_area,
-    const size_t nRpoints, const cart2_t *Rpoints, // n.b. can't contain 0; TODO automatic recognition and skip
-    const size_t nKpoints, const cart2_t *Kpoints,
-    const double beta,//DIFF21
-    const double particle_shift//DIFF21
+    const double eta, const double k,
+    const cart2_t b1, const cart2_t b2,
+    const cart2_t beta,
+    const cart2_t particle_shift,
+    double maxR, double maxK
     )
 {
 
   const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e32c->lMax);
   //const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
   const bool doerr = Aerr || Berr;
-  const bool do_sigma0 = (particle_shift == 0)//DIFF21((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
+  const bool do_sigma0 = ((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
 
   complex double *sigmas_short = malloc(sizeof(complex double)*nelem2_sc);
   complex double *sigmas_long = malloc(sizeof(complex double)*nelem2_sc);
@@ -1324,13 +1423,48 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
     serr_total = malloc(sizeof(double)*nelem2_sc);
   } else serr_short = serr_long = serr_total = NULL;
 
+  const double unitcell_area = l2d_unitcell_area(b1, b2);
+  cart2_t rb1, rb2; // reciprocal basis
+  if (QPMS_SUCCESS != l2d_reciprocalBasis2pi(b1, b2, &rb1, &rb2)) abort();
+
+  PGen Rgen = PGen_xyWeb_new(b1, b2, BASIS_RTOL, 
+#ifdef GEN_RSHIFTEDPOINTS
+      cart2_scale(-1 /*CHECKSIGN*/, particle_shift),
+#else
+      CART2_ZERO,
+#endif
+      0, !do_sigma0, maxR, false);
+  PGen Kgen = PGen_xyWeb_new(rb1, rb2, BASIS_RTOL,
+#ifdef GEN_KSHIFTEDPOINTS
+      beta,
+#else
+     CART2_ZERO,
+#endif
+     0, true, maxK, false);
+
   int retval;
-  retval = ewald31z_sigma_long_points_and_shift(sigmas_long, serr_long, //DIFF21
-      c->e32c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
+  //retval = ewald32_sigma_long_points_and_shift(sigmas_long, serr_long,
+  //    c->e32c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
+  retval = ewald3_sigma_long(sigmas_long, serr_long, c->e32c, eta, k, 
+      unitcell_area, LAT_2D_IN_3D_XYONLY, &Kgen,
+#ifdef GEN_KSHIFTEDPOINTS
+      true,
+#else
+      false,
+#endif
+      cart22cart3xy(beta), cart22cart3xy(particle_shift));
   if (retval) abort();
 
-  retval = ewald31z_sigma_short_points_and_shift(sigmas_short, serr_short, //DIFF21
-      c->e32c, eta, k, nRpoints, Rpoints, beta, particle_shift);
+  //retval = ewald32_sigma_short_points_and_shift(sigmas_short, serr_short,
+  //    c->e32c, eta, k, nRpoints, Rpoints, beta, particle_shift);
+  retval = ewald3_sigma_short(sigmas_short, serr_short, c->e32c, eta, k,
+      LAT_2D_IN_3D_XYONLY, &Rgen, 
+#ifdef GEN_RSHIFTEDPOINTS
+      true,
+#else
+      false,
+#endif
+      cart22cart3xy(beta), cart22cart3xy(particle_shift));
   if (retval) abort();
 
   for(qpms_y_t y = 0; y < nelem2_sc; ++y)
@@ -1340,7 +1474,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
 
   complex double sigma0 = 0; double sigma0_err = 0;
   if (do_sigma0) {
-    retval = ewald31z_sigma0(&sigma0, &sigma0_err, c->e32c, eta, k);//DIFF21
+    retval = ewald32_sigma0(&sigma0, &sigma0_err, c->e32c, eta, k);
     if(retval) abort();
     const qpms_l_t y = qpms_mn2y_sc(0,0);
     sigmas_total[y] += sigma0;
@@ -1361,7 +1495,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
             double Asumerr, Asumerrc; if(Aerr) kahaninit(&Asumerr, &Asumerrc);
             
             const qpms_m_t mu_m  = mu - m;
-            // TODO skip if ... (N.B. skip will be different for 31z and 32)
+            // TODO skip if ...
             for(qpms_l_t q = 0; q <= qmax; ++q) {
               const qpms_l_t p = n + nu - 2*q;
               const qpms_y_t y_sc = qpms_mn2y_sc(mu_m, p); 
@@ -1410,6 +1544,31 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
   }
   return 0;
 }
+
+#if 0
+int qpms_trans_calculator_e32_long_points_and_shift(const qpms_trans_calculator *c,
+                complex double *Adest_long, double *Aerr_long,
+                complex double *Bdest_long, double *Berr_long,
+                double eta, double k, double unitcell_area,
+                size_t npoints, const cart2_t *Kpoints,
+                cart2_t beta,
+                cart2_t particle_shift
+                )
+{
+  
+}
+
+int qpms_trans_calculator_e32_short_points_and_shift(const qpms_trans_calculator *c,
+                complex double *Adest_short, double *Aerr_short,
+                complex double *Bdest_short, double *Berr_short,
+                double eta, double k,
+                size_t npoints, const cart2_t *Rpoints,
+                cart2_t beta,
+                cart2_t particle_shift
+                };
+#endif // 0
+#endif // LATTICESUMS32
+
 #ifdef LATTICESUMS_OLD
 
 int qpms_trans_calculator_get_shortrange_AB_arrays_buf(const qpms_trans_calculator *c,
