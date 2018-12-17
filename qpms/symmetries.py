@@ -63,6 +63,10 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
     
     def svwf_irrep_projectors(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
         return gen_point_group_svwfrep_projectors(self.permgroup, self.irreps, self.svwf_rep(lMax, *rep_gen_func_args, **rep_gen_func_kwargs))
+    
+    # alternative, for comparison and testing; should give the same results
+    def svwf_irrep_projectors2(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
+        return gen_point_group_svwfrep_projectors(self.permgroup, self.irreps, self.svwf_rep(lMax, *rep_gen_func_args, **rep_gen_func_kwargs))
 
 # srcgroup is expected to be PermutationGroup and srcgens of the TODO
 # imcmp returns True if two elements of the image group are 'equal', otherwise False
@@ -96,7 +100,7 @@ def mmult_tyty(a, b):
 def mmult_ptypty(a, b):
     return(qpms.apply_ndmatrix_left(a, b, (-6,-5,-4)))
 
-def gen_point_group_svwfrep_projectors(permgroup, matrix_irreps_dict, sphrep_full):
+def gen_point_group_svwfrep_irreps(permgroup, matrix_irreps_dict, sphrep_full):
     '''
     Gives the projection operators $P_kl('\Gamma')$ from Dresselhaus (4.28)
     for all irreps $\Gamma$ of D3h.;
@@ -130,6 +134,74 @@ def gen_point_group_svwfrep_projectors(permgroup, matrix_irreps_dict, sphrep_ful
             sphrep[np.isclose(sphrep,x)]=x
         sphreps[repkey] = sphrep
     return sphreps
+
+
+def gen_point_group_svwfrep_projectors(permgroup, matrix_irreps_dict, sphrep_full):
+    '''
+    The same as gen_point_group_svwfrep_irreps, but summed over the kl diagonal, so
+    one gets single projector onto each irrep space and the arrays have indices
+    [t, y, t, y]
+    '''
+    summedprojs = dict()
+    for repi, W in gen_point_group_svwfrep_irreps(permgroup, matrix_irreps_dict, sphrep_full).items():
+        irrepd = W.shape[0]
+        if irrepd == 1:
+            mat = np.reshape(W, W.shape[-4:])
+        else:
+            mat = np.zeros(W.shape[-4:], dtype=complex) # TODO the result should be real — check!
+            for d in range(irrepd):
+                mat += W[d,d]
+        if not np.allclose(mat.imag, 0):
+            raise ValueError("The imaginary part of the resulting projector should be zero, damn!")
+        else:
+            summedprojs[repi] = mat.real
+    return summedprojs
+
+def gen_point_group_svwfrep_projectors2(permgroup, matrix_irreps_dict, sphrep_full, do_bases = False):
+    '''
+    an approach as in gen_hexlattice_Kpoint_svwf_rep_projectors; for comparison and testing
+    '''
+    nelem = sphrep_full.values[0].shape[-1]
+    if (do_bases):
+        bases = dict()
+    projectors = dict()
+    for repi, W in gen_point_group_svwfrep_irreps(permgroup, matrix_irreps_dict, sphrep_full).items():
+        totalvecs = 0
+        tmplist = list()
+        for t in (0,1):
+         for y in range(nelem):
+           for ai in range(W.shape[0]):
+            for bi in range(W.shape[1]):
+                v = np.zeros((2, nelem))
+                v[t,y] = 1
+                v1 = np.tensordot(W[ai,bi], v, axes = ([-2,-1],[0,1]))
+
+                if not np.allclose(v1,0):
+                    v1 = normalize(v1)
+                    for v2 in tmplist:
+                        dot = np.tensordot(v1.conjugate(),v2, axes=([-2,-1],[0,1]))
+                        if not (np.allclose(dot,0)):
+                            if not np.allclose(np.abs(dot),1):
+                                raise ValueError('You have to fix this piece of code.')
+                            break
+                    else:
+                        totalvecs += 1
+                        tmplist.append(v1)
+        theprojectors = np.zeros((2,nelem, 2, nelem), dtype = float)
+        if do_bases:
+            thebasis = np.zeros((len(tmplist), 2, nelem), dtype=complex)
+            for i, v in enumerate(tmplist):
+                thebasis[i] = v
+            beses[repi] = thebasis
+        for v in tmplist:
+            theprojector += (v[:,:,ň,ň] * v.conjugate()[ň,ň,ň,:,:,:]).real 
+        for x in [0, 1, -1, sqrt(.5), -sqrt(.5), .5, -.5]:
+            theprojector[np.isclose(theprojector,x)] = x
+    if do_bases:
+        return projectors, bases
+    else:
+        return projectors
+
 
 # Group D3h; mostly legacy code (kept because of the the honeycomb lattice K-point code, whose generalised version not yet implemented)
 # Note that the size argument of permutations is necessary, otherwise e.g. c*c and  b*b would not be evaluated equal
