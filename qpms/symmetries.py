@@ -66,7 +66,11 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
     
     # alternative, for comparison and testing; should give the same results
     def svwf_irrep_projectors2(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
-        return gen_point_group_svwfrep_projectors(self.permgroup, self.irreps, self.svwf_rep(lMax, *rep_gen_func_args, **rep_gen_func_kwargs))
+        return gen_point_group_svwfrep_projectors2(self.permgroup, self.irreps, self.svwf_rep(lMax, *rep_gen_func_args, **rep_gen_func_kwargs))
+
+    def svwf_irrep_projectors2_w_bases(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
+        return gen_point_group_svwfrep_projectors2_w_bases(self.permgroup, self.irreps, self.svwf_rep(lMax, *rep_gen_func_args, **rep_gen_func_kwargs))
+
 
 # srcgroup is expected to be PermutationGroup and srcgens of the TODO
 # imcmp returns True if two elements of the image group are 'equal', otherwise False
@@ -157,15 +161,19 @@ def gen_point_group_svwfrep_projectors(permgroup, matrix_irreps_dict, sphrep_ful
             summedprojs[repi] = mat.real
     return summedprojs
 
+
+def gen_point_group_svwfrep_projectors2_w_bases(permgroup, matrix_irreps_dict, sphrep_full):
+    return gen_point_group_svwfrep_projectors2(permgroup, matrix_irreps_dict, sphrep_full, do_bases = True)
+
 def gen_point_group_svwfrep_projectors2(permgroup, matrix_irreps_dict, sphrep_full, do_bases = False):
     '''
     an approach as in gen_hexlattice_Kpoint_svwf_rep_projectors; for comparison and testing
     '''
-    nelem = sphrep_full.values[0].shape[-1]
     if (do_bases):
         bases = dict()
     projectors = dict()
     for repi, W in gen_point_group_svwfrep_irreps(permgroup, matrix_irreps_dict, sphrep_full).items():
+        nelem = W.shape[-1] # however, this should change between iterations
         totalvecs = 0
         tmplist = list()
         for t in (0,1):
@@ -187,16 +195,17 @@ def gen_point_group_svwfrep_projectors2(permgroup, matrix_irreps_dict, sphrep_fu
                     else:
                         totalvecs += 1
                         tmplist.append(v1)
-        theprojectors = np.zeros((2,nelem, 2, nelem), dtype = float)
+        theprojector = np.zeros((2,nelem, 2, nelem), dtype = float)
         if do_bases:
             thebasis = np.zeros((len(tmplist), 2, nelem), dtype=complex)
             for i, v in enumerate(tmplist):
                 thebasis[i] = v
-            beses[repi] = thebasis
+            bases[repi] = thebasis
         for v in tmplist:
-            theprojector += (v[:,:,ň,ň] * v.conjugate()[ň,ň,ň,:,:,:]).real 
+            theprojector += (v[:,:,ň,ň] * v.conjugate()[ň,ň,:,:]).real 
         for x in [0, 1, -1, sqrt(.5), -sqrt(.5), .5, -.5]:
             theprojector[np.isclose(theprojector,x)] = x
+        projectors[repi] = theprojector
     if do_bases:
         return projectors, bases
     else:
