@@ -126,6 +126,19 @@ def zflip_tyty(lmax):
     fl_tyty[1,:,1,:] = -fl_yy
     return fl_tyty
 
+def zrotN_yy(N, lMax):
+    return WignerD_yy_fromvector(lMax, np.array([0,0,pi * (2/N)]))
+
+def op_yy2tyty(yyop):
+    '''
+    Broadcasts an yy operator to tyty operator without considering mirroring effects.
+    Good (maybe only) for rotations.
+    '''
+    return np.moveaxis(np.eye(2)[:,:,ň,ň] * yyop, 2,1)
+
+def zrotN_tyty(N, lMax):
+    return op_yy2tyty(zrotN_yy(N, lMax))
+
 def parity_yy(lmax):
     """
     Parity operator (flip in x,y,z)

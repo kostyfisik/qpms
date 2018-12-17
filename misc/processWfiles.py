@@ -3,8 +3,9 @@
 import sys
 from qpms import processWfiles_sameKs
 
-dest = sys.argv[1]
-srcs = sys.argv[2:]
+npart = int(sys.argv[1])
+dest = sys.argv[2]
+srcs = sys.argv[3:]
 
-processWfiles_sameKs(srcs, dest, f='d')
+processWfiles_sameKs(srcs, dest, f='d', nparticles=npart)
 
