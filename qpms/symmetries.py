@@ -28,6 +28,42 @@ def grouprep_try(tdict, src, im, srcgens, imgens, immultop = None, imcmp = None)
             raise ValueError("Homomorphism inconsistency detected")                
     return
 
+class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyty, not I_ptypty or something alike
+    def __init__(self,
+                 name,
+                 permgroupgens, # permutation group generators
+                 irrepgens_dict, # dictionary with irrep generators,
+                 svwf_rep_gen_func, # function that generates a tuple with svwf representation generators
+                ):
+        self.name = name
+        self.permgroupgens = permgroupgens
+        self.permgroup = PermutationGroup(*permgroupgens)
+        self.irrepgens_dict = irrepgens_dict
+        self.svwf_rep_gen_func = svwf_rep_gen_func
+        self.irreps = dict()
+        for irrepname, irrepgens in irrepgens_dict.items():
+            is1d = isinstance(irrepgens[0], int)
+            irrepdim = 1 if is1d else irrepgens[0].shape[0]
+            self.irreps[irrepname] = generate_grouprep(self.permgroup, 
+                                                       1 if is1d else np.eye(irrepdim),
+                                                       permgroupgens, irrepgens,
+                                                       immultop = None if is1d else np.dot,
+                                                       imcmp = None if is1d else np.allclose
+                                                      )
+    
+    def svwf_rep(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
+        '''
+        This method generates full SVWF (reducible) representation of the group.
+        '''
+        svwfgens = self.svwf_rep_gen_func(lMax, *rep_gen_func_args, **rep_gen_func_kwargs)
+        my, ny = qpms.get_mn_y(lMax)
+        nelem = len(my)
+        I_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * np.eye(nelem), 2,1)
+        return generate_grouprep(self.permgroup, I_tyty, self.permgroupgens, svwfgens, immultop = mmult_tyty, imcmp = np.allclose)
+    
+    def svwf_irrep_projectors(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
+        return gen_point_group_svwfrep_projectors(self.permgroup, self.irreps, self.svwf_rep(lMax, *rep_gen_func_args, **rep_gen_func_kwargs))
+
 # srcgroup is expected to be PermutationGroup and srcgens of the TODO
 # imcmp returns True if two elements of the image group are 'equal', otherwise False
 def generate_grouprep(srcgroup, im_identity, srcgens, imgens, immultop = None, imcmp = None):
@@ -42,22 +78,67 @@ def generate_grouprep(srcgroup, im_identity, srcgens, imgens, immultop = None, i
                          srcgroup.order(), " != ", len(tdict.keys()))
     return tdict
     
+# matrices appearing in 2d representations of common groups as used in Bradley, Cracknell p. 61 (with arabic names instead of greek, because lambda is a keyword)
 epsilon = np.eye(2)
 alif = np.array(((-1/2,-sqrt(3)/2),(sqrt(3)/2,-1/2)))
 bih = np.array(((-1/2,sqrt(3)/2),(-sqrt(3)/2,-1/2)))
+kaf = np.array(((0,1),(1,0)))
 lam = np.array(((1,0),(0,-1)))
+ra = np.array(((0,-1),(1,0)))
 mim =  np.array(((-1/2,-sqrt(3)/2),(-sqrt(3)/2,1/2)))
 nun =  np.array(((-1/2,sqrt(3)/2),(sqrt(3)/2,1/2)))
 
 
-# Group D3h
+
+
+def mmult_tyty(a, b):
+        return(qpms.apply_ndmatrix_left(a, b, (-4,-3)))
+def mmult_ptypty(a, b):
+    return(qpms.apply_ndmatrix_left(a, b, (-6,-5,-4)))
+
+def gen_point_group_svwfrep_projectors(permgroup, matrix_irreps_dict, sphrep_full):
+    '''
+    Gives the projection operators $P_kl('\Gamma')$ from Dresselhaus (4.28)
+    for all irreps $\Gamma$ of D3h.;
+    as an array with indices [k,l,t,y,t,y]
+    
+    Example of creating last argument:
+    sphrep_full = generate_grouprep(D3h_permgroup, I_tyty, D3h_srcgens, [C3_tyty, vfl_tyty, zfl_tyty], 
+                           immultop = mmult_tyty, imcmp = np.allclose)
+    '''
+    order = permgroup.order()
+    sphreps = dict()
+    nelem = sphrep_full[permgroup[0]].shape[-1] # quite ugly hack
+    for repkey, matrixrep in matrix_irreps_dict.items():
+        arepmatrix = matrixrep[permgroup[0]] # just one of the matrices to get the shape etc
+        if isinstance(arepmatrix, numbers.Number):
+            dim = 1 # repre dimension
+            preprocess = lambda x: np.array([[x]])
+        elif isinstance(arepmatrix, np.ndarray):
+            if(len(arepmatrix.shape)) != 2 or arepmatrix.shape[0] != arepmatrix.shape[1]:
+                raise ValueError("Arrays representing irrep matrices must be of square shape")
+            dim = arepmatrix.shape[0]
+            preprocess = lambda x: x
+        else: 
+            raise ValueError("Irrep is not a square array or number")        
+        sphrep = np.zeros((dim,dim,2,nelem,2,nelem), dtype=complex)
+        for i in permgroup.elements:
+            sphrep += preprocess(matrixrep[i]).conj().transpose()[:,:,ň,ň,ň,ň] * sphrep_full[i]
+        sphrep *= dim / order
+        # clean the nonexact values here 
+        for x in [0, 0.5, -0.5, 0.5j, -0.5j]:
+            sphrep[np.isclose(sphrep,x)]=x
+        sphreps[repkey] = sphrep
+    return sphreps
+
+# Group D3h; mostly legacy code (kept because of the the honeycomb lattice K-point code, whose generalised version not yet implemented)
 # Note that the size argument of permutations is necessary, otherwise e.g. c*c and  b*b would not be evaluated equal
 # N.B. the weird elements as Permutation(N) – it means identity permutation of size N+1.
 rot3_perm = Permutation(0,1,2, size=5) # C3 rotation
 xflip_perm = Permutation(0,2, size=5) # vertical mirror
 zflip_perm = Permutation(3,4, size=5) # horizontal mirror
 D3h_srcgens = [rot3_perm,xflip_perm,zflip_perm]
-D3h_permgroup = PermutationGroup(rot3_perm,xflip_perm,zflip_perm) # D3h
+D3h_permgroup = PermutationGroup(*D3h_srcgens) # D3h
 
 D3h_irreps = {
     # Bradley, Cracknell p. 61
@@ -70,13 +151,7 @@ D3h_irreps = {
     "A2''" : generate_grouprep(D3h_permgroup, 1, D3h_srcgens, [1,1,-1]),
 }
 
-
-def mmult_tyty(a, b):
-        return(qpms.apply_ndmatrix_left(a, b, (-4,-3)))
-def mmult_ptypty(a, b):
-    return(qpms.apply_ndmatrix_left(a, b, (-6,-5,-4)))
-    
-#TODO lepší název fce
+#TODO lepší název fce; legacy, use group_info['D3h'].generate_grouprep() instead
 def gen_point_D3h_svwf_rep(lMax, vflip = 'x'):
     '''
     Gives the projection operators $P_kl('\Gamma')$ from Dresselhaus (4.28)
@@ -216,3 +291,102 @@ def gen_hexlattice_Kpoint_svwf_rep_projectors(lMax, psi, vflip='x', do_bases=Fal
     else:
         return projectors
 
+
+
+point_group_info = { # representation info of some useful point groups
+    'C2v' : SVWFPointGroupInfo('C2v',
+                 # permutation group generators
+                               (Permutation(0,1, size=4)(2,3), # x -> - x mirror operation (i.e. yz mirror plane)
+                                Permutation(0,3, size=4)(1,2), # y -> - y mirror operation (i.e. xz mirror plane)
+                               ), 
+                 # dictionary with irrep generators
+                               {
+                                    # Bradley, Cracknell p. 58; not sure about the labels / axes here
+                                    'A1': (1,1),
+                                    'B2': (-1,1),
+                                    'A2': (-1,-1),
+                                    'B1': (1,-1),    
+                               },
+                 # function that generates a tuple with svwf representation generators
+                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax))
+    ),
+    'D2h' : SVWFPointGroupInfo('D2h',
+                 # permutation group generators
+                               (Permutation(0,1, size=6)(2,3), # x -> - x mirror operation (i.e. yz mirror plane)
+                                Permutation(0,3, size=6)(1,2), # y -> - y mirror operation (i.e. xz mirror plane)
+                                Permutation(4,5, size=6)       # z -> - z mirror operation (i.e. xy mirror plane)
+                               ), 
+                 # dictionary with irrep generators
+                               {
+                                    # Product of C2v and zflip; not sure about the labels / axes here
+                                    "A1'": (1,1,1),
+                                    "B2'": (-1,1,1),
+                                    "A2'": (-1,-1,1),
+                                    "B1'": (1,-1,1),
+                                    "A1''": (-1,-1,-1),
+                                    "B2''": (1,-1,-1),
+                                    "A2''": (1,1,-1),
+                                    "B1''": (-1,1,-1),
+                               },
+                 # function that generates a tuple with svwf representation generators
+                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax), qpms.zflip_tyty(lMax))
+    ),
+    'C4v' : SVWFPointGroupInfo('C4v',
+                 # permutation group generators
+                               (Permutation(0,1,2,3, size=4), #C4 rotation
+                                Permutation(0,1, size=4)(2,3)), # x -> - x mirror operation (i.e. yz mirror plane)
+                 # dictionary with irrep generators
+                               {
+                                    # Bradley, Cracknell p. 62
+                                    'E': (ra, -lam),
+                                    # Bradley, Cracknell p. 59, or Dresselhaus, Table A.18
+                                    'A1': (1,1),
+                                    'A2': (1,-1),
+                                    'B1': (-1,1),
+                                    'B2': (-1,-1),    
+                               },
+                 # function that generates a tuple with svwf representation generators
+                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax))
+    ),
+    'D4h' : SVWFPointGroupInfo('D4h',
+                 # permutation group generators
+                               (Permutation(0,1,2,3, size=6),  # C4 rotation
+                                Permutation(0,1, size=6)(2,3), # x -> - x mirror operation (i.e. yz mirror plane)
+                                Permutation(4,5, size=6), # horizontal mirror operation z -> -z (i.e. xy mirror plane)
+                               ), 
+                 # dictionary with irrep generators
+                               {    # product of C4v and zflip
+                                    "E'": (ra, -lam, epsilon),
+                                    "E''":(ra, -lam, -epsilon),
+                                    "A1'": (1,1,1),
+                                    "A2'": (1,-1,1),
+                                    "A1''": (1,-1,-1),
+                                    "A2''": (1,1,-1),
+                                    "B1'": (-1,1,1),
+                                    "B2'": (-1,-1,1),
+                                    "B1''": (-1,-1,-1),
+                                    "B2''": (-1,1,-1), 
+                               },
+                 # function that generates a tuple with svwf representation generators
+                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax))
+    ),
+    'D3h' : SVWFPointGroupInfo('D3h',
+                 # permutation group generators
+                               ( Permutation(0,1,2, size=5),  # C3 rotation
+                                 Permutation(0,2, size=5), # vertical mirror
+                                 Permutation(3,4, size=5), # horizontal mirror z -> -z (i.e. xy mirror plane)
+                               ), 
+                 # dictionary with irrep generators
+                               {    # Bradley, Cracknell p. 61
+                                    "E'" : (alif, lam, epsilon),
+                                    "E''" : (alif, lam, -epsilon),
+                                    # Bradley, Cracknell p. 59, or Dresselhaus, Table A.14 (p. 482)
+                                    "A1'" : (1,1,1),
+                                    "A2'" : (1,-1,1),
+                                    "A1''" : (1,-1,-1),
+                                    "A2''" : (1,1,-1),
+                               },
+                 # function that generates a tuple with svwf representation generators
+                               lambda lMax, vflip: (qpms.zrotN_tyty(3, lMax), qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax))
+    ),
+}
