@@ -145,14 +145,14 @@ int ewald32_sr_integral(double r, double k, double n, double eta, double *result
 
 int ewald3_sigma0(complex double *result, double *err,
 		const qpms_ewald32_constants_t *c,
-		double eta, double k
+		double eta, complex double k
 );
 
 int ewald3_sigma_short(
 		complex double *target_sigmasr_y, // must be c->nelem_sc long
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
-		const double eta, const double k,
+		const double eta, const complex double k,
 		const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
 		PGen *pgen_R, const bool pgen_generates_shifted_points 
 		/* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
@@ -169,7 +169,7 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
 		const qpms_ewald32_constants_t *c,
-		const double eta, const double k,
+		const double eta, const complex double k,
 	        const double unitcell_volume /* with the corresponding lattice dimensionality */,
 		const LatticeDimensionality latdim,
 		PGen *pgen_K, const bool pgen_generates_shifted_points 

@@ -176,11 +176,11 @@ void qpms_ewald32_constants_free(qpms_ewald32_constants_t *c) {
 
 int ewald3_sigma0(complex double *result, double *err,
     const qpms_ewald32_constants_t *c,
-    const double eta, const double k)
+    const double eta, const complex double k)
 {
   qpms_csf_result gam;
-  int retval = complex_gamma_inc_e(-0.5, -sq(k/(2*eta)), &gam);
-  gam.val = conj(gam.val); // We take the other branch, cf. [Linton, p. 642 in the middle]
+  int retval = complex_gamma_inc_e(-0.5, -csq(k/(2*eta)), &gam);
+  // FIXME DO THIS CORRECTLY gam.val = conj(gam.val); // We take the other branch, cf. [Linton, p. 642 in the middle]
   if (0 != retval)
     abort();
   *result = gam.val * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
@@ -381,7 +381,7 @@ int ewald3_21_xy_sigma_long (
     complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c,
-    const double eta, const double k /* TODO COMPLEX */,
+    const double eta, const complex double k,
     const double unitcell_volume /* with the corresponding lattice dimensionality */,
     const LatticeDimensionality latdim,
     PGen *pgen_K, const bool pgen_generates_shifted_points
@@ -394,6 +394,7 @@ int ewald3_21_xy_sigma_long (
     const cart3_t particle_shift
     )
 {
+  const bool k_is_real = (cimag(k) == 0);
   assert((latdim & LAT_XYONLY) && (latdim & SPACE3D));
   assert((latdim & LAT1D) || (latdim & LAT2D));
   const qpms_y_t nelem_sc = c->nelem_sc;
@@ -408,8 +409,9 @@ int ewald3_21_xy_sigma_long (
     memset(err, 0, nelem_sc * sizeof(double));
   }
 
-  const double commonfac = 1/(k*k*unitcell_volume); // used in the very end (CFC) //TODO COMPLEX
-  assert(commonfac > 0);
+  const complex double commonfac = 1/(k*k*unitcell_volume); // used in the very end (CFC)
+  if (k_is_real)
+    assert(creal(commonfac) > 0);
 
   PGenSphReturnData pgen_retdata;
 #ifndef NDEBUG
@@ -418,7 +420,7 @@ int ewald3_21_xy_sigma_long (
   // recycleable values if rbeta_pq stays the same:
   complex double gamma_pq;
   complex double z;
-  double factor1d = 1; // the "additional" factor for the 1D case (then it is not 1)
+  complex double factor1d = 1; // the "additional" factor for the 1D case (then it is not 1)
   // space for Gamma_pq[j]'s
   qpms_csf_result Gamma_pq[lMax/2+1];
 
@@ -452,18 +454,18 @@ int ewald3_21_xy_sigma_long (
 
     // R-DEPENDENT BEGIN
     if (new_rbeta_pq) {
-      gamma_pq = lilgamma(rbeta_pq/k /*TODO COMPLEX*/);
-      z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
+      gamma_pq = clilgamma(rbeta_pq/k);
+      z = csq(gamma_pq*k/(2*eta)); 
       for(qpms_l_t j = 0; j <= lMax/2; ++j) {
         // TODO COMPLEX FIXME check the branches in the old lilgamma case
         int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
         // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
-        if(creal(z) < 0) 
-          Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
+        //if(creal(z) < 0) 
+        //  Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
         if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
       }
       if (latdim & LAT1D)
-        factor1d = k /*TODO COMPLEX */  * M_SQRT1_2 * .5 * gamma_pq;
+        factor1d =  M_SQRT1_2 * .5 * k * gamma_pq;
     }
     // R-DEPENDENT END
     
@@ -479,7 +481,7 @@ int ewald3_21_xy_sigma_long (
         double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
         assert((n-abs(m))/2 == c->s1_jMaxes[y]);
         for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
-          complex double summand = pow(rbeta_pq/k, n-2*j) 
+          complex double summand = cpow(rbeta_pq/k, n-2*j) 
             * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
             * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
             * c->s1_constfacs[y][j];
@@ -516,7 +518,7 @@ int ewald3_1_z_sigma_long (
     complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c,
-    const double eta, const double k,
+    const double eta, const complex double k,
     const double unitcell_volume /* length (periodicity) in this case */,
     const LatticeDimensionality latdim,
     PGen *pgen_K, const bool pgen_generates_shifted_points
@@ -573,13 +575,13 @@ int ewald3_1_z_sigma_long (
     const complex double phasefac = cexp(I * K_z * particle_shift_z); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
 
     // R-DEPENDENT BEGIN
-    complex double gamma_pq = lilgamma(rbeta_mu/k);  // For real beta and k this is real or pure imaginary ...
+    complex double gamma_pq = clilgamma(rbeta_mu/k);  // For real beta and k this is real or pure imaginary ...
     const complex double z = csq(gamma_pq*k/(2*eta));// ... so the square (this) is in fact real.
     for(qpms_l_t j = 0; j <= lMax/2; ++j) {
       int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
       // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
-      if(creal(z) < 0) 
-        Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
+      //if(creal(z) < 0) 
+      //  Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
       if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
     }
     // R-DEPENDENT END
@@ -632,7 +634,7 @@ int ewald3_sigma_long (
     complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c,
-    const double eta, const double k,
+    const double eta, const complex double k,
     const double unitcell_volume /* with the corresponding lattice dimensionality */,
     const LatticeDimensionality latdim,
     PGen *pgen_K, const bool pgen_generates_shifted_points
@@ -880,7 +882,7 @@ int ewald3_sigma_short(
                 complex double *target, // must be c->nelem_sc long
                 double *err, // must be c->nelem_sc long or NULL
                 const qpms_ewald32_constants_t *c,
-                const double eta, const double k /* TODO COMPLEX */,
+                const double eta, const complex double k /* TODO COMPLEX */,
                 const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
                 PGen *pgen_R, const bool pgen_generates_shifted_points
                 /* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
@@ -893,6 +895,8 @@ int ewald3_sigma_short(
                 const cart3_t particle_shift
                 )
 {
+  const bool k_is_real = (cimag(k) == 0); // TODO check how the compiler optimises the loops
+  const double kreal = creal(k);
   const qpms_y_t nelem_sc = c->nelem_sc;
   const qpms_l_t lMax = c->lMax;
   gsl_integration_workspace *workspace = 
@@ -916,6 +920,7 @@ int ewald3_sigma_short(
 #endif
   // recyclable variables if r_pq_shifted stays the same:
   double intres[lMax+1], interr[lMax+1];
+  complex double cintres[lMax+1];
 
 // CHOOSE POINT BEGIN
 // TODO check whether _next_sph is the optimal coordinate system choice here
@@ -971,11 +976,18 @@ int ewald3_sigma_short(
     }
     
     for(qpms_l_t n = 0; n <= lMax; ++n) {
-      const double complex prefacn = - I * pow(2./k /*TODO COMPLEX*/, n+1) * M_2_SQRTPI / 2; // profiling TODO put outside the R-loop and multiply in the end?
+      const double complex prefacn = - I * (k_is_real ? pow(2./creal(k),n+1) : cpow(2./k, n+1)) * M_2_SQRTPI / 2; // profiling TODO put outside the R-loop and multiply in the end?
       const double R_pq_pown = pow(r_pq_shifted, n); // profiling TODO: maybe put this into the new_r_pq_shifted condition as well?
       if (new_r_pq_shifted) {
-        int retval = ewald32_sr_integral(r_pq_shifted, k /*TODO COMPLEX*/, n, eta,
-            intres + n, interr + n, workspace);
+        int retval;
+        if (k_is_real) {
+          double intres_real;
+          retval = ewald32_sr_integral(r_pq_shifted, kreal, n, eta,
+               &intres_real, interr + n, workspace);
+          cintres[n] = intres_real;
+        } else
+          retval = ewald32_sr_integral_ck(r_pq_shifted, k, n, eta,
+               cintres+n, interr + n, workspace);
         if (retval) abort();
       } // otherwise recycle the integrals
       for (qpms_m_t m = -n; m <= n; ++m){
@@ -1000,7 +1012,7 @@ int ewald3_sigma_short(
           kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
               * interr[n])); // TODO include also other errors
         ckahanadd(target + y, target_c + y,
-            prefacn * R_pq_pown * leg * intres[n] * e_beta_Rpq * e_imf * min1pow_m_neg(m));
+            prefacn * R_pq_pown * leg * cintres[n] * e_beta_Rpq * e_imf * min1pow_m_neg(m));
       }
 
     }
