@@ -76,10 +76,10 @@ typedef struct {
 					This is because I dont't actually consider this fixed in
 					translations.c */
 
-} qpms_ewald32_constants_t;
+} qpms_ewald3_constants_t;
 
-qpms_ewald32_constants_t *qpms_ewald32_constants_init(qpms_l_t lMax, int csphase);
-void qpms_ewald32_constants_free(qpms_ewald32_constants_t *);
+qpms_ewald3_constants_t *qpms_ewald3_constants_init(qpms_l_t lMax, int csphase);
+void qpms_ewald3_constants_free(qpms_ewald3_constants_t *);
 
 
 typedef struct { // as gsl_sf_result, but with complex val
@@ -144,14 +144,14 @@ int ewald32_sr_integral(double r, double k, double n, double eta, double *result
 // General functions acc. to [2], sec. 4.6 – currently valid for 2D and 1D lattices in 3D space
 
 int ewald3_sigma0(complex double *result, double *err,
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		double eta, complex double k
 );
 
 int ewald3_sigma_short(
 		complex double *target_sigmasr_y, // must be c->nelem_sc long
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		const double eta, const complex double k,
 		const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
 		PGen *pgen_R, const bool pgen_generates_shifted_points 
@@ -168,7 +168,7 @@ int ewald3_sigma_short(
 int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, depending on latdim
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		const double eta, const complex double k,
 	        const double unitcell_volume /* with the corresponding lattice dimensionality */,
 		const LatticeDimensionality latdim,
@@ -182,11 +182,10 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		const cart3_t particle_shift
 		);
 		
-/// !!!!!!!!!!!!!!! ZDE JSEM SKONČIL !!!!!!!!!!!!!!!!!!!!!!.
-
+#ifdef EWALD_LEGACY // moved to ewald_legacy.c, not even everything implemented
 
 int ewald32_sigma0(complex double *result, double *err, // actually, this should be only alias for ewald3_sigma0
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		double eta, double k
 );
 
@@ -196,7 +195,7 @@ int ewald32_sigma0(complex double *result, double *err, // actually, this should
 int ewald32_sigma_long_shiftedpoints ( 
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const point2d *Kpoints_plus_beta,
 		point2d beta,
@@ -205,7 +204,7 @@ int ewald32_sigma_long_shiftedpoints (
 int ewald32_sigma_long_points_and_shift (
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const point2d *Kpoints,
 		point2d beta,
@@ -214,7 +213,7 @@ int ewald32_sigma_long_points_and_shift (
 int ewald32_sigma_long_shiftedpoints_rordered(//NI
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		double eta, double k, double unitcell_area,
 		const points2d_rordered_t *Kpoints_plus_beta_rordered,
 		point2d particle_shift
@@ -223,7 +222,7 @@ int ewald32_sigma_long_shiftedpoints_rordered(//NI
 int ewald32_sigma_short_shiftedpoints(
 		complex double *target_sigmasr_y, // must be c->nelem_sc long
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		const qpms_ewald3_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		size_t npoints, const point2d *Rpoints_plus_particle_shift,
 		point2d beta,
@@ -232,7 +231,7 @@ int ewald32_sigma_short_shiftedpoints(
 int ewald32_sigma_short_points_and_shift(
 		complex double *target_sigmasr_y, // must be c->nelem_sc long
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		const qpms_ewald3_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		size_t npoints, const point2d *Rpoints, 
 		point2d beta,
@@ -241,7 +240,7 @@ int ewald32_sigma_short_points_and_shift(
 int ewald32_sigma_short_points_rordered(//NI
 		complex double *target_sigmasr_y, // must be c->nelem_sc long
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		const qpms_ewald3_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		const points2d_rordered_t *Rpoints_plus_particle_shift_rordered,
 		point2d particle_shift    // used only in the very end to multiply it by the phase
@@ -252,7 +251,7 @@ int ewald32_sigma_short_points_rordered(//NI
 int ewald31z_sigma_long_points_and_shift (
 		complex double *target_sigmalr_y, // must be c->nelem_sc long
 		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		double eta, double k, double unitcell_area,
 		size_t npoints, const double *Kpoints,
 		double beta,
@@ -261,16 +260,17 @@ int ewald31z_sigma_long_points_and_shift (
 int ewald31z_sigma_short_points_and_shift(
 		complex double *target_sigmasr_y, // must be c->nelem_sc long
 		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald32_constants_t *c, // N.B. not too useful here
+		const qpms_ewald3_constants_t *c, // N.B. not too useful here
 		double eta, double k,
 		size_t npoints, const double *Rpoints, 
 		double beta,
 		double particle_shift
 		);
 int ewald31z_sigma0(complex double *result, double *err, 
-		const qpms_ewald32_constants_t *c,
+		const qpms_ewald3_constants_t *c,
 		double eta, double k
 		); // exactly the same as ewald32_sigma0
 
+#endif // EWALD_LEGACY
 
 #endif //EWALD_H

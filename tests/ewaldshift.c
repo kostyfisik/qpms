@@ -266,7 +266,7 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   results->err_sigmas_long = malloc(sizeof(double)*nelem_sc);
   results->err_sigmas_total = malloc(sizeof(double)*nelem_sc);
 
-  qpms_ewald32_constants_t *c = qpms_ewald32_constants_init(p.lMax, p.csphase);
+  qpms_ewald3_constants_t *c = qpms_ewald3_constants_init(p.lMax, p.csphase);
 
   points2d_rordered_t *Kpoints_plus_beta = points2d_rordered_shift(&(Klg->ps), p.beta,
       8*DBL_EPSILON, 8*DBL_EPSILON);
@@ -332,7 +332,7 @@ ewaldtest_triang_results *ewaldtest_triang(const ewaldtest_triang_params p) {
   }
 
   points2d_rordered_free(Kpoints_plus_beta);
-  qpms_ewald32_constants_free(c);
+  qpms_ewald3_constants_free(c);
   triangular_lattice_gen_free(Klg);
   triangular_lattice_gen_free(Rlg);
   ++ewaldtest_counter;
