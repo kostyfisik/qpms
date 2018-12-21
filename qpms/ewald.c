@@ -381,7 +381,7 @@ int ewald3_21_xy_sigma_long (
     complex double *target, // must be c->nelem_sc long
     double *err,
     const qpms_ewald32_constants_t *c,
-    const double eta, const double k,
+    const double eta, const double k /* TODO COMPLEX */,
     const double unitcell_volume /* with the corresponding lattice dimensionality */,
     const LatticeDimensionality latdim,
     PGen *pgen_K, const bool pgen_generates_shifted_points
@@ -408,7 +408,7 @@ int ewald3_21_xy_sigma_long (
     memset(err, 0, nelem_sc * sizeof(double));
   }
 
-  const double commonfac = 1/(k*k*unitcell_volume); // used in the very end (CFC)
+  const double commonfac = 1/(k*k*unitcell_volume); // used in the very end (CFC) //TODO COMPLEX
   assert(commonfac > 0);
 
   PGenSphReturnData pgen_retdata;
@@ -452,9 +452,10 @@ int ewald3_21_xy_sigma_long (
 
     // R-DEPENDENT BEGIN
     if (new_rbeta_pq) {
-      gamma_pq = lilgamma(rbeta_pq/k);
+      gamma_pq = lilgamma(rbeta_pq/k /*TODO COMPLEX*/);
       z = csq(gamma_pq*k/(2*eta)); // Když o tom tak přemýšlím, tak tohle je vlastně vždy reálné
       for(qpms_l_t j = 0; j <= lMax/2; ++j) {
+        // TODO COMPLEX FIXME check the branches in the old lilgamma case
         int retval = complex_gamma_inc_e(0.5-j, z, Gamma_pq+j);
         // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
         if(creal(z) < 0) 
@@ -462,7 +463,7 @@ int ewald3_21_xy_sigma_long (
         if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
       }
       if (latdim & LAT1D)
-        factor1d = k * M_SQRT1_2 * .5 * gamma_pq;
+        factor1d = k /*TODO COMPLEX */  * M_SQRT1_2 * .5 * gamma_pq;
     }
     // R-DEPENDENT END
     
@@ -690,6 +691,62 @@ static int ewald32_sr_integral(double r, double k, int n, double eta,
   return retval;
 }
 
+// a version allowing complex k
+
+struct sigma2_integrand_params_ck {
+  int n;
+  complex double k;
+  double R;
+};
+
+// TODO ther might be some space for optimisation if needed, as now we calculate everything twice
+// including the whole complex exponential (throwing the imaginary/real part away)
+static double sigma2_integrand_ck_real(double ksi, void *params) {
+  struct sigma2_integrand_params_ck *p = (struct sigma2_integrand_params_ck *) params;
+  return creal(cexp(-csq(p->R * ksi) + csq(p->k / ksi / 2))) * pow(ksi, 2*p->n);
+}
+static double sigma2_integrand_ck_imag(double ksi, void *params) {
+  struct sigma2_integrand_params_ck *p = (struct sigma2_integrand_params_ck *) params;
+  return cimag(cexp(-csq(p->R * ksi) + csq(p->k / ksi / 2))) * pow(ksi, 2*p->n);
+}
+
+static int ewald32_sr_integral_ck(double r, complex double k, int n, double eta,
+    complex double *result, double *err, gsl_integration_workspace *workspace)
+{
+  struct sigma2_integrand_params_ck p;
+
+
+  const double R0 = r; // Maybe could be chosen otherwise, but fuck it for now.
+  p.n = n;
+  eta *= R0;
+  p.k = k * R0;
+  p.R = r / R0;  // i.e. p.R = 1
+
+  gsl_function F;
+  F.params = &p;
+  double result_real, result_imag, err_real, err_imag;
+  
+  F.function = sigma2_integrand_ck_real;
+  // TODO check return values
+  int retval = gsl_integration_qagiu(&F, eta, INTEGRATION_EPSABS, 
+      INTEGRATION_EPSREL, INTEGRATION_WORKSPACE_LIMIT,
+      workspace, &result_real, &err_real);
+  
+  F.function = sigma2_integrand_ck_imag;
+  // TODO check return values
+  retval = gsl_integration_qagiu(&F, eta, INTEGRATION_EPSABS, 
+      INTEGRATION_EPSREL, INTEGRATION_WORKSPACE_LIMIT,
+      workspace, &result_imag, &err_imag);
+
+  *result = result_real + I*result_imag;
+  *err = sqrt(sq(err_real) + sq(err_imag));
+
+  double normfac = pow(R0, -2*p.n - 1);
+  *result *= normfac;
+  *err *= normfac;
+  return retval;
+}
+
 int ewald32_sigma_short_shiftedpoints(
     complex double *target, // must be c->nelem_sc long
     double *err,
@@ -823,7 +880,7 @@ int ewald3_sigma_short(
                 complex double *target, // must be c->nelem_sc long
                 double *err, // must be c->nelem_sc long or NULL
                 const qpms_ewald32_constants_t *c,
-                const double eta, const double k,
+                const double eta, const double k /* TODO COMPLEX */,
                 const LatticeDimensionality latdim, // apart from asserts and possible optimisations ignored, as the SR formula stays the same
                 PGen *pgen_R, const bool pgen_generates_shifted_points
                 /* If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift,
@@ -914,10 +971,10 @@ int ewald3_sigma_short(
     }
     
     for(qpms_l_t n = 0; n <= lMax; ++n) {
-      const double complex prefacn = - I * pow(2./k, n+1) * M_2_SQRTPI / 2; // profiling TODO put outside the R-loop and multiply in the end?
+      const double complex prefacn = - I * pow(2./k /*TODO COMPLEX*/, n+1) * M_2_SQRTPI / 2; // profiling TODO put outside the R-loop and multiply in the end?
       const double R_pq_pown = pow(r_pq_shifted, n); // profiling TODO: maybe put this into the new_r_pq_shifted condition as well?
       if (new_r_pq_shifted) {
-        int retval = ewald32_sr_integral(r_pq_shifted, k, n, eta,
+        int retval = ewald32_sr_integral(r_pq_shifted, k /*TODO COMPLEX*/, n, eta,
             intres + n, interr + n, workspace);
         if (retval) abort();
       } // otherwise recycle the integrals

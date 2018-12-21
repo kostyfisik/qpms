@@ -97,6 +97,25 @@ static inline complex double lilgamma(double t) {
     return -I * sqrt(1 - t*t);
 }
 
+// [1, (A.8)], complex version of lilgamma()
+static inline complex double clilgamma(complex double z) {
+	complex double a1 = z - 1, a2 = z + 1;
+	// ensure  -pi/2 < arg(z + 1) < 3*pi/2
+	if (creal(a2) < 0 && cimag(a2) <= 0) 
+		a2 = -csqrt(a2);
+	else 
+		a2 = csqrt(a2);
+	// ensure -3*pi/2 < arg(z - 1) < pi/2
+	if (creal(a1) < 0 && cimag(a1) >= 0)
+		a1 = -csqrt(a1);
+	else
+		a1 = csqrt(a1);
+	return a1 * a2;
+}
+
+
+ 
+
 
 // Incomplete Gamma function as series
 // DLMF 8.7.3 (latter expression) for complex second argument
