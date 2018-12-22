@@ -35,7 +35,7 @@ static inline double cart2_normsq(const cart2_t a) {
 }
 
 static inline double cart2norm(const cart2_t v) {
-	return sqrt(v.x*v.x + v.y*v.y);
+	return hypot(v.x, v.y); //sqrt(v.x*v.x + v.y*v.y);
 }
 
 static inline pol_t cart2pol(const cart2_t cart) {
