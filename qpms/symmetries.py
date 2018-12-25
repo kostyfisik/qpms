@@ -395,6 +395,8 @@ point_group_info = { # representation info of some useful point groups
                  # permutation group generators
                                (Permutation(0,1, size=6)(2,3), # x -> - x mirror operation (i.e. yz mirror plane)
                                 Permutation(0,3, size=6)(1,2), # y -> - y mirror operation (i.e. xz mirror plane)
+                                # ^^^ btw, I guess that Permutation(0,1, size=6) and Permutation(2,3, size=6) would
+                                # do exactly the same job (they should; CHECK)
                                 Permutation(4,5, size=6)       # z -> - z mirror operation (i.e. xy mirror plane)
                                ), 
                  # dictionary with irrep generators
