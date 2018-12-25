@@ -135,7 +135,7 @@ static const PGenSphReturnData PGenSphDoneVal = {PGEN_DONE, {0,0,0}};
 static const PGenCart2ReturnData PGenCart2DoneVal = {PGEN_DONE, {0,0}};
 static const PGenCart3ReturnData PGenCart3DoneVal = {PGEN_DONE, {0,0,0}};
 
-typedef struct PGenSphClassInfo { // static PGenSph info
+typedef struct PGenClassInfo { // static PGenSph info
 	char * const name; // mainly for debugging purposes
 	int dimensionality; // lower-dimensional can be converted to higher-D, not vice versa; bit redundant with the following, whatever.
 	PGenPointFlags native_point_flags; // info about native coordinate system
