@@ -8,6 +8,80 @@ from cython.parallel cimport parallel, prange
 #cimport openmp
 #openmp.omp_set_dynamic(1)
 
+#cdef extern from "stdbool.h":
+    
+# TODO put the declarations / cdef extern parts to a .pxd file
+
+cdef extern from "qpms_types.h":
+    cdef struct cart3_t:
+        double x
+        double y
+        double z
+    cdef struct cart2_t:
+        double x
+        double y
+    cdef struct sph_t:
+        double r
+        double theta
+        double phi
+    cdef struct pol_t:
+        double r
+        double phi
+    cdef union anycoord_point_t:
+        double z
+        cart3_t cart3
+        cart2_t cart2
+        pol_t pol
+    ctypedef enum qpms_normalisation_t:
+        QPMS_NORMALISATION_XU
+        QPMS_NORMALISATION_XU_CS
+        QPMS_NORMALISATION_NONE
+        QPMS_NORMALISATION_NONE_CS
+        QPMS_NORMALISATION_KRISTENSSON
+        QPMS_NORMALISATION_KRISTENSSON_CS
+        QPMS_NORMALISATION_POWER
+        QPMS_NORMALISATION_POWER_CS
+        QPMS_NORMALISATION_TAYLOR
+        QPMS_NORMALISATION_TAYLOR_CS
+        QPMS_NORMALISATION_SPHARM
+        QPMS_NORMALISATION_SPHARM_CS
+        QPMS_NORMALISATION_UNDEF
+    # maybe more if needed
+
+# Point generators from lattices.h
+cdef extern from "lattices.h":
+    ctypedef enum PGenPointFlags:
+        pass
+    struct PGenReturnData:
+        pass
+    struct PGenZReturnData:
+        pass
+    struct PGenPolReturnData:
+        pass
+    struct PGenSphReturnData:
+        pass
+    struct PGenCart2ReturnData:
+        pass
+    struct PGenCart3ReturnData:
+        pass
+    struct PGenClassInfo: # maybe important
+        pass
+    struct PGen: # probably important
+        PGenClassInfo* c
+        void *statedata
+    void PGen_destroy(PGen *g)
+
+    # now the individual PGen implementations:
+    # FIXME Is bint always guaranteed to be equivalent to _Bool? (I dont't think so.)
+    PGen PGen_xyWeb_new(cart2_t b1, cart2_t b2, double rtol, cart2_t offset,
+            double minR, bint inc_minR, double maxR, bint inc_maxR)
+    ctypedef enum PGen_1D_incrementDirection:
+        PGEN_1D_INC_FROM_ORIGIN
+        PGEN_1D_INC_TOWARDS_ORIGIN
+    PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bint inc_minR,
+            double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
+
+
 ## Auxillary function for retrieving the "meshgrid-like" indices; inc. nmax
 @cython.boundscheck(False)
 def get_mn_y(int nmax):
