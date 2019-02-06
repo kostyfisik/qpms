@@ -897,10 +897,12 @@ def loadWfile_info(fileName, lMax = None, midk_halfwidth = None, freqlimits = No
     slovnik['Ws'] = None
     return slovnik
 
-def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = None, freqlimits = None, iteratechunk = None):
+def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = None, midk_index = None, freqlimits = None, iteratechunk = None):
     """
     midk_halfwidth: int
         if given, takes only the "middle" k-value by index nk//2 and midk_halfwidth values from both sides
+    midk_index: int
+        if given, midk_index is taken as the "middle" value instad of nk//2
     freqlimit: pair of doubles; 
         if given, only the values from the given frequency range (in Hz) are returned to save RAM
         N.B.: the frequencies in the processed file are expected to be sorted!
@@ -931,13 +933,13 @@ def loadWfile_processed(fileName, lMax = None, fatForm = True, midk_halfwidth = 
         EeVs_orig = data['EeVs_orig']
         freqs_weirdunits = data['freqs_weirdunits']
     if midk_halfwidth is not None:
-        k_mid_i = nk // 2
-        if midk_halfwidth < k_mid_i:
-            maxk_i = k_mid_i + midk_halfwidth
-            mink_i = k_mid_i - midk_halfwidth
-            nk = 2*midk_halfwidth+1
-            Ws = Ws[:,mink_i:(maxk_i+1)]
-            ks = ks[mink_i:(maxk_i+1)]
+        k_mid_i = nk // 2 if midk_index is None else midk_index
+        maxk_i = min(k_mid_i + midk_halfwidth, nk)
+        mink_i = max(0, k_mid_i - midk_halfwidth)
+        nk = maxk_i + 1 - mink_i
+        Ws = Ws[:,mink_i:(maxk_i+1)]
+        ks = ks[mink_i:(maxk_i+1)]
+        #k_mid_i_new = k_mid_i - mink_i
     if lMax is not None:
         nelem = lMax2nelem(lMax)
         Ws = Ws[...,:nelem,:nelem]
