@@ -165,11 +165,12 @@ def _scuffTMatrixConvert_EM_01(EM):
     else:
         return None
 
-def loadScuffTMatrices(fileName, normalisation = 1, version = 'old', freqscale = None):
+def loadScuffTMatrices(fileName, normalisation = 1, version = 'old', freqscale = None, order = None):
     """
     TODO doc
 
-    version describes version of scuff-em. It is either 'old' or 'new'
+    version describes version of scuff-em. It is either 'old' or 'new'. 
+    default order is ('N','M') with 'old' version, ('M','N') with 'new'
     """
     oldversion = (version == 'old')
     μm = 1e-6
@@ -203,10 +204,15 @@ def loadScuffTMatrices(fileName, normalisation = 1, version = 'old', freqscale =
     # Second, M-waves come first, so they have now 0-valued index, and E-waves have 1-valued index,
     # which we want to be inverted.
     TMatrices = np.zeros((len(freqs),2,nelem,2,nelem),dtype=complex)
-    for inc_type in [0,1]:
-        for outc_type in [0,1]:
+    reorder = (0,1)
+    if ((order == ('N', 'M')) and not oldversion): # reverse order for the new version
+        reorder = (1,0) 
+    # TODO reverse order for the old version...
+    for inc_type in reorder:
+        for outc_type in reorder:
             TMatrices[:,outc_type,:,inc_type,:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
     # IMPORTANT: now we are going from Reid's/Kristensson's/Jackson's/whoseever convention to Taylor's convention
+    # TODO make these consistent with what is defined in qpms_types.h (implement all possibilities)
     if normalisation == 1:
         TMatrices[:,:,:,:,:] = TMatrices[:,:,:,:,:] * np.sqrt(ny*(ny+1))[ň,ň,ň,ň,:] / np.sqrt(ny*(ny+1))[ň,ň,:,ň,ň]
     elif normalisation == 2: # Kristensson?
