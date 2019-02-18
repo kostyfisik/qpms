@@ -1532,7 +1532,7 @@ Quantisation of quasistatic modes of a sphere
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "/l/necadam1/repo/qpms/Electrodynamics"
+bibfiles "Electrodynamics"
 options "plain"
 
 \end_inset
