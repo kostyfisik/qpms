@@ -2,85 +2,11 @@
 # -----------------------------
 
 import numpy as np
-cimport numpy as np
+from qpms_cdefs cimport *
 cimport cython
 from cython.parallel cimport parallel, prange
 #cimport openmp
 #openmp.omp_set_dynamic(1)
-
-#cdef extern from "stdbool.h":
-    
-# TODO put the declarations / cdef extern parts to a .pxd file
-
-cdef extern from "qpms_types.h":
-    cdef struct cart3_t:
-        double x
-        double y
-        double z
-    cdef struct cart2_t:
-        double x
-        double y
-    cdef struct sph_t:
-        double r
-        double theta
-        double phi
-    cdef struct pol_t:
-        double r
-        double phi
-    cdef union anycoord_point_t:
-        double z
-        cart3_t cart3
-        cart2_t cart2
-        pol_t pol
-    ctypedef enum qpms_normalisation_t:
-        QPMS_NORMALISATION_XU
-        QPMS_NORMALISATION_XU_CS
-        QPMS_NORMALISATION_NONE
-        QPMS_NORMALISATION_NONE_CS
-        QPMS_NORMALISATION_KRISTENSSON
-        QPMS_NORMALISATION_KRISTENSSON_CS
-        QPMS_NORMALISATION_POWER
-        QPMS_NORMALISATION_POWER_CS
-        QPMS_NORMALISATION_TAYLOR
-        QPMS_NORMALISATION_TAYLOR_CS
-        QPMS_NORMALISATION_SPHARM
-        QPMS_NORMALISATION_SPHARM_CS
-        QPMS_NORMALISATION_UNDEF
-    # maybe more if needed
-
-# Point generators from lattices.h
-cdef extern from "lattices.h":
-    ctypedef enum PGenPointFlags:
-        pass
-    struct PGenReturnData:
-        pass
-    struct PGenZReturnData:
-        pass
-    struct PGenPolReturnData:
-        pass
-    struct PGenSphReturnData:
-        pass
-    struct PGenCart2ReturnData:
-        pass
-    struct PGenCart3ReturnData:
-        pass
-    struct PGenClassInfo: # maybe important
-        pass
-    struct PGen: # probably important
-        PGenClassInfo* c
-        void *statedata
-    void PGen_destroy(PGen *g)
-
-    # now the individual PGen implementations:
-    # FIXME Is bint always guaranteed to be equivalent to _Bool? (I dont't think so.)
-    PGen PGen_xyWeb_new(cart2_t b1, cart2_t b2, double rtol, cart2_t offset,
-            double minR, bint inc_minR, double maxR, bint inc_maxR)
-    ctypedef enum PGen_1D_incrementDirection:
-        PGEN_1D_INC_FROM_ORIGIN
-        PGEN_1D_INC_TOWARDS_ORIGIN
-    PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bint inc_minR,
-            double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
-
 
 ## Auxillary function for retrieving the "meshgrid-like" indices; inc. nmax
 @cython.boundscheck(False)
@@ -185,7 +111,6 @@ In simple words, it works like this:
 #-------------------------------------
 
 
-ctypedef double complex cdouble
 
 cdef void loop_D_iiiidddii_As_D_lllldddbl(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
@@ -227,54 +152,6 @@ cdef void loop_D_iiiidddii_As_D_lllldddbl(char **args, np.npy_intp *dims, np.npy
         op0 += steps[9]
 # FIXME ERROR HANDLING!!! requires correct import and different data passed (see scipy's generated ufuncs)
 #    sf_error.check_fpe(func_name)
-
-
-#cdef extern from "numpy/arrayobject.h":
-#    cdef enum NPY_TYPES:
-#        NPY_DOUBLE
-#        NPY_CDOUBLE # complex double
-#        NPY_LONG # int
-#    ctypedef int npy_intp
-
-
-cdef extern from "translations.h":
-    cdouble qpms_trans_single_A_Taylor_ext(int m, int n, int mu, int nu,
-        double r, double th, double ph, int r_ge_d, int J) nogil
-    cdouble qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu,
-        double r, double th, double ph, int r_ge_d, int J) nogil
-    struct qpms_trans_calculator:
-        int lMax
-        size_t nelem
-        cdouble** A_multipliers
-        cdouble** B_multipliers
-    enum qpms_normalization_t:
-        pass
-    qpms_trans_calculator* qpms_trans_calculator_init(int lMax, int nt) # should be qpms_normalization_t
-    void qpms_trans_calculator_free(qpms_trans_calculator* c)
-    cdouble qpms_trans_calculator_get_A_ext(const qpms_trans_calculator* c,
-            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
-            int r_ge_d, int J) nogil
-    cdouble qpms_trans_calculator_get_B_ext(const qpms_trans_calculator* c,
-            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
-            int r_ge_d, int J) nogil
-    int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator* c,
-            cdouble *Adest, cdouble *Bdest,
-            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
-            int r_ge_d, int J) nogil
-    int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
-            cdouble *Adest, cdouble *Bdest,
-            size_t deststride, size_t srcstride,
-            double kdlj_r, double kdlj_theta, double kdlj_phi,
-            int r_ge_d, int J) nogil
-    int qpms_cython_trans_calculator_get_AB_arrays_loop(qpms_trans_calculator *c,
-            int J, int resnd,
-            int daxis, int saxis,
-            char *A_data, np.npy_intp *A_shape, np.npy_intp *A_strides,
-            char *B_data, np.npy_intp *B_shape, np.npy_intp *B_strides,
-            char *r_data, np.npy_intp *r_shape, np.npy_intp *r_strides,
-            char *theta_data, np.npy_intp *theta_shape, np.npy_intp *theta_strides,
-            char *phi_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides,
-            char *r_ge_d_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides) nogil
 
 
 

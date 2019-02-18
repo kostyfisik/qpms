@@ -1,5 +1,5 @@
 from setuptools import setup#, Extension
-from Cython.Distutils import build_ext
+from Cython.Build import cythonize, build_ext
 from distutils.extension import Extension
 # setuptools DWIM monkey-patch madness
 # http://mail.python.org/pipermail/distutils-sig/2007-September/thread.html#8204
@@ -35,12 +35,12 @@ qpms_c = Extension('qpms_c',
         )
 
 setup(name='qpms',
-        version = "0.2.992",
+        version = "0.2.993",
         packages=['qpms'],
-#        setup_requires=['setuptools_cython'],
+        setup_requires=['cython>0.28'],
         install_requires=['cython>=0.21','quaternion','spherical_functions','py_gmm'],
         dependency_links=['https://github.com/texnokrates/py_gmm','https://github.com/moble/quaternion','https://github.com/moble/spherical_functions'],
-        ext_modules=[qpms_c],
+        ext_modules=cythonize([qpms_c], include_path=['qpms']),
         cmdclass = {'build_ext': build_ext},
         )
         
