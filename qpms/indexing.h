@@ -58,15 +58,16 @@ static inline qpms_uvswfi_t qpms_tmn2uvswfi(
 }
 
 /// Conversion from universal VSWF index u to type, order and degree.
-/** Crashes (abort()) the program if the u value is invalid. */
-static inline void qpms_uvswfi2tmn(qpms_uvswfi_t u,
+/** Returns a non-zero value if the u value is invalid. */
+static inline qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u,
 		qpms_vswf_type_t *t, qpms_m_t *m, qpms_l_t *n) {
 	*t = u & 3;
 	qpms_y_sc_t y_sc = u / 4;
 	// Test validity
-	if (*t == 3) abort(); // VSWF type code invalid
-	if (*t && !y_sc) abort(); // l == 0 for transversal wave
+	if (*t == 3) return QPMS_ERROR; // VSWF type code invalid, TODO WARN
+	if (*t && !y_sc) return QPMS_ERROR; // l == 0 for transversal wave, TODO WARN
 	qpms_y2mn_sc_p(y_sc, m, n);
+	return QPMS_SUCCESS;
 }
 
 #endif //QPMS_INDEXING_H

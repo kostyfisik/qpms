@@ -8,6 +8,52 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+qpms_vswf_set_spec_t *qpms_vswf_set_spec_init() {
+  qpms_vswf_set_spec_t *s = calloc(1,sizeof(qpms_vswf_set_spec_t));
+  if (s == NULL) return NULL; // TODO warn
+  // The rest are zeroes automatically because of calloc:
+  s->lMax_L = -1;
+  return s;
+}
+
+#define MAX(x,y) (((x)<(y))?(y):(x))
+
+qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *s, const qpms_uvswfi_t u) {
+  qpms_l_t l;
+  qpms_m_t m;
+  qpms_vswf_type_t t;
+  if (qpms_uvswfi2tmn(u, &t, &m, &l)!=QPMS_SUCCESS) return QPMS_ERROR; // TODO WARN
+  if (s->n + 1 > s->capacity) {
+    size_t newcap = (s->capacity > 32) ? 32 : 2*s->capacity;
+    qpms_uvswfi_t *newmem = realloc(s->ilist, newcap * sizeof(qpms_uvswfi_t));
+    if (newmem == NULL) return QPMS_ENOMEM; // TODO WARN
+    s->ilist = newmem;
+  }
+  s->ilist[s->n] = u;
+  ++s->n;
+  switch(t) {
+    case QPMS_VSWF_ELECTRIC:
+      s->lMax_N = MAX(s->lMax_N, l);
+      break;
+    case QPMS_VSWF_MAGNETIC:
+      s->lMax_M = MAX(s->lMax_M, l);
+      break;
+    case QPMS_VSWF_LONGITUDINAL:
+      s->lMax_L = MAX(s->lMax_L, l);
+      break;
+    default:
+      abort();
+  }
+  s->lMax = MAX(s->lMax, l);
+  return QPMS_SUCCESS;
+}
+
+void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *s) {
+  if(s) free(s->ilist);
+  free(s);
+}
+
 csphvec_t qpms_vswf_single_el(qpms_m_t m, qpms_l_t l, sph_t kdlj,
     qpms_bessel_t btyp, qpms_normalisation_t norm) {
   lmcheck(l,m);

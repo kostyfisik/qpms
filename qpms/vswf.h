@@ -1,17 +1,56 @@
+/*! \file vswf.h
+ * \brief Vector spherical wavefunctions.
+ *
+ * N.B. for the Legendre polynomial norm definitions, see
+ * <a href="https://www.gnu.org/software/gsl/doc/html/specfunc.html#associated-legendre-polynomials-and-spherical-harmonics">the corresponding section of GSL docs</a>
+ * or <a href="http://git.savannah.gnu.org/cgit/gsl.git/tree/specfunc/legendre_source.c">gsl/specfunc/legendre_source.c</a>.
+ */
 #ifndef QPMS_VSWF_H
 #define QPMS_VSWF_H
 #include "qpms_types.h"
 #include <gsl/gsl_sf_legendre.h>
 
-// Electric wave N; NI
+/// Specifies a finite set of VSWFs.
+/**
+ * When for example not all the M and N -type waves up to a degree lMax
+ * need to be computed, this will specify the subset. 
+ *
+ * A typical use case would be when only even/odd fields wrt. z-plane
+ * mirror symmetry are considered.
+ */
+typedef struct qpms_vswf_set_spec_t {
+	size_t n; ///< Actual number of VSWF indices included in ilist.
+	qpms_uvswfi_t *ilist; ///< List of wave indices.
+	qpms_l_t lMax; ///< Maximum degree of the waves specified in ilist.
+	qpms_l_t lMax_M, ///< Maximum degree of the magnetic (M-type) waves.
+		 lMax_N, ///< Maximum degree of the electric (N-type) waves.
+		 lMax_L; ///< Maximum degree of the longitudinal (L-type) waves.
+	size_t capacity; ///< Allocated capacity of ilist.
+	qpms_normalisation_t norm; ///< Normalisation convention. To be set manually if needed.
+} qpms_vswf_set_spec_t;
+
+/// Creates a qpms_vswf_set_spec_t structure with an empty list of wave indices.
+qpms_vswf_set_spec_t *qpms_vswf_set_spec_init();
+
+/// Appends a VSWF index to a \ref qpms_vswf_set_spec_t, also updating metadata.
+qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *self, qpms_uvswfi_t u);
+
+/// Destroys a \ref qpms_vswf_set_spec_t.
+void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *);
+
+/// Electric wave N.
 csphvec_t qpms_vswf_single_el(int m, int n, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
-// Magnetic wave M; NI
+/// Magnetic wave M.
 csphvec_t qpms_vswf_single_mg(int m, int n, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 
-// Set of electric and magnetic VSWF in spherical coordinate basis
-typedef struct {
+/// Set of electric and magnetic VSWF values in spherical coordinate basis.
+/* This is supposed to contain all the waves up to $l = lMax$.
+ * for a custom set of waves, use \ref qpms_uvswfset_sph_t instead.
+ */
+
+typedef struct qpms_vswfset_sph_t {
 	//qpms_normalisation_t norm;
 	qpms_l_t lMax;
 	//qpms_y_t nelem;
@@ -20,11 +59,6 @@ typedef struct {
 } qpms_vswfset_sph_t;
 
 
-/*
- * N.B. for the norm definitions, see
- * https://www.gnu.org/software/gsl/manual/html_node/Associated-Legendre-Polynomials-and-Spherical-Harmonics.html
- * ( gsl/specfunc/legendre_source.c and 7.24.2 of gsl docs
- */
 
 qpms_errno_t qpms_legendre_deriv_y_get(double **result, double **result_deriv, double x, qpms_l_t lMax, 
 		gsl_sf_legendre_t lnorm, double csphase); // free() result and result_deriv yourself!
