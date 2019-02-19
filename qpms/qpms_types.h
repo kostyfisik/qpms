@@ -49,9 +49,9 @@ typedef size_t qpms_y_sc_t;
 
 /// Codes of the VSWF types (electric/N, magnetic/M, longitudinal/L).
 typedef enum {
-	QPMS_VSWF_ELECTRIC = 2, /// "Electric" ($N$-type) transversal wave.
-	QPMS_VSWF_MAGNETIC = 1, /// "Magnetic" ($M$-type) transversal wave.
-	QPMS_VSWF_LONGITUDINAL = 0 /// Longitudinal ($L$-type) wave (not relevant for radiation).
+	QPMS_VSWF_ELECTRIC = 2, ///< "Electric" ($N$-type) transversal wave.
+	QPMS_VSWF_MAGNETIC = 1, ///< "Magnetic" ($M$-type) transversal wave.
+	QPMS_VSWF_LONGITUDINAL = 0 ///< Longitudinal ($L$-type) wave (not relevant for radiation).
 } qpms_vswf_type_t;
 
 
@@ -93,12 +93,11 @@ typedef enum {
 typedef enum {
 #ifdef USE_XU_ANTINORMALISATION
 	// As in TODO
-	QPMS_NORMALISATION_XU = 4, /// such that the numerical values in Xu's tables match, not recommended to use otherwise
+	QPMS_NORMALISATION_XU = 4, ///< such that the numerical values in Xu's tables match, not recommended to use otherwise
 	QPMS_NORMALISATION_XU_CS = QPMS_NORMALISATION_XU | QPMS_NORMALISATION_T_CSBIT, 
 #endif
-	QPMS_NORMALISATION_NONE = 3, /// genuine unnormalised waves (with unnormalised Legendre polynomials)
-	/// As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
-	QPMS_NORMALISATION_KRISTENSSON = 2,
+	QPMS_NORMALISATION_NONE = 3, ///< genuine unnormalised waves (with unnormalised Legendre polynomials)
+	QPMS_NORMALISATION_KRISTENSSON = 2, ///< As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
 	QPMS_NORMALISATION_POWER = QPMS_NORMALISATION_KRISTENSSON, 
 	// as in TODO
 	QPMS_NORMALISATION_TAYLOR = 1,
