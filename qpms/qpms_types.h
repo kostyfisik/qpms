@@ -1,3 +1,6 @@
+/*! \file qpms_types.h
+ * \brief Common qpms types.
+ */
 #ifndef QPMS_TYPES_H
 #define QPMS_TYPES_H
 #include <complex.h>
@@ -20,27 +23,54 @@ typedef qpms_lm_t qpms_m_t;
 
 /// Type for the (l,m) multiindex of transversal (M or N-type) VSWFs.
 /** This corresponds to the typical memory layout for various coefficient etc.
- *  Corresponds to the l-primary, m-secondary ordering, i.e.
- *  y = 0: l = 1, m = -1,
- *  y = 1: l = 1, m = 0,
- *  y = 2: l = 1, m = +1,
- *  y = 3: l = 2, m = -2,
+ *  Corresponds to the l-primary, m-secondary ordering, i.e. \n
+ *  y = 0: l = 1, m = -1,\n
+ *  y = 1: l = 1, m = 0,\n
+ *  y = 2: l = 1, m = +1,\n
+ *  y = 3: l = 2, m = -2,\n
  *  ...
  */
 typedef size_t qpms_y_t;
 
+/// Type for the (l,m) multiindex of spherical harmonics, including (0,0).
+/** This differs from qpms_y_t by being shifted by one and including
+ *  the l = 0 option. Suitable also for scalar and longitudinal waves.
+ *  Corresponds to the l-primary, m-secondary ordering, i.e.\n
+ *  y = 0: l = 0, m = 0,\n
+ *  y = 1: l = 1, m = -1,\n
+ *  y = 2: l = 1, m = 0,\n
+ *  y = 3: l = 1, m = +1,\n
+ *  y = 4: l = 2, m = -2,\n
+ *  ...
+ */
+typedef size_t qpms_y_sc_t;
+
+/// Codes of the VSWF types (electric/N, magnetic/M, longitudinal/L).
+typedef enum {
+	QPMS_VSWF_ELECTRIC = 2, /// "Electric" ($N$-type) transversal wave.
+	QPMS_VSWF_MAGNETIC = 1, /// "Magnetic" ($M$-type) transversal wave.
+	QPMS_VSWF_LONGITUDINAL = 0 /// Longitudinal ($L$-type) wave (not relevant for radiation).
+} qpms_vswf_type_t;
+
+
 /// Exhaustive index type for VSWF basis functions.
 /** Carries information about the wave being of M/N/L (magnetic, electric,
  *  or longitudinal) type, as well as the wave's degree and order (l, m).
+ *
+ *  The formula is 4 * (qpms_y_sc_t) y_sc + (qmps_vswf_type_t) type_code,
+ *  but don't rely on this and use the functions
+ *  qpms_tmn2uvswfi() and qpms_uvswfi2tmn()
+ *  from qpms_types.h instead
+ *  as the formula might change in future versions.
  */
 typedef size_t qpms_uvswfi_t; 
 
 /// Error codes / return values for certain numerical functions.
 /** These are de facto a subset of the GSL error codes. */
 typedef enum {
-	QPMS_SUCCESS = 0, /// Success.
-	QPMS_ERROR = 1, /// Unspecified error.
-	QPMS_ENOMEM = 8 /// Out of memory.
+	QPMS_SUCCESS = 0, ///< Success.
+	QPMS_ERROR = 1, ///< Unspecified error.
+	QPMS_ENOMEM = 8 ///< Out of memory.
 } qpms_errno_t;
 
 /// Vector spherical wavefuction normalisation (and sign) convention codes.
@@ -159,11 +189,11 @@ static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t 
 
 /// Bessel function kinds.
 typedef enum {
-	QPMS_BESSEL_REGULAR = 1, /// regular (spherical) Bessel function j (Bessel function of the first kind)
-	QPMS_BESSEL_SINGULAR = 2, /// singular (spherical)  Bessel function y (Bessel function of the second kind)
-	QPMS_HANKEL_PLUS = 3, ///  (spherical) Hankel function h1 = j + I*y
-	QPMS_HANKEL_MINUS = 4, /// (spherical) Hankel function h2 = j - I*y
-	QPMS_BESSEL_UNDEF = 0 /// invalid / unspecified kind
+	QPMS_BESSEL_REGULAR = 1, ///< regular (spherical) Bessel function $j$ (Bessel function of the first kind)
+	QPMS_BESSEL_SINGULAR = 2, ///< singular (spherical)  Bessel function $y$ (Bessel function of the second kind)
+	QPMS_HANKEL_PLUS = 3, ///< (spherical) Hankel function $h_1 = j + iy$
+	QPMS_HANKEL_MINUS = 4, ///< (spherical) Hankel function $h_2 = j - iy$
+	QPMS_BESSEL_UNDEF = 0 ///< invalid / unspecified kind
 } qpms_bessel_t;
 
 // coordinate system types
@@ -216,11 +246,11 @@ typedef union anycoord_point_t {
 typedef enum { 
 	// IF EVER CHANGING THE CONSTANT VALUES HERE, 
 	// CHECK THAT THEY DO NOT CLASH WITH THOSE IN PGenPointFlags!
-	QPMS_COORDS_CART1 = 64, /// 1D cartesian (= double).
-	QPMS_COORDS_POL = 128, /// 2D polar.
-	QPMS_COORDS_SPH = 256, /// 3D spherical.
-	QPMS_COORDS_CART2 = 512, /// 2D cartesian.
-	QPMS_COORDS_CART3 = 1024, /// 3D cartesian.
+	QPMS_COORDS_CART1 = 64, ///< 1D cartesian (= double).
+	QPMS_COORDS_POL = 128, ///< 2D polar.
+	QPMS_COORDS_SPH = 256, ///< 3D spherical.
+	QPMS_COORDS_CART2 = 512, ///< 2D cartesian.
+	QPMS_COORDS_CART3 = 1024, ///< 3D cartesian.
 } qpms_coord_system_t;
 
 

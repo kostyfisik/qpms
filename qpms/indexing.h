@@ -1,3 +1,6 @@
+/*! \file indexing.h
+ * \brief Various index conversion functions.
+ */
 #ifndef QPMS_INDEXING_H
 #define QPMS_INDEXING_H
 
@@ -48,5 +51,22 @@ static inline qpms_y_t qpms_lMax2nelem_sc(qpms_l_t lmax){
 	return lmax * ((qpms_y_t)lmax + 2) + 1;
 }
 
+/// Conversion from VSWF type, order and degree to universal index.
+static inline qpms_uvswfi_t qpms_tmn2uvswfi(
+		qpms_vswf_type_t t, qpms_m_t m, qpms_l_t n) {
+	return t + 4 * qpms_mn2y_sc(m, n);
+}
+
+/// Conversion from universal VSWF index u to type, order and degree.
+/** Crashes (abort()) the program if the u value is invalid. */
+static inline void qpms_uvswfi2tmn(qpms_uvswfi_t u,
+		qpms_vswf_type_t *t, qpms_m_t *m, qpms_l_t *n) {
+	*t = u & 3;
+	qpms_y_sc_t y_sc = u / 4;
+	// Test validity
+	if (*t == 3) abort(); // VSWF type code invalid
+	if (*t && !y_sc) abort(); // l == 0 for transversal wave
+	qpms_y2mn_sc_p(y_sc, m, n);
+}
 
 #endif //QPMS_INDEXING_H
