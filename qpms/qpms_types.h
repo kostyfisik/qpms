@@ -13,27 +13,59 @@
 
 // integer index types
 typedef int qpms_lm_t;
+/// Type for spherical harmonic degree l.
 typedef int qpms_l_t; // can't be unsigned because of the behaviour under - operator
+/// Type for spherical harmonic order m.
 typedef qpms_lm_t qpms_m_t;
+
+/// Type for the (l,m) multiindex of transversal (M or N-type) VSWFs.
+/** This corresponds to the typical memory layout for various coefficient etc.
+ *  Corresponds to the l-primary, m-secondary ordering, i.e.
+ *  y = 0: l = 1, m = -1,
+ *  y = 1: l = 1, m = 0,
+ *  y = 2: l = 1, m = +1,
+ *  y = 3: l = 2, m = -2,
+ *  ...
+ */
 typedef size_t qpms_y_t;
 
+/// Exhaustive index type for VSWF basis functions.
+/** Carries information about the wave being of M/N/L (magnetic, electric,
+ *  or longitudinal) type, as well as the wave's degree and order (l, m).
+ */
+typedef size_t qpms_uvswfi_t; 
+
+/// Error codes / return values for certain numerical functions.
+/** These are de facto a subset of the GSL error codes. */
 typedef enum {
-	QPMS_SUCCESS = 0,
-	QPMS_ERROR = 1,
-	QPMS_ENOMEM = 8
+	QPMS_SUCCESS = 0, /// Success.
+	QPMS_ERROR = 1, /// Unspecified error.
+	QPMS_ENOMEM = 8 /// Out of memory.
 } qpms_errno_t;
 
-// Normalisations
+/// Vector spherical wavefuction normalisation (and sign) convention codes.
+/** Throughout the literature, various conventions for VSWF bases are used.
+ *  The meaningful ones are the "power" and "spherical harmonic" normalisation
+ *  conventions, as the (l,m) and (l,-m) waves of the same type have the same
+ *  intensities.
+ *  One might also encounter a very inconvenient and messy "antinormalisation"
+ *  used in Xu (TODO reference).
+ *
+ *  Moreover, VSWFs might use various sign convention. Usually they either
+ *  carry the Condon-Shortley phase $(-1)^m$ or not, which is also saved here.
+ *
+ *  TODO references and exact definitions.
+ */
 //const int QPMS_NORMALISATION_T_CSBIT = 128;
 #define QPMS_NORMALISATION_T_CSBIT 128
 typedef enum {
 #ifdef USE_XU_ANTINORMALISATION
 	// As in TODO
-	QPMS_NORMALISATION_XU = 4, // such that the numerical values in Xu's tables match, not recommended to use otherwise
+	QPMS_NORMALISATION_XU = 4, /// such that the numerical values in Xu's tables match, not recommended to use otherwise
 	QPMS_NORMALISATION_XU_CS = QPMS_NORMALISATION_XU | QPMS_NORMALISATION_T_CSBIT, 
 #endif
-	QPMS_NORMALISATION_NONE = 3, // genuine unnormalised waves (with unnormalised Legendre polynomials)
-	// As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
+	QPMS_NORMALISATION_NONE = 3, /// genuine unnormalised waves (with unnormalised Legendre polynomials)
+	/// As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
 	QPMS_NORMALISATION_KRISTENSSON = 2,
 	QPMS_NORMALISATION_POWER = QPMS_NORMALISATION_KRISTENSSON, 
 	// as in TODO
@@ -48,17 +80,15 @@ typedef enum {
 	QPMS_NORMALISATION_UNDEF = 0
 } qpms_normalisation_t;
 
-
-
-
+/// Determine whether the convention includes Condon-Shortley phase (-1) or not (+1).
 static inline int qpms_normalisation_t_csphase(qpms_normalisation_t norm) {
 	return (norm & QPMS_NORMALISATION_T_CSBIT)? -1 : 1;
 }
 
+/// Returns the normalisation convention code without the Condon-Shortley phase.
 static inline int qpms_normalisation_t_normonly(qpms_normalisation_t norm) {
 	return norm & (~QPMS_NORMALISATION_T_CSBIT);
 }
-
 
 // TODO move the inlines elsewhere
 /* Normalisation of the spherical waves is now scattered in at least three different files:
@@ -127,61 +157,70 @@ static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t 
 }
 
 
+/// Bessel function kinds.
 typedef enum {
-	QPMS_BESSEL_REGULAR = 1, // regular function j
-	QPMS_BESSEL_SINGULAR = 2, // singular function y
-	QPMS_HANKEL_PLUS = 3, // hankel function h1 = j + I*y
-	QPMS_HANKEL_MINUS = 4, // hankel function h2 = j - I*y
-	QPMS_BESSEL_UNDEF = 0
+	QPMS_BESSEL_REGULAR = 1, /// regular (spherical) Bessel function j (Bessel function of the first kind)
+	QPMS_BESSEL_SINGULAR = 2, /// singular (spherical)  Bessel function y (Bessel function of the second kind)
+	QPMS_HANKEL_PLUS = 3, ///  (spherical) Hankel function h1 = j + I*y
+	QPMS_HANKEL_MINUS = 4, /// (spherical) Hankel function h2 = j - I*y
+	QPMS_BESSEL_UNDEF = 0 /// invalid / unspecified kind
 } qpms_bessel_t;
 
 // coordinate system types
+/// 3D cartesian coordinates.
 typedef struct cart3_t {
 	double x, y, z;
 } cart3_t;
 
+/// 3D complex (actually 6D) coordinates.
 typedef struct ccart3_t {
 	complex double x, y, z;
 } ccart3_t;
 
+/// 2D cartesian coordinates.
 typedef struct cart2_t {
 	double x, y;
 } cart2_t;
 
+/// Spherical coordinates.
 typedef struct sph_t {
 	double r, theta, phi;
 } sph_t;
 
+/// Spherical coordinates with complex radial component.
 typedef struct csph_t { // Do I really need this???
 	complex double r;
 	double	theta, phi;
 } csph_t;
 
-// complex vector components in local spherical basis
+/// 3D complex vector components in local spherical basis.
 typedef struct csphvec_t {
 	complex double rc, thetac, phic; 
 } csphvec_t;
 
+/// 2D polar coordinates.
 typedef struct pol_t {
 	double r, phi;
 } pol_t;
 
+/// Union type capable to contain various 1D, 2D and 3D coordinates.
 typedef union anycoord_point_t {
-	double z;
+	double z; /// 1D cartesian coordinate.
 	cart3_t cart3;
 	cart2_t cart2;
 	sph_t sph;
 	pol_t pol;
 } anycoord_point_t;
 
+/// Enum codes for common coordinate systems.
 typedef enum { 
 	// IF EVER CHANGING THE CONSTANT VALUES HERE, 
 	// CHECK THAT THEY DO NOT CLASH WITH THOSE IN PGenPointFlags!
-	QPMS_COORDS_CART1 = 64,
-	QPMS_COORDS_POL = 128,
-	QPMS_COORDS_SPH = 256,
-	QPMS_COORDS_CART2 = 512,
-	QPMS_COORDS_CART3 = 1024,
+	QPMS_COORDS_CART1 = 64, /// 1D cartesian (= double).
+	QPMS_COORDS_POL = 128, /// 2D polar.
+	QPMS_COORDS_SPH = 256, /// 3D spherical.
+	QPMS_COORDS_CART2 = 512, /// 2D cartesian.
+	QPMS_COORDS_CART3 = 1024, /// 3D cartesian.
 } qpms_coord_system_t;
 
 
