@@ -28,15 +28,28 @@ typedef struct qpms_vswf_set_spec_t {
 	size_t capacity; ///< Allocated capacity of ilist.
 	qpms_normalisation_t norm; ///< Normalisation convention. To be set manually if needed.
 } qpms_vswf_set_spec_t;
-
 /// Creates a qpms_vswf_set_spec_t structure with an empty list of wave indices.
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_init();
-
 /// Appends a VSWF index to a \ref qpms_vswf_set_spec_t, also updating metadata.
 qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *self, qpms_uvswfi_t u);
-
 /// Destroys a \ref qpms_vswf_set_spec_t.
 void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *);
+
+/// NOT IMPLEMENTED Evaluates a set of VSWF basis functions at a given point.
+/** The list of basis wave indices is specified in \a setspec; 
+ *  \a setspec->norm must be set as well.
+ */
+qpms_errno_t qpms_uvswf_fill(
+		csphvec_t *const target,
+		const qpms_vswf_set_spec_t *setspec,
+		sph_t evaluation_point, qpms_bessel_t btyp);
+
+/// NOT IMPLEMENTED Evaluates field specified by SVWF coefficients at a given point.
+/** SVWF coefficients in \a coeffs must be ordered according to \a setspec->ilist
+ */
+csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
+		const complex double *coeffs, sph_t evaluation_point,
+		qpms_bessel_t btyp);
 
 /// Electric wave N.
 csphvec_t qpms_vswf_single_el(int m, int n, sph_t kdlj,
@@ -46,10 +59,10 @@ csphvec_t qpms_vswf_single_mg(int m, int n, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 /// Set of electric and magnetic VSWF values in spherical coordinate basis.
-/* This is supposed to contain all the waves up to $l = lMax$.
- * for a custom set of waves, use \ref qpms_uvswfset_sph_t instead.
+/** This is supposed to contain all the waves up to $l = lMax$.
+ * 
+ *  For a completely custom set of waves, use \ref qpms_uvswfset_sph_t instead.
  */
-
 typedef struct qpms_vswfset_sph_t {
 	//qpms_normalisation_t norm;
 	qpms_l_t lMax;
@@ -57,8 +70,6 @@ typedef struct qpms_vswfset_sph_t {
 	//sph_t kdlj
 	csphvec_t *el, *mg;
 } qpms_vswfset_sph_t;
-
-
 
 qpms_errno_t qpms_legendre_deriv_y_get(double **result, double **result_deriv, double x, qpms_l_t lMax, 
 		gsl_sf_legendre_t lnorm, double csphase); // free() result and result_deriv yourself!

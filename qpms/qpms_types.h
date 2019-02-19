@@ -17,17 +17,19 @@
 // integer index types
 typedef int qpms_lm_t;
 /// Type for spherical harmonic degree l.
-typedef int qpms_l_t; // can't be unsigned because of the behaviour under - operator
+typedef int qpms_l_t; /* can't be unsigned because of the behaviour under - operator;
+			 also -1 needed as an invalid value for scalar waves. */
+
 /// Type for spherical harmonic order m.
 typedef qpms_lm_t qpms_m_t;
 
 /// Type for the (l,m) multiindex of transversal (M or N-type) VSWFs.
 /** This corresponds to the typical memory layout for various coefficient etc.
- *  Corresponds to the l-primary, m-secondary ordering, i.e. \n
- *  y = 0: l = 1, m = -1,\n
- *  y = 1: l = 1, m = 0,\n
- *  y = 2: l = 1, m = +1,\n
- *  y = 3: l = 2, m = -2,\n
+ *  Corresponds to the l-primary, m-secondary ordering, i.e.
+ *  \f[ y = 0: l = 1, m = -1, \f]
+ *  \f[ y = 1: l = 1, m =  0, \f]
+ *  \f[ y = 2: l = 1, m = +1, \f]
+ *  \f[ y = 3: l = 2, m = -2, \f]
  *  ...
  */
 typedef size_t qpms_y_t;
@@ -35,12 +37,12 @@ typedef size_t qpms_y_t;
 /// Type for the (l,m) multiindex of spherical harmonics, including (0,0).
 /** This differs from qpms_y_t by being shifted by one and including
  *  the l = 0 option. Suitable also for scalar and longitudinal waves.
- *  Corresponds to the l-primary, m-secondary ordering, i.e.\n
- *  y = 0: l = 0, m = 0,\n
- *  y = 1: l = 1, m = -1,\n
- *  y = 2: l = 1, m = 0,\n
- *  y = 3: l = 1, m = +1,\n
- *  y = 4: l = 2, m = -2,\n
+ *  Corresponds to the l-primary, m-secondary ordering, i.e.
+ *  \f[ y = 0: l = 0, m = 0,  \f]
+ *  \f[ y = 1: l = 1, m = -1, \f]
+ *  \f[ y = 2: l = 1, m = 0,  \f]
+ *  \f[ y = 3: l = 1, m = +1, \f]
+ *  \f[ y = 4: l = 2, m = -2, \f]
  *  ...
  */
 typedef size_t qpms_y_sc_t;
@@ -189,10 +191,10 @@ static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t 
 
 /// Bessel function kinds.
 typedef enum {
-	QPMS_BESSEL_REGULAR = 1, ///< regular (spherical) Bessel function $j$ (Bessel function of the first kind)
-	QPMS_BESSEL_SINGULAR = 2, ///< singular (spherical)  Bessel function $y$ (Bessel function of the second kind)
-	QPMS_HANKEL_PLUS = 3, ///< (spherical) Hankel function $h_1 = j + iy$
-	QPMS_HANKEL_MINUS = 4, ///< (spherical) Hankel function $h_2 = j - iy$
+	QPMS_BESSEL_REGULAR = 1, ///< regular (spherical) Bessel function \a j (Bessel function of the first kind)
+	QPMS_BESSEL_SINGULAR = 2, ///< singular (spherical)  Bessel function \a y (Bessel function of the second kind)
+	QPMS_HANKEL_PLUS = 3, ///< (spherical) Hankel function \f$ h_1 = j + iy \f$
+	QPMS_HANKEL_MINUS = 4, ///< (spherical) Hankel function \f$ h_2 = j - iy \f$
 	QPMS_BESSEL_UNDEF = 0 ///< invalid / unspecified kind
 } qpms_bessel_t;
 
