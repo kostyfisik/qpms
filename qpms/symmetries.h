@@ -1,10 +1,10 @@
-#ifndef SYMMETRIES_H
-#define SYMMETRIES_H
-/* TODO.
+/*! \file symmetries.h
+ * \brief Functions providing point group operations operating on translation
+ * operators and T-matrices.
  *
  * Here will be functions providing point group operations
  * operating on translation operators and T-matrices
- * as in tmatrices.py.
+ * similar to tmatrices.py.
  * 
  * At least I want:
  * - Wigner D matrices
@@ -19,5 +19,37 @@
  *
  * 
  */
+#ifndef SYMMETRIES_H
+#define SYMMETRIES_H
+#include "vswf.h"
+#include <cblas.h>
+
+/// Dense matrix representation of the z coordinate sign flip operation (xy-plane mirroring).
+complex double *qpms_zflip_uvswi_dense(
+		complex double *target, ///< If NULL, a new array is allocated.
+		const qpms_vswf_set_spec_t *bspec);
+/// Dense matrix representation of the y coordinate sign flip operation (xz-plane mirroring).
+complex double *qpms_yflip_uvswi_dense(
+		complex double *target, ///< If NULL, a new array is allocated.
+		const qpms_vswf_set_spec_t *bspec);
+/// Dense matrix representation of the x coordinate sign flip operation (yz-plane mirroring).
+complex double *qpms_xflip_uvswi_dense(
+		complex double *target, ///< If NULL, a new array is allocated.
+		const qpms_vswf_set_spec_t *bspec);
+/// Dense matrix representation of a rotation around the z-axis
+complex double *qpms_zrot_uvswi_dense(
+		complex double *target, ///< If NULL, a new array is allocated.
+		const qpms_vswf_set_spec_t *bspec,
+		double phi ///< Rotation angle
+		);
+/// Dense matrix representation of a "rational" rotation around the z-axis
+/** Just for convenience. Corresponds to the angle \f$ \phi = 2\piw/N \f$.
+ */
+complex double *qpms_zrot_rational_uvswi_dense(
+		complex double *target, ///< If NULL, a new array is allocated.
+		const qpms_vswf_set_spec_t *bspec,
+		int N,
+		int w
+		);
 
 #endif // SYMMETRIES_H

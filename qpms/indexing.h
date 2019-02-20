@@ -51,6 +51,8 @@ static inline qpms_y_t qpms_lMax2nelem_sc(qpms_l_t lmax){
 	return lmax * ((qpms_y_t)lmax + 2) + 1;
 }
 
+// TODO maybe enable crashing / validity control by macro definitions...
+
 /// Conversion from VSWF type, order and degree to universal index.
 static inline qpms_uvswfi_t qpms_tmn2uvswfi(
 		qpms_vswf_type_t t, qpms_m_t m, qpms_l_t n) {
