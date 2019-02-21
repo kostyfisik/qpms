@@ -135,4 +135,18 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 		complex double **tmdata ///< The t-matrices raw contents
 		);
 
+
+typedef struct qpms_tmatrix_interpolator_t {
+	/*TODO; probably use gsl_spline from <gsl/gsl_spline.h> */;
+} qpms_tmatrix_interpolator_t;
+
+/// NOT IMPLEMENTED
+void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp);
+
+/// NOT IMPLEMENTED
+qpms_tmatrix_t *qpms_tmatrix_interpolator_get(const qpms_tmatrix_interpolator_t *interp);
+
+/// NOT IMPLEMENTED 
+qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t *n, const double *freqs, const qpms_tmatrix_t *tmatrices_array /*, ...? */);
+
 #endif //QPMS_SCATSYSTEM_H
