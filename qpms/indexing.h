@@ -65,11 +65,19 @@ static inline qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u,
 		qpms_vswf_type_t *t, qpms_m_t *m, qpms_l_t *n) {
 	*t = u & 3;
 	qpms_y_sc_t y_sc = u / 4;
+	qpms_y2mn_sc_p(y_sc, m, n);
 	// Test validity
 	if (*t == 3) return QPMS_ERROR; // VSWF type code invalid, TODO WARN
 	if (*t && !y_sc) return QPMS_ERROR; // l == 0 for transversal wave, TODO WARN
-	qpms_y2mn_sc_p(y_sc, m, n);
 	return QPMS_SUCCESS;
 }
+
+/// Extract degree \a m from an universal VSWF index \a u.
+static inline qpms_m_t qpms_uvswfi2m(qpms_uvswfi_t u) {
+	qpms_vswf_type_t t; qpms_m_t m; qpms_l_t n;
+	qpms_uvswfi2tmn(u, &t,&m,&n);
+	return m;
+}
+
 
 #endif //QPMS_INDEXING_H
