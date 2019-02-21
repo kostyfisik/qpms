@@ -1,6 +1,7 @@
-#include "scatsystem.h"
-
+#include <stdlib.h>
 #include <cblas.h>
+#include "scatsystem.h"
+#include "indexing.h"
 
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
   qpms_tmatrix_t *t = malloc(sizeof(qpms_tmatrix_t));
@@ -10,12 +11,21 @@ qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
     size_t n = bspec->n;
     t->m = calloc(n*n, sizeof(complex double));
     if (!t->m) abort();
+    t->owns_m = true;
   }
   return t;
 }
 
+qpms_tmatrix_t *qpms_tmatrix_copy(const qpms_tmatrix_t *T) {
+  qpms_tmatrix_t *t = qpms_tmatrix_init(T->spec);
+  size_t n = T->spec->n;
+  for(size_t i = 0; i < n*n; ++i)
+    t->m = T->m;
+  return t;
+}
+
 void qpms_tmatrix_free(qpms_tmatrix_t *t){
-  if(t) free(t->m);
+  if(t && t->owns_m) free(t->m);
   free(t);
 }
 
@@ -24,7 +34,7 @@ qpms_tmatrix_t *qpms_tmatrix_apply_symop(
                 const complex double *M 
                 )
 {
-  qpms_tmatrix_t t = qpms_tmatrix_init(T->spec);
+  qpms_tmatrix_t *t = qpms_tmatrix_init(T->spec);
   const size_t n = T->spec->n;
   complex double tmp[n][n];
   // tmp = M T
@@ -41,12 +51,25 @@ qpms_tmatrix_t *qpms_tmatrix_apply_symop(
   return t;
 }
 
+qpms_tmatrix_t *qpms_tmatrix_symmetrise_involution_inplace(
+                qpms_tmatrix_t *T, 
+                const complex double *M 
+                )
+{
+  qpms_tmatrix_t *t = qpms_tmatrix_apply_symop(T, M);
+  const size_t n = T->spec->n;
+  for(size_t i = 0; i < n*n; ++i)
+    T->m[i] = 0.5 * (t->m[i] + T->m[i]);
+  qpms_tmatrix_free(t);
+  return T;
+}
+
 qpms_tmatrix_t *qpms_tmatrix_symmetrise_involution(
                 const qpms_tmatrix_t *T, 
                 const complex double *M 
                 )
 {
-  qpms_tmatrix_t t = qpms_tmatrix_init(T->spec);
+  qpms_tmatrix_t *t = qpms_tmatrix_init(T->spec);
   const size_t n = T->spec->n;
   complex double tmp[n][n];
   // tmp = M T
@@ -66,35 +89,43 @@ qpms_tmatrix_t *qpms_tmatrix_symmetrise_involution(
 }
 
 qpms_tmatrix_t *qpms_tmatrix_symmetrise_C_inf(const qpms_tmatrix_t *T) {
-  qpms_tmatrix_t t = qpms_tmatrix_init(T->spec);
+  qpms_tmatrix_t *t = qpms_tmatrix_copy(T);
+  return qpms_tmatrix_symmetrise_C_inf_inplace(t);
+}
+
+qpms_tmatrix_t *qpms_tmatrix_symmetrise_C_inf_inplace(qpms_tmatrix_t *T) {
   const size_t n = T->spec->n;
   for (size_t row = 0; row < n; row++) {
     qpms_m_t rm = qpms_uvswfi2m(T->spec->ilist[row]);
     for (size_t col = 0; col < n; col++) {
       qpms_m_t cm = qpms_uvswfi2m(T->spec->ilist[col]);
       if (rm == cm)
-        t->m[n*row + col] = T->m[n*row + col];
+        ;// No-op // t->m[n*row + col] = T->m[n*row + col];
       else
-        t->m[n*row + col] = 0;
+        T->m[n*row + col] = 0;
     }
   }
-  return t;
+  return T;
 }
 
 qpms_tmatrix_t *qpms_tmatrix_symmetrise_C_N(const qpms_tmatrix_t *T, int N) {
-  qpms_tmatrix_t t = qpms_tmatrix_init(T->spec);
+  qpms_tmatrix_t *t = qpms_tmatrix_copy(T);
+  return qpms_tmatrix_symmetrise_C_N_inplace(t, N);
+}
+
+qpms_tmatrix_t *qpms_tmatrix_symmetrise_C_N_inplace(qpms_tmatrix_t *T, int N) {
   const size_t n = T->spec->n;
   for (size_t row = 0; row < n; row++) {
     qpms_m_t rm = qpms_uvswfi2m(T->spec->ilist[row]);
     for (size_t col = 0; col < n; col++) {
       qpms_m_t cm = qpms_uvswfi2m(T->spec->ilist[col]);
       if (((rm - cm) % N) == 0)
-        t->m[n*row + col] = T->m[n*row + col];
+        ; // T->m[n*row + col] = T->m[n*row + col];
       else
-        t->m[n*row + col] = 0;
+        T->m[n*row + col] = 0;
     }
   }
-  return t;
+  return T;
 }
 
 
