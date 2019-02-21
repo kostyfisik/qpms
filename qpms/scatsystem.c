@@ -2,6 +2,7 @@
 #include <cblas.h>
 #include "scatsystem.h"
 #include "indexing.h"
+#include <gsl/gsl_spline.h>
 
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
   qpms_tmatrix_t *t = malloc(sizeof(qpms_tmatrix_t));
@@ -128,10 +129,10 @@ qpms_tmatrix_t *qpms_tmatrix_symmetrise_C_N_inplace(qpms_tmatrix_t *T, int N) {
   return T;
 }
 
-bool qpms_tmatrix_isnear(const qpms_tmatrix *A, const qpms_tmatrix *B,
+bool qpms_tmatrix_isnear(const qpms_tmatrix_t *A, const qpms_tmatrix_t *B,
     const double rtol, const double atol)
 {
-  if (!qpms_vswf_set_specisidentical(A->spec, B->spec))
+  if (!qpms_vswf_set_spec_isidentical(A->spec, B->spec))
     return false;
   if (A->m == B->m)
     return true;
@@ -145,5 +146,75 @@ bool qpms_tmatrix_isnear(const qpms_tmatrix *A, const qpms_tmatrix *B,
 }
     
 
+qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(const size_t incount,
+    const double *freqs, const qpms_tmatrix_t *ta, const gsl_interp_type *iptype//, const bool copy_bspec
+    ) {
+  if (incount <= 0) return NULL;
+  qpms_tmatrix_interpolator_t *ip = malloc(sizeof(qpms_tmatrix_interpolator_t));
+  /*
+  if (copy_bspec) {
+    ip->bspec = qpms_vswf_set_spec_copy(ta[0].spec);
+    ip->owns_bspec = true;
+  }
+  else {
+  */
+    ip->bspec = ta[0].spec;
+  //  ip->owns_bspec = false;
+  //}
+  const size_t n = ip->bspec->n;
 
+  // check if all matrices have the same bspec
+  for (size_t i = 0; i < incount; ++i)
+    if (!qpms_vswf_set_spec_isidentical(ip->bspec, ta[i].spec))
+      abort();
+
+  if (!(ip->splines_real = calloc(n*n,sizeof(gsl_spline *)))) abort();
+  if (!(ip->splines_imag = calloc(n*n,sizeof(gsl_spline *)))) abort();
+  for (size_t row = 0; row < n; ++row)
+    for (size_t col = 0; col < n; ++col) {
+      double y_real[incount], y_imag[incount];
+      bool n0_real = false, n0_imag = false;
+      for (size_t i = 0; i < incount; ++i) {
+        complex double telem = ta[i].m[n * row + col];
+        if (y_real[i] = creal(telem)) n0_real = true;
+        if (y_imag[i] = cimag(telem)) n0_imag = true;
+      }
+      if (n0_real) {
+        gsl_spline *s =
+        ip->splines_real[n * row + col] = gsl_spline_alloc(iptype, incount);
+        if (gsl_spline_init(s, freqs, y_real, incount) != 0 /*GSL_SUCCESS*/) abort();
+      }
+      else ip->splines_real[n * row + col] = NULL;
+     if (n0_imag) {
+        gsl_spline *s =
+        ip->splines_imag[n * row + col] = gsl_spline_alloc(iptype, incount);
+        if (gsl_spline_init(s, freqs, y_imag, incount) != 0 /*GSL_SUCCESS*/) abort();
+      }
+      else ip->splines_imag[n * row + col] = NULL;
+    }
+  return ip;
+}
+
+void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *ip) {
+  if (ip) {
+    const size_t n = ip->bspec->n;
+    for (size_t i = 0; i < n*n; ++i) {
+      if (ip->splines_real[i]) gsl_spline_free(ip->splines_real[i]);
+      if (ip->splines_imag[i]) gsl_spline_free(ip->splines_imag[i]);
+    }
+    //if (ip->owns_bspec)
+    //  qpms_vswf_set_spec_free(ip->bspec);
+    free(ip);
+  }
+}
+
+qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *ip, double freq) {
+  qpms_tmatrix_t *t = qpms_tmatrix_init(ip->bspec);
+  const size_t n = ip->bspec->n;
+  for (size_t i = 0; i < n*n; ++i){
+    if (ip->splines_real[i]) t->m[i] = gsl_spline_eval(ip->splines_real[i], freq, NULL /*does this work?*/);
+    if (ip->splines_imag[i]) t->m[i] += I* gsl_spline_eval(ip->splines_imag[i], freq, NULL /*does this work?*/);
+  }
+  return t;
+}
 

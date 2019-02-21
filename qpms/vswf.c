@@ -59,6 +59,16 @@ bool qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a,
   return true;
 }
 
+qpms_vswf_set_spec_t *qpms_vswf_set_spec_copy(const qpms_vswf_set_spec_t *or){
+  qpms_vswf_set_spec_t *c = malloc(sizeof(qpms_vswf_set_spec_t));
+  if (!c) abort; // return NULL
+  *c = *or;
+  c->ilist = malloc(sizeof(qpms_uvswfi_t) * c->n);
+  memcpy(c->ilist, or->ilist, sizeof(qpms_vswfi_t)*c->n);
+  c->capacity = c->n;
+  return c;
+}
+
 void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *s) {
   if(s) free(s->ilist);
   free(s);

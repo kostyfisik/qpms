@@ -5,6 +5,7 @@
 #define QPMS_SCATSYSTEM_H
 #include "vswf.h"
 #include <stdbool.h>
+#include <gsl/gsl_spline.h>
 
 /// A T-matrix.
 /** In the future, I might rather use a more abstract approach in which T-matrix
@@ -141,18 +142,39 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 		complex double **tmdata ///< The t-matrices raw contents
 		);
 
+/* Fuck this, include the whole <gsl/gsl_spline.h>
+typedef struct gsl_spline gsl_spline; // Forward declaration for the interpolator struct
+typedef struct gsl_interp_type gsl_interp_type;
+extern const gsl_interp_type * gsl_interp_linear;
+extern const gsl_interp_type * gsl_interp_polynomial;
+extern const gsl_interp_type * gsl_interp_cspline;
+extern const gsl_interp_type * gsl_interp_cspline_periodic;
+extern const gsl_interp_type * gsl_interp_akima;
+extern const gsl_interp_type * gsl_interp_akima_periodic;
+extern const gsl_interp_type * gsl_interp_steffen;
+*/
 
+// struct gsl_interp_accel; // use if lookup shows to be too slow
 typedef struct qpms_tmatrix_interpolator_t {
-	/*TODO; probably use gsl_spline from <gsl/gsl_spline.h> */;
+	const qpms_vswf_set_spec_t *bspec;
+	//bool owns_bspec;
+	gsl_spline **splines_real; ///< There will be a spline object for each nonzero element
+	gsl_spline **splines_imag; ///< There will be a spline object for each nonzero element
+	// gsl_interp_accel **accel_real;
+	// gsl_interp_accel **accel_imag;
 } qpms_tmatrix_interpolator_t;
 
-/// NOT IMPLEMENTED
+/// Free a T-matrix interpolator.
 void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp);
 
-/// NOT IMPLEMENTED
-qpms_tmatrix_t *qpms_tmatrix_interpolator_get(const qpms_tmatrix_interpolator_t *interp);
+/// Evaluate a T-matrix interpolated value.
+qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *interp, double freq);
 
-/// NOT IMPLEMENTED 
-qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t *n, const double *freqs, const qpms_tmatrix_t *tmatrices_array /*, ...? */);
+/// Create a T-matrix interpolator from frequency and T-matrix arrays.
+qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Number of freqs and T-matrices provided.
+		const double *freqs, const qpms_tmatrix_t *tmatrices_array, ///< N.B. array of qpms_tmatrix_t, not pointers!
+		const gsl_interp_type *iptype
+	       //, bool copy_bspec ///< if true, copies its own copy of basis spec from the first T-matrix.
+       	       /*, ...? */);
 
 #endif //QPMS_SCATSYSTEM_H
