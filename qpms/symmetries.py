@@ -34,6 +34,7 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
                  permgroupgens, # permutation group generators
                  irrepgens_dict, # dictionary with irrep generators,
                  svwf_rep_gen_func, # function that generates a tuple with svwf representation generators
+                 rep3d_gens = None, # 3d representation generators of a point group
                 ):
         self.name = name
         self.permgroupgens = permgroupgens
@@ -50,6 +51,13 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
                                                        immultop = None if is1d else np.dot,
                                                        imcmp = None if is1d else np.allclose
                                                       )
+        self.rep3d_gens = rep3d_gens
+        self.rep3d = None if rep3d_gens is None else generate_grouprep(
+                self.permgroup,
+                np.eye(3),
+                permgroupgens, rep3d_gens,
+                immultop = np.dot, imcmp = np.allclose
+                )
     
     def svwf_rep(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
         '''
@@ -71,6 +79,88 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
     def svwf_irrep_projectors2_w_bases(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
         return gen_point_group_svwfrep_projectors2_w_bases(self.permgroup, self.irreps, self.svwf_rep(lMax, *rep_gen_func_args, **rep_gen_func_kwargs))
 
+    def generate_c_source(self):
+        '''
+        Generates a string with a chunk of C code with a definition of a qpms_finite_group_t instance.
+        See also groups.h.
+        '''
+        self = point_group_info['D3h']
+        permlist = list(self.permgroup.elements) # all elements ordered
+        order = len(permlist)
+        permindices = {perm: i for i, perm in enumerate(permlist)} # 'invert' permlist
+        identity = self.permgroup.identity
+        s = "{\n"
+        # char *name
+        s += '  "%s", // name\n' % self.name
+        # size_t order;
+        s += '  %d, // order\n' % order
+        # qpms_gmi_t idi
+        s += '  %d, // idi\n' % permindices[identity]
+        # qpms_gmi_t *mt
+        s += '  { // mt\n'
+        for i in range(order):
+            ss = ', '.join([str(permindices[permlist[i]*permlist[j]]) for j in range(order)])
+            s += '    ' + ss + ',\n'
+        s += '  },\n'
+        # qpms_gmi_t *gens
+        s += '  {' + ', '.join([str(permindices[g]) for g in self.permgroupgens]) + '}, // gens\n'
+        # int ngens
+        s += '  %d, // ngens\n' % len(self.permgroupgens)
+        # qpms_permutation_t permrep[]
+        s += '  { // permrep\n'
+        for i in range(order):
+            s += '    "%s",\n' % str(permlist[i])
+        s += '  }\n'
+        # char **elemlabels
+        s += '  NULL, // elemlabels\n'
+        # int permrep_nelem
+        s += '  %d, // permrep_nelem\n' % self.permgroup.degree
+        # cmatrix3d rep3d[]
+        if True: #self.rep3d is None:
+            s += '  NULL, // rep3d TODO!!!\n'
+        else:
+            s += '  { // rep3d\n'
+            for i in range(order):
+                s += '   {  '
+                s += '\n      '.join(
+                    ['{' + ' ,'.join([str(rep3d[permlist[i]][row][col]) for col in range(3)]) 
+                     +'}' for row in range(3) ]
+                )
+                s += '\n   },\n'
+            s += '  },\n'
+        # int nirreps
+        s += '  %d, // nirreps\n' % len(self.irreps)
+        # struct qpms_finite_grep_irrep_t irreps[]
+        s += '  { // irreps\n'
+        for irname, irrep in self.irreps.items():
+            s += '    {\n' 
+            is1d = isinstance(irrep[identity], (int, float, complex))
+            dim = 1 if is1d else irrep[identity].shape[0]
+            # int dim
+            s += '      %d, // dim\n' % dim
+            # char name[]
+            s += '      "%s", //name\n' % re.escape(irname)
+
+            # complex double *m
+            if (is1d):
+                s += '      {' + ', '.join([str(irrep[permlist[i]]) for i in range(order)]) + '} // m\n'
+            else:
+                s += '      {\n'
+                for i in range(order):
+                    s += '        // %s\n' % str(permlist[i])
+                    for row in range(dim):
+                        s += '        '
+                        for col in range(dim):
+                            s += '%s, ' % re.sub('j', '*I', str(irrep[permlist[i]][row,col]))
+                        s += '\n'
+                    mat = irrep[permlist[i]]
+                s += '      }\n'
+
+            #s += '       %d, // dim\n' %
+            s += '    },\n'
+        s += '  } // end of irreps\n'
+        s += '}'
+        return s
 
 # srcgroup is expected to be PermutationGroup and srcgens of the TODO
 # imcmp returns True if two elements of the image group are 'equal', otherwise False

@@ -177,4 +177,8 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Num
 	       //, bool copy_bspec ///< if true, copies its own copy of basis spec from the first T-matrix.
        	       /*, ...? */);
 
+typedef struct qpms_scatsys_t {
+	;
+} qpms_scatsys_t;
+
 #endif //QPMS_SCATSYSTEM_H
