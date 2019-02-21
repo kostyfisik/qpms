@@ -128,4 +128,22 @@ qpms_tmatrix_t *qpms_tmatrix_symmetrise_C_N_inplace(qpms_tmatrix_t *T, int N) {
   return T;
 }
 
+bool qpms_tmatrix_isnear(const qpms_tmatrix *A, const qpms_tmatrix *B,
+    const double rtol, const double atol)
+{
+  if (!qpms_vswf_set_specisidentical(A->spec, B->spec))
+    return false;
+  if (A->m == B->m)
+    return true;
+  const size_t n = A->spec->n;
+  for (size_t i = 0; i < n*n; ++i) {
+    const double tol = atol + rtol * (cabs(B->m[i]));
+    if ( cabs(B->m[i] - A->m[i]) > tol )
+      return false;
+  }
+  return true;
+}
+    
+
+
 

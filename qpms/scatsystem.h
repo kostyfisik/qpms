@@ -46,7 +46,13 @@ typedef struct qpms_particle_t {
 	const qpms_tmatrix_t *tmatrix; ///< T-matrix; not owned by qpms_particle_t.
 } qpms_particle_t;
 
-
+/// Check T-matrix equality/similarity.
+/** 
+ *  This function actually checks for identical vswf specs.
+ * TODO define constants with "default" atol, rtol for this function.
+ */
+bool qpms_tmatrix_isnear(const qpms_tmatrix_t *T1, const qpms_tmatrix_t *T2,
+		const double rtol, const double atol);
 
 /// Creates a T-matrix from another matrix and a symmetry operation.
 /** The symmetry operation is expected to be a unitary (square) 

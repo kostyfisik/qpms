@@ -49,6 +49,16 @@ qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *s, const qpms_uvswf
   return QPMS_SUCCESS;
 }
 
+bool qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a,
+                    const qpms_vswf_set_spec_t *b) {
+  if (a == b) return true;
+  if (a->n != b->n) return false;
+  for (size_t i = 0; i < a->n; ++i)
+    if (a->ilist[i] != b->ilist[i])
+      return false;
+  return true;
+}
+
 void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *s) {
   if(s) free(s->ilist);
   free(s);

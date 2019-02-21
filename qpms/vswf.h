@@ -34,6 +34,13 @@ qpms_vswf_set_spec_t *qpms_vswf_set_spec_init();
 qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *self, qpms_uvswfi_t u);
 /// Destroys a \ref qpms_vswf_set_spec_t.
 void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *);
+/// Compares two vswf basis specs.
+/**
+ * Checks whether ilist is the same and of the same length.
+ * If yes, returns true, else returns false.
+ */
+bool qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a,
+		const qpms_vswf_set_spec_t *b);
 
 /// NOT IMPLEMENTED Evaluates a set of VSWF basis functions at a given point.
 /** The list of basis wave indices is specified in \a setspec; 
