@@ -21,7 +21,8 @@ qpms_c = Extension('qpms_c',
         sources = ['qpms/qpms_c.pyx', #'qpms/hexpoints_c.pyx',
             'qpms/gaunt.c',#'qpms/gaunt.h','qpms/vectors.h','qpms/translations.h',
             # FIXME http://stackoverflow.com/questions/4259170/python-setup-script-extensions-how-do-you-include-a-h-file
-            'qpms/translations.c'],
+            'qpms/translations.c',
+            'qpms/wigner.c'],
         extra_compile_args=['-std=c99','-ggdb', '-O0',
             '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # this is required
             #'-DQPMS_USE_OMP',

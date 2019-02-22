@@ -248,8 +248,8 @@ static inline double csphvec_reldiff(const csphvec_t a, const csphvec_t b) {
 	return csphvec_reldiff_abstol(a, b, 0);
 }
 
-typedef double[3][3] matrix3d;
-typedef double[2][2] matrix2d;
-typedef complex double[3][3] cmatrix3d;
-typedef complex double[2][2] cmatrix2d;
+typedef double matrix3d[3][3];
+typedef double matrix2d[2][2];
+typedef complex double cmatrix3d[3][3];
+typedef complex double cmatrix2d[2][2];
 #endif //VECTORS_H
