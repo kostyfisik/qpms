@@ -22,6 +22,7 @@
 #ifndef SYMMETRIES_H
 #define SYMMETRIES_H
 #include "vswf.h"
+#include "qpms_types.h"
 #include <cblas.h>
 
 /// Dense matrix representation of the z coordinate sign flip operation (xy-plane mirroring).
@@ -51,5 +52,11 @@ complex double *qpms_zrot_rational_uvswi_dense(
 		int N,
 		int w
 		);
+
+/// Dense matrix (uvswi-indexed) representation of any O(3) transformation.
+complex double *qpms_irot3_uvswfi_dense(
+		complex double *target, ///< If NULL, a new array is allocated.
+		const qpms_vswf_set_spec_t *bspec,
+		const qpms_irot3_t transf);
 
 #endif // SYMMETRIES_H
