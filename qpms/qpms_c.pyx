@@ -2,6 +2,7 @@
 # -----------------------------
 
 import numpy as np
+import cmath
 from qpms_cdefs cimport *
 cimport cython
 from cython.parallel cimport parallel, prange
@@ -617,3 +618,112 @@ cdef class trans_calculator:
         return a, b
 
     # TODO make possible to access the attributes (to show normalization etc)
+
+
+
+# Quaternions from wigner.h 
+# (mainly for testing; use moble's quaternions in python)
+
+cdef class cquat:
+    '''
+    Wrapper of the qpms_quat_t object, with the functionality
+    to evaluate Wigner D-matrix elements.
+    '''
+    cdef qpms_quat_t q
+
+    def __cinit__(self, double w, double x, double y, double z):
+        cdef qpms_quat4d_t p
+        p.c1 = w
+        p.ci = x
+        p.cj = y
+        p.ck = z
+        self.q = qpms_quat_2c_from_4d(p)
+
+    def __repr__(self): # TODO make this look like a quaternion with i,j,k
+        return repr(self.r)
+
+    def __add__(cquat self, cquat other):
+        # TODO add real numbers
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_add(self.q, other.q)
+        return res
+
+    def __mul__(cquat self, cquat other):
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_mult(self.q, other.q)
+        return res
+
+    def __neg__(cquat self):
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_rscale(-1, self.q)
+        return res
+
+    def __sub__(cquat self, cquat other):
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_add(self.q, qpms_quat_rscale(-1,other.q))
+        return res
+
+    def __abs__(self):
+        return qpms_quat_norm(self.q)
+
+    def norm(self):
+        return qpms_quat_norm(self.q)
+
+    def imnorm(self):
+        return qpms_quat_imnorm(self.q)
+
+    def exp(self):
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_exp(self.q)
+        return res
+
+    def log(self):
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_exp(self.q)
+        return res
+
+    def __pow__(cquat self, double other, _):
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_pow(self.q, other)
+        return res
+
+    def normalise(self):
+        res = cquat(0,0,0,0)
+        res.q = qpms_quat_normalise(self.q)
+        return res
+
+    property c:
+        '''
+        Quaternion representation as two complex numbers
+        '''
+        def __get__(self):
+            return (self.q.a, self.q.b)
+        def __set__(self, RaRb):
+            self.q.a = RaRb[0]
+            self.q.b = RaRb[1]
+
+    property r:
+        '''
+        Quaternion representation as four real numbers
+        '''
+        def __get__(self):
+            cdef qpms_quat4d_t p
+            p = qpms_quat_4d_from_2c(self.q)
+            return (p.c1, p.ci, p.cj, p.ck)
+        def __set__(self, wxyz):
+            cdef qpms_quat4d_t p
+            p.c1 = wxyz[0]
+            p.ci = wxyz[1]
+            p.cj = wxyz[2]
+            p.ck = wxyz[3]
+            self.q = qpms_quat_2c_from_4d(p)
+
+    def wignerDelem(self, qpms_l_t l, qpms_m_t mp, qpms_m_t m):
+        '''
+        Returns an element of a bosonic Wigner matrix.
+        '''
+        # don't crash on bad l, m here
+        if (abs(m) > l or abs(mp) > l):
+            return 0
+        return qpms_wignerD_elem(self.q, l, mp, m)
+

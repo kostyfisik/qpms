@@ -34,6 +34,9 @@ cdef extern from "qpms_types.h":
         QPMS_NORMALISATION_SPHARM
         QPMS_NORMALISATION_SPHARM_CS
         QPMS_NORMALISATION_UNDEF
+    ctypedef int qpms_lm_t
+    ctypedef int qpms_l_t
+    ctypedef int qpms_m_t
     # maybe more if needed
 
 # Point generators from lattices.h
@@ -69,8 +72,31 @@ cdef extern from "lattices.h":
     PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bint inc_minR,
             double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
 
-
 ctypedef double complex cdouble
+
+cdef extern from "wigner.h":
+    struct qpms_quat_t:
+        cdouble a
+        cdouble b
+    struct qpms_quat4d_t:
+        double c1
+        double ci
+        double cj
+        double ck
+    qpms_quat_t qpms_quat_2c_from_4d(qpms_quat4d_t q)
+    qpms_quat4d_t qpms_quat_4d_from_2c(qpms_quat_t q)
+    qpms_quat_t qpms_quat_mult(qpms_quat_t p, qpms_quat_t q)
+    qpms_quat_t qpms_quat_add(qpms_quat_t p, qpms_quat_t q)
+    qpms_quat_t qpms_quat_rscale(double s, qpms_quat_t q) 
+    qpms_quat_t qpms_quat_conj(qpms_quat_t q) 
+    double qpms_quat_norm(qpms_quat_t q) 
+    double qpms_quat_imnorm(qpms_quat_t q)
+    qpms_quat_t qpms_quat_normalise(qpms_quat_t q) 
+    qpms_quat_t qpms_quat_log(qpms_quat_t q)
+    qpms_quat_t qpms_quat_exp(qpms_quat_t q)
+    qpms_quat_t qpms_quat_pow(qpms_quat_t q, double exponent)
+    cdouble qpms_wignerD_elem(qpms_quat_t q, qpms_l_t l,
+                           qpms_m_t mp, qpms_m_t m)
 
 
 #cdef extern from "numpy/arrayobject.h":
