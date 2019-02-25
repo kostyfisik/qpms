@@ -21,7 +21,6 @@
  */
 #ifndef SYMMETRIES_H
 #define SYMMETRIES_H
-#include "vswf.h"
 #include "qpms_types.h"
 #include <cblas.h>
 

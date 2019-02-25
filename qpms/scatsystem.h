@@ -3,7 +3,7 @@
  */
 #ifndef QPMS_SCATSYSTEM_H
 #define QPMS_SCATSYSTEM_H
-#include "vswf.h"
+#include "qpms_types.h"
 #include <stdbool.h>
 #include <gsl/gsl_spline.h>
 

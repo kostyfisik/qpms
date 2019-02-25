@@ -280,6 +280,26 @@ typedef struct qpms_irot3_t {
         short det; ///< Determinant of the transformation (valid values are 1 (rotation) or -1 (improper rotation)
 } qpms_irot3_t;
 
+/// Specifies a finite set of VSWFs.
+/**
+ * When for example not all the M and N -type waves up to a degree lMax
+ * need to be computed, this will specify the subset.
+ *
+ * A typical use case would be when only even/odd fields wrt. z-plane
+ * mirror symmetry are considered.
+ * 
+ * Check vswf.h for "methods".
+ */
+typedef struct qpms_vswf_set_spec_t {
+        size_t n; ///< Actual number of VSWF indices included in ilist.
+        qpms_uvswfi_t *ilist; ///< List of wave indices.
+        qpms_l_t lMax; ///< Maximum degree of the waves specified in ilist.
+        qpms_l_t lMax_M, ///< Maximum degree of the magnetic (M-type) waves.
+                 lMax_N, ///< Maximum degree of the electric (N-type) waves.
+                 lMax_L; ///< Maximum degree of the longitudinal (L-type) waves.
+        size_t capacity; ///< Allocated capacity of ilist.
+        qpms_normalisation_t norm; ///< Normalisation convention. To be set manually if needed.
+} qpms_vswf_set_spec_t;
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES
