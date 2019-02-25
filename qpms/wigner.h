@@ -61,7 +61,7 @@ static inline qpms_quat_t qpms_quat_exp(const qpms_quat_t q) {
 	const qpms_quat4d_t q4 = qpms_quat_4d_from_2c(q);
 	const double vn = sqrt(q4.ci*q4.ci + q4.cj*q4.cj + q4.ck *q4.ck);
 	const double ea = exp(q4.c1);
-	const double cv = ea*sin(vn)/vn; // "vector" part common prefactor
+	const double cv = vn ? (ea*sin(vn)/vn) : ea; // "vector" part common prefactor
 	const qpms_quat4d_t r4 = {ea * cos(vn), cv*q4.ci, cv*q4.cj, cv*q4.ck};
 	return qpms_quat_2c_from_4d(r4);
 }
