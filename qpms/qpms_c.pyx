@@ -664,7 +664,7 @@ cdef class basespec:
         if 'norm' in kwargs.keys():
             self.s.norm = kwargs['norm']
         else:
-            self.s.norm = QPMS_NORMALISATION_UNDEF
+            self.s.norm = QPMS_NORMALISATION_POWER
         # set the other metadata
         cdef qpms_l_t l
         cdef qpms_m_t m
@@ -707,17 +707,26 @@ cdef class basespec:
     def l(self): # ugly
         return self.tlm()[1]
 
+    def __len__(self):
+        return self.s.n
+
+    def __getitem__(self, key):
+        # TODO raise correct errors (TypeError on bad type of key, IndexError on exceeding index)
+        return self.__ilist[key]
+
     property ilist:
         def __get__(self):
             return self.__ilist
 
-    property rawpointer: 
+    cdef qpms_vswf_set_spec_t *rawpointer(basespec self):
         '''Pointer to the qpms_vswf_set_spec_t structure.
-        Don't forget to reference the basespec object itself!!!
+        Don't forget to reference the basespec object itself when storing the pointer anywhere!!!
         '''
+        return &(self.s)
+
+    property rawpointer:
         def __get__(self):
             return <uintptr_t> &(self.s)
-
 
 # Quaternions from wigner.h 
 # (mainly for testing; use moble's quaternions in python)
@@ -1001,6 +1010,17 @@ cdef class irot3:
         r = irot3()
         r.rot = cquat(math.cos(math.pi/n),0,0,math.sin(math.pi/n))
         return r
+
+    def as_uvswf_matrix(irot3 self, basespec bspec):
+        '''
+        Returns the uvswf representation of the current transform as a numpy array
+        '''
+        cdef ssize_t sz = len(bspec)
+        cdef np.ndarray m = np.empty((sz, sz), dtype=complex, order='C') # FIXME explicit dtype
+        cdef cdouble[:, ::1] view = m
+        qpms_irot3_uvswfi_dense(&view[0,0], bspec.rawpointer(), self.qd)
+        return m
+
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc 

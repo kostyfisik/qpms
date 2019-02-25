@@ -195,7 +195,7 @@ complex double *qpms_irot3_uvswfi_dense(
       qpms_l_t cl;
       qpms_m_t cm;
       if(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl)) abort();
-      if (rl == cl && rm == cm && rt == ct)
+      if (rl == cl && rt == ct)
         // TODO qpms_vswf_irot_elem_from_irot3 might be slow and not too accurate for large l
         target[n*row + col] = // Checkme rm and cm order
           qpms_vswf_irot_elem_from_irot3(t,
