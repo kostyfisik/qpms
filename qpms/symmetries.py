@@ -7,6 +7,7 @@ import numpy as np
 np.set_printoptions(linewidth=200)
 import qpms
 import numbers
+import re
 ň = None
 
 def grouprep_try(tdict, src, im, srcgens, imgens, immultop = None, imcmp = None):
@@ -34,7 +35,7 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
                  permgroupgens, # permutation group generators
                  irrepgens_dict, # dictionary with irrep generators,
                  svwf_rep_gen_func, # function that generates a tuple with svwf representation generators
-                 rep3d_gens = None, # 3d representation generators of a point group
+                 rep3d_gens = None, # 3d (quaternion) representation generators of a point group: sequence of qpms.irep3 instances
                 ):
         self.name = name
         self.permgroupgens = permgroupgens
@@ -54,9 +55,9 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         self.rep3d_gens = rep3d_gens
         self.rep3d = None if rep3d_gens is None else generate_grouprep(
                 self.permgroup,
-                np.eye(3),
+                qpms.irot3(),
                 permgroupgens, rep3d_gens,
-                immultop = np.dot, imcmp = np.allclose
+                immultop = None, imcmp = (lambda x, y: x.isclose(y))
                 )
     
     def svwf_rep(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
@@ -115,18 +116,13 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         s += '  NULL, // elemlabels\n'
         # int permrep_nelem
         s += '  %d, // permrep_nelem\n' % self.permgroup.degree
-        # cmatrix3d rep3d[]
-        if True: #self.rep3d is None:
+        # qpms_irot3_t rep3d[]
+        if self.rep3d is None:
             s += '  NULL, // rep3d TODO!!!\n'
         else:
             s += '  { // rep3d\n'
             for i in range(order):
-                s += '   {  '
-                s += '\n      '.join(
-                    ['{' + ' ,'.join([str(rep3d[permlist[i]][row][col]) for col in range(3)]) 
-                     +'}' for row in range(3) ]
-                )
-                s += '\n   },\n'
+                s += '   ' + self.rep3d[permlist[i]].crepr() + ',\n'
             s += '  },\n'
         # int nirreps
         s += '  %d, // nirreps\n' % len(self.irreps)
@@ -479,7 +475,13 @@ point_group_info = { # representation info of some useful point groups
                                     'B1': (1,-1),    
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax))
+                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax)),
+                 # quaternion rep generators
+                                rep3d_gens = (
+                                    qpms.irot3.xflip(),
+                                    qpms.irot3.yflip(),
+                                )
+
     ),
     'D2h' : SVWFPointGroupInfo('D2h',
                  # permutation group generators
@@ -502,7 +504,13 @@ point_group_info = { # representation info of some useful point groups
                                     "B1''": (-1,1,-1),
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax), qpms.zflip_tyty(lMax))
+                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+                 # quaternion rep generators
+                               rep3d_gens = (
+                                   qpms.irot3.xflip(),
+                                   qpms.irot3.yflip(),
+                                   qpms.irot3.zflip(),
+                                )
     ),
     'C4v' : SVWFPointGroupInfo('C4v',
                  # permutation group generators
@@ -519,7 +527,12 @@ point_group_info = { # representation info of some useful point groups
                                     'B2': (-1,-1),    
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax))
+                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax)),
+                 # quaternion rep generators
+                               rep3d_gens = (
+                                   qpms.irot3.zrotN(4),
+                                   qpms.irot3.xflip(),
+                                )
     ),
     'D4h' : SVWFPointGroupInfo('D4h',
                  # permutation group generators
@@ -541,7 +554,13 @@ point_group_info = { # representation info of some useful point groups
                                     "B2''": (-1,1,-1), 
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax))
+                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+                 # quaternion rep generators
+                               rep3d_gens = (
+                                   qpms.irot3.zrotN(4),
+                                   qpms.irot3.xflip(),
+                                   qpms.irot3.zflip(),
+                                )
     ),
     'D3h' : SVWFPointGroupInfo('D3h',
                  # permutation group generators
@@ -560,6 +579,12 @@ point_group_info = { # representation info of some useful point groups
                                     "A2''" : (1,1,-1),
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax, vflip: (qpms.zrotN_tyty(3, lMax), qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax))
+                               lambda lMax, vflip: (qpms.zrotN_tyty(3, lMax), qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+                 # quaternion rep generators
+                               rep3d_gens = (
+                                   qpms.irot3.zrotN(3),
+                                   qpms.irot3.xflip(), # if vflip == 'y' else qpms.irot3.xflip(), # FIXME enable to choose
+                                   qpms.irot3.zflip(),
+                                )
     ),
 }

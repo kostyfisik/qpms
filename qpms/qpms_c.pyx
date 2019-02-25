@@ -668,9 +668,18 @@ cdef class cquat:
         res.q = qpms_quat_add(self.q, other.q)
         return res
 
-    def __mul__(cquat self, cquat other):
+    def __mul__(self, other):
         res = cquat(0,0,0,0)
-        res.q = qpms_quat_mult(self.q, other.q)
+        if isinstance(self, cquat):
+            if isinstance(other, cquat):
+                res.q = qpms_quat_mult(self.q, other.q)
+            elif isinstance(other, (int, float)):
+                res.q = qpms_quat_rscale(other, self.q)
+            else: return NotImplemented
+        elif isinstance(self, (int, float)):
+            if isinstance(other, cquat):
+                res.q = qpms_quat_rscale(self, other.q)
+            else: return NotImplemented
         return res
 
     def __neg__(cquat self):
@@ -860,4 +869,57 @@ cdef class irot3:
                 # minus the same quaternion represents the same rotation
                 or self.rot.isclose(-(other.rot), rtol=rtol, atol=atol)
             )
+
+    # Several 'named constructors' for convenience
+    @staticmethod
+    def inversion():
+        '''
+        Returns an irot3 object representing the 3D spatial inversion.
+        '''
+        r = irot3()
+        r.det = -1
+        return r
+
+    @staticmethod
+    def zflip():
+        '''
+        Returns an irot3 object representing the 3D xy-plane mirror symmetry (z axis sign flip).
+        '''
+        r = irot3()
+        r.rot = cquat(0,0,0,1) # π-rotation around z-axis
+        r.det = -1 # inversion
+        return r
+
+    @staticmethod
+    def yflip():
+        '''
+        Returns an irot3 object representing the 3D xz-plane mirror symmetry (y axis sign flip).
+        '''
+        r = irot3()
+        r.rot = cquat(0,0,1,0) # π-rotation around y-axis
+        r.det = -1 # inversion
+        return r
+
+    @staticmethod
+    def xflip():
+        '''
+        Returns an irot3 object representing the 3D yz-plane mirror symmetry (x axis sign flip).
+        '''
+        r = irot3()
+        r.rot = cquat(0,1,0,0) # π-rotation around x-axis
+        r.det = -1 # inversion
+        return r
+
+    @staticmethod
+    def zrotN(int n):
+        '''
+        Returns an irot3 object representing a \f$ C_n $\f rotation (around the z-axis).
+        '''
+        r = irot3()
+        r.rot = cquat(math.cos(math.pi/n),0,0,math.sin(math.pi/n))
+        return r
+
+
+
+
 

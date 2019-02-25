@@ -27,6 +27,8 @@ struct qpms_finite_group_irrep_t {
 	complex double *m; 
 };
 
+struct qpms_irot3_t;
+
 /// A point group with its irreducible representations and some metadata.
 /** 
  *  The structure of the group is given by the multiplication table \a mt.
@@ -49,7 +51,7 @@ typedef struct qpms_finite_group_t {
 	qpms_permutation_t permrep[]; ///< Permutation representations of the elements.
 	char **elemlabels; ///< Optional human readable labels for the group elements.
 	int permrep_nelem; ///< Number of the elements over which the permutation representation acts.
-	cmatrix3d rep3d[]; ///< The 'natural' 3D matrix representation of a 3D point group.
+	struct qpms_irot3_t rep3d[]; ///< The quaternion representation of a 3D point group (if applicable).
 	int nirreps; ///< How many irreps does the group have
 	struct qpms_finite_group_irrep_t irreps[]; ///< Irreducible representations of the group.
 } qpms_finite_group_t;
