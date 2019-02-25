@@ -654,6 +654,11 @@ cdef class cquat:
         p.ck = z
         self.q = qpms_quat_2c_from_4d(p)
 
+    def copy(self):
+        res = cquat(0,0,0,0)
+        res.q = self.q
+        return res
+
     def __repr__(self): # TODO make this look like a quaternion with i,j,k
         return repr(self.r)
 
@@ -707,6 +712,12 @@ cdef class cquat:
         res.q = qpms_quat_normalise(self.q)
         return res
 
+    def isclose(cquat self, cquat other, rtol=1e-5, atol=1e-8):
+        '''
+        Checks whether two quaternions are "almost equal".
+        '''
+        return abs(self - other) <= (atol + rtol * abs(other))
+
     property c:
         '''
         Quaternion representation as two complex numbers
@@ -754,11 +765,21 @@ cdef class irot3:
     '''
     cdef qpms_irot3_t qd
 
-    def __cinit__(self, cquat q, short det): # TODO implement a constructor with no arguments
+    def __cinit__(self, cquat q, short det): 
+        # TODO implement a constructor with
+        #  - no arguments (returns identity)
+        #  - irot3 as argument (makes a copy)
+        #  - cquat as argument (returns a corresponding proper rotation)
+        #  - tuple as argument ...?
         if (det != 1 and det != -1):
             raise ValueError("Improper rotation determinant has to be 1 or -1")
         self.qd.rot = q.normalise().q
         self.qd.det = det
+
+    def copy(self):
+        res = irot3(cquat(1,0,0,0),1)
+        res.qd = self.qd
+        return res
 
     property rot:
         '''
@@ -798,10 +819,22 @@ cdef class irot3:
         res.qd = qpms_irot3_mult(self.qd, other.qd)
         return res
 
-    def __pow__(irot3 self, int n, _):
+    def __pow__(irot3 self, n, _):
+        cdef int nint
+        if (n % 1 == 0):
+            nint = n
+        else:
+            raise ValueError("The exponent of an irot3 has to have an integer value.")
         res = irot3(cquat(1,0,0,0), 1)
         res.qd = qpms_irot3_pow(self.qd, n)
         return res
 
-
+    def isclose(irot3 self, irot3 other, rtol=1e-5, atol=1e-8):
+        '''
+        Checks whether two (improper) rotations are "almost equal".
+        Returns always False if the determinants are different.
+        '''
+        if self.det != other.det: 
+            return False
+        return self.rot.isclose(other.rot, rtol=rtol, atol=atol)
 
