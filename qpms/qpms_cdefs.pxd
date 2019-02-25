@@ -1,5 +1,9 @@
 cimport numpy as np
 
+ctypedef double complex cdouble
+
+from libc.stdint cimport uintptr_t
+
 cdef extern from "qpms_types.h":
     cdef struct cart3_t:
         double x
@@ -48,6 +52,30 @@ cdef extern from "qpms_types.h":
     struct qpms_irot3_t:
         qpms_quat_t rot
         short det
+    ctypedef np.ulonglong_t qpms_uvswfi_t
+    struct qpms_vswf_set_spec_t:
+        size_t n
+        qpms_uvswfi_t *ilist
+        qpms_l_t lMax
+        qpms_l_t lMax_M
+        qpms_l_t lMax_N
+        qpms_l_t lMax_L
+        size_t capacity
+        qpms_normalisation_t norm
+    ctypedef enum qpms_errno_t:
+        QPMS_SUCCESS
+        QPMS_ERROR
+        # more if needed
+    ctypedef enum qpms_vswf_type_t:
+        QPMS_VSWF_ELECTRIC
+        QPMS_VSWF_MAGNETIC
+        QPMS_VSWF_LONGITUDINAL
+    # maybe more if needed
+
+cdef extern from "indexing.h":
+    qpms_uvswfi_t qpms_tmn2uvswfi(qpms_vswf_type_t t, qpms_m_t m, qpms_l_t n)
+    qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u, qpms_vswf_type_t* t, qpms_m_t* m, qpms_l_t* n)
+    qpms_m_t qpms_uvswfi2m(qpms_uvswfi_t u)
     # maybe more if needed
 
 # Point generators from lattices.h
@@ -83,7 +111,6 @@ cdef extern from "lattices.h":
     PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bint inc_minR,
             double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
 
-ctypedef double complex cdouble
 
 cdef extern from "wigner.h":
     qpms_quat_t qpms_quat_2c_from_4d(qpms_quat4d_t q)
@@ -103,6 +130,13 @@ cdef extern from "wigner.h":
     qpms_irot3_t qpms_irot3_mult(qpms_irot3_t p, qpms_irot3_t q)
     qpms_irot3_t qpms_irot3_pow(qpms_irot3_t p, int n)
 
+cdef extern from "symmetries.h":
+    cdouble *qpms_zflip_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec)
+    cdouble *qpms_yflip_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec)
+    cdouble *qpms_xflip_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec)
+    cdouble *qpms_zrot_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec, double phi)
+    cdouble *qpms_zrot_rational_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec, int N, int w)
+    cdouble *qpms_irot3_uvswfi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec, qpms_irot3_t transf)
 
 #cdef extern from "numpy/arrayobject.h":
 #    cdef enum NPY_TYPES:

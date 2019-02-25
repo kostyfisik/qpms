@@ -6,6 +6,7 @@
 #include <complex.h>
 #include <stdbool.h>
 #include <stddef.h>
+//#include <stdint.h>
 
 #ifndef M_PI_2
 #define M_PI_2 (1.570796326794896619231321691639751442098584699687552910487)
@@ -65,7 +66,7 @@ typedef enum {
  *  from qpms_types.h instead
  *  as the formula might change in future versions.
  */
-typedef size_t qpms_uvswfi_t; 
+typedef unsigned long long qpms_uvswfi_t; 
 
 /// Error codes / return values for certain numerical functions.
 /** These are de facto a subset of the GSL error codes. */

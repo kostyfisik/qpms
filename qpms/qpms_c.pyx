@@ -636,6 +636,89 @@ def complex_crep(complex c, parentheses = False, shortI = True, has_Imaginary = 
             + (')' if parentheses else '')
         )
 
+cdef class basespec:
+    '''Cython wrapper over qpms_vswf_set_spec_t.
+
+    It should be kept immutable. The memory is managed by numpy/cython, not directly by the C functions, therefore
+    whenever used in other wrapper classes that need the pointer
+    to qpms_vswf_set_spec_t, remember to set a (private, probably immutable) reference to qpms.basespec to ensure
+    correct reference counting and garbage collection.
+    '''
+    cdef qpms_vswf_set_spec_t s
+    cdef np.ndarray __ilist
+    #cdef const qpms_uvswfi_t[:] __ilist
+
+    def __cinit__(self, *args, **kwargs):
+        cdef const qpms_uvswfi_t[:] ilist_memview
+        if len(args) > 0:
+            ilist = args[0]
+            #self.__ilist = np.array(args[0], dtype=qpms_uvswfi_t, order='C', copy=True) # FIXME define the dtypes at qpms_cdef.pxd level
+            self.__ilist = np.array(args[0], dtype=np.ulonglong, order='C', copy=True)
+            self.__ilist.setflags(write=False)
+            ilist_memview = self.__ilist
+            self.s.ilist = &ilist_memview[0]
+            self.s.n = len(self.__ilist)
+            self.s.capacity = 0 # is this the best way?
+        else:
+            raise ValueError
+        if 'norm' in kwargs.keys():
+            self.s.norm = kwargs['norm']
+        else:
+            self.s.norm = QPMS_NORMALISATION_UNDEF
+        # set the other metadata
+        cdef qpms_l_t l
+        cdef qpms_m_t m
+        cdef qpms_vswf_type_t t
+        for i in range(self.s.n):
+            if(qpms_uvswfi2tmn(ilist_memview[i], &t, &m, &l) != QPMS_SUCCESS):
+                raise ValueError("Invalid uvswf index")
+            if (t == QPMS_VSWF_ELECTRIC):
+                self.s.lMax_N = max(self.s.lMax_N, l)
+            elif (t == QPMS_VSWF_MAGNETIC):
+                self.s.lMax_M = max(self.s.lMax_M, l)
+            elif (t == QPMS_VSWF_LONGITUDINAL):
+                self.s.lMax.L = max(self.s.lMax_L, l)
+            else:
+                raise ValueError # If this happens, it's probably a bug, as it should have failed already at qpms_uvswfi2tmn
+            self.s.lMax = max(self.s.lMax, l)
+
+    def tlm(self):
+        cdef const qpms_uvswfi_t[:] ilist_memview = <qpms_uvswfi_t[:self.s.n]> self.s.ilist
+        #cdef qpms_vswf_type_t[:] t = np.empty(shape=(self.s.n,), dtype=qpms_vswf_type_t) # does not work, workaround:
+        cdef size_t i
+        cdef np.ndarray ta = np.empty(shape=(self.s.n,), dtype=np.intc)
+        cdef int[:] t = ta 
+        #cdef qpms_l_t[:] l = np.empty(shape=(self.s.n,), dtype=qpms_l_t) # FIXME explicit dtype again
+        cdef np.ndarray la = np.empty(shape=(self.s.n,), dtype=np.intc) 
+        cdef qpms_l_t[:] l = la 
+        #cdef qpms_m_t[:] m = np.empty(shape=(self.s.n,), dtype=qpms_m_t) # FIXME explicit dtype again
+        cdef np.ndarray ma =  np.empty(shape=(self.s.n,), dtype=np.intc) 
+        cdef qpms_m_t[:] m = ma
+        for i in range(self.s.n):
+            qpms_uvswfi2tmn(self.s.ilist[i], <qpms_vswf_type_t*>&t[i], &m[i], &l[i])
+        return (ta, la, ma)
+
+    def m(self): # ugly
+        return self.tlm()[2]
+
+    def t(self): # ugly
+        return self.tlm()[0]
+
+    def l(self): # ugly
+        return self.tlm()[1]
+
+    property ilist:
+        def __get__(self):
+            return self.__ilist
+
+    property rawpointer: 
+        '''Pointer to the qpms_vswf_set_spec_t structure.
+        Don't forget to reference the basespec object itself!!!
+        '''
+        def __get__(self):
+            return <uintptr_t> &(self.s)
+
+
 # Quaternions from wigner.h 
 # (mainly for testing; use moble's quaternions in python)
 
@@ -919,7 +1002,45 @@ cdef class irot3:
         r.rot = cquat(math.cos(math.pi/n),0,0,math.sin(math.pi/n))
         return r
 
+def tlm2uvswfi(t, l, m):
+    ''' TODO doc 
+    '''
+    # Very low-priority TODO: add some types / cythonize
+    if isinstance(t, int) and isinstance(l, int) and isinstance(m, int): 
+        return qpms_tmn2uvswfi(t, m, l)
+    elif len(t) == len(l) and len(t) == len(m):
+        u = list()
+        for i in range(len(t)):
+            if not (isinstance(t[i], int) and isinstance(l[i], int) and isinstance(m[i], int)): # not the best check possible, though
+                raise ValueError # TODO error message
+            u.append(qpms_tmn2uvswfi(t[i],m[i],l[i]))
+        return u
+    else:
+        raise ValueError # TODO error message
 
+
+def uvswfi2tlm(u):
+    ''' TODO doc
+    '''
+    cdef qpms_vswf_type_t t
+    cdef qpms_l_t l
+    cdef qpms_m_t m
+    cdef size_t i
+    if isinstance(u, (int, np.ulonglong)):
+        if (qpms_uvswfi2tmn(u, &t, &m, &l) != QPMS_SUCCESS):
+            raise ValueError("Invalid uvswf index")
+        return (t, l, m)
+    else:
+        ta = list()
+        la = list()
+        ma = list()
+        for i in range(len(u)):
+            if (qpms_uvswfi2tmn(u[i], &t, &m, &l) != QPMS_SUCCESS):
+                raise ValueError("Invalid uvswf index")
+            ta.append(t)
+            la.append(l)
+            ma.append(m)
+        return (ta, la, ma)
 
 
 
