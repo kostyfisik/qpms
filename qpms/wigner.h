@@ -106,10 +106,17 @@ static inline qpms_quat_t qpms_quat_normalise(qpms_quat_t q) {
 /// Logarithm of a quaternion.
 static inline qpms_quat_t qpms_quat_log(const qpms_quat_t q) {
 	const double n = qpms_quat_norm(q);
-	const double vc = acos(creal(q.a)/n) / qpms_quat_imnorm(q);
-	const qpms_quat_t r = {log(n) + cimag(q.a)*vc*I,
-		q.b*vc};
-	return r;
+	const double imnorm = qpms_quat_imnorm(q);
+	if (imnorm != 0.) {
+		const double vc = acos(creal(q.a)/n) / qpms_quat_imnorm(q);
+		const qpms_quat_t r = {log(n) + cimag(q.a)*vc*I,
+			q.b*vc};
+		return r;
+	}
+	else {
+		const qpms_quat_t r = {log(n), 0};
+		return r;
+	}
 }
 
 /// Quaternion power to a real exponent.
