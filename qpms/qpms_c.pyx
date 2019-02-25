@@ -763,18 +763,37 @@ cdef class irot3:
     '''
     Wrapper over the C type qpms_irot3_t.
     '''
-    cdef qpms_irot3_t qd
+    cdef readonly qpms_irot3_t qd
 
-    def __cinit__(self, cquat q, short det): 
+    def __cinit__(self, *args): 
+        '''
+        TODO doc
+        '''
         # TODO implement a constructor with
-        #  - no arguments (returns identity)
-        #  - irot3 as argument (makes a copy)
-        #  - cquat as argument (returns a corresponding proper rotation)
         #  - tuple as argument ...?
-        if (det != 1 and det != -1):
-            raise ValueError("Improper rotation determinant has to be 1 or -1")
-        self.qd.rot = q.normalise().q
-        self.qd.det = det
+        if (len(args) == 0): # no args, return identity
+            self.qd.rot.a = 1
+            self.qd.rot.b = 0
+            self.qd.det = 1
+        elif (len(args) == 2 and isinstance(args[0], cquat) and isinstance(args[1], (int, float))):
+            # The original __cinit__(self, cquat q, short det) constructor
+            q = args[0]
+            det = args[1]
+            if (det != 1 and det != -1):
+                raise ValueError("Improper rotation determinant has to be 1 or -1")
+            self.qd.rot = q.normalise().q
+            self.qd.det = det
+        elif (len(args) == 1 and isinstance(args[0], irot3)):
+            # Copy
+            self.qd = args[0].qd
+        elif (len(args) == 1 and isinstance(args[0], cquat)):
+            # proper rotation from a quaternion
+            q = args[0]
+            det = 1
+            self.qd.rot = q.normalise().q
+            self.qd.det = det
+        else:
+            raise ValueError('Unsupported constructor arguments')
 
     def copy(self):
         res = irot3(cquat(1,0,0,0),1)
