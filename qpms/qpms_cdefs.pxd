@@ -97,6 +97,11 @@ cdef extern from "wigner.h":
     qpms_quat_t qpms_quat_pow(qpms_quat_t q, double exponent)
     cdouble qpms_wignerD_elem(qpms_quat_t q, qpms_l_t l,
                            qpms_m_t mp, qpms_m_t m)
+    struct qpms_irot3_t:
+        qpms_quat_t rot
+        short det
+    qpms_irot3_t qpms_irot3_mult(qpms_irot3_t p, qpms_irot3_t q)
+    qpms_irot3_t qpms_irot3_pow(qpms_irot3_t p, int n)
 
 
 #cdef extern from "numpy/arrayobject.h":

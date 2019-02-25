@@ -8,7 +8,7 @@ Installation
 The package depends on numpy, scipy, cython and GSL (>= 2.0).
 The first three can be obtained by pip. If you have a recent enough OS,
 you can get GSL easily from the repositories; on Debian and derivatives,
-just run `apt-get install libgsl-dev` under root. Alternatively,
+just run ``apt-get install libgsl-dev`` under root. Alternatively,
 you can `get the source 
 <https://www.gnu.org/software/gsl/>`_ get the source and compile it yourself.
 

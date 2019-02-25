@@ -6,6 +6,8 @@
 
 #include "qpms_types.h"
 
+#include "tiny_inlines.h"
+
 /// Quaternion type.
 /**
  * Internaly represented as a pair of complex numbers,
@@ -19,6 +21,12 @@ typedef struct qpms_quat_t {
 typedef struct qpms_quat4d_t {
 	double c1, ci, cj, ck;
 } qpms_quat4d_t;
+
+/// 3D improper rotations represented as a quaternion and a sign of the determinant.
+typedef struct qpms_irot3_t {
+	qpms_quat_t rot; ///< Quaternion representing the rotation part.
+	short det; ///< Determinant of the transformation (valid values are 1 (rotation) or -1 (improper rotation)
+} qpms_irot3_t;
 
 /// Conversion from the 4*double to the 2*complex quaternion.
 // TODO is this really correct? 
@@ -133,5 +141,30 @@ static inline qpms_quat_t qpms_quat_pow(const qpms_quat_t q, const double expone
  */
 complex double qpms_wignerD_elem(qpms_quat_t q, qpms_l_t l,
 	       qpms_m_t	mp, qpms_m_t m);
+
+static inline int qpms_irot3_checkdet(const qpms_irot3_t p) {
+	if (p.det != 1 && p.det != -1) abort();
+	return 0;
+}
+
+/// Improper rotation multiplication.
+static inline qpms_irot3_t qpms_irot3_mult(const qpms_irot3_t p, const qpms_irot3_t q) {
+#ifndef NDEBUG
+	qpms_irot3_checkdet(p);
+	qpms_irot3_checkdet(q);
+#endif
+	const qpms_irot3_t r = {qpms_quat_normalise(qpms_quat_mult(p.rot, q.rot)), p.det*q.det};
+	return r;
+}
+
+/// Improper rotation power \f$ p^n \f$.
+static inline qpms_irot3_t qpms_irot3_pow(const qpms_irot3_t p, int n) {
+#ifndef NDEBUG
+	qpms_irot3_checkdet(p);
+#endif
+	const qpms_irot3_t r = {qpms_quat_normalise(qpms_quat_pow(p.rot, n)),
+		p.det == -1 ? min1pow(n) : 1};
+	return r;
+}
 
 #endif //QPMS_WIGNER_H

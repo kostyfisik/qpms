@@ -629,7 +629,7 @@ cdef class cquat:
     Wrapper of the qpms_quat_t object, with the functionality
     to evaluate Wigner D-matrix elements.
     '''
-    cdef qpms_quat_t q
+    cdef readonly qpms_quat_t q
 
     def __cinit__(self, double w, double x, double y, double z):
         cdef qpms_quat4d_t p
@@ -726,4 +726,55 @@ cdef class cquat:
         if (abs(m) > l or abs(mp) > l):
             return 0
         return qpms_wignerD_elem(self.q, l, mp, m)
+
+cdef class irot3:
+    '''
+    Wrapper over the C type qpms_irot3_t.
+    '''
+    cdef qpms_irot3_t qd
+
+    def __cinit__(self, cquat q, short det): # TODO implement a constructor with no arguments
+        if (det != 1 and det != -1):
+            raise ValueError("Improper rotation determinant has to be 1 or -1")
+        self.qd.rot = q.normalise().q
+        self.qd.det = det
+
+    property rot:
+        '''
+        The proper rotation part of the irot3 type.
+        '''
+        def __get__(self):
+            res = cquat(0,0,0,0)
+            res.q = self.qd.rot
+            return res
+        def __set__(self, cquat r):
+            # TODO check for non-zeroness and throw an exception if norm is zero
+            self.qd.rot = r.normalise().q
+
+    property det:
+        '''
+        The determinant of the improper rotation.
+        '''
+        def __get__(self):
+            return self.qd.det
+        def __set__(self, d):
+            d = int(d)
+            if (d != 1 and d != -1):
+                raise ValueError("Improper rotation determinant has to be 1 or -1")
+            self.qd.det = d
+
+    def __repr__(self): # TODO make this look like a quaternion with i,j,k
+        return '(' + repr(self.rot) + ', ' + repr(self.det) + ')'
+
+    def __mul__(irot3 self, irot3 other):
+        res = irot3(cquat(1,0,0,0), 1) 
+        res.qd = qpms_irot3_mult(self.qd, other.qd)
+        return res
+
+    def __pow__(irot3 self, int n, _):
+        res = irot3(cquat(1,0,0,0), 1)
+        res.qd = qpms_irot3_pow(self.qd, n)
+        return res
+
+
 
