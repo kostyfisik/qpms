@@ -6,6 +6,10 @@ import cmath
 from qpms_cdefs cimport *
 cimport cython
 from cython.parallel cimport parallel, prange
+
+import math # for copysign in crep methods
+#import re # TODO for crep methods?
+
 #cimport openmp
 #openmp.omp_set_dynamic(1)
 
@@ -620,6 +624,17 @@ cdef class trans_calculator:
     # TODO make possible to access the attributes (to show normalization etc)
 
 
+def complex_crep(complex c, parentheses = False, shortI = True, has_Imaginary = False):
+    '''
+    Return a C-code compatible string representation of a (python) complex number.
+    '''
+    return ( ('(' if parentheses else '')
+            + repr(c.real)
+            + ('+' if math.copysign(1, c.imag) >= 0 else '')
+            + repr(c.imag)
+            + ('*I' if shortI else '*_Imaginary_I' if has_Imaginary else '*_Complex_I')
+            + (')' if parentheses else '')
+        )
 
 # Quaternions from wigner.h 
 # (mainly for testing; use moble's quaternions in python)
@@ -718,6 +733,12 @@ cdef class cquat:
             p.ck = wxyz[3]
             self.q = qpms_quat_2c_from_4d(p)
 
+    def crepr(self):
+        '''
+        Returns a string that can be used in C code to initialise a qpms_irot3_t
+        '''
+        return '{' + complex_crep(self.q.a) + ', ' + complex_crep(self.q.b)  + '}'
+
     def wignerDelem(self, qpms_l_t l, qpms_m_t mp, qpms_m_t m):
         '''
         Returns an element of a bosonic Wigner matrix.
@@ -765,6 +786,12 @@ cdef class irot3:
 
     def __repr__(self): # TODO make this look like a quaternion with i,j,k
         return '(' + repr(self.rot) + ', ' + repr(self.det) + ')'
+
+    def crepr(self):
+        '''
+        Returns a string that can be used in C code to initialise a qpms_irot3_t
+        '''
+        return '{' + self.rot.crepr() + ', ' + repr(self.det) + '}'
 
     def __mul__(irot3 self, irot3 other):
         res = irot3(cquat(1,0,0,0), 1) 
