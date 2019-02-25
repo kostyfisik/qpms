@@ -855,5 +855,9 @@ cdef class irot3:
         '''
         if self.det != other.det: 
             return False
-        return self.rot.isclose(other.rot, rtol=rtol, atol=atol)
+        return (self.rot.isclose(other.rot, rtol=rtol, atol=atol)
+                # unit quaternions are a double cover of SO(3), i.e.
+                # minus the same quaternion represents the same rotation
+                or self.rot.isclose(-(other.rot), rtol=rtol, atol=atol)
+            )
 
