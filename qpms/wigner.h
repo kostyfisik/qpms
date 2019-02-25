@@ -8,25 +8,6 @@
 
 #include "tiny_inlines.h"
 
-/// Quaternion type.
-/**
- * Internaly represented as a pair of complex numbers,
- * \f$ Q_a = Q_1 + iQ_z, Q_b = Q_y + i Q_x\f$.
- */
-typedef struct qpms_quat_t {
-	complex double a, b;
-} qpms_quat_t;
-
-/// Quaternion type as four doubles.
-typedef struct qpms_quat4d_t {
-	double c1, ci, cj, ck;
-} qpms_quat4d_t;
-
-/// 3D improper rotations represented as a quaternion and a sign of the determinant.
-typedef struct qpms_irot3_t {
-	qpms_quat_t rot; ///< Quaternion representing the rotation part.
-	short det; ///< Determinant of the transformation (valid values are 1 (rotation) or -1 (improper rotation)
-} qpms_irot3_t;
 
 /// Conversion from the 4*double to the 2*complex quaternion.
 // TODO is this really correct? 
@@ -134,13 +115,24 @@ static inline qpms_quat_t qpms_quat_pow(const qpms_quat_t q, const double expone
 	return qpms_quat_exp(qe);
 }
 
-/// Wigner D matrix element from a rotator quaternion for integer l.
+/// Wigner D matrix element from a rotator quaternion for integer \a l.
 /**
  * The D matrix are calculated using formulae (3), (4), (6), (7) from
  * http://moble.github.io/spherical_functions/WignerDMatrices.html
  */
 complex double qpms_wignerD_elem(qpms_quat_t q, qpms_l_t l,
 	       qpms_m_t	mp, qpms_m_t m);
+
+/// A VSWF representation element of the O(3) group.
+/**
+ * TODO more doc.
+ */
+complex double qpms_vswf_irot_elem_from_irot3(
+		const qpms_irot3_t q, ///< The O(3) element in the quaternion representation.
+		qpms_l_t l, qpms_m_t mp, qpms_m_t m,
+		bool pseudo ///< Determines the sign of improper rotations. True for magnetic waves, false otherwise.
+		);
+
 
 static inline int qpms_irot3_checkdet(const qpms_irot3_t p) {
 	if (p.det != 1 && p.det != -1) abort();

@@ -54,4 +54,16 @@ complex double qpms_wignerD_elem(const qpms_quat_t R,
   }
 }
 
-
+complex double qpms_vswf_irot_elem_from_irot3(const_qpms_irot3_t q,
+    qpms_l_t l, qpms_m_t mp, qpms_m_t m, bool pseudo) {
+#ifndef NDEBUG
+  qpms_irot3_checkdet(q);
+#endif
+  complex double res = qpms_wignerD_elem(q.rot, l, mp);
+  if (q.det == -1) {
+    res *= min1pow(l);
+    if (pseudo)
+      res *= -1;
+  }
+  return res;
+}

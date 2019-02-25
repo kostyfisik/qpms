@@ -37,6 +37,17 @@ cdef extern from "qpms_types.h":
     ctypedef int qpms_lm_t
     ctypedef int qpms_l_t
     ctypedef int qpms_m_t
+    struct qpms_quat_t:
+        cdouble a
+        cdouble b
+    struct qpms_quat4d_t:
+        double c1
+        double ci
+        double cj
+        double ck
+    struct qpms_irot3_t:
+        qpms_quat_t rot
+        short det
     # maybe more if needed
 
 # Point generators from lattices.h
@@ -75,14 +86,6 @@ cdef extern from "lattices.h":
 ctypedef double complex cdouble
 
 cdef extern from "wigner.h":
-    struct qpms_quat_t:
-        cdouble a
-        cdouble b
-    struct qpms_quat4d_t:
-        double c1
-        double ci
-        double cj
-        double ck
     qpms_quat_t qpms_quat_2c_from_4d(qpms_quat4d_t q)
     qpms_quat4d_t qpms_quat_4d_from_2c(qpms_quat_t q)
     qpms_quat_t qpms_quat_mult(qpms_quat_t p, qpms_quat_t q)
@@ -97,9 +100,6 @@ cdef extern from "wigner.h":
     qpms_quat_t qpms_quat_pow(qpms_quat_t q, double exponent)
     cdouble qpms_wignerD_elem(qpms_quat_t q, qpms_l_t l,
                            qpms_m_t mp, qpms_m_t m)
-    struct qpms_irot3_t:
-        qpms_quat_t rot
-        short det
     qpms_irot3_t qpms_irot3_mult(qpms_irot3_t p, qpms_irot3_t q)
     qpms_irot3_t qpms_irot3_pow(qpms_irot3_t p, int n)
 
