@@ -52,7 +52,7 @@ typedef struct qpms_particle_t {
  *  This function actually checks for identical vswf specs.
  * TODO define constants with "default" atol, rtol for this function.
  */
-bool qpms_tmatrix_isnear(const qpms_tmatrix_t *T1, const qpms_tmatrix_t *T2,
+bool qpms_tmatrix_isclose(const qpms_tmatrix_t *T1, const qpms_tmatrix_t *T2,
 		const double rtol, const double atol);
 
 /// Creates a T-matrix from another matrix and a symmetry operation.
@@ -63,6 +63,17 @@ bool qpms_tmatrix_isnear(const qpms_tmatrix_t *T1, const qpms_tmatrix_t *T2,
  */
 qpms_tmatrix_t *qpms_tmatrix_apply_symop(
 		const qpms_tmatrix_t *T, ///< the original T-matrix
+		const complex double *M ///< the symmetry op matrix in row-major format
+		);
+
+/// Applies a symmetry operation onto a T-matrix, rewriting the original T-matrix data.
+/** The symmetry operation is expected to be a unitary (square) 
+ *  matrix \a M with the same
+ *  VSWF basis spec as the T-matrix (i.e. \a t->spec). The new T-matrix will then
+ *  correspond to CHECKME \f[ T' = MTM^\dagger \f] 
+ */
+qpms_tmatrix_t *qpms_tmatrix_apply_symop_inplace(
+		qpms_tmatrix_t *T, ///< the original T-matrix
 		const complex double *M ///< the symmetry op matrix in row-major format
 		);
 
@@ -154,7 +165,7 @@ extern const gsl_interp_type * gsl_interp_akima_periodic;
 extern const gsl_interp_type * gsl_interp_steffen;
 */
 
-// struct gsl_interp_accel; // use if lookup shows to be too slow
+// struct gsl_interp_accel; // use if lookup proves to be too slow
 typedef struct qpms_tmatrix_interpolator_t {
 	const qpms_vswf_set_spec_t *bspec;
 	//bool owns_bspec;
@@ -177,8 +188,42 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Num
 	       //, bool copy_bspec ///< if true, copies its own copy of basis spec from the first T-matrix.
        	       /*, ...? */);
 
+
+/// A particle, defined by its T-matrix INDEX and position, to be used in qpms_scatsys_t.
+typedef struct qpms_particle_tid_t {
+	// Does it make sense to ever use other than cartesian coords for this?
+	cart3_t pos; ///< Particle position in cartesian coordinates.
+	ptrdiff_t tmatrix_id; ///< T-matrix index
+} qpms_particle_tid_t;
+
+struct qpms_finite_group_t;
+
 typedef struct qpms_scatsys_t {
-	;
+	// TODO does bspec belong here?
+	qpms_tmatrix_t **tm; ///< T-matrices in the system
+	ptrdiff_t tm_count; ///< Number of all different T-matrices
+	ptrdiff_t tm_capacity; ///< Capacity of tm[].
+	qpms_particle_tid_t *p; ///< Particles.
+	ptrdiff_t p_count; ///< Size of particles array.
+	ptrdiff_t p_capacity; ///< Capacity of p[].
+
+	//TODO the index types do not need to be so big.
+	struct qpms_finite_group_t *sym; ///< Symmetry group of the array
+	ptrdiff_t *p_sym_map; ///< Which particles map onto which by the symmetry ops.
+	///< p_sym_map[idi + pi * sym->order] gives the index of pi-th particle under the idi'th sym op.
+	ptrdiff_t *tm_sym_map; ///< Which t-matrices map onto which by the symmetry ops. Lookup by tm_sum_map[idi + tmi * sym->order].
+
+	// TODO shifted origin of the symmetry group etc.
+	// TODO some indices for fast operations here.
+	// private
+	double lenscale; // radius of the array, used as a relative tolerance measure
 } qpms_scatsys_t;
+
+/// Creates a new scatsys by applying a symmetry group, copying particles if needed.
+/** In fact, it copies everything except the vswf set specs, so keep them alive until scatsys is destroyed.
+ */
+qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym);
+/// Destroys the result of qpms_scatsys_apply_symmetry.
+void qpms_scatsys_free(qpms_scatsys_t *s);
 
 #endif //QPMS_SCATSYSTEM_H

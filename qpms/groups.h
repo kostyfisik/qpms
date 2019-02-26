@@ -19,7 +19,7 @@ typedef const char * qpms_permutation_t;
 /// To be used only in qpms_finite_group_t
 struct qpms_finite_group_irrep_t {
 	int dim; ///< Irrep dimension.
-	char name[]; ///< Irrep label.
+	char *name; ///< Irrep label.
 	/// Irrep matrix data.
 	/** The r-th row, c-th column of the representation of the i'th element is retrieved as
 	 *  m[i * dim * dim + r * dim + c]
@@ -49,12 +49,12 @@ typedef struct qpms_finite_group_t {
 	qpms_gmi_t *invi; ///< Group elem inverse indices.
 	qpms_gmi_t *gens; ///< A canonical set of group generators.
 	int ngens; ///< Number of the generators in gens;
-	qpms_permutation_t permrep[]; ///< Permutation representations of the elements.
+	qpms_permutation_t *permrep; ///< Permutation representations of the elements.
 	char **elemlabels; ///< Optional human readable labels for the group elements.
 	int permrep_nelem; ///< Number of the elements over which the permutation representation acts.
-	struct qpms_irot3_t rep3d[]; ///< The quaternion representation of a 3D point group (if applicable).
+	struct qpms_irot3_t *rep3d; ///< The quaternion representation of a 3D point group (if applicable).
 	int nirreps; ///< How many irreps does the group have
-	struct qpms_finite_group_irrep_t irreps[]; ///< Irreducible representations of the group.
+	struct qpms_finite_group_irrep_t *irreps; ///< Irreducible representations of the group.
 } qpms_finite_group_t;
 
 

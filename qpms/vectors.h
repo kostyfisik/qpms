@@ -122,6 +122,14 @@ static inline cart3_t cart3_scale(const double c, const cart3_t v) {
 	return res;
 }
 
+static inline double cart3_dist(const cart3_t a, const cart3_t b) {
+	return cart3norm(cart3_substract(a,b));
+}
+
+static inline bool cart3_isclose(const cart3_t a, const cart3_t b, double rtol, double atol) {
+	return cart3_dist(a,b) <= atol + rtol * (cart3norm(b) + cart3norm(a)) * .5;
+}
+
 static inline ccart3_t ccart3_scale(const complex  double c, const ccart3_t v) {
 	ccart3_t res = {c * v.x, c * v.y, c * v.z};
 	return res;
@@ -160,6 +168,7 @@ static inline complex double csphvec_dotnc(const csphvec_t a, const csphvec_t b)
 static inline double cart3_dot(const cart3_t a, const cart3_t b) {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
+
 
 // equivalent to sph_loccart2cart in qpms_p.py
 static inline ccart3_t csphvec2ccart(const csphvec_t sphvec, const sph_t at) {

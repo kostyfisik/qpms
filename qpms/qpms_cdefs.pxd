@@ -185,5 +185,18 @@ cdef extern from "translations.h":
             char *phi_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides,
             char *r_ge_d_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides) nogil
 
+cdef extern from "scatsystem.h":
+    struct qpms_tmatrix_t:
+        qpms_vswf_set_spec_t *spec
+        cdouble *m
+        int owns_m # FIXME in fact bool
+    struct qpms_particle_t:
+        cart3_t pos
+        const qpms_tmatrix_t *tmatrix
+    struct qpms_tmatrix_interpolator_t:
+        const qpms_vswf_set_spec_t *bspec
+    struct qpms_scatsys_t:
+        pass # TODO
+
 
 
