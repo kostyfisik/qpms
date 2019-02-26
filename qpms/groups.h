@@ -43,9 +43,10 @@ struct qpms_irot3_t;
  */
 typedef struct qpms_finite_group_t {
 	char *name;
-	size_t order; ///< Group order (number of elements)
+	qpms_gmi_t order; ///< Group order (number of elements)
 	qpms_gmi_t idi; ///< Identity element index
 	qpms_gmi_t *mt; ///< Group multiplication table. If c = a*b, then ic = mt[order * ia + ib].
+	qpms_gmi_t *invi; ///< Group elem inverse indices.
 	qpms_gmi_t *gens; ///< A canonical set of group generators.
 	int ngens; ///< Number of the generators in gens;
 	qpms_permutation_t permrep[]; ///< Permutation representations of the elements.

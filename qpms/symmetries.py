@@ -103,6 +103,10 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
             ss = ', '.join([str(permindices[permlist[i]*permlist[j]]) for j in range(order)])
             s += '    ' + ss + ',\n'
         s += '  },\n'
+        # qpms_gmi_t *invi
+        s += '  { // invi\n'
+        s += '    ' + ', '.join([str(permindices[permlist[j]**-1]) for j in range(order)])
+        s += '\n  },\n'
         # qpms_gmi_t *gens
         s += '  {' + ', '.join([str(permindices[g]) for g in self.permgroupgens]) + '}, // gens\n'
         # int ngens
@@ -111,7 +115,7 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         s += '  { // permrep\n'
         for i in range(order):
             s += '    "%s",\n' % str(permlist[i])
-        s += '  }\n'
+        s += '  },\n'
         # char **elemlabels
         s += '  NULL, // elemlabels\n'
         # int permrep_nelem
