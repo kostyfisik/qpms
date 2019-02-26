@@ -5,7 +5,7 @@
 #define QPMS_WIGNER_H
 
 #include "qpms_types.h"
-
+#include "vectors.h"
 #include "tiny_inlines.h"
 
 
@@ -115,6 +115,28 @@ static inline qpms_quat_t qpms_quat_pow(const qpms_quat_t q, const double expone
 	return qpms_quat_exp(qe);
 }
 
+/// Make a pure imaginary quaternion from a 3d cartesian vector.
+static inline qpms_quat_t qpms_quat_from_cart3(const cart3_t c) {
+	const qpms_quat4d_t q4 = {0, c.x, c.y, c.z};
+	return qpms_quat_2c_from_4d(q4);
+}
+
+/// Make a 3d cartesian vector from the imaginary part of a quaternion.
+static inline cart3_t qpms_quat_to_cart3(const qpms_quat_t q) {
+	const qpms_quat4d_t q4 = qpms_quat_4d_from_2c(q);
+	const cart3_t c = {q4.ci, q4.cj, q4.ck};
+	return c;
+}
+
+/// Rotate a 3-dimensional cartesian vector using the quaternion/versor representation.
+static inline cart3_t qpms_quat_rot_cart3(qpms_quat_t q, const cart3_t v) {
+	q = qpms_quat_normalise(q);
+	const qpms_quat_t qc = qpms_quat_normalise(qpms_quat_pow(q, -1));
+	const qpms_quat_t vv = qpms_quat_from_cart3(v);
+	return qpms_quat_to_cart3(qpms_quat_mult(qc,
+				qpms_quat_mult(vv, q)));
+}
+
 /// Wigner D matrix element from a rotator quaternion for integer \a l.
 /**
  * The D matrix are calculated using formulae (3), (4), (6), (7) from
@@ -157,6 +179,14 @@ static inline qpms_irot3_t qpms_irot3_pow(const qpms_irot3_t p, int n) {
 	const qpms_irot3_t r = {qpms_quat_normalise(qpms_quat_pow(p.rot, n)),
 		p.det == -1 ? min1pow(n) : 1};
 	return r;
+}
+
+/// Apply an improper rotation onto a 3d cartesian vector.
+static inline cart3_t qpms_irot3_apply_cart3(const qpms_irot3_t p, const cart3_t v) {
+#ifndef NDEBUG
+	qpms_irot3_checkdet(p);
+#endif
+	return cart3_scale(p.det, qpms_quat_rot_cart3(p.rot, v));
 }
 
 #endif //QPMS_WIGNER_H
