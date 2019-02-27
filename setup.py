@@ -40,7 +40,7 @@ setup(name='qpms',
         version = "0.2.994",
         packages=['qpms'],
         setup_requires=['cython>0.28'],
-        install_requires=['cython>=0.21','quaternion','spherical_functions','scipy>=0.14.0'
+        install_requires=['cython>=0.21','quaternion','spherical_functions','scipy>=0.18.0'
             #'py_gmm' # no longer needed
             ],
         # TODO implement https://stackoverflow.com/questions/17366784/setuptools-unable-to-use-link-from-dependency-links and update README.md accordingly

@@ -289,7 +289,7 @@ _sph_zn = [_sph_zn_1,_sph_zn_2,_sph_zn_3,_sph_zn_4]
 # computes bessel/hankel functions for orders from 0 up to n; 
 #@jit
 def zJn(n, z, J=1):
-    return (_sph_zn[J-1](n=n,z=z,derivative=False), _sph_zn[J-1](n=n,z=z,derivative=True))
+    return (_sph_zn[J-1](n=np.arange(n+1),z=z,derivative=False), _sph_zn[J-1](n=np.arange(n+1),z=z,derivative=True))
 
 
 
