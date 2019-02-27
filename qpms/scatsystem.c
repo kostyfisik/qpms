@@ -373,9 +373,25 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   ss->p = realloc(ss->p, sizeof(qpms_particle_tid_t) * ss->p_count); ss->p_capacity = ss->p_count;
 
   ss->sym = sym;
+
+  // Set ss->fecv_size and ss->fecv_pstarts
+  ss->fecv_size = 0;
+  ss->fecv_pstarts = malloc(ss->p_count * sizeof(size_t));
+  for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    ss->fecv_pstarts[pi] = ss->fecv_size;
+    ss->fecv_size += ss->tm[ss->p[pi].tmatrix_id]->spec->n; // That's a lot of dereferencing!
+  }
+
   return ss;
 }
 
-  
 
+void qpms_scatsys_free(qpms_scatsys_t *ss) {
+  free(ss->tm);
+  free(ss->p);
+  free(ss->fecv_pstarts);
+  free(ss->tm_sym_map);
+  free(ss->p_sym_map);
+  free(ss);
+}
 

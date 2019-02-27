@@ -212,6 +212,12 @@ typedef struct qpms_scatsys_t {
 	qpms_ss_pi_t *p_sym_map; ///< Which particles map onto which by the symmetry ops.
 	///< p_sym_map[idi + pi * sym->order] gives the index of pi-th particle under the idi'th sym op.
 	qpms_ss_tmi_t *tm_sym_map; ///< Which t-matrices map onto which by the symmetry ops. Lookup by tm_sum_map[idi + tmi * sym->order].
+	size_t fecv_size; ///< Number of elements of a full excitation coefficient vector size. 
+	//size_t *saecv_sizes; ///< NI. Number of elements of symmetry-adjusted coefficient vector sizes (order as in sym->irreps). 
+
+	size_t *fecv_pstarts; ///< Indices of where pi'th particle's excitation coeffs start in a full excitation coefficient vector.
+	//size_t **saecv_pstarts; ///< NI. Indices of where pi'th particle's excitation coeff start in a symmetry-adjusted e.c.v.
+	///**< First index is irrep index as in sym->irreps, second index is particle index. */
 
 	// TODO shifted origin of the symmetry group etc.
 	// TODO some indices for fast operations here.
