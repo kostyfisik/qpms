@@ -266,7 +266,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   {
     double minx = +INFINITY, miny = +INFINITY, minz = +INFINITY;
     double maxx = -INFINITY, maxy = -INFINITY, maxz = -INFINITY;
-    for (ssize_t i = 0; i < orig->p_count; ++i) {
+    for (qpms_ss_pi_t i = 0; i < orig->p_count; ++i) {
       minx = MIN(minx,orig->p[i].pos.x);
       miny = MIN(miny,orig->p[i].pos.y);
       minz = MIN(minz,orig->p[i].pos.z);
@@ -278,8 +278,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   }
 
   // Second, check that there are no duplicit positions in the input system.
-  for (ssize_t i = 0; i < orig->p_count; ++i)
-    for (ssize_t j = 0; j < i; ++j)
+  for (qpms_ss_pi_t i = 0; i < orig->p_count; ++i)
+    for (qpms_ss_pi_t j = 0; j < i; ++j)
       assert(!cart3_isclose(orig->p[i].pos, orig->p[j].pos, 0, QPMS_SCATSYS_LEN_RTOL * lenscale));
 
   // Allocate T-matrix and particle arrays
@@ -294,11 +294,11 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
 
   // Copy T-matrices; checking for duplicitie
 
-  ptrdiff_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities
+  qpms_ss_tmi_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities
   ss->tm_count = 0;
-  for (ptrdiff_t i = 0; i < orig->tm_count; ++i) {
+  for (qpms_ss_tmi_t i = 0; i < orig->tm_count; ++i) {
     bool found_dupl = false;
-    ptrdiff_t j;
+    qpms_ss_tmi_t j;
     for (j = 0; j < ss->tm_count; ++j) 
       if (qpms_tmatrix_isclose(orig->tm[i], ss->tm[j], QPMS_SCATSYS_TMATRIX_RTOL, QPMS_SCATSYS_TMATRIX_ATOL)) {
         break;
@@ -311,23 +311,23 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   }
 
   // Copy particles, remapping the t-matrix indices
-  for (ptrdiff_t i = 0; i < orig->p_count; ++(i)) {
+  for (qpms_ss_pi_t i = 0; i < orig->p_count; ++(i)) {
     ss->p[i] = orig->p[i];
     ss->p[i].tmatrix_id = tm_dupl_remap[ss->p[i].tmatrix_id];
   }
   ss->p_count = orig->p_count;
 
   // allocate t-matrix symmetry map
-  ss->tm_sym_map = malloc(sizeof(ptrdiff_t) * sym->order * sym->order * ss->tm_count);
+  ss->tm_sym_map = malloc(sizeof(qpms_ss_tmi_t) * sym->order * sym->order * ss->tm_count);
 
   // Extend the T-matrices list by the symmetry operations
-  for (ptrdiff_t tmi = 0; tmi < ss->tm_count; ++tmi) 
+  for (qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) 
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi){
       const size_t d = ss->tm[tmi]->spec->n;
       complex double M[d][d]; // transformation matrix
       qpms_irot3_uvswfi_dense(M[0], ss->tm[tmi]->spec, sym->rep3d[gmi]);
       qpms_tmatrix_t *transformed = qpms_tmatrix_apply_symop(ss->tm[tmi], M[0]);
-      ptrdiff_t tmj;
+      qpms_ss_tmi_t tmj;
       for (tmj = 0; tmj < ss->tm_count; ++tmj)
         if (qpms_tmatrix_isclose(transformed, ss->tm[tmj], QPMS_SCATSYS_TMATRIX_RTOL, QPMS_SCATSYS_TMATRIX_ATOL))
           break;
@@ -340,19 +340,19 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       ss->tm_sym_map[gmi + tmi * sym->order] = tmj; // In any case, tmj now indexes the correct transformed matrix
     }
   // Possibly free some space using the new ss->tm_count instead of (old) ss->tm_count*sym->order
-  ss->tm_sym_map = realloc(ss->tm_sym_map, sizeof(ptrdiff_t) * sym->order * ss->tm_count);
+  ss->tm_sym_map = realloc(ss->tm_sym_map, sizeof(qpms_ss_tmi_t) * sym->order * ss->tm_count);
   // tm could be realloc'd as well, but those are just pointers, not likely many.
   
   // allocate particle symmetry map
-  ss->p_sym_map = malloc(sizeof(ptrdiff_t) * sym->order * sym->order * ss->p_count);
+  ss->p_sym_map = malloc(sizeof(qpms_ss_pi_t) * sym->order * sym->order * ss->p_count);
   // Extend the particle list by the symmetry operations, check that particles mapped by symmetry ops on themselves
   // have the correct symmetry
   // TODO this could be sped up to O(npart * log(npart)); let's see later if it is needed.
-  for (ptrdiff_t pi = 0; pi < ss->p_count; ++pi)
+  for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi)
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi) {
       cart3_t newpoint = qpms_irot3_apply_cart3(sym->rep3d[gmi], ss->p[pi].pos);
-      ptrdiff_t new_tmi = ss->tm_sym_map[gmi + ss->p[pi].tmatrix_id * sym->order]; // transformed t-matrix index
-      ptrdiff_t pj;
+      qpms_ss_tmi_t new_tmi = ss->tm_sym_map[gmi + ss->p[pi].tmatrix_id * sym->order]; // transformed t-matrix index
+      qpms_ss_pi_t pj;
       for (pj = 0; pj < ss->p_count; ++pj)
         if (cart3_isclose(newpoint, ss->p[pj].pos, 0, ss->lenscale * QPMS_SCATSYS_LEN_RTOL)) {
           if (new_tmi != ss->p[pj].tmatrix_id)
@@ -369,27 +369,12 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       ss->p_sym_map[gmi + pi * sym->order] = pi;
     }
   // Possibly free some space using the new ss->p_count instead of (old) ss->p_count*sym->order
-  ss->p_sym_map = realloc(ss->p_sym_map, sizeof(ptrdiff_t) * sym->order * ss->p_count);
+  ss->p_sym_map = realloc(ss->p_sym_map, sizeof(qpms_ss_pi_t) * sym->order * ss->p_count);
   ss->p = realloc(ss->p, sizeof(qpms_particle_tid_t) * ss->p_count); ss->p_capacity = ss->p_count;
 
   ss->sym = sym;
   return ss;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   
 

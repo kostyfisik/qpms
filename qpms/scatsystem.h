@@ -193,7 +193,7 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Num
 typedef struct qpms_particle_tid_t {
 	// Does it make sense to ever use other than cartesian coords for this?
 	cart3_t pos; ///< Particle position in cartesian coordinates.
-	ptrdiff_t tmatrix_id; ///< T-matrix index
+	qpms_ss_tmi_t tmatrix_id; ///< T-matrix index
 } qpms_particle_tid_t;
 
 struct qpms_finite_group_t;
@@ -201,17 +201,17 @@ struct qpms_finite_group_t;
 typedef struct qpms_scatsys_t {
 	// TODO does bspec belong here?
 	qpms_tmatrix_t **tm; ///< T-matrices in the system
-	ptrdiff_t tm_count; ///< Number of all different T-matrices
-	ptrdiff_t tm_capacity; ///< Capacity of tm[].
+	qpms_ss_tmi_t tm_count; ///< Number of all different T-matrices
+	qpms_ss_tmi_t tm_capacity; ///< Capacity of tm[].
 	qpms_particle_tid_t *p; ///< Particles.
-	ptrdiff_t p_count; ///< Size of particles array.
-	ptrdiff_t p_capacity; ///< Capacity of p[].
+	qpms_ss_pi_t p_count; ///< Size of particles array.
+	qpms_ss_pi_t p_capacity; ///< Capacity of p[].
 
 	//TODO the index types do not need to be so big.
 	struct qpms_finite_group_t *sym; ///< Symmetry group of the array
-	ptrdiff_t *p_sym_map; ///< Which particles map onto which by the symmetry ops.
+	qpms_ss_pi_t *p_sym_map; ///< Which particles map onto which by the symmetry ops.
 	///< p_sym_map[idi + pi * sym->order] gives the index of pi-th particle under the idi'th sym op.
-	ptrdiff_t *tm_sym_map; ///< Which t-matrices map onto which by the symmetry ops. Lookup by tm_sum_map[idi + tmi * sym->order].
+	qpms_ss_tmi_t *tm_sym_map; ///< Which t-matrices map onto which by the symmetry ops. Lookup by tm_sum_map[idi + tmi * sym->order].
 
 	// TODO shifted origin of the symmetry group etc.
 	// TODO some indices for fast operations here.

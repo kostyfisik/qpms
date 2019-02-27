@@ -6,7 +6,7 @@
 #include <complex.h>
 #include <stdbool.h>
 #include <stddef.h>
-//#include <stdint.h>
+#include <stdint.h>
 
 #ifndef M_PI_2
 #define M_PI_2 (1.570796326794896619231321691639751442098584699687552910487)
@@ -301,6 +301,12 @@ typedef struct qpms_vswf_set_spec_t {
         size_t capacity; ///< Allocated capacity of ilist.
         qpms_normalisation_t norm; ///< Normalisation convention. To be set manually if needed.
 } qpms_vswf_set_spec_t;
+
+/// T-matrix index used in qpms_scatsys_t and related structures.
+typedef int32_t qpms_ss_tmi_t;
+
+/// Particle index used in qpms_scatsys_t and related structures.
+typedef int32_t qpms_ss_pi_t;
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES
