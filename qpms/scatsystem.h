@@ -198,6 +198,56 @@ typedef struct qpms_particle_tid_t {
 
 struct qpms_finite_group_t;
 
+typedef qpms_gmi_t qpms_ss_orbit_pi_t; ///< Auxilliary type used in qpms_ss_orbit_type_t for labeling particles inside orbits.
+typedef qpms_tmi_t qpms_ss_oti_t; ///< Auxilliary type used for labeling orbit types.
+
+/// Structure describing a particle's "orbit type" under symmetry group actions in a system.
+/**
+ * Each particle has its orbit with respect to a symmetry group of the system in which the particle lies,
+ * i.e. a set of particles onto which the group operations map the original particle.
+ * 
+ * (TODO DOC improve the following explanation:)
+ * Typically, there will be only a small number of different (T-matrix, particle 
+ * <a href="https://en.wikipedia.org/wiki/Group_action#Fixed_points_and_stabilizer_subgroups">stabiliser</a>)
+ * pairs in the system. We can group the particles accordingly, into the same "orbit types"
+ * that will allow to do certain operations only once for each "orbit type", saving memory and (perhaps) time.
+ *
+ * Each particle will then have assigned:
+ *   1. an orbit type,
+ *   2. an ID inside that orbit.
+ *
+ *
+ * TODO DOC how the process of assigning the particle IDs actually work, orbit type (non-)uniqueness.
+ *
+ *
+ */
+typedef struct qpms_ss_orbit_type_t {
+	qpms_gmi_t size; ///< Size of the orbit (a divisor of the group order).
+	/// Action of the group elements onto the "first" element in this orbit.
+	/** Its size is sym->order and its values lie between 0 and \a this.size − 1.
+	 *  
+	 *  The corresponding stabilizer {\a g} of the i-th particle on the orbit
+	 *  is given by action[i] = g.
+	 *
+	 */
+	qpms_ss_orbit_pi_t *action;
+	/// T-matrix IDs of the particles on this orbit (type).
+	/**
+	 * We save all the tmi's of the particles on the orbit here to make the number of array lookups
+	 * and pointer dereferences constant.
+	 *
+	 * The size of this array is \a size.
+	 */
+	qpms_ss_tmi_t tmatrices;
+} qpms_ss_orbit_type_t;
+
+/// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
+typedef struct qpms_ss_particle_orbitinfo {
+	qpms_oti_t orbit; ///< Orbit type.
+	qpms_ss_orbit_pi_t; ///< "Order" of the particle inside that orbit type.
+} qpms_ss_particle_orbitinfo_t;
+
+
 typedef struct qpms_scatsys_t {
 	// TODO does bspec belong here?
 	qpms_tmatrix_t **tm; ///< T-matrices in the system
@@ -212,6 +262,12 @@ typedef struct qpms_scatsys_t {
 	qpms_ss_pi_t *p_sym_map; ///< Which particles map onto which by the symmetry ops.
 	///< p_sym_map[idi + pi * sym->order] gives the index of pi-th particle under the idi'th sym op.
 	qpms_ss_tmi_t *tm_sym_map; ///< Which t-matrices map onto which by the symmetry ops. Lookup by tm_sum_map[idi + tmi * sym->order].
+
+	qpms_ss_oti_t orbit_type_count;
+	qpms_ss_orbit_type_t *orbit_types; ///< (Array length is \a orbit_type_count.)
+
+	qpms_ss_particle_orbitinfo_t *orbitinfo; ///< Orbit type identification of each particle. (Array length is \a p_count.)
+
 	size_t fecv_size; ///< Number of elements of a full excitation coefficient vector size. 
 	//size_t *saecv_sizes; ///< NI. Number of elements of symmetry-adjusted coefficient vector sizes (order as in sym->irreps). 
 
