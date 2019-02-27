@@ -269,27 +269,27 @@ def vswf_yr(pos_sph,lMax,J=1):
     return (M_y, N_y)
 
 #@jit
-def _sph_zn_1(n,z):
-    return spherical_jn(n,z)
+def _sph_zn_1(n,z,derivative=False):
+    return spherical_jn(n,z,derivative)
 #@jit
-def _sph_zn_2(n,z):
-    return spherical_yn(n,z)
+def _sph_zn_2(n,z,derivative=False):
+    return spherical_yn(n,z,derivative)
 #@jit
-def _sph_zn_3(n,z):
-    besj=spherical_jn(n,z)
-    besy=spherical_yn(n,z)
-    return (besj[0] + 1j*besy[0],besj[1] + 1j*besy[1])
+def _sph_zn_3(n,z,derivative=False):
+    besj=spherical_jn(n,z,derivative)
+    besy=spherical_yn(n,z,derivative)
+    return besj + 1j*besy
 #@jit
-def _sph_zn_4(n,z):
-    besj=spherical_jn(n,z)
-    besy=spherical_yn(n,z)
-    return (besj[0] - 1j*besy[0],besj[1] - 1j*besy[1])
+def _sph_zn_4(n,z,derivative=False):
+    besj=spherical_jn(n,z,derivative)
+    besy=spherical_yn(n,z,derivative)
+    return besj + 1j*besy
 _sph_zn = [_sph_zn_1,_sph_zn_2,_sph_zn_3,_sph_zn_4]
 
 # computes bessel/hankel functions for orders from 0 up to n; 
 #@jit
 def zJn(n, z, J=1):
-    return _sph_zn[J-1](n=n,z=z)
+    return (_sph_zn[J-1](n=n,z=z,derivative=False), _sph_zn[J-1](n=n,z=z,derivative=True))
 
 
 
