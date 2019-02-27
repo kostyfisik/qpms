@@ -17,14 +17,14 @@
 
 // integer index types
 typedef int qpms_lm_t;
-/// Type for spherical harmonic degree l.
-typedef int qpms_l_t; /* can't be unsigned because of the behaviour under - operator;
+/// Type for spherical harmonic degree \a l.
+typedef int qpms_l_t; /* can't be unsigned because of the behaviour under the - operator;
 			 also -1 needed as an invalid value for scalar waves. */
 
-/// Type for spherical harmonic order m.
+/// Type for spherical harmonic order \a m.
 typedef qpms_lm_t qpms_m_t;
 
-/// Type for the (l,m) multiindex of transversal (M or N-type) VSWFs.
+/// Type for the (\a l, \a m) multiindex of transversal (\a M or \a N -type) VSWFs.
 /** This corresponds to the typical memory layout for various coefficient etc.
  *  Corresponds to the l-primary, m-secondary ordering, i.e.
  *  \f[ y = 0: l = 1, m = -1, \f]
@@ -32,39 +32,45 @@ typedef qpms_lm_t qpms_m_t;
  *  \f[ y = 2: l = 1, m = +1, \f]
  *  \f[ y = 3: l = 2, m = -2, \f]
  *  ...
+ *
+ *  See also indexing.h.
  */
 typedef size_t qpms_y_t;
 
-/// Type for the (l,m) multiindex of spherical harmonics, including (0,0).
+/// Type for the (\a l, \a m) multiindex of spherical harmonics, including (0, 0).
 /** This differs from qpms_y_t by being shifted by one and including
- *  the l = 0 option. Suitable also for scalar and longitudinal waves.
- *  Corresponds to the l-primary, m-secondary ordering, i.e.
+ *  the \a l = 0 option. Suitable also for scalar and longitudinal waves.
+ *  Corresponds to the \a l -primary, \a m -secondary ordering, i.e.
  *  \f[ y = 0: l = 0, m = 0,  \f]
  *  \f[ y = 1: l = 1, m = -1, \f]
  *  \f[ y = 2: l = 1, m = 0,  \f]
  *  \f[ y = 3: l = 1, m = +1, \f]
  *  \f[ y = 4: l = 2, m = -2, \f]
  *  ...
+ *
+ *  See also indexing.h.
  */
 typedef size_t qpms_y_sc_t;
 
 /// Codes of the VSWF types (electric/N, magnetic/M, longitudinal/L).
 typedef enum {
-	QPMS_VSWF_ELECTRIC = 2, ///< "Electric" ($N$-type) transversal wave.
-	QPMS_VSWF_MAGNETIC = 1, ///< "Magnetic" ($M$-type) transversal wave.
-	QPMS_VSWF_LONGITUDINAL = 0 ///< Longitudinal ($L$-type) wave (not relevant for radiation).
+	QPMS_VSWF_ELECTRIC = 2, ///< "Electric" (\a N -type) transversal wave.
+	QPMS_VSWF_MAGNETIC = 1, ///< "Magnetic" (\a M -type) transversal wave.
+	QPMS_VSWF_LONGITUDINAL = 0 ///< Longitudinal (\a L -type) wave (not relevant for radiation).
 } qpms_vswf_type_t;
 
-
+// FIXME DOC The references to the functions do not work in doxygen:
 /// Exhaustive index type for VSWF basis functions.
-/** Carries information about the wave being of M/N/L (magnetic, electric,
- *  or longitudinal) type, as well as the wave's degree and order (l, m).
+/** Carries information about the wave being of \a M/N/L (magnetic, electric,
+ *  or longitudinal) type, as well as the wave's degree and order (\a l, \a m).
  *
  *  The formula is 4 * (qpms_y_sc_t) y_sc + (qmps_vswf_type_t) type_code,
  *  but don't rely on this and use the functions
- *  qpms_tmn2uvswfi() and qpms_uvswfi2tmn()
+ *  \ref qpms_tmn2uvswfi() and \ref qpms_uvswfi2tmn()
  *  from qpms_types.h instead
  *  as the formula might change in future versions.
+ *
+ *  See also indexing.h.
  */
 typedef unsigned long long qpms_uvswfi_t; 
 
@@ -76,22 +82,25 @@ typedef enum {
 	QPMS_ENOMEM = 8 ///< Out of memory.
 } qpms_errno_t;
 
+
+
 /// Vector spherical wavefuction normalisation (and sign) convention codes.
 /** Throughout the literature, various conventions for VSWF bases are used.
  *  The meaningful ones are the "power" and "spherical harmonic" normalisation
- *  conventions, as the (l,m) and (l,-m) waves of the same type have the same
+ *  conventions, as the (\a l, \a m) and (\a l, \a −m) waves of the same type have the same
  *  intensities.
  *  One might also encounter a very inconvenient and messy "antinormalisation"
  *  used in Xu (TODO reference).
  *
  *  Moreover, VSWFs might use various sign convention. Usually they either
- *  carry the Condon-Shortley phase $(-1)^m$ or not, which is also saved here.
+ *  carry the Condon-Shortley phase \f$ (-1)^m \f$ or not, which is also saved here.
  *
  *  TODO references and exact definitions.
  */
-//const int QPMS_NORMALISATION_T_CSBIT = 128;
-#define QPMS_NORMALISATION_T_CSBIT 128
 typedef enum {
+
+#define QPMS_NORMALISATION_T_CSBIT 128 ///< A flag used in qpms_normalisation_t indicating the Condon-Shortley phase.
+
 #ifdef USE_XU_ANTINORMALISATION
 	// As in TODO
 	QPMS_NORMALISATION_XU = 4, ///< such that the numerical values in Xu's tables match, not recommended to use otherwise
@@ -199,45 +208,46 @@ typedef enum {
 } qpms_bessel_t;
 
 // coordinate system types
-/// 3D cartesian coordinates.
+/// 3D cartesian coordinates. See also vectors.h.
 typedef struct cart3_t {
 	double x, y, z;
 } cart3_t;
 
-/// 3D complex (actually 6D) coordinates.
+/// 3D complex (actually 6D) coordinates. See also vectors.h.
 typedef struct ccart3_t {
 	complex double x, y, z;
 } ccart3_t;
 
-/// 2D cartesian coordinates.
+/// 2D cartesian coordinates. See also vectors.h.
+/** See also vectors.h */
 typedef struct cart2_t {
 	double x, y;
 } cart2_t;
 
-/// Spherical coordinates.
+/// Spherical coordinates. See also vectors.h.
 typedef struct sph_t {
 	double r, theta, phi;
 } sph_t;
 
-/// Spherical coordinates with complex radial component.
+/// Spherical coordinates with complex radial component. See also vectors.h.
 typedef struct csph_t { // Do I really need this???
 	complex double r;
 	double	theta, phi;
 } csph_t;
 
-/// 3D complex vector components in local spherical basis.
+/// 3D complex vector components in local spherical basis. See also vectors.h.
 typedef struct csphvec_t {
 	complex double rc, thetac, phic; 
 } csphvec_t;
 
-/// 2D polar coordinates.
+/// 2D polar coordinates. See also vectors.h.
 typedef struct pol_t {
 	double r, phi;
 } pol_t;
 
 /// Union type capable to contain various 1D, 2D and 3D coordinates.
 typedef union anycoord_point_t {
-	double z; /// 1D cartesian coordinate.
+	double z; ///< 1D cartesian coordinate.
 	cart3_t cart3;
 	cart2_t cart2;
 	sph_t sph;
@@ -260,21 +270,21 @@ typedef enum {
  * Internaly represented as a pair of complex numbers,
  * \f$ Q_a = Q_1 + iQ_z, Q_b = Q_y + i Q_x\f$.
  *
- * Check wigner.h for "methods".
+ * See wigner.h for "methods".
  */
 typedef struct qpms_quat_t {
         complex double a, b;
 } qpms_quat_t;
 
 /// Quaternion type as four doubles.
-/** Check wigner.h for "methods".
+/** See wigner.h for "methods".
  */
 typedef struct qpms_quat4d_t {
         double c1, ci, cj, ck;
 } qpms_quat4d_t;
 
 /// 3D improper rotations represented as a quaternion and a sign of the determinant.
-/** Check wigner.h for "methods".
+/** See wigner.h for "methods".
  */
 typedef struct qpms_irot3_t {
         qpms_quat_t rot; ///< Quaternion representing the rotation part.
@@ -289,7 +299,7 @@ typedef struct qpms_irot3_t {
  * A typical use case would be when only even/odd fields wrt. z-plane
  * mirror symmetry are considered.
  * 
- * Check vswf.h for "methods".
+ * See vswf.h for "methods".
  */
 typedef struct qpms_vswf_set_spec_t {
         size_t n; ///< Actual number of VSWF indices included in ilist.
@@ -309,10 +319,10 @@ typedef int32_t qpms_ss_tmi_t;
 typedef int32_t qpms_ss_pi_t;
 
 // These types are mainly used in groups.h:
-/// Finite group member index.
+/// Finite group member index. See also groups.h.
 typedef int qpms_gmi_t;
 
-/// Irreducible representation index
+/// Irreducible representation index. See also groups.h.
 typedef int qpms_iri_t;
 
 /// Permutation representation of a group element.
