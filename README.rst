@@ -5,33 +5,22 @@ TODO description
 
 Installation
 ============
-The package depends on numpy, scipy, cython and GSL (>= 2.0).
-The first three can be obtained by pip. If you have a recent enough OS,
+The package depends on several python modules and GSL (>= 2.0).
+The python module dependencies should be installed automatically when running
+the installation script. If you have a recent enough OS,
 you can get GSL easily from the repositories; on Debian and derivatives,
 just run ``apt-get install libgsl-dev`` under root. Alternatively,
 you can `get the source 
 <https://www.gnu.org/software/gsl/>`_ get the source and compile it yourself.
 
-After all dependencies are installed, install qpms to your local python library using::
+After GSL is installed, you can install qpms to your local python library using::
 
   python3 setup.py install --user
 
+If GSL is not installed the standard library path on your system, you might 
+need to pass it to the installation script using the LD_LIBRARY_PATH environment
+variable.
 
-Easiest installation ever 
-=========================
-(Just skip those you have already installed.)
-
-::
-
-  pip3 install --user numpy
-  pip3 install --user scipy
-  pip3 install --user cython
-  pip3 install --user git+https://github.com/moble/quaternion.git
-  pip3 install --user git+https://github.com/moble/spherical_functions.git
-  python3 setup.py install --user
-
-
-  
 Documentation
 =============
 

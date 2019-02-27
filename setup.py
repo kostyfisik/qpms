@@ -39,11 +39,8 @@ qpms_c = Extension('qpms_c',
 setup(name='qpms',
         version = "0.2.994",
         packages=['qpms'],
-        setup_requires=['cython>0.28'],
-        install_requires=['cython>=0.21','quaternion','spherical_functions','scipy>=0.18.0'
-            #'py_gmm' # no longer needed
-            ],
-        # TODO implement https://stackoverflow.com/questions/17366784/setuptools-unable-to-use-link-from-dependency-links and update README.md accordingly
+        setup_requires=['cython>=0.28',],
+        install_requires=['cython>=0.28','quaternion','spherical_functions','scipy>=0.18.0'],
         dependency_links=['https://github.com/moble/quaternion/archive/v2.0.tar.gz','https://github.com/moble/spherical_functions/archive/master.zip'],
         ext_modules=cythonize([qpms_c], include_path=['qpms']),
         cmdclass = {'build_ext': build_ext},
