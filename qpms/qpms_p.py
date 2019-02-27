@@ -4,7 +4,7 @@ from qpms_c import *
 import scipy
 from scipy.constants import epsilon_0 as ε_0, c, pi as π, e, hbar as ℏ, mu_0 as μ_0
 eV = e
-from scipy.special import lpmn, lpmv, sph_jn, sph_yn, poch, gammaln
+from scipy.special import lpmn, lpmv, spherical_jn, spherical_yn, poch, gammaln
 from scipy.misc import factorial
 import math
 import cmath
@@ -268,27 +268,25 @@ def vswf_yr(pos_sph,lMax,J=1):
         M_y[i], N_y[i] = vswf_yr1(pos_sph[i], lMax, J) # non-vectorised function
     return (M_y, N_y)
 
-from scipy.special import sph_jn, sph_yn
 #@jit
 def _sph_zn_1(n,z):
-    return sph_jn(n,z)
+    return spherical_jn(n,z)
 #@jit
 def _sph_zn_2(n,z):
-    return sph_yn(n,z)
+    return spherical_yn(n,z)
 #@jit
 def _sph_zn_3(n,z):
-    besj=sph_jn(n,z)
-    besy=sph_yn(n,z)
+    besj=spherical_jn(n,z)
+    besy=spherical_yn(n,z)
     return (besj[0] + 1j*besy[0],besj[1] + 1j*besy[1])
 #@jit
 def _sph_zn_4(n,z):
-    besj=sph_jn(n,z)
-    besy=sph_yn(n,z)
+    besj=spherical_jn(n,z)
+    besy=spherical_yn(n,z)
     return (besj[0] - 1j*besy[0],besj[1] - 1j*besy[1])
 _sph_zn = [_sph_zn_1,_sph_zn_2,_sph_zn_3,_sph_zn_4]
 
-# computes bessel/hankel functions for orders from 0 up to n; drops
-# the derivatives which are also included in scipy.special.sph_jn/yn
+# computes bessel/hankel functions for orders from 0 up to n; 
 #@jit
 def zJn(n, z, J=1):
     return _sph_zn[J-1](n=n,z=z)
