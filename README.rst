@@ -25,9 +25,12 @@ Documentation
 =============
 
 Documentation of QPMS is a work in progress. Most of the newer code
-is documented using doxygen comments. To build the documentation, just run::
-
-  doxygen
-
+is documented using doxygen comments. To build the documentation, just run
+``doxygen``
 in the root directory; the documentation will then be found in 
-``docs/index.html``.
+``docs/html/index.html``.
+
+Of course, the prerequisite of this is having doxygen installed.
+If you don't, you will probably find it easily in your OS's
+repositories. On Debian and derivatives, simply run ``apt-get install doxygen``
+under root.
