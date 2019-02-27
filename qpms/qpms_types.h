@@ -308,5 +308,18 @@ typedef int32_t qpms_ss_tmi_t;
 /// Particle index used in qpms_scatsys_t and related structures.
 typedef int32_t qpms_ss_pi_t;
 
+// These types are mainly used in groups.h:
+/// Finite group member index.
+typedef int qpms_gmi_t;
+
+/// Irreducible representation index
+typedef int qpms_iri_t;
+
+/// Permutation representation of a group element.
+/** For now, it's just a string of the form "(0,1)(3,4,5)"
+ */
+typedef const char * qpms_permutation_t;
+
+
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES

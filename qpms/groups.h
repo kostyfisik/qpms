@@ -8,13 +8,7 @@
 #ifndef QPMS_GROUPS_H
 #define QPMS_GROUPS_H
 
-/// Group member index.
-typedef int qpms_gmi_t;
-
-/// Permutation representation of a group element.
-/** For now, it's just a string of the form "(0,1)(3,4,5)"
- */
-typedef const char * qpms_permutation_t;
+#include "qpms_types.h"
 
 /// To be used only in qpms_finite_group_t
 struct qpms_finite_group_irrep_t {
@@ -26,8 +20,6 @@ struct qpms_finite_group_irrep_t {
 	 */
 	complex double *m; 
 };
-
-struct qpms_irot3_t;
 
 /// A point group with its irreducible representations and some metadata.
 /** 
@@ -53,7 +45,7 @@ typedef struct qpms_finite_group_t {
 	char **elemlabels; ///< Optional human readable labels for the group elements.
 	int permrep_nelem; ///< Number of the elements over which the permutation representation acts.
 	struct qpms_irot3_t *rep3d; ///< The quaternion representation of a 3D point group (if applicable).
-	int nirreps; ///< How many irreps does the group have
+	qpms_iri_t nirreps; ///< How many irreps does the group have
 	struct qpms_finite_group_irrep_t *irreps; ///< Irreducible representations of the group.
 } qpms_finite_group_t;
 
