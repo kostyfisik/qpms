@@ -636,7 +636,7 @@ def complex_crep(complex c, parentheses = False, shortI = True, has_Imaginary = 
             + (')' if parentheses else '')
         )
 
-cdef class basespec:
+cdef class BaseSpec:
     '''Cython wrapper over qpms_vswf_set_spec_t.
 
     It should be kept immutable. The memory is managed by numpy/cython, not directly by the C functions, therefore
@@ -718,9 +718,9 @@ cdef class basespec:
         def __get__(self):
             return self.__ilist
 
-    cdef qpms_vswf_set_spec_t *rawpointer(basespec self):
+    cdef qpms_vswf_set_spec_t *rawpointer(BaseSpec self):
         '''Pointer to the qpms_vswf_set_spec_t structure.
-        Don't forget to reference the basespec object itself when storing the pointer anywhere!!!
+        Don't forget to reference the BaseSpec object itself when storing the pointer anywhere!!!
         '''
         return &(self.s)
 
@@ -731,7 +731,7 @@ cdef class basespec:
 # Quaternions from wigner.h 
 # (mainly for testing; use moble's quaternions in python)
 
-cdef class cquat:
+cdef class CQuat:
     '''
     Wrapper of the qpms_quat_t object, with the functionality
     to evaluate Wigner D-matrix elements.
@@ -747,40 +747,40 @@ cdef class cquat:
         self.q = qpms_quat_2c_from_4d(p)
 
     def copy(self):
-        res = cquat(0,0,0,0)
+        res = CQuat(0,0,0,0)
         res.q = self.q
         return res
 
     def __repr__(self): # TODO make this look like a quaternion with i,j,k
         return repr(self.r)
 
-    def __add__(cquat self, cquat other):
+    def __add__(CQuat self, CQuat other):
         # TODO add real numbers
-        res = cquat(0,0,0,0)
+        res = CQuat(0,0,0,0)
         res.q = qpms_quat_add(self.q, other.q)
         return res
 
     def __mul__(self, other):
-        res = cquat(0,0,0,0)
-        if isinstance(self, cquat):
-            if isinstance(other, cquat):
+        res = CQuat(0,0,0,0)
+        if isinstance(self, CQuat):
+            if isinstance(other, CQuat):
                 res.q = qpms_quat_mult(self.q, other.q)
             elif isinstance(other, (int, float)):
                 res.q = qpms_quat_rscale(other, self.q)
             else: return NotImplemented
         elif isinstance(self, (int, float)):
-            if isinstance(other, cquat):
+            if isinstance(other, CQuat):
                 res.q = qpms_quat_rscale(self, other.q)
             else: return NotImplemented
         return res
 
-    def __neg__(cquat self):
-        res = cquat(0,0,0,0)
+    def __neg__(CQuat self):
+        res = CQuat(0,0,0,0)
         res.q = qpms_quat_rscale(-1, self.q)
         return res
 
-    def __sub__(cquat self, cquat other):
-        res = cquat(0,0,0,0)
+    def __sub__(CQuat self, CQuat other):
+        res = CQuat(0,0,0,0)
         res.q = qpms_quat_add(self.q, qpms_quat_rscale(-1,other.q))
         return res
 
@@ -794,26 +794,26 @@ cdef class cquat:
         return qpms_quat_imnorm(self.q)
 
     def exp(self):
-        res = cquat(0,0,0,0)
+        res = CQuat(0,0,0,0)
         res.q = qpms_quat_exp(self.q)
         return res
 
     def log(self):
-        res = cquat(0,0,0,0)
+        res = CQuat(0,0,0,0)
         res.q = qpms_quat_exp(self.q)
         return res
 
-    def __pow__(cquat self, double other, _):
-        res = cquat(0,0,0,0)
+    def __pow__(CQuat self, double other, _):
+        res = CQuat(0,0,0,0)
         res.q = qpms_quat_pow(self.q, other)
         return res
 
     def normalise(self):
-        res = cquat(0,0,0,0)
+        res = CQuat(0,0,0,0)
         res.q = qpms_quat_normalise(self.q)
         return res
 
-    def isclose(cquat self, cquat other, rtol=1e-5, atol=1e-8):
+    def isclose(CQuat self, CQuat other, rtol=1e-5, atol=1e-8):
         '''
         Checks whether two quaternions are "almost equal".
         '''
@@ -860,7 +860,7 @@ cdef class cquat:
             return 0
         return qpms_wignerD_elem(self.q, l, mp, m)
 
-cdef class irot3:
+cdef class IRot3:
     '''
     Wrapper over the C type qpms_irot3_t.
     '''
@@ -876,18 +876,18 @@ cdef class irot3:
             self.qd.rot.a = 1
             self.qd.rot.b = 0
             self.qd.det = 1
-        elif (len(args) == 2 and isinstance(args[0], cquat) and isinstance(args[1], (int, float))):
-            # The original __cinit__(self, cquat q, short det) constructor
+        elif (len(args) == 2 and isinstance(args[0], CQuat) and isinstance(args[1], (int, float))):
+            # The original __cinit__(self, CQuat q, short det) constructor
             q = args[0]
             det = args[1]
             if (det != 1 and det != -1):
                 raise ValueError("Improper rotation determinant has to be 1 or -1")
             self.qd.rot = q.normalise().q
             self.qd.det = det
-        elif (len(args) == 1 and isinstance(args[0], irot3)):
+        elif (len(args) == 1 and isinstance(args[0], IRot3)):
             # Copy
             self.qd = args[0].qd
-        elif (len(args) == 1 and isinstance(args[0], cquat)):
+        elif (len(args) == 1 and isinstance(args[0], CQuat)):
             # proper rotation from a quaternion
             q = args[0]
             det = 1
@@ -897,19 +897,19 @@ cdef class irot3:
             raise ValueError('Unsupported constructor arguments')
 
     def copy(self):
-        res = irot3(cquat(1,0,0,0),1)
+        res = IRot3(CQuat(1,0,0,0),1)
         res.qd = self.qd
         return res
 
     property rot:
         '''
-        The proper rotation part of the irot3 type.
+        The proper rotation part of the IRot3 type.
         '''
         def __get__(self):
-            res = cquat(0,0,0,0)
+            res = CQuat(0,0,0,0)
             res.q = self.qd.rot
             return res
-        def __set__(self, cquat r):
+        def __set__(self, CQuat r):
             # TODO check for non-zeroness and throw an exception if norm is zero
             self.qd.rot = r.normalise().q
 
@@ -934,22 +934,22 @@ cdef class irot3:
         '''
         return '{' + self.rot.crepr() + ', ' + repr(self.det) + '}'
 
-    def __mul__(irot3 self, irot3 other):
-        res = irot3(cquat(1,0,0,0), 1) 
-        res.qd = qpms_irot3_mult(self.qd, other.qd)
+    def __mul__(IRot3 self, IRot3 other):
+        res = IRot3(CQuat(1,0,0,0), 1) 
+        res.qd = qpms_IRot3_mult(self.qd, other.qd)
         return res
 
-    def __pow__(irot3 self, n, _):
+    def __pow__(IRot3 self, n, _):
         cdef int nint
         if (n % 1 == 0):
             nint = n
         else:
-            raise ValueError("The exponent of an irot3 has to have an integer value.")
-        res = irot3(cquat(1,0,0,0), 1)
-        res.qd = qpms_irot3_pow(self.qd, n)
+            raise ValueError("The exponent of an IRot3 has to have an integer value.")
+        res = IRot3(CQuat(1,0,0,0), 1)
+        res.qd = qpms_IRot3_pow(self.qd, n)
         return res
 
-    def isclose(irot3 self, irot3 other, rtol=1e-5, atol=1e-8):
+    def isclose(IRot3 self, IRot3 other, rtol=1e-5, atol=1e-8):
         '''
         Checks whether two (improper) rotations are "almost equal".
         Returns always False if the determinants are different.
@@ -966,59 +966,59 @@ cdef class irot3:
     @staticmethod
     def inversion():
         '''
-        Returns an irot3 object representing the 3D spatial inversion.
+        Returns an IRot3 object representing the 3D spatial inversion.
         '''
-        r = irot3()
+        r = IRot3()
         r.det = -1
         return r
 
     @staticmethod
     def zflip():
         '''
-        Returns an irot3 object representing the 3D xy-plane mirror symmetry (z axis sign flip).
+        Returns an IRot3 object representing the 3D xy-plane mirror symmetry (z axis sign flip).
         '''
-        r = irot3()
-        r.rot = cquat(0,0,0,1) # π-rotation around z-axis
+        r = IRot3()
+        r.rot = CQuat(0,0,0,1) # π-rotation around z-axis
         r.det = -1 # inversion
         return r
 
     @staticmethod
     def yflip():
         '''
-        Returns an irot3 object representing the 3D xz-plane mirror symmetry (y axis sign flip).
+        Returns an IRot3 object representing the 3D xz-plane mirror symmetry (y axis sign flip).
         '''
-        r = irot3()
-        r.rot = cquat(0,0,1,0) # π-rotation around y-axis
+        r = IRot3()
+        r.rot = CQuat(0,0,1,0) # π-rotation around y-axis
         r.det = -1 # inversion
         return r
 
     @staticmethod
     def xflip():
         '''
-        Returns an irot3 object representing the 3D yz-plane mirror symmetry (x axis sign flip).
+        Returns an IRot3 object representing the 3D yz-plane mirror symmetry (x axis sign flip).
         '''
-        r = irot3()
-        r.rot = cquat(0,1,0,0) # π-rotation around x-axis
+        r = IRot3()
+        r.rot = CQuat(0,1,0,0) # π-rotation around x-axis
         r.det = -1 # inversion
         return r
 
     @staticmethod
     def zrotN(int n):
         '''
-        Returns an irot3 object representing a \f$ C_n $\f rotation (around the z-axis).
+        Returns an IRot3 object representing a \f$ C_n $\f rotation (around the z-axis).
         '''
-        r = irot3()
-        r.rot = cquat(math.cos(math.pi/n),0,0,math.sin(math.pi/n))
+        r = IRot3()
+        r.rot = CQuat(math.cos(math.pi/n),0,0,math.sin(math.pi/n))
         return r
 
-    def as_uvswf_matrix(irot3 self, basespec bspec):
+    def as_uvswf_matrix(IRot3 self, basespec bspec):
         '''
         Returns the uvswf representation of the current transform as a numpy array
         '''
         cdef ssize_t sz = len(bspec)
         cdef np.ndarray m = np.empty((sz, sz), dtype=complex, order='C') # FIXME explicit dtype
         cdef cdouble[:, ::1] view = m
-        qpms_irot3_uvswfi_dense(&view[0,0], bspec.rawpointer(), self.qd)
+        qpms_IRot3_uvswfi_dense(&view[0,0], bspec.rawpointer(), self.qd)
         return m
 
 
