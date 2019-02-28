@@ -460,6 +460,17 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   ss->p_orbitinfo = realloc(ss->p_orbitinfo, sizeof(qpms_ss_particle_orbitinfo_t)*ss->p_count);
   ss->p_capacity = ss->p_count;
 
+  {  // Reallocate the orbit type data space and update the pointers if needed.
+    size_t otspace_sz = ss->otspace_end - ss->otspace;
+    char *old_otspace = ss->otspace;
+    ss->otspace = realloc(ss->otspace, otspace_sz);
+    ptrdiff_t shift = ss->otspace - old_otspace;
+    if(shift)
+      for (size_t oi = 0; oi < ss->orbit_type_count; ++oi) {
+        (char *) (ss->orbit_types[i].action) += shift;
+        (char *) (ss->orbit_types[i].tmatrices) += shift;
+      }
+  }
 
   // Set ss->fecv_size and ss->fecv_pstarts
   ss->fecv_size = 0;
