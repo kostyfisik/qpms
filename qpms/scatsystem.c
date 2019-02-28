@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include "vectors.h"
 #include "wigner.h"
+#include <string.h>
 
 
 #define QPMS_SCATSYS_LEN_RTOL 1e-13
@@ -258,6 +259,33 @@ qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t
 #define MIN(x,y) (((x)<(y))?(x):(y))
 #define MAX(x,y) (((x)>(y))?(x):(y))
 
+// The following functions are just to make qpms_scatsys_apply_symmetry more readable.
+// They are not to be used elsewhere, as they do not perform any array capacity checks etc.
+
+/// Compare two orbit types in a scattering system.
+static bool orbit_types_equal(const qpms_ss_orbit_type_t *a, const qpms_ss_orbit_type_t *b) {
+  if (a->size != b->size) return false;
+  if (memcmp(a->action, b->action, a->size*sizeof(qpms_ss_orbit_pi_t))) return false;
+  if (memcmp(a->tmatrices, b->tmatrices, a->size*sizeof(qpms_ss_tmi_t))) return false;
+  return true;
+}
+
+/// Add orbit type to a scattering system, updating the ss->otspace_end pointer accordingly
+static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_current) {
+  qpms_ss_orbit_type_t * const ot_new = & (ss->orbit_types[ss->orbit_type_count]);
+  ot_new->size = ot_current->size;
+  const size_t actionsiz = sizeof(ot_current->action[0]) * ss->sym->order;
+  ot_new->action = (void *) (ss->otspace_end);
+  memcpy(ot_new->action, ot_current->action, actionsiz);
+  ss->otspace_end += actionsiz;
+  const size_t tmsiz = sizeof(ot_current->tmatrices[0]) * ot_current->size;
+  ot_new->tmatrices = (void *) (ss->otspace_end);
+  memcpy(ot_new->tmatrices, ot_current->tmatrices, tmsiz);
+  ss->otspace_end += tmsiz;
+}
+
+
+// Almost 200 lines. This whole thing deserves a rewrite!
 qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym) {
   // TODO check data sanity
 
@@ -285,6 +313,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   // Allocate T-matrix, particle and particle orbit info arrays
   qpms_scatsys_t *ss = malloc(sizeof(qpms_scatsys_t));
   ss->lenscale = lenscale;
+  ss->sym = sym;
 
   ss->tm_capacity = sym->order * orig->tm_count;
   ss->tm = malloc(ss->tm_capacity * sizeof(qpms_tmatrix_t *));
@@ -292,13 +321,16 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   ss->p_capacity = sym->order * orig->p_count;
   ss->p = malloc(ss->p_capacity * sizeof(qpms_particle_tid_t));
   ss->p_orbitinfo = malloc(ss->p_capacity * sizeof(qpms_ss_particle_orbitinfo_t));
+  for (qpms_ss_pi_t pi = 0; pi < ss->p_capacity; ++pi) {
+    ss->p_orbitinfo[pi].t = QPMS_SS_P_ORBITINFO_UNDEF;
+    ss->p_orbitinfo[pi].p = QPMS_SS_P_ORBITINFO_UNDEF;
+  }
 
-  // Copy T-matrices; checking for duplicitie
+  // Copy T-matrices; checking for duplicities
 
   qpms_ss_tmi_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities
   ss->tm_count = 0;
   for (qpms_ss_tmi_t i = 0; i < orig->tm_count; ++i) {
-    bool found_dupl = false;
     qpms_ss_tmi_t j;
     for (j = 0; j < ss->tm_count; ++j) 
       if (qpms_tmatrix_isclose(orig->tm[i], ss->tm[j], QPMS_SCATSYS_TMATRIX_RTOL, QPMS_SCATSYS_TMATRIX_ATOL)) {
@@ -358,8 +390,9 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   // Workspace for the orbit type determination
   qpms_ss_orbit_type_t ot_current;
   qpms_ss_orbit_pi_t ot_current_action[sym->order];
-  qpms_ss_pi_t current_orbit[sym->order];
   qpms_ss_tmi_t ot_current_tmatrices[sym->order];
+  
+  qpms_ss_pi_t current_orbit[sym->order];
   ot_current.action = ot_current_action;
   ot_current.tmatrices = ot_current_tmatrices;
 
@@ -368,8 +401,13 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   // have the correct symmetry
   // TODO this could be sped up to O(npart * log(npart)); let's see later whether needed.
   for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
-    const bool new_orbit = (ss->p_orbitinfo[pi].size == 0); // TODO build the orbit!!!
-    
+    const bool new_orbit = (ss->p_orbitinfo[pi].t == QPMS_SS_P_ORBITINFO_UNDEF); // TODO build the orbit!!!
+    if (new_orbit){
+      current_orbit[0] = pi;
+      ot_current.size = 1; 
+      ot_current.tmatrices[0] = ss->p[pi].tmatrix_id;
+    }
+
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi) {
       cart3_t newpoint = qpms_irot3_apply_cart3(sym->rep3d[gmi], ss->p[pi].pos);
       qpms_ss_tmi_t new_tmi = ss->tm_sym_map[gmi + ss->p[pi].tmatrix_id * sym->order]; // transformed t-matrix index
@@ -388,6 +426,32 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
         ++(ss->p_count);
       }
       ss->p_sym_map[gmi + pi * sym->order] = pi;
+      
+      if (new_orbit) {
+        // Now check whether the particle (result of the symmetry op) is already in the current orbit
+        qpms_ss_orbit_pi_t opj;
+        for (opj = 0; opj < ot_current.size; ++opj)
+          if (current_orbit[opj] == pj) break; // HIT, pj already on current orbit
+        if (opj == ot_current.size) { // MISS, pj is new on the orbit, extend the size and set the T-matrix id
+          ++ot_current.size;
+          ot_current.tmatrices[opj] = ss->p[pj].tmatrix_id;
+        }
+        ot_current.action[gmi] = opj;
+      }
+    }
+    if (new_orbit) { // Now compare if the new orbit corresponds to some of the existing types.
+      qpms_ss_oti_t oti;
+      for(oti = 0; oti < ss->orbit_type_count; ++oti)
+        if (orbit_types_equal(&ot_current, &(ss->orbit_types[oti]))) break; // HIT, orbit type already exists
+      if (oti == ss->orbit_type_count)  // MISS, add the new orbit type
+        add_orbit_type(ss, &ot_current);
+      
+      // Walk through the orbit again and set up the orbit info of the particles
+      for (qpms_ss_orbit_pi_t opi = 0; opi < ot_current.size; ++opi) {
+        const qpms_ss_pi_t pi_opi = current_orbit[opi];
+        ss->p_orbitinfo[pi_opi].t = oti;
+        ss->p_orbitinfo[pi_opi].p = opi;
+      }
     }
   }
   // Possibly free some space using the new ss->p_count instead of (old) ss->p_count*sym->order
@@ -396,7 +460,6 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   ss->p_orbitinfo = realloc(ss->p_orbitinfo, sizeof(qpms_ss_particle_orbitinfo_t)*ss->p_count);
   ss->p_capacity = ss->p_count;
 
-  ss->sym = sym;
 
   // Set ss->fecv_size and ss->fecv_pstarts
   ss->fecv_size = 0;

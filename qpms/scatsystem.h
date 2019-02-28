@@ -199,7 +199,7 @@ typedef struct qpms_particle_tid_t {
 struct qpms_finite_group_t;
 
 typedef qpms_gmi_t qpms_ss_orbit_pi_t; ///< Auxilliary type used in qpms_ss_orbit_type_t for labeling particles inside orbits.
-typedef qpms_tmi_t qpms_ss_oti_t; ///< Auxilliary type used for labeling orbit types.
+typedef qpms_ss_tmi_t qpms_ss_oti_t; ///< Auxilliary type used for labeling orbit types.
 
 /// Structure describing a particle's "orbit type" under symmetry group actions in a system.
 /**
@@ -245,8 +245,9 @@ typedef struct qpms_ss_orbit_type_t {
 
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
 typedef struct qpms_ss_particle_orbitinfo {
-	qpms_oti_t orbit; ///< Orbit type.
-	qpms_ss_orbit_pi_t; ///< "Order" of the particle inside that orbit type.
+	qpms_ss_oti_t t; ///< Orbit type.
+#define QPMS_SS_P_ORBITINFO_UNDEF (-1) ///< This labels that the particle has not yet been assigned to an orbit.
+	qpms_ss_orbit_pi_t p; ///< "Order" of the particle inside that orbit type.
 } qpms_ss_particle_orbitinfo_t;
 
 
@@ -260,7 +261,7 @@ typedef struct qpms_scatsys_t {
 	qpms_ss_pi_t p_capacity; ///< Capacity of p[].
 
 	//TODO the index types do not need to be so big.
-	struct qpms_finite_group_t *sym; ///< Symmetry group of the array
+	const struct qpms_finite_group_t *sym; ///< Symmetry group of the array
 	qpms_ss_pi_t *p_sym_map; ///< Which particles map onto which by the symmetry ops.
 	///< p_sym_map[idi + pi * sym->order] gives the index of pi-th particle under the idi'th sym op.
 	qpms_ss_tmi_t *tm_sym_map; ///< Which t-matrices map onto which by the symmetry ops. Lookup by tm_sum_map[idi + tmi * sym->order].
@@ -282,7 +283,7 @@ typedef struct qpms_scatsys_t {
 	// private
 	
 	// We keep the p_orbitinfo arrays in this chunk in order to avoid memory fragmentation
-	void *otspace;
+	char *otspace;
 	char *otspace_end;
 	double lenscale; // radius of the array, used as a relative tolerance measure
 } qpms_scatsys_t;

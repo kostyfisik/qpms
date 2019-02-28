@@ -50,6 +50,6 @@ typedef struct qpms_finite_group_t {
 } qpms_finite_group_t;
 
 /// NOT IMPLEMENTED Get irrep index by name.
-qpms_iri_t qpms_finite_group_find_irrep_by_name(qpms_finite_group *G, char *name);
+qpms_iri_t qpms_finite_group_find_irrep_by_name(qpms_finite_group_t *G, char *name);
 
 #endif // QPMS_GROUPS_H
