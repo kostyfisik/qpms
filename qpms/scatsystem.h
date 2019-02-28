@@ -220,6 +220,8 @@ typedef qpms_tmi_t qpms_ss_oti_t; ///< Auxilliary type used for labeling orbit t
  * TODO DOC how the process of assigning the particle IDs actually work, orbit type (non-)uniqueness.
  *
  *
+ * Memory is managed by qpms_scatspec_t; qpms_ss_orbit_type_t does not own anything.
+ *
  */
 typedef struct qpms_ss_orbit_type_t {
 	qpms_gmi_t size; ///< Size of the orbit (a divisor of the group order).
@@ -238,7 +240,7 @@ typedef struct qpms_ss_orbit_type_t {
 	 *
 	 * The size of this array is \a size.
 	 */
-	qpms_ss_tmi_t tmatrices;
+	qpms_ss_tmi_t *tmatrices;
 } qpms_ss_orbit_type_t;
 
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
@@ -266,7 +268,7 @@ typedef struct qpms_scatsys_t {
 	qpms_ss_oti_t orbit_type_count;
 	qpms_ss_orbit_type_t *orbit_types; ///< (Array length is \a orbit_type_count.)
 
-	qpms_ss_particle_orbitinfo_t *orbitinfo; ///< Orbit type identification of each particle. (Array length is \a p_count.)
+	qpms_ss_particle_orbitinfo_t *p_orbitinfo; ///< Orbit type identification of each particle. (Array length is \a p_count.)
 
 	size_t fecv_size; ///< Number of elements of a full excitation coefficient vector size. 
 	//size_t *saecv_sizes; ///< NI. Number of elements of symmetry-adjusted coefficient vector sizes (order as in sym->irreps). 
@@ -278,6 +280,10 @@ typedef struct qpms_scatsys_t {
 	// TODO shifted origin of the symmetry group etc.
 	// TODO some indices for fast operations here.
 	// private
+	
+	// We keep the p_orbitinfo arrays in this chunk in order to avoid memory fragmentation
+	void *otspace;
+	char *otspace_end;
 	double lenscale; // radius of the array, used as a relative tolerance measure
 } qpms_scatsys_t;
 

@@ -282,7 +282,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
     for (qpms_ss_pi_t j = 0; j < i; ++j)
       assert(!cart3_isclose(orig->p[i].pos, orig->p[j].pos, 0, QPMS_SCATSYS_LEN_RTOL * lenscale));
 
-  // Allocate T-matrix and particle arrays
+  // Allocate T-matrix, particle and particle orbit info arrays
   qpms_scatsys_t *ss = malloc(sizeof(qpms_scatsys_t));
   ss->lenscale = lenscale;
 
@@ -291,6 +291,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
 
   ss->p_capacity = sym->order * orig->p_count;
   ss->p = malloc(ss->p_capacity * sizeof(qpms_particle_tid_t));
+  ss->p_orbitinfo = malloc(ss->p_capacity * sizeof(qpms_ss_particle_orbitinfo_t));
 
   // Copy T-matrices; checking for duplicitie
 
@@ -342,13 +343,33 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   // Possibly free some space using the new ss->tm_count instead of (old) ss->tm_count*sym->order
   ss->tm_sym_map = realloc(ss->tm_sym_map, sizeof(qpms_ss_tmi_t) * sym->order * ss->tm_count);
   // tm could be realloc'd as well, but those are just pointers, not likely many.
-  
+ 
+
   // allocate particle symmetry map
   ss->p_sym_map = malloc(sizeof(qpms_ss_pi_t) * sym->order * sym->order * ss->p_count);
+  // allocate orbit type array (TODO realloc later if too long)
+  ss->orbit_type_count = 0;
+  ss->orbit_types = calloc(ss->p_count, sizeof(qpms_ss_orbit_type_t));
+
+  ss->otspace_end = ss->otspace = malloc( // reallocate later
+      (sizeof(qpms_ss_orbit_pi_t) * sym->order
+       + sizeof(qpms_ss_tmi_t) * sym->order) * ss->p_count);
+  
+  // Workspace for the orbit type determination
+  qpms_ss_orbit_type_t ot_current;
+  qpms_ss_orbit_pi_t ot_current_action[sym->order];
+  qpms_ss_pi_t current_orbit[sym->order];
+  qpms_ss_tmi_t ot_current_tmatrices[sym->order];
+  ot_current.action = ot_current_action;
+  ot_current.tmatrices = ot_current_tmatrices;
+
+
   // Extend the particle list by the symmetry operations, check that particles mapped by symmetry ops on themselves
   // have the correct symmetry
-  // TODO this could be sped up to O(npart * log(npart)); let's see later if it is needed.
-  for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi)
+  // TODO this could be sped up to O(npart * log(npart)); let's see later whether needed.
+  for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    const bool new_orbit = (ss->p_orbitinfo[pi].size == 0); // TODO build the orbit!!!
+    
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi) {
       cart3_t newpoint = qpms_irot3_apply_cart3(sym->rep3d[gmi], ss->p[pi].pos);
       qpms_ss_tmi_t new_tmi = ss->tm_sym_map[gmi + ss->p[pi].tmatrix_id * sym->order]; // transformed t-matrix index
@@ -368,9 +389,12 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       }
       ss->p_sym_map[gmi + pi * sym->order] = pi;
     }
+  }
   // Possibly free some space using the new ss->p_count instead of (old) ss->p_count*sym->order
   ss->p_sym_map = realloc(ss->p_sym_map, sizeof(qpms_ss_pi_t) * sym->order * ss->p_count);
-  ss->p = realloc(ss->p, sizeof(qpms_particle_tid_t) * ss->p_count); ss->p_capacity = ss->p_count;
+  ss->p = realloc(ss->p, sizeof(qpms_particle_tid_t) * ss->p_count); 
+  ss->p_orbitinfo = realloc(ss->p_orbitinfo, sizeof(qpms_ss_particle_orbitinfo_t)*ss->p_count);
+  ss->p_capacity = ss->p_count;
 
   ss->sym = sym;
 
@@ -392,6 +416,9 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
   free(ss->fecv_pstarts);
   free(ss->tm_sym_map);
   free(ss->p_sym_map);
+  free(ss->otspace);
+  free(ss->p_orbitinfo);
+  free(ss->orbit_types);
   free(ss);
 }
 
