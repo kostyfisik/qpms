@@ -1037,7 +1037,17 @@ cdef class TMatrix:
     '''
     Wrapper over the C qpms_tmatrix_t stucture. 
     '''
-    pass
+    cdef readonly np.ndarray m # Numpy array holding the matrix data
+    cdef readonly BaseSpec spec # Here we hold the base spec for the correct reference counting; TODO check if it gets copied
+    cdef qpms_tmatrix_t t
+
+    def __cinit__(TMatrix self, BaseSpec spec, matrix):
+        self.t.spec = spec.rawpointer();
+        # The following will raise an exception if shape is wrong
+        self.m = np.array(matrix, dtype=complex, copy=True, order='C').reshape((len(spec), len(spec)))
+        cdef cdouble[:,::1] m_memview = self.m
+        self.t.m = &(m_memview[0,0])
+        self.t.owns_m = False # Memory in self.t.m is "owned" by self.m, not by self.t...
 
 cdef class FinitePointGroup:
     '''
@@ -1049,7 +1059,13 @@ cdef class Particle:
     '''
     Wrapper over the qpms_particle_t structure.
     '''
-    pass
+    cdef readonly qpms_particle_t p
+    cdef readonly TMatrix t # We hold the reference to the T-matrix to ensure correct reference counting
+
+    def __cinit__(Particle self, position, TMatrix t):
+        pass
+
+    
 
 cdef class ScatteringSystem:
     '''
