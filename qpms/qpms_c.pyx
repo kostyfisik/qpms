@@ -1021,6 +1021,41 @@ cdef class IRot3:
         qpms_IRot3_uvswfi_dense(&view[0,0], bspec.rawpointer(), self.qd)
         return m
 
+cdef class TMatrixInterpolator:
+    '''
+    Wrapper over the qpms_tmatrix_interpolator_t structure.
+    '''
+    def __cinit__(self, filename, *args, **kwargs):
+        '''Creates a T-matrix interpolator object from a scuff-tmatrix output'''
+        pass
+    def __call__(self, freq):
+        '''Returns a TMatrix instance, corresponding to a given frequency.'''
+        pass
+    pass
+
+cdef class TMatrix:
+    '''
+    Wrapper over the C qpms_tmatrix_t stucture. 
+    '''
+    pass
+
+cdef class FinitePointGroup:
+    '''
+    Wrapper over the qpms_finite_group_t structure.
+    '''
+    pass
+
+cdef class Particle:
+    '''
+    Wrapper over the qpms_particle_t structure.
+    '''
+    pass
+
+cdef class ScatteringSystem:
+    '''
+    Wrapper over the C qpms_scatsys_t structure.
+    '''
+    pass
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc 
