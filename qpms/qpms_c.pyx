@@ -1090,6 +1090,9 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
         Don't forget to reference the BaseSpec object itself when storing the pointer anywhere!!!
         '''
         return &(self.t)
+    property rawpointer:
+        def __get__(self):
+            return <uintptr_t> &(self.t)
 
     # Transparent access to the T-matrix elements.
     def __getitem__(self, key):
@@ -1115,10 +1118,49 @@ cdef class Particle:
     cdef qpms_particle_t p
     cdef readonly CTMatrix t # We hold the reference to the T-matrix to ensure correct reference counting
 
-    def __cinit__(Particle self, position, CTMatrix t):
-        pass
+    def __cinit__(Particle self, pos, CTMatrix t):
+        if(len(pos)>=2 and len(pos) < 4):
+            self.p.pos.x = pos[0]
+            self.p.pos.y = pos[1]
+            self.p.pos.z = pos[2] if len(pos)==3 else 0
+        else:
+            raise ValueError("Position argument has to contain 3 or 2 cartesian coordinates")
+        self.t = t
+        self.p.tmatrix = self.t.rawpointer()
 
-    
+    cdef qpms_particle_t *rawpointer(Particle self):
+        '''Pointer to the qpms_particle_p structure.
+        '''
+        return &(self.p)
+    property rawpointer:
+        def __get__(self):
+            return <uintptr_t> &(self.p)
+
+    property x:
+        def __get__(self):
+            return self.p.pos.x
+        def __set__(self,x):
+            self.p.pos.x = x
+    property y:
+        def __get__(self):
+            return self.p.pos.y
+        def __set__(self,y):
+            self.p.pos.y = y
+    property z:
+        def __get__(self):
+            return self.p.pos.z
+        def __set__(self,z):
+            self.p.pos.z = z
+    property pos:
+        def __get__(self):
+            return (self.p.pos.x, self.p.pos.y, self.p.pos.z)
+        def __set__(self, pos):
+            if(len(pos)>=2 and len(pos) < 4):
+                self.p.pos.x = pos[0]
+                self.p.pos.y = pos[1]
+                self.p.pos.z = pos[2] if len(pos)==3 else 0
+            else:
+                raise ValueError("Position argument has to contain 3 or 2 cartesian coordinates")
 
 cdef class ScatteringSystem:
     '''
