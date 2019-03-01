@@ -6,10 +6,31 @@ import cmath
 from qpms_cdefs cimport *
 cimport cython
 from cython.parallel cimport parallel, prange
-#import enum
+import enum
 
 # Here will be enum and dtype definitions; maybe move these to a separate file
+class VSWFType(enum.IntEnum):
+    ELECTRIC = QPMS_VSWF_ELECTRIC
+    MAGNETIC = QPMS_VSWF_MAGNETIC
+    LONGITUDINAL = QPMS_VSWF_LONGITUDINAL
+    M = QPMS_VSWF_MAGNETIC
+    N = QPMS_VSWF_ELECTRIC
+    L = QPMS_VSWF_LONGITUDINAL
 
+class VSWFNorm(enum.IntEnum):
+    #XU = QPMS_NORMALISATION_XU
+    #XU_CS = QPMS_NORMALISATION_XU_CS
+    NONE = QPMS_NORMALISATION_NONE
+    NONE_CS = QPMS_NORMALISATION_NONE_CS
+    POWER = QPMS_NORMALISATION_POWER
+    POWER_CS = QPMS_NORMALISATION_POWER_CS
+    SPHARM = QPMS_NORMALISATION_SPHARM
+    SPHARM_CS = QPMS_NORMALISATION_SPHARM_CS
+    UNDEF = QPMS_NORMALISATION_UNDEF
+    KRISTENSSON = QPMS_NORMALISATION_KRISTENSSON
+    KRISTENSSON_CS = QPMS_NORMALISATION_KRISTENSSON_CS
+    TAYLOR = QPMS_NORMALISATION_TAYLOR
+    TAYLOR_CS = QPMS_NORMALISATION_TAYLOR_CS
 
 import math # for copysign in crep methods
 #import re # TODO for crep methods?
