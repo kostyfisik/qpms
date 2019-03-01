@@ -1067,7 +1067,7 @@ cdef class TMatrixInterpolator:
         pass
     pass
 
-cdef class TMatrix:
+cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py!
     '''
     Wrapper over the C qpms_tmatrix_t stucture. 
     '''
@@ -1075,22 +1075,22 @@ cdef class TMatrix:
     cdef readonly BaseSpec spec # Here we hold the base spec for the correct reference counting; TODO check if it gets copied
     cdef qpms_tmatrix_t t
 
-    def __cinit__(TMatrix self, BaseSpec spec, matrix):
+    def __cinit__(CTMatrix self, BaseSpec spec, matrix):
         self.t.spec = spec.rawpointer();
         # The following will raise an exception if shape is wrong
         self.m = np.array(matrix, dtype=complex, copy=True, order='C').reshape((len(spec), len(spec)))
-        #self.m.setflags(write=False) # checkme
-        cdef cdouble[:,::1] m_memview = self.m
+        self.m.setflags(write=False) # checkme
+        cdef const cdouble[:,:] m_memview = self.m
         self.t.m = &(m_memview[0,0])
         self.t.owns_m = False # Memory in self.t.m is "owned" by self.m, not by self.t...
 
-    cdef qpms_tmatrix_t *rawpointer(TMatrix self):
+    cdef qpms_tmatrix_t *rawpointer(CTMatrix self):
         '''Pointer to the qpms_tmatrix_t structure.
         Don't forget to reference the BaseSpec object itself when storing the pointer anywhere!!!
         '''
         return &(self.t)
 
-    def as_array(TMatrix self):
+    def as_array(CTMatrix self):
         return np.array(self.m, copy=True)
 
 cdef class FinitePointGroup:
@@ -1104,9 +1104,9 @@ cdef class Particle:
     Wrapper over the qpms_particle_t structure.
     '''
     cdef qpms_particle_t p
-    cdef readonly TMatrix t # We hold the reference to the T-matrix to ensure correct reference counting
+    cdef readonly CTMatrix t # We hold the reference to the T-matrix to ensure correct reference counting
 
-    def __cinit__(Particle self, position, TMatrix t):
+    def __cinit__(Particle self, position, CTMatrix t):
         pass
 
     
