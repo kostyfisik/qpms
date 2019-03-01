@@ -1076,11 +1076,12 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
     cdef qpms_tmatrix_t t
 
     def __cinit__(CTMatrix self, BaseSpec spec, matrix):
-        self.t.spec = spec.rawpointer();
+        self.spec = spec
+        self.t.spec = self.spec.rawpointer();
         # The following will raise an exception if shape is wrong
         self.m = np.array(matrix, dtype=complex, copy=True, order='C').reshape((len(spec), len(spec)))
-        self.m.setflags(write=False) # checkme
-        cdef const cdouble[:,:] m_memview = self.m
+        #self.m.setflags(write=False) # checkme
+        cdef cdouble[:,:] m_memview = self.m
         self.t.m = &(m_memview[0,0])
         self.t.owns_m = False # Memory in self.t.m is "owned" by self.m, not by self.t...
 
@@ -1090,7 +1091,15 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
         '''
         return &(self.t)
 
-    def as_array(CTMatrix self):
+    # Transparent access to the T-matrix elements.
+    def __getitem__(self, key):
+        return self.m[key]
+    def __setitem__(self, key, value):
+        self.m[key] = value
+
+    def as_ndarray(CTMatrix self):
+        ''' Returns a copy of the T-matrix as a numpy array.'''
+        # Maybe not totally needed after all, as np.array(T[...]) should be equivalent and not longer
         return np.array(self.m, copy=True)
 
 cdef class FinitePointGroup:
