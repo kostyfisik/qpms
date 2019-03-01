@@ -292,7 +292,13 @@ typedef struct qpms_scatsys_t {
 /** In fact, it copies everything except the vswf set specs, so keep them alive until scatsys is destroyed.
  */
 qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym);
-/// Destroys the result of qpms_scatsys_apply_symmetry.
+/// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.
 void qpms_scatsys_free(qpms_scatsys_t *s);
+
+/// NOT IMPLEMENTED Dumps a qpms_scatsys_t structure to a file.
+qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);
+
+/// NOT IMPLEMENTED Reads a qpms_scatsys_t structure from a file.
+qpms_scatsys_t *qpms_scatsys_load(char *path);
 
 #endif //QPMS_SCATSYSTEM_H
