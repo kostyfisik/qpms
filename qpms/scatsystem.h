@@ -301,4 +301,41 @@ qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);
 /// NOT IMPLEMENTED Reads a qpms_scatsys_t structure from a file.
 qpms_scatsys_t *qpms_scatsys_load(char *path);
 
+
+
+#if 0
+// Abstract types that describe T-matrix/particle/scatsystem symmetries
+// To be implemented later. See also the thoughts in the beginning of groups.h.
+
+typedef *char qpms_tmatrix_id_t; ///< Maybe I want some usual integer type instead.
+
+///Abstract T-matrix type draft.
+/**
+ * TODO.
+ */
+typedef struct qpms_abstract_tmatrix_t{
+	qpms_tmatrix_id_t id;
+	/// Generators of the discrete point group under which T-matrix is invariant.
+	qpms_irot3_t *invar_gens;
+	/// Length of invar_gens.
+	qpms_gmi_t invar_gens_size;
+
+} qpms_abstract_tmatrix_t;
+
+
+typedef struct qpms_abstract_particle_t{
+} qpms_abstract_particle_t;
+
+/// An abstract particle, defined by its position and abstract T-matrix.
+typedef struct qpms_abstract_particle_t {
+	cart3_t pos; ///< Particle position in cartesian coordinates.
+	const qpms_abstract_tmatrix_t *tmatrix; ///< T-matrix; not owned by this.
+} qpms_abstract_particle_t;
+
+
+/** This is just an alias, as the same index can be used for 
+ * abstract T-matrices as well.
+ */
+typedef qpms_particle_tid_t qpms_abstract_particle_tid_t;
+#endif // 0
 #endif //QPMS_SCATSYSTEM_H
