@@ -55,7 +55,7 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         self.rep3d_gens = rep3d_gens
         self.rep3d = None if rep3d_gens is None else generate_grouprep(
                 self.permgroup,
-                qpms.irot3(),
+                qpms.IRot3(),
                 permgroupgens, rep3d_gens,
                 immultop = None, imcmp = (lambda x, y: x.isclose(y))
                 )
@@ -481,8 +481,8 @@ point_group_info = { # representation info of some useful point groups
                                lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax)),
                  # quaternion rep generators
                                 rep3d_gens = (
-                                    qpms.irot3.xflip(),
-                                    qpms.irot3.yflip(),
+                                    qpms.IRot3.xflip(),
+                                    qpms.IRot3.yflip(),
                                 )
 
     ),
@@ -510,9 +510,9 @@ point_group_info = { # representation info of some useful point groups
                                lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax), qpms.zflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.irot3.xflip(),
-                                   qpms.irot3.yflip(),
-                                   qpms.irot3.zflip(),
+                                   qpms.IRot3.xflip(),
+                                   qpms.IRot3.yflip(),
+                                   qpms.IRot3.zflip(),
                                 )
     ),
     'C4v' : SVWFPointGroupInfo('C4v',
@@ -533,8 +533,8 @@ point_group_info = { # representation info of some useful point groups
                                lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.irot3.zrotN(4),
-                                   qpms.irot3.xflip(),
+                                   qpms.IRot3.zrotN(4),
+                                   qpms.IRot3.xflip(),
                                 )
     ),
     'D4h' : SVWFPointGroupInfo('D4h',
@@ -560,9 +560,9 @@ point_group_info = { # representation info of some useful point groups
                                lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.irot3.zrotN(4),
-                                   qpms.irot3.xflip(),
-                                   qpms.irot3.zflip(),
+                                   qpms.IRot3.zrotN(4),
+                                   qpms.IRot3.xflip(),
+                                   qpms.IRot3.zflip(),
                                 )
     ),
     'D3h' : SVWFPointGroupInfo('D3h',
@@ -585,9 +585,9 @@ point_group_info = { # representation info of some useful point groups
                                lambda lMax, vflip: (qpms.zrotN_tyty(3, lMax), qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.irot3.zrotN(3),
-                                   qpms.irot3.xflip(), # if vflip == 'y' else qpms.irot3.xflip(), # FIXME enable to choose
-                                   qpms.irot3.zflip(),
+                                   qpms.IRot3.zrotN(3),
+                                   qpms.IRot3.xflip(), # if vflip == 'y' else qpms.IRot3.xflip(), # FIXME enable to choose
+                                   qpms.IRot3.zflip(),
                                 )
     ),
 }
