@@ -1045,6 +1045,13 @@ cdef class IRot3:
         r.rot = CQuat(math.cos(math.pi/n),0,0,math.sin(math.pi/n))
         return r
 
+    @staticmethod
+    def identity():
+        '''
+        An alias for the constructor without arguments; returns identity.
+        '''
+        return IRot3()
+
     def as_uvswf_matrix(IRot3 self, BaseSpec bspec):
         '''
         Returns the uvswf representation of the current transform as a numpy array

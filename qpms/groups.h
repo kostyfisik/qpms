@@ -68,4 +68,7 @@ typedef struct qpms_finite_group_t {
 /// NOT IMPLEMENTED Get irrep index by name.
 qpms_iri_t qpms_finite_group_find_irrep_by_name(qpms_finite_group_t *G, char *name);
 
+extern const qpms_finite_group_t QPMS_FINITE_GROUP_TRIVIAL;
+extern const qpms_finite_group_t QPMS_FINITE_GROUP_TRIVIAL_G;
+
 #endif // QPMS_GROUPS_H

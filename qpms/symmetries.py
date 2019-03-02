@@ -97,21 +97,21 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         # qpms_gmi_t idi
         s += '  %d, // idi\n' % permindices[identity]
         # qpms_gmi_t *mt
-        s += '  { // mt\n'
+        s += '  (qpms_gmi_t[]) { // mt\n'
         for i in range(order):
             ss = ', '.join([str(permindices[permlist[i]*permlist[j]]) for j in range(order)])
             s += '    ' + ss + ',\n'
         s += '  },\n'
         # qpms_gmi_t *invi
-        s += '  { // invi\n'
+        s += '  (qpms_gmi_t[]) { // invi\n'
         s += '    ' + ', '.join([str(permindices[permlist[j]**-1]) for j in range(order)])
         s += '\n  },\n'
         # qpms_gmi_t *gens
-        s += '  {' + ', '.join([str(permindices[g]) for g in self.permgroupgens]) + '}, // gens\n'
+        s += '  (qpms_gmi_t[]) {' + ', '.join([str(permindices[g]) for g in self.permgroupgens]) + '}, // gens\n'
         # int ngens
         s += '  %d, // ngens\n' % len(self.permgroupgens)
         # qpms_permutation_t permrep[]
-        s += '  { // permrep\n'
+        s += '  (qpms_permutation_t[]){ // permrep\n'
         for i in range(order):
             s += '    "%s",\n' % str(permlist[i])
         s += '  },\n'
@@ -123,14 +123,14 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         if self.rep3d is None:
             s += '  NULL, // rep3d TODO!!!\n'
         else:
-            s += '  { // rep3d\n'
+            s += '  (qpms_irot3_t[]) { // rep3d\n'
             for i in range(order):
                 s += '   ' + self.rep3d[permlist[i]].crepr() + ',\n'
             s += '  },\n'
         # int nirreps
         s += '  %d, // nirreps\n' % len(self.irreps)
         # struct qpms_finite_grep_irrep_t irreps[]
-        s += '  { // irreps\n'
+        s += '  (struct qpms_finite_group_irrep_t[]) { // irreps\n'
         for irname, irrep in self.irreps.items():
             s += '    {\n' 
             is1d = isinstance(irrep[identity], (int, float, complex))
@@ -142,9 +142,9 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
 
             # complex double *m
             if (is1d):
-                s += '      {' + ', '.join([str(irrep[permlist[i]]) for i in range(order)]) + '} // m\n'
+                s += '      (complex double []) {' + ', '.join([str(irrep[permlist[i]]) for i in range(order)]) + '} // m\n'
             else:
-                s += '      {\n'
+                s += '      (complex double []) {\n'
                 for i in range(order):
                     s += '        // %s\n' % str(permlist[i])
                     for row in range(dim):
@@ -464,6 +464,23 @@ def gen_hexlattice_Kpoint_svwf_rep_projectors(lMax, psi, vflip='x', do_bases=Fal
 
 
 point_group_info = { # representation info of some useful point groups
+    # TODO real trivial without generators
+    'trivial_g' : SVWFPointGroupInfo('trivial_g',
+                 # permutation group generators
+                               (   # I put here the at least the identity for now (it is reduntant, but some functions are not robust enough to have an empty set of generators
+                                   Permutation(),
+                               ), 
+                 # dictionary with irrep generators
+                               {    
+                                    "A" : (1,),
+                               },
+                 # function that generates a tuple with svwf representation generators
+                               lambda lMax : (qpms.identity_tyty(lMax),),
+                 # quaternion rep generators
+                               rep3d_gens = (
+                                   qpms.IRot3.identity(),
+                                )
+    ),
     'C2v' : SVWFPointGroupInfo('C2v',
                  # permutation group generators
                                (Permutation(0,1, size=4)(2,3), # x -> - x mirror operation (i.e. yz mirror plane)

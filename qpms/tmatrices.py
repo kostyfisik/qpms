@@ -48,6 +48,19 @@ def WignerD_yy_fromvector(lmax, vect):
     """
     return WignerD_yy(lmax, quaternion.from_rotation_vector(vect))
 
+def identity_yy(lmax):
+    """
+    TODO doc
+    """
+    return np.eye(lMax2nelem(lMax))
+
+def identity_tyty(lmax):
+    """
+    TODO doc
+    """
+    nelem = lMax2nelem(lmax)
+    return np.eye(2*nelem).reshape((2,nelem,2,nelem))
+
 def xflip_yy(lmax):
     """
     TODO doc
