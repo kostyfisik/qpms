@@ -1105,11 +1105,120 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
         # Maybe not totally needed after all, as np.array(T[...]) should be equivalent and not longer
         return np.array(self.m, copy=True)
 
+cdef char *make_c_string(pythonstring):
+    '''
+    Copies contents of a python string into a char[]
+    (allocating the memory with malloc())
+    '''
+    bytestring = pythonstring.encode('UTF-8')
+    cdef Py_ssize_t n = len(bytestring)
+    cdef char *s 
+    s = <char *>malloc(n+1)
+    if not s:
+        raise MemoryError
+    s[:] = bytestring
+    s[n] = <char>0
+    return s
+
 cdef class FinitePointGroup:
     '''
     Wrapper over the qpms_finite_group_t structure.
+
+    TODO more functionality to make it better usable in Python
+    (group element class at least)
     '''
-    pass
+    cdef readonly bint owns_data
+    cdef qpms_finite_group_t *G
+
+    def __cinit__(self, info):
+        '''Constructs a FinitePointGroup from PointGroupInfo'''
+        # TODO maybe I might use a try..finally statement to avoid leaks
+        # First, generate all basic data from info
+        permlist = list(info.permgroup.elements)
+        cdef int order = len(permlist)
+        permindices = {perm: i for i, perm in enumerate(permlist)} # 'invert' permlist
+        identity = self.permgroup.identity
+        self.G = <qpms_finite_group_t *>malloc(sizeof(qpms_finite_group_t))
+        if not self.G: raise MemoryError
+        self.G[0].name = make_c_string(info.name)
+        self.G[0].order = order
+        self.G[0].idi = permindices[identity]
+        self.G[0].mt = <qpms_gmi_t *>malloc(sizeof(qpms_gmi_t) * order * order)
+        if not self.G[0].mt: raise MemoryError
+        for i in range(order):
+          for j in range(order):
+            self.G[0].mt[i*order + j] = permindices[permlist[i] * permlist[j]]
+        self.G[0].invi = <qpms_gmi_t *>malloc(sizeof(qpms_gmi_t) * order)
+        if not self.G[0].invi: raise MemoryError
+        for i in range(order):
+            self.G[0].invi[i] = permindices[permlist[i]**-1]
+        self.G[0].ngens = len(info.permgroupgens)
+        self.G[0].gens = <qpms_gmi_t *>malloc(sizeof(qpms_gmi_t) * self.G[0].ngens)
+        if not self.G[0].gens: raise MemoryError
+        for i in range(self.G[0].ngens):
+            self.G[0].gens[i] = permindices[info.groupgens[i]]
+        self.G[0].permrep = <char **>calloc(order, sizeof(char *))
+        if not self.G[0].permrep: raise MemoryError
+        for i in range(order):
+            self.G[0].permrep[i] = make_c_string(str(permlist[i]))
+            if not self.G[0].permrep[i]: raise MemoryError
+        self.G[0].permrep_nelem = info.permgroup.degree
+        if info.rep3d is not None:
+            self.G[0].rep3d = <qpms_irot3_t *>malloc(order * sizeof(qpms_irot3_t))
+            for i in range(order):
+                self.G[0].rep3d[i] = info.rep3d[permlist[i]].qd
+        self.G[0].nirreps = len(info.irreps)
+        self.G[0].irreps = <qpms_finite_group_irrep_t *>calloc(self.G[0].nirreps, sizeof(qpms_finite_group_irrep_t))
+        if not self.G[0].irreps: raise MemoryError
+        cdef int dim
+        for iri, (irname, irrep) in enumerate(info.irreps.items()):
+            is1d = isinstance(irrep[identity], (int, float, complex))
+            dim = 1 if is1d else irrep[identity].shape[0]
+            self.G[0].irreps[iri].dim = dim
+            self.G[0].irreps[iri].name = <char *>make_c_string(irname)
+            if not self.G[0].irreps[iri].name: raise MemoryError
+            self.G[0].irreps[iri].m = <cdouble *>malloc(dim*dim*sizeof(cdouble)*order)
+            if not self.G[0].irreps[iri].m: raise MemoryError
+            if is1d:
+                for i in range(order):
+                    self.G[0].irreps[iri].m[i] = irrep[permlist[i]]
+            else:
+                for i in range(order):
+                    for row in range(dim):
+                        for col in range(dim):
+                            self.G[0].irreps[iri].m[i*dim*dim + row*dim + col] = irrep[permlist[i]][row,col]
+        self.owns_data = True
+        
+    def __dealloc__(self):
+        cdef qpms_gmi_t order
+        if self.owns_data:
+            if self.G:
+                order = self.G[0].order
+                free(self.G[0].name)
+                free(self.G[0].mt)
+                free(self.G[0].invi)
+                free(self.G[0].gens)
+                if self.G[0].permrep:
+                    for i in range(order): free(self.G[0].permrep[i])
+                free(self.G[0].permrep)
+                if self.G[0].elemlabels: # this is not even contructed right now
+                    for i in range(order): free(self.G[0].elemlabels[i])
+                if self.G[0].irreps:
+                    for iri in range(self.G[0].nirreps):
+                        free(self.G[0].irreps[iri].name)
+                        free(self.G[0].irreps[iri].m)
+                free(self.G[0].irreps)
+            free(self.G)
+            self.G = <qpms_finite_group_t *>0
+            self.owns_data = False
+
+cdef class FinitePointGroupElement:
+    '''TODO'''
+    cdef readonly FinitePointGroup G
+    cdef readonly qpms_gmi_t gmi
+    def __cinit__(self, FinitePointGroup G, qpms_gmi_t gmi):
+        self.G = G
+        self.gmi = gmi
 
 cdef class Particle:
     '''

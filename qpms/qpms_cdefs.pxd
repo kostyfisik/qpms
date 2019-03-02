@@ -70,6 +70,9 @@ cdef extern from "qpms_types.h":
         QPMS_VSWF_ELECTRIC
         QPMS_VSWF_MAGNETIC
         QPMS_VSWF_LONGITUDINAL
+    ctypedef int qpms_gmi_t
+    ctypedef int qpms_iri_t
+    ctypedef const char * qpms_permutation_t
     # maybe more if needed
 
 cdef extern from "indexing.h":
@@ -129,6 +132,26 @@ cdef extern from "wigner.h":
                            qpms_m_t mp, qpms_m_t m)
     qpms_irot3_t qpms_irot3_mult(qpms_irot3_t p, qpms_irot3_t q)
     qpms_irot3_t qpms_irot3_pow(qpms_irot3_t p, int n)
+
+cdef extern from "groups.h":
+    struct qpms_finite_group_irrep_t:
+        int dim
+        char *name
+        cdouble *m
+    struct qpms_finite_group_t:
+        char *name
+        qpms_gmi_t order
+        qpms_gmi_t idi
+        qpms_gmi_t *mt
+        qpms_gmi_t *invi
+        qpms_gmi_t *gens
+        int ngens
+        qpms_permutation_t *permrep
+        char **elemlabels
+        int permrep_nelem
+        qpms_irot3_t *rep3d
+        qpms_iri_t nirreps
+        qpms_finite_group_irrep_t *irreps
 
 cdef extern from "symmetries.h":
     cdouble *qpms_zflip_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec)
