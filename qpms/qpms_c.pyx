@@ -1112,11 +1112,13 @@ cdef char *make_c_string(pythonstring):
     '''
     bytestring = pythonstring.encode('UTF-8')
     cdef Py_ssize_t n = len(bytestring)
+    cdef Py_ssize_t i
     cdef char *s 
     s = <char *>malloc(n+1)
     if not s:
         raise MemoryError
-    s[:] = bytestring
+    #s[:n] = bytestring # This segfaults; why?
+    for i in range(n): s[i] = bytestring[i]
     s[n] = <char>0
     return s
 
@@ -1156,7 +1158,7 @@ cdef class FinitePointGroup:
         self.G[0].gens = <qpms_gmi_t *>malloc(sizeof(qpms_gmi_t) * self.G[0].ngens)
         if not self.G[0].gens: raise MemoryError
         for i in range(self.G[0].ngens):
-            self.G[0].gens[i] = permindices[info.groupgens[i]]
+            self.G[0].gens[i] = permindices[info.permgroupgens[i]]
         self.G[0].permrep = <char **>calloc(order, sizeof(char *))
         if not self.G[0].permrep: raise MemoryError
         for i in range(order):
@@ -1187,6 +1189,7 @@ cdef class FinitePointGroup:
                     for row in range(dim):
                         for col in range(dim):
                             self.G[0].irreps[iri].m[i*dim*dim + row*dim + col] = irrep[permlist[i]][row,col]
+        self.G[0].elemlabels = <char **> 0 # Elem labels not yet implemented
         self.owns_data = True
         
     def __dealloc__(self):
