@@ -1137,7 +1137,7 @@ cdef class FinitePointGroup:
         permlist = list(info.permgroup.elements)
         cdef int order = len(permlist)
         permindices = {perm: i for i, perm in enumerate(permlist)} # 'invert' permlist
-        identity = self.permgroup.identity
+        identity = info.permgroup.identity
         self.G = <qpms_finite_group_t *>malloc(sizeof(qpms_finite_group_t))
         if not self.G: raise MemoryError
         self.G[0].name = make_c_string(info.name)
