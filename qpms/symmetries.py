@@ -85,7 +85,6 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         Generates a string with a chunk of C code with a definition of a qpms_finite_group_t instance.
         See also groups.h.
         '''
-        self = point_group_info['D3h']
         permlist = list(self.permgroup.elements) # all elements ordered
         order = len(permlist)
         permindices = {perm: i for i, perm in enumerate(permlist)} # 'invert' permlist
