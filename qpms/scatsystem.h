@@ -290,6 +290,11 @@ typedef struct qpms_scatsys_t {
 
 /// Creates a new scatsys by applying a symmetry group, copying particles if needed.
 /** In fact, it copies everything except the vswf set specs, so keep them alive until scatsys is destroyed.
+ * The following fields must be filled:
+ * orig->tm
+ * orig->tm_count
+ * orig->p
+ * orig->p_count
  */
 qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym);
 /// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.

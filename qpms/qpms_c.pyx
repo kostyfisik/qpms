@@ -8,6 +8,7 @@ cimport cython
 from cython.parallel cimport parallel, prange
 import enum
 
+
 # Here will be enum and dtype definitions; maybe move these to a separate file
 class VSWFType(enum.IntEnum):
     ELECTRIC = QPMS_VSWF_ELECTRIC
@@ -1223,6 +1224,9 @@ cdef class FinitePointGroup:
             self.G = <qpms_finite_group_t *>0
             self.owns_data = False
 
+    cdef qpms_finite_group_t *rawpointer(self):
+        return self.G
+
 cdef class FinitePointGroupElement:
     '''TODO'''
     cdef readonly FinitePointGroup G
@@ -1286,7 +1290,48 @@ cdef class ScatteringSystem:
     '''
     Wrapper over the C qpms_scatsys_t structure.
     '''
-    pass
+    cdef list basespecs # Here we keep the references to occuring basespecs
+    #cdef list Tmatrices # Here we keep the references to occuring T-matrices
+    cdef qpms_scatsys_t *s
+
+    def __cinit__(self, particles, FinitePointGroup sym):
+        '''TODO doc.
+        Takes the particles (which have to be a sequence of instances of Particle),
+        fills them together with their t-matrices to the "proto-qpms_scatsys_t"
+        orig and calls qpms_scatsys_apply_symmetry
+        (and then cleans orig)
+        '''
+        cdef qpms_scatsys_t orig # This should be automatically init'd to 0 (CHECKME)
+        cdef qpms_ss_pi_t p_count = len(particles)
+        cdef qpms_ss_tmi_t tm_count = 0
+        tmindices = dict()
+        tmobjs = list()
+        for p in particles: # find and enumerate unique t-matrices
+            if id(p.t) not in tmindices:
+                tmindices[id(p.t)] = tm_count
+                tmobjs.append(p.t)
+                tm_count += 1
+        orig.tm_count = tm_count
+        orig.p_count = p_count
+        for tm in tmobjs: # create references to BaseSpec objects
+            self.basespecs.append(tm.spec)
+        try:
+            orig.tm = <qpms_tmatrix_t **>malloc(orig.tm_count * sizeof(orig.tm[0]))
+            if not orig.tm: raise MemoryError
+            orig.p = <qpms_particle_tid_t *>malloc(orig.p_count * sizeof(orig.p[0]))
+            if not orig.p: raise MemoryError
+            for tmi in range(tm_count):
+                orig.tm[tmi] = (<CTMatrix?>(tmobjs[tmi])).rawpointer()
+            for pi in range(p_count):
+                orig.p[pi].pos = particles[pi].p.pos
+                orig.p[pi].tmatrix_id = tmindices[id(particles[pi].t)]
+            self.s = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer())
+        finally:
+            free(orig.tm)
+            free(orig.p)
+
+    def __dealloc__(self):
+        qpms_scatsys_free(self.s)
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc

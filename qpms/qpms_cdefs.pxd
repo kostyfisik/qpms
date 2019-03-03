@@ -2,7 +2,7 @@ cimport numpy as np
 
 ctypedef double complex cdouble
 
-from libc.stdint cimport uintptr_t
+from libc.stdint cimport *
 
 cdef extern from "qpms_types.h":
     cdef struct cart3_t:
@@ -70,6 +70,8 @@ cdef extern from "qpms_types.h":
         QPMS_VSWF_ELECTRIC
         QPMS_VSWF_MAGNETIC
         QPMS_VSWF_LONGITUDINAL
+    ctypedef int32_t qpms_ss_tmi_t
+    ctypedef int32_t qpms_ss_pi_t
     ctypedef int qpms_gmi_t
     ctypedef int qpms_iri_t
     ctypedef const char * qpms_permutation_t
@@ -152,6 +154,8 @@ cdef extern from "groups.h":
         qpms_irot3_t *rep3d
         qpms_iri_t nirreps
         qpms_finite_group_irrep_t *irreps
+    qpms_finite_group_t QPMS_FINITE_GROUP_TRIVIAL
+    qpms_finite_group_t QPMS_FINITE_GROUP_TRIVIAL_G
 
 cdef extern from "symmetries.h":
     cdouble *qpms_zflip_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec)
@@ -212,14 +216,29 @@ cdef extern from "scatsystem.h":
     struct qpms_tmatrix_t:
         qpms_vswf_set_spec_t *spec
         cdouble *m
-        int owns_m # FIXME in fact bool
+        bint owns_m # FIXME in fact bool
     struct qpms_particle_t:
         cart3_t pos
         const qpms_tmatrix_t *tmatrix
+    struct qpms_particle_tid_t:
+        cart3_t pos
+        qpms_ss_tmi_t tmatrix_id
     struct qpms_tmatrix_interpolator_t:
         const qpms_vswf_set_spec_t *bspec
     struct qpms_scatsys_t:
-        pass # TODO
+        qpms_tmatrix_t **tm
+        qpms_ss_tmi_t tm_count
+        qpms_particle_tid_t *p
+        qpms_ss_pi_t p_count
+        # We shouldn't need more to construct a symmetric scatsystem
+    qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym)
+    void qpms_scatsys_free(qpms_scatsys_t *s)
+    qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path) #NI
+    qpms_scatsys_t *qpms_scatsys_load(char *path) #NI
+    qpms_tmatrix_isclose(const qpms_tmatrix_t *A, const qpms_tmatrix_t *B,
+                const double rtol, const double atol)
+        
+        
 
 
 
