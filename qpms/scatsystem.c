@@ -537,8 +537,7 @@ static inline void check_norm_compat(const qpms_vswf_set_spec_t *s)
   }
 }
 
-#if 0
-complex double *qpms_orbit_matrix_action(complex double *target,
+complex double *qpms_orbit_action_matrix(complex double *target,
     const qpms_ss_orbit_type_t *ot, const qpms_vswf_set_spec_t *bspec,
     const qpms_finite_group_t *sym, const qpms_gmi_t g) {
   assert(sym); assert(g < sym->order);
@@ -552,12 +551,14 @@ complex double *qpms_orbit_matrix_action(complex double *target,
   if (target == NULL) abort();
   memset(target, 0, n*n*N*N*sizeof(complex double));
   complex double tmp[n][n]; // this is the 'per-particle' action
-  qpms_irot3_uvswfi_dense(tmp[0], bspec, sym->rep3d[g]);
+  qpms_irot3_uvswfi_dense(tmp[0], bspec, sym->rep3d[g]); 
   for(qpms_gmi_t Col = 0; Col < ot->size; ++Col) {
     // Row is the 'destination' of the symmetry operation, Col is the 'source'
-    qpms_gmi_t Row = ot->action
-    
-#endif
-
-
+    const qpms_gmi_t Row = ot->action[sym->order * Col + g];
+    for(size_t row = 0; row < bspec->n; ++row)
+      for(size_t col = 0; col < bspec->n; ++col)
+        target[n*n*N*Row + n*Col + n*N*row + col] = tmp[row][col]; //CHECKCONJ
+  }
+  return target;
+}
 

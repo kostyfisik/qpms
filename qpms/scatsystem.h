@@ -244,25 +244,6 @@ typedef struct qpms_ss_orbit_type_t {
 	qpms_ss_tmi_t *tmatrices;
 } qpms_ss_orbit_type_t;
 
-/// Construct a "full matrix action" of a point group element for an orbit type.
-/** TODO detailed doc */
-complex double *qpms_orbit_matrix_action(
-		/// Target array. If NULL, a new one is allocated.
-		/** The size of the array is (orbit->size * bspec->n)**2
-		 * (it makes sense to assume all the T-matrices share their spec).
-		 */
-		complex double *target,
-		/// The orbit (type).
-		const qpms_ss_orbit_type_t *orbit,
-		/// Base spec of the t-matrices (we don't know it from orbit, as it has 
-		/// only T-matrix indices.
-		const qpms_vswf_set_spec_t *bspec;
-		/// The symmetry group used to generate the orbit (must have rep3d filled).
-		const qpms_finite_group_t *sym,
-		/// The index of the operation in sym to represent.
-		const qpms_gmi_t g);
-
-
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
 typedef struct qpms_ss_particle_orbitinfo {
 	qpms_ss_oti_t t; ///< Orbit type.
@@ -325,6 +306,26 @@ qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);
 
 /// NOT IMPLEMENTED Reads a qpms_scatsys_t structure from a file.
 qpms_scatsys_t *qpms_scatsys_load(char *path);
+
+struct qpms_finite_group_t;
+
+/// Constructs a "full matrix action" of a point group element for an orbit type.
+/** TODO detailed doc */
+complex double *qpms_orbit_action_matrix(
+		/// Target array. If NULL, a new one is allocated.
+		/** The size of the array is (orbit->size * bspec->n)**2
+		 * (it makes sense to assume all the T-matrices share their spec).
+		 */
+		complex double *target,
+		/// The orbit (type).
+		const qpms_ss_orbit_type_t *orbit,
+		/// Base spec of the t-matrices (we don't know it from orbit, as it has 
+		/// only T-matrix indices.
+		const qpms_vswf_set_spec_t *bspec,
+		/// The symmetry group used to generate the orbit (must have rep3d filled).
+		const struct qpms_finite_group_t *sym,
+		/// The index of the operation in sym to represent.
+		const qpms_gmi_t g);
 
 
 
