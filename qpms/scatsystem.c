@@ -485,14 +485,16 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
 
 
 void qpms_scatsys_free(qpms_scatsys_t *ss) {
-  free(ss->tm);
-  free(ss->p);
-  free(ss->fecv_pstarts);
-  free(ss->tm_sym_map);
-  free(ss->p_sym_map);
-  free(ss->otspace);
-  free(ss->p_orbitinfo);
-  free(ss->orbit_types);
+  if(ss) {
+    free(ss->tm);
+    free(ss->p);
+    free(ss->fecv_pstarts);
+    free(ss->tm_sym_map);
+    free(ss->p_sym_map);
+    free(ss->otspace);
+    free(ss->p_orbitinfo);
+    free(ss->orbit_types);
+  }
   free(ss);
 }
 
