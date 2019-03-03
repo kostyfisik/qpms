@@ -1260,6 +1260,10 @@ cdef class Particle:
         def __get__(self):
             return <uintptr_t> &(self.p)
 
+    cdef qpms_particle_t cval(Particle self):
+        '''Provides a copy for assigning in cython code'''
+        return self.p
+
     property x:
         def __get__(self):
             return self.p.pos.x
@@ -1306,6 +1310,7 @@ cdef class ScatteringSystem:
         cdef qpms_ss_tmi_t tm_count = 0
         tmindices = dict()
         tmobjs = list()
+        self.basespecs=list()
         for p in particles: # find and enumerate unique t-matrices
             if id(p.t) not in tmindices:
                 tmindices[id(p.t)] = tm_count
@@ -1323,7 +1328,7 @@ cdef class ScatteringSystem:
             for tmi in range(tm_count):
                 orig.tm[tmi] = (<CTMatrix?>(tmobjs[tmi])).rawpointer()
             for pi in range(p_count):
-                orig.p[pi].pos = particles[pi].p.pos
+                orig.p[pi].pos = (<Particle?>(particles[pi])).cval().pos
                 orig.p[pi].tmatrix_id = tmindices[id(particles[pi].t)]
             self.s = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer())
         finally:

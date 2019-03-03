@@ -433,6 +433,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
         for (opj = 0; opj < ot_current.size; ++opj)
           if (current_orbit[opj] == pj) break; // HIT, pj already on current orbit
         if (opj == ot_current.size) { // MISS, pj is new on the orbit, extend the size and set the T-matrix id
+          current_orbit[opj] = pj;
           ++ot_current.size;
           ot_current.tmatrices[opj] = ss->p[pj].tmatrix_id;
         }
