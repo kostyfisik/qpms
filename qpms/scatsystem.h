@@ -327,7 +327,23 @@ complex double *qpms_orbit_action_matrix(
 		/// The index of the operation in sym to represent.
 		const qpms_gmi_t g);
 
-
+/// Constructs a dense matrix representation of a irrep projector for an orbit type.
+/** TODO detailed doc */
+complex double *qpms_orbit_irrep_projector_matrix(
+		/// Target array. If NULL, a new one is allocated.
+		/** The size of the array is (orbit->size * bspec->n)**2
+		 * (it makes sense to assume all the T-matrices share their spec).
+		 */
+		complex double *target,
+		/// The orbit (type).
+		const qpms_ss_orbit_type_t *orbit,
+		/// Base spec of the t-matrices (we don't know it from orbit, as it has 
+		/// only T-matrix indices.
+		const qpms_vswf_set_spec_t *bspec,
+		/// The symmetry group used to generate the orbit (must have rep3d filled).
+		const struct qpms_finite_group_t *sym,
+		/// The index of the irreducible representation of sym.
+		const qpms_iri_t iri);
 
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries

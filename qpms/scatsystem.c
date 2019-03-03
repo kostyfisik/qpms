@@ -562,3 +562,36 @@ complex double *qpms_orbit_action_matrix(complex double *target,
   return target;
 }
 
+complex double *qpms_orbit_irrep_projector_matrix(complex double *target,
+    const qpms_ss_orbit_type_t *ot, const qpms_vswf_set_spec_t *bspec,
+    const qpms_finite_group_t *sym, const qpms_iri_t iri) {
+  assert(sym);
+  assert(sym->rep3d);
+  assert(ot); assert(ot->size > 0);
+  assert(iri < sym->nirreps); assert(sym->irreps);
+  check_norm_compat(bspec);
+  const size_t n = bspec->n;
+  const qpms_gmi_t N = ot->size;
+  if (target == NULL)
+    target = malloc(n*n*N*N*sizeof(complex double));
+  if (target == NULL) abort();
+  memset(target, 0, n*n*N*N*sizeof(complex double));
+  // Workspace for the orbit group action matrices
+  complex double *tmp = malloc(n*n*N*N*sizeof(complex double));
+  const int d = sym->irreps[iri].dim;
+  double prefac = d / (double) sym->order;
+  for(int partner = 0; partner < d; ++partner) {
+    for(qpms_gmi_t g = 0; g < sym->order; ++g) {
+      // We use the diagonal elements of D_g
+      complex double D_g_conj = sym->irreps[iri].m[g*d*d + partner*d + partner];
+      qpms_orbit_action_matrix(tmp, ot, bspec, sym, g);
+      // TODO kahan sum?
+      for(size_t i = 0; i < n*n*N*N; ++i)
+        target[i] += prefac * D_g_conj * tmp[i];
+    }
+  }
+  free(tmp);
+  return target;
+}
+
+
