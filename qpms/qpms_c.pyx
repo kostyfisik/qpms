@@ -1338,6 +1338,13 @@ cdef class ScatteringSystem:
     def __dealloc__(self):
         qpms_scatsys_free(self.s)
 
+    def particles_tmi(self):
+        r = list()
+        cdef qpms_ss_pi_t pi
+        for pi in range(self.s[0].p_count):
+            r.append(self.s[0].p[pi])
+        return r
+
 def tlm2uvswfi(t, l, m):
     ''' TODO doc
     And TODO this should rather be an ufunc.
