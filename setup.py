@@ -23,7 +23,10 @@ qpms_c = Extension('qpms_c',
             # FIXME http://stackoverflow.com/questions/4259170/python-setup-script-extensions-how-do-you-include-a-h-file
             'qpms/translations.c',
             'qpms/symmetries.c',
-            'qpms/wigner.c'],
+            'qpms/wigner.c',
+            'qpms/scatsystem.c',
+            'qpms/vswf.c', # FIXME many things from vswf.c are not required by this module, but they have many dependencies (following in this list); maybe I want to move all the  "basespec stuff"
+            'qpms/legendre.c'],
         extra_compile_args=['-std=c99','-ggdb', '-O0',
             '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # this is required
             #'-DQPMS_USE_OMP',

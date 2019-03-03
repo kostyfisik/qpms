@@ -18,7 +18,7 @@ typedef struct {
 	//complex double *bkn; // coefficients of the derivatives
 } qpms_sbessel_calculator_t;
 
-qpms_sbessel_calculator_t *qpms_sbessel_calculator_init();
+qpms_sbessel_calculator_t *qpms_sbessel_calculator_init(void);
 void qpms_sbessel_calculator_pfree(qpms_sbessel_calculator_t *c);
 
 qpms_errno_t qpms_sbessel_calc_fill(qpms_sbessel_calculator_t *c, qpms_bessel_t typ, qpms_l_t lmax,

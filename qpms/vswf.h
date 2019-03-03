@@ -12,7 +12,7 @@
 
 // Methods for qpms_vswf_spec_t
 /// Creates a qpms_vswf_set_spec_t structure with an empty list of wave indices.
-qpms_vswf_set_spec_t *qpms_vswf_set_spec_init();
+qpms_vswf_set_spec_t *qpms_vswf_set_spec_init(void);
 /// Appends a VSWF index to a \ref qpms_vswf_set_spec_t, also updating metadata.
 qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *self, qpms_uvswfi_t u);
 /// Destroys a \ref qpms_vswf_set_spec_t.

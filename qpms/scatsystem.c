@@ -210,8 +210,8 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(const size_t incou
       bool n0_real = false, n0_imag = false;
       for (size_t i = 0; i < incount; ++i) {
         complex double telem = ta[i].m[n * row + col];
-        if (y_real[i] = creal(telem)) n0_real = true;
-        if (y_imag[i] = cimag(telem)) n0_imag = true;
+        if ((y_real[i] = creal(telem))) n0_real = true;
+        if ((y_imag[i] = cimag(telem))) n0_imag = true;
       }
       if (n0_real) {
         gsl_spline *s =
@@ -467,8 +467,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
     ptrdiff_t shift = ss->otspace - old_otspace;
     if(shift)
       for (size_t oi = 0; oi < ss->orbit_type_count; ++oi) {
-        (char *) (ss->orbit_types[i].action) += shift;
-        (char *) (ss->orbit_types[i].tmatrices) += shift;
+        ss->orbit_types[oi].action = (void *)(((char *) (ss->orbit_types[oi].action)) + shift);
+        ss->orbit_types[oi].tmatrices = (void *)(((char *) (ss->orbit_types[oi].tmatrices)) + shift);
       }
   }
 

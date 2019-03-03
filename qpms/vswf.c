@@ -61,10 +61,10 @@ bool qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a,
 
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_copy(const qpms_vswf_set_spec_t *or){
   qpms_vswf_set_spec_t *c = malloc(sizeof(qpms_vswf_set_spec_t));
-  if (!c) abort; // return NULL
+  if (!c) abort(); // return NULL
   *c = *or;
   c->ilist = malloc(sizeof(qpms_uvswfi_t) * c->n);
-  memcpy(c->ilist, or->ilist, sizeof(qpms_vswfi_t)*c->n);
+  memcpy(c->ilist, or->ilist, sizeof(qpms_uvswfi_t)*c->n);
   c->capacity = c->n;
   return c;
 }
@@ -208,7 +208,7 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *const longtarget, csphvec_t *
     complex double besderfac = *(pbes-1) - l * besfac;
     double sqrtlfac = sqrt(l*(l+1));
     for(qpms_m_t m = -l; m <= l; ++m) {
-      complex double eimf = cexp(m * kr.phi * I);
+      complex double eimf = cexp(m * kr.phi * I); // FIXME unused variable?!!!
       if (longtarget) {
         *plong = csphvec_add(csphvec_scale(besderfac-besfac, *p3),
             csphvec_scale(sqrtlfac * besfac, *p2));
