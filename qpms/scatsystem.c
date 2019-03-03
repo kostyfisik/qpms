@@ -270,13 +270,34 @@ static bool orbit_types_equal(const qpms_ss_orbit_type_t *a, const qpms_ss_orbit
   return true;
 }
 
-/// Add orbit type to a scattering system, updating the ss->otspace_end pointer accordingly
+// Extend the action to all particles in orbit if only the action on the 0th 
+// particle has been filled.
+static void extend_orbit_action(qpms_scatsys_t *ss, qpms_ss_orbit_type_t *ot) {
+  for(qpms_ss_orbit_pi_t src = 1; src < ot->size; ++src) {
+    // find any element g that sends 0 to src:
+    qpms_gmi_t g;
+    for (g = 0; g < ss->sym->order; ++g)
+      if (ot->action[g] == src) break;
+    assert(g < ss->sym->order);
+    // invg sends src to 0
+    qpms_gmi_t invg = qpms_finite_group_inv(ss->sym, g);
+    for (qpms_gmi_t f = 0; f < ss->sym->order; ++f)
+      // if f sends 0 to dest, then f * invg sends src to dest
+      ot->action[src * ss->sym->order + 
+        qpms_finite_group_mul(ss->sym,f,invg)] = ot->action[f];
+  }
+}
+
+//Add orbit type to a scattering system, updating the ss->otspace_end pointer accordingly
 static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_current) {
   qpms_ss_orbit_type_t * const ot_new = & (ss->orbit_types[ss->orbit_type_count]);
   ot_new->size = ot_current->size;
-  const size_t actionsiz = sizeof(ot_current->action[0]) * ss->sym->order;
+  const size_t actionsiz = sizeof(ot_current->action[0]) * ot_current->size 
+    * ss->sym->order;
   ot_new->action = (void *) (ss->otspace_end);
   memcpy(ot_new->action, ot_current->action, actionsiz);
+  // N.B. we copied mostly garbage ^^^, most of it is initialized just now:
+  extend_orbit_action(ss, ot_new);
   ss->otspace_end += actionsiz;
   const size_t tmsiz = sizeof(ot_current->tmatrices[0]) * ot_current->size;
   ot_new->tmatrices = (void *) (ss->otspace_end);
@@ -384,12 +405,12 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   ss->orbit_types = calloc(ss->p_count, sizeof(qpms_ss_orbit_type_t));
 
   ss->otspace_end = ss->otspace = malloc( // reallocate later
-      (sizeof(qpms_ss_orbit_pi_t) * sym->order
+      (sizeof(qpms_ss_orbit_pi_t) * sym->order * sym->order
        + sizeof(qpms_ss_tmi_t) * sym->order) * ss->p_count);
   
   // Workspace for the orbit type determination
   qpms_ss_orbit_type_t ot_current;
-  qpms_ss_orbit_pi_t ot_current_action[sym->order];
+  qpms_ss_orbit_pi_t ot_current_action[sym->order * sym->order];
   qpms_ss_tmi_t ot_current_tmatrices[sym->order];
   
   qpms_ss_pi_t current_orbit[sym->order];
@@ -498,4 +519,45 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
   }
   free(ss);
 }
+
+
+
+// (copypasta from symmetries.c)
+// TODO at some point, maybe support also other norms.
+// (perhaps just use qpms_normalisation_t_factor() at the right places)
+static inline void check_norm_compat(const qpms_vswf_set_spec_t *s)
+{
+  switch (qpms_normalisation_t_normonly(s->norm)) {
+    case QPMS_NORMALISATION_POWER:
+      break;
+    case QPMS_NORMALISATION_SPHARM:
+      break;
+    default:
+      abort(); // Only SPHARM and POWER norms are supported right now.
+  }
+}
+
+#if 0
+complex double *qpms_orbit_matrix_action(complex double *target,
+    const qpms_ss_orbit_type_t *ot, const qpms_vswf_set_spec_t *bspec,
+    const qpms_finite_group_t *sym, const qpms_gmi_t g) {
+  assert(sym); assert(g < sym->order);
+  assert(sym->rep3d);
+  assert(ot); assert(ot->size > 0);
+  check_norm_compat(bspec);
+  const size_t n = bspec->n;
+  const qpms_gmi_t N = ot->size;
+  if (target == NULL)
+    target = malloc(n*n*N*N*sizeof(complex double));
+  if (target == NULL) abort();
+  memset(target, 0, n*n*N*N*sizeof(complex double));
+  complex double tmp[n][n]; // this is the 'per-particle' action
+  qpms_irot3_uvswfi_dense(tmp[0], bspec, sym->rep3d[g]);
+  for(qpms_gmi_t Col = 0; Col < ot->size; ++Col) {
+    // Row is the 'destination' of the symmetry operation, Col is the 'source'
+    qpms_gmi_t Row = ot->action
+    
+#endif
+
+
 

@@ -65,6 +65,21 @@ typedef struct qpms_finite_group_t {
 	struct qpms_finite_group_irrep_t *irreps; ///< Irreducible representations of the group.
 } qpms_finite_group_t;
 
+/// Group multiplication.
+static inline qpms_gmi_t qpms_finite_group_mul(const qpms_finite_group_t *G,
+		qpms_gmi_t a, qpms_gmi_t b) {
+	assert(a < G->order);
+	assert(b < G->order);
+	return G->mt[G->order * a + b];
+}
+
+/// Group element inversion.
+static inline qpms_gmi_t qpms_finite_group_inv(const qpms_finite_group_t *G,
+		qpms_gmi_t a) {
+	assert(a < G->order);
+	return G->invi[a];
+}
+
 /// NOT IMPLEMENTED Get irrep index by name.
 qpms_iri_t qpms_finite_group_find_irrep_by_name(qpms_finite_group_t *G, char *name);
 

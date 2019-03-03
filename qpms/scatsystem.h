@@ -224,13 +224,14 @@ typedef qpms_ss_tmi_t qpms_ss_oti_t; ///< Auxilliary type used for labeling orbi
  *
  */
 typedef struct qpms_ss_orbit_type_t {
-	qpms_gmi_t size; ///< Size of the orbit (a divisor of the group order).
-	/// Action of the group elements onto the "first" element in this orbit.
-	/** Its size is sym->order and its values lie between 0 and \a this.size − 1.
-	 *  
-	 *  The corresponding stabilizer {\a g} of the i-th particle on the orbit
-	 *  is given by action[i] = g.
+	qpms_ss_orbit_pi_t size; ///< Size of the orbit (a divisor of the group order).
+	/// Action of the group elements onto the elements in this orbit.
+	/** Its size is sym->order * this.size
+	 *  and its values lie between 0 and \a this.size − 1.
 	 *
+	 *  Action of the group element g onto the pi-th particle
+	 *  is given by action[g + pi*sym->order].
+	 *  
 	 */
 	qpms_ss_orbit_pi_t *action;
 	/// T-matrix IDs of the particles on this orbit (type).
@@ -242,6 +243,25 @@ typedef struct qpms_ss_orbit_type_t {
 	 */
 	qpms_ss_tmi_t *tmatrices;
 } qpms_ss_orbit_type_t;
+
+/// Construct a "full matrix action" of a point group element for an orbit type.
+/** TODO detailed doc */
+complex double *qpms_orbit_matrix_action(
+		/// Target array. If NULL, a new one is allocated.
+		/** The size of the array is (orbit->size * bspec->n)**2
+		 * (it makes sense to assume all the T-matrices share their spec).
+		 */
+		complex double *target,
+		/// The orbit (type).
+		const qpms_ss_orbit_type_t *orbit,
+		/// Base spec of the t-matrices (we don't know it from orbit, as it has 
+		/// only T-matrix indices.
+		const qpms_vswf_set_spec_t *bspec;
+		/// The symmetry group used to generate the orbit (must have rep3d filled).
+		const qpms_finite_group_t *sym,
+		/// The index of the operation in sym to represent.
+		const qpms_gmi_t g);
+
 
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
 typedef struct qpms_ss_particle_orbitinfo {
