@@ -7,6 +7,7 @@
  */
 #ifndef QPMS_VSWF_H
 #define QPMS_VSWF_H
+#include <unistd.h> // ssize_t 
 #include "qpms_types.h"
 #include <gsl/gsl_sf_legendre.h>
 
@@ -26,6 +27,17 @@ bool qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a,
 		const qpms_vswf_set_spec_t *b);
 /// Copies an instance of qpms_vswf_set_spec_t
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_copy(const qpms_vswf_set_spec_t *orig);
+
+/// Finds the position of a given index in the bspec's ilist.
+/** If not found, returns -1. */
+// TODO more consistency in types (here size_t vs. ptrdiff_t).
+static inline ssize_t qpms_vswf_set_spec_find_uvswfi(const qpms_vswf_set_spec_t *bspec,
+		const qpms_uvswfi_t index) {
+	for(size_t i = 0; i < bspec->n; ++i) 
+		if (bspec->ilist[i] == index)
+			return i;
+	return -1;
+}
 
 /// NOT IMPLEMENTED Evaluates a set of VSWF basis functions at a given point.
 /** The list of basis wave indices is specified in \a setspec; 

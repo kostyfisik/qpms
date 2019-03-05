@@ -6,6 +6,7 @@
 #include "qpms_types.h"
 #include <stdbool.h>
 #include <gsl/gsl_spline.h>
+#include <stdio.h> // only because of qpms_read_scuff_tmatrix()
 
 /// A T-matrix.
 /** In the future, I might rather use a more abstract approach in which T-matrix
@@ -137,7 +138,54 @@ qpms_tmatrix_t *qpms_tmatrix_symmetrise_C_N_inplace(
 		int N ///< number of z-axis rotations in the group
 		);
 
-/// NOT IMPLEMENTED Loads scuff-tmatrix generated files.
+/// Reads an open scuff-tmatrix generated file.
+/** 
+ * \a *freqs, \a *freqs_su, \a *tmatrices_array and \a *tmdata 
+ * arrays are allocated by this function
+ * and have to be freed by the caller after use.
+ * \a freqs_su and \a tmatrices_array can be NULL, in that case
+ * the respective arrays are not filled nor allocated.
+ *
+ * The contents of tmatrices_array is NOT 
+ * supposed to be freed element per element.
+ *
+ * TODO more checks and options regarding NANs etc.
+ *
+ */
+qpms_errno_t qpms_load_scuff_tmatrix(
+		const char *path, ///< Path to the TMatrix file
+		const qpms_vswf_set_spec_t *bspec, ///< VSWF set spec
+		size_t *n, ///< Number of successfully loaded t-matrices
+		double **freqs, ///< Frequencies / (eV / ħ).
+		double **freqs_su, ///< Frequencies in SCUFF units (optional).
+		/// The resulting T-matrices (optional).
+		qpms_tmatrix_t **tmatrices_array, 
+		complex double **tmdata ///< The T-matrices raw contents
+		);
+
+/// Loads a scuff-tmatrix generated file.
+/** A simple wrapper over qpms_read_scuff_tmatrix() that needs a 
+ * path instead of open FILE.
+ */
+qpms_errno_t qpms_read_scuff_tmatrix(
+		FILE *f, ///< An open stream with the T-matrix data.
+		const qpms_vswf_set_spec_t *bspec, ///< VSWF set spec
+		size_t *n, ///< Number of successfully loaded t-matrices
+		double **freqs, ///< Frequencies / (eV / ħ).
+		double **freqs_su, ///< Frequencies in SCUFF units (optional).
+		/// The resulting T-matrices (optional).
+		qpms_tmatrix_t **tmatrices_array, 
+		/// The T-matrices raw contents. 
+		/** The coefficient of outgoing wave defined by 
+		 * \a bspec->ilist[desti] as a result of incoming wave
+		 * \a bspec->ilist[srci] at frequency \a (*freqs)[fi]
+		 * is accessed via
+		 * (*tmdata)[bspec->n*bspec->n*fi + desti*bspec->n + srci].
+		 */
+		complex double ** tmdata 
+		);
+
+/// Loads scuff-tmatrix generated files.
 /** 
  * freqs, freqs_su, tmatrices_array and tmdata arrays are allocated by this function
  * and have to be freed by the caller after use.
@@ -149,7 +197,7 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 		size_t *n, ///< Number of successfully loaded t-matrices
 		double **freqs, ///< Frequencies in SI units
 		double **freqs_su, ///< Frequencies in SCUFF units (optional)
-		qpms_tmatrix_t *tmatrices_array, ///< The resulting T-matrices.
+		qpms_tmatrix_t **tmatrices_array, ///< The resulting T-matrices.
 		complex double **tmdata ///< The t-matrices raw contents
 		);
 
