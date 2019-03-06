@@ -1067,13 +1067,39 @@ cdef class TMatrixInterpolator:
     '''
     Wrapper over the qpms_tmatrix_interpolator_t structure.
     '''
-    def __cinit__(self, filename, *args, **kwargs):
+    #cdef readonly np.ndarray m # Numpy array holding the matrix data
+    cdef readonly BaseSpec spec # Here we hold the base spec for the correct reference counting; TODO check if it gets copied
+    cdef qpms_tmatrix_t *tmatrices_array
+    cdef cdouble *tmdata
+    cdef double *freqs
+    cdef double *freqs_su
+    cdef size_t nfreqs
+    cdef qpms_tmatrix_interpolator_t *interp
+
+    def __cinit__(self, filename, BaseSpec bspec,  *args, **kwargs):
         '''Creates a T-matrix interpolator object from a scuff-tmatrix output'''
-        pass
+        self.spec = bspec
+        cdef char * cpath = make_c_string(filename)
+        if QPMS_SUCCESS != qpms_load_scuff_tmatrix(cpath, self.spec.rawpointer(),
+                &(self.nfreqs), &(self.freqs), &(self.freqs_su),
+                &(self.tmatrices_array), &(self.tmdata)):
+            raise IOError("Could not read T-matrix from %s" % filename)
+        self.interp = qpms_tmatrix_interpolator_create(self.nfreqs,
+                self.freqs, self.tmatrices_array, &gsl_interp_cspline)
+        if not self.interp: raise Exception("Unexpected NULL at interpolator creation.")
     def __call__(self, freq):
         '''Returns a TMatrix instance, corresponding to a given frequency.'''
-        pass
-    pass
+        # This is a bit stupid, I should rethink the CTMatrix constuctors
+        cdef qpms_tmatrix_t *t = qpms_tmatrix_interpolator_eval(self.interp, freq)
+        cdef CTMatrix res = CTMatrix(self.spec, <cdouble[:len(self.spec),:len(self.spec)]>(t[0].m))
+        qpms_tmatrix_free(t)
+        return res
+    def __dealloc__(self):
+        qpms_tmatrix_interpolator_free(self.interp)
+        free(self.tmatrices_array)
+        free(self.tmdata)
+        free(self.freqs_su)
+        free(self.freqs)
 
 cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py!
     '''

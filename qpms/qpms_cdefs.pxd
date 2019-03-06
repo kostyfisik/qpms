@@ -164,6 +164,8 @@ cdef extern from "symmetries.h":
     cdouble *qpms_zrot_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec, double phi)
     cdouble *qpms_zrot_rational_uvswi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec, int N, int w)
     cdouble *qpms_irot3_uvswfi_dense(cdouble *target, const qpms_vswf_set_spec_t *bspec, qpms_irot3_t transf)
+    size_t qpms_zero_roundoff_clean(double *arr, size_t nmemb, double atol)
+    size_t qpms_czero_roundoff_clean(cdouble *arr, size_t nmemb, double atol)
 
 #cdef extern from "numpy/arrayobject.h":
 #    cdef enum NPY_TYPES:
@@ -212,6 +214,13 @@ cdef extern from "translations.h":
             char *phi_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides,
             char *r_ge_d_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides) nogil
 
+cdef extern from "gsl/gsl_interp.h":
+    struct gsl_interp_type:
+        pass
+    gsl_interp_type gsl_interp_linear
+    gsl_interp_type gsl_interp_cspline
+    # ^^^ These are probably the only relevant ones.
+
 cdef extern from "scatsystem.h":
     struct qpms_tmatrix_t:
         qpms_vswf_set_spec_t *spec
@@ -225,6 +234,11 @@ cdef extern from "scatsystem.h":
         qpms_ss_tmi_t tmatrix_id
     struct qpms_tmatrix_interpolator_t:
         const qpms_vswf_set_spec_t *bspec
+    void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp)
+    qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *interp, double freq)
+    qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, double *freqs, 
+            const qpms_tmatrix_t *tmatrices_array, const gsl_interp_type *iptype)
+    void qpms_tmatrix_free(qpms_tmatrix_t *tmatrix)
     struct qpms_scatsys_t:
         qpms_tmatrix_t **tm
         qpms_ss_tmi_t tm_count
@@ -237,8 +251,27 @@ cdef extern from "scatsystem.h":
     qpms_scatsys_t *qpms_scatsys_load(char *path) #NI
     qpms_tmatrix_isclose(const qpms_tmatrix_t *A, const qpms_tmatrix_t *B,
                 const double rtol, const double atol)
-        
-        
-
-
+    qpms_errno_t qpms_symmetrise_tmdata_irot3arr(
+            cdouble *tmdata, const size_t tmcount,
+            const qpms_vswf_set_spec_t *bspec,
+            size_t n_symops,
+            const qpms_irot3_t *symops
+            )
+    qpms_errno_t qpms_symmetrise_tmdata_finite_group(
+            cdouble *tmdata, const size_t tmcount,
+            const qpms_vswf_set_spec_t *bspec,
+            const qpms_finite_group_t *pointgroup
+            )
+    qpms_tmatrix_t *qpms_tmatrix_symmetrise_irot3arr_inplace(
+            qpms_tmatrix_t *T,
+            size_t n_symops,
+            const qpms_irot3_t *symops
+            )
+    qpms_tmatrix_t *qpms_tmatrix_symmetrise_finite_group_inplace(
+            qpms_tmatrix_t *T,
+            const qpms_finite_group_t *pointgroup
+            )
+    qpms_errno_t qpms_load_scuff_tmatrix(const char *path, const qpms_vswf_set_spec_t *bspec,
+            size_t *n, double **freqs, double **freqs_su, qpms_tmatrix_t **tmatrices_array,
+            cdouble **tmdata)
 

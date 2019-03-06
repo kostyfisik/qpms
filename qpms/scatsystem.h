@@ -269,6 +269,7 @@ typedef struct qpms_tmatrix_interpolator_t {
 void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp);
 
 /// Evaluate a T-matrix interpolated value.
+/** The result is to be freed using qpms_tmatrix_free().*/
 qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *interp, double freq);
 
 /// Create a T-matrix interpolator from frequency and T-matrix arrays.
