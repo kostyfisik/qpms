@@ -1085,10 +1085,13 @@ cdef class TMatrixInterpolator:
                 &(self.tmatrices_array), &(self.tmdata)):
             raise IOError("Could not read T-matrix from %s" % filename)
         self.interp = qpms_tmatrix_interpolator_create(self.nfreqs,
-                self.freqs, self.tmatrices_array, &gsl_interp_cspline)
+                self.freqs, self.tmatrices_array, gsl_interp_cspline)
         if not self.interp: raise Exception("Unexpected NULL at interpolator creation.")
-    def __call__(self, freq):
+    def __call__(self, double freq):
         '''Returns a TMatrix instance, corresponding to a given frequency.'''
+        if freq < self.freqs[0] or freq > self.freqs[self.nfreqs-1]:# FIXME here I assume that the input is already sorted
+            raise ValueError("input frequency %g is outside the interpolator domain (%g, %g)"
+                    % (freq, self.freqs[0], self.freqs[self.nfreqs-1]))
         # This is a bit stupid, I should rethink the CTMatrix constuctors
         cdef qpms_tmatrix_t *t = qpms_tmatrix_interpolator_eval(self.interp, freq)
         cdef CTMatrix res = CTMatrix(self.spec, <cdouble[:len(self.spec),:len(self.spec)]>(t[0].m))

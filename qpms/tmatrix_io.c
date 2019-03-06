@@ -16,6 +16,10 @@ double qpms_SU2eV(double e_SU) {
   return e_SU * SCUFF_OMEGAUNIT / (ELECTRONVOLT / HBAR);
 }
 
+double qpms_SU2SI(double e_SU) {
+  return e_SU * SCUFF_OMEGAUNIT;
+}
+
 /// TODO doc and more checks
 qpms_errno_t qpms_read_scuff_tmatrix(
     FILE *f, ///< file handle
@@ -29,9 +33,9 @@ qpms_errno_t qpms_read_scuff_tmatrix(
   if (!(freqs && n && tmdata)) 
     qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
       "freqs, n, and tmdata are mandatory arguments and must not be NULL.");
-  if (bs->norm != QPMS_NORMALISATION_POWER_CS) // CHECKME CORRECT?
+  if (bs->norm != QPMS_NORMALISATION_POWER) // CHECKME CORRECT?
     qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
-        "Not implemented; only QPMS_NORMALISATION_POWER_CS (CHECKME)"
+        "Not implemented; only QPMS_NORMALISATION_POWER (CHECKME)"
         " norm supported right now.");
   int n_alloc = 128; // First chunk to allocate
   *n = 0;
@@ -58,19 +62,18 @@ qpms_errno_t qpms_read_scuff_tmatrix(
       lastfreq_su = currentfreq_su;
       if(*n > n_alloc) {
         n_alloc *= 2;
-          *freqs = realloc(*freqs, n_alloc * sizeof(double));
-          if (freqs_su) *freqs_su = realloc(*freqs_su, n_alloc * sizeof(double));
-          *tmdata = realloc(*tmdata, sizeof(complex double) * bs->n * bs->n * n_alloc);
-          if (!*freqs || (!freqs_su != !*freqs_su) || !*tmdata)
-            qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
-                  "realloc() failed.");
-
-          if (freqs_su) (*freqs_su)[*n-1] = currentfreq_su;
-          (*freqs)[*n-1] = qpms_SU2eV(currentfreq_su);
-
-          for(size_t i = 0; i < bs->n * bs->n; ++i)
-            (*tmdata)[(*n-1)*bs->n*bs->n + i] = NAN + I*NAN;
+        *freqs = realloc(*freqs, n_alloc * sizeof(double));
+        if (freqs_su) *freqs_su = realloc(*freqs_su, n_alloc * sizeof(double));
+        *tmdata = realloc(*tmdata, sizeof(complex double) * bs->n * bs->n * n_alloc);
+        if (!*freqs || (!freqs_su != !*freqs_su) || !*tmdata)
+          qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+              "realloc() failed.");
       }
+      if (freqs_su) (*freqs_su)[*n-1] = currentfreq_su;
+      (*freqs)[*n-1] = qpms_SU2SI(currentfreq_su);
+
+      for(size_t i = 0; i < bs->n * bs->n; ++i)
+        (*tmdata)[(*n-1)*bs->n*bs->n + i] = NAN + I*NAN;
     }
     qpms_vswf_type_t TAlpha, TBeta;
     switch(PAlpha) {

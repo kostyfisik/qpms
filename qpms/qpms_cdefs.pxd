@@ -217,8 +217,8 @@ cdef extern from "translations.h":
 cdef extern from "gsl/gsl_interp.h":
     struct gsl_interp_type:
         pass
-    gsl_interp_type gsl_interp_linear
-    gsl_interp_type gsl_interp_cspline
+    const gsl_interp_type *gsl_interp_linear
+    const gsl_interp_type *gsl_interp_cspline
     # ^^^ These are probably the only relevant ones.
 
 cdef extern from "scatsystem.h":

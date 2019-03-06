@@ -166,7 +166,7 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 		const char *path, ///< Path to the TMatrix file
 		const qpms_vswf_set_spec_t *bspec, ///< VSWF set spec
 		size_t *n, ///< Number of successfully loaded t-matrices
-		double **freqs, ///< Frequencies / (eV / ħ).
+		double **freqs, ///< Frequencies in SI units..
 		double **freqs_su, ///< Frequencies in SCUFF units (optional).
 		/// The resulting T-matrices (optional).
 		qpms_tmatrix_t **tmatrices_array, 
@@ -180,7 +180,7 @@ qpms_errno_t qpms_read_scuff_tmatrix(
 		FILE *f, ///< An open stream with the T-matrix data.
 		const qpms_vswf_set_spec_t *bspec, ///< VSWF set spec
 		size_t *n, ///< Number of successfully loaded t-matrices
-		double **freqs, ///< Frequencies / (eV / ħ).
+		double **freqs, ///< Frequencies in SI units.
 		double **freqs_su, ///< Frequencies in SCUFF units (optional).
 		/// The resulting T-matrices (optional).
 		qpms_tmatrix_t **tmatrices_array, 
