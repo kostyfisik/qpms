@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "indexing.h" 
 #include "vswf.h" // qpms_vswf_set_spec_find_uvswfi()
-//#include <regex.h>
+#include "qpms_error.h"
 
 
 #define HBAR (1.05457162825e-34)
@@ -26,14 +26,17 @@ qpms_errno_t qpms_read_scuff_tmatrix(
     qpms_tmatrix_t* *const tmatrices_array, ///< The resulting T-matrices (optional).
     complex double* *const tmdata
     ) {
-  if (!(freqs && n && tmdata)) abort(); // These are mandatory
+  if (!(freqs && n && tmdata)) 
+    qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+      "freqs, n, and tmdata are mandatory arguments and must not be NULL.");
   int n_alloc = 128; // First chunk to allocate
   *n = 0;
   *freqs = malloc(n_alloc * sizeof(double));
   if (freqs_su) *freqs_su = malloc(n_alloc * sizeof(double));
   *tmdata = malloc(sizeof(complex double) * bs->n * bs->n * n_alloc);
   if (!*freqs || (!freqs_su != !*freqs_su) || !*tmdata)
-            abort(); // allocation failed
+      qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+          "malloc() failed.");
   size_t linebufsz = 256;
   char *linebuf = malloc(linebufsz);
   ssize_t readchars;
@@ -55,7 +58,8 @@ qpms_errno_t qpms_read_scuff_tmatrix(
           if (freqs_su) *freqs_su = realloc(*freqs_su, n_alloc * sizeof(double));
           *tmdata = realloc(*tmdata, sizeof(complex double) * bs->n * bs->n * n_alloc);
           if (!*freqs || (!freqs_su != !*freqs_su) || !*tmdata)
-            abort(); // allocation failed
+            qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+                  "realloc() failed.");
 
           if (freqs_su) (*freqs_su)[*n-1] = currentfreq_su;
           (*freqs)[*n-1] = qpms_SU2eV(currentfreq_su);
@@ -93,10 +97,13 @@ qpms_errno_t qpms_read_scuff_tmatrix(
   if (tmatrices_array) *tmatrices_array = realloc(*tmatrices_array, n_alloc * sizeof(qpms_tmatrix_t));
   *tmdata = realloc(*tmdata, sizeof(complex double) * bs->n * bs->n * n_alloc);
   if (!*freqs || (!freqs_su != !*freqs_su) || !*tmdata)
-    abort(); // allocation failed
+    qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+          "realloc() failed.");
   if (tmatrices_array) {
     *tmatrices_array = malloc(n_alloc * sizeof(qpms_tmatrix_t));
-    if (!*tmatrices_array) abort(); // allocation failed
+    if (!*tmatrices_array) 
+      qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+          "malloc() failed.");
     for (size_t i = 0; i < *n; ++i) {
       (*tmatrices_array)[i].spec = bs;
       (*tmatrices_array)[i].m = (*tmdata) + i * bs->n * bs->n;
@@ -116,10 +123,15 @@ qpms_errno_t qpms_load_scuff_tmatrix(
     complex double ** const tmdata
     ) {
   FILE *f = fopen(path, "r");
-  if (!f) abort(); // Could not open file.
+  if (!f)
+    qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
+        "Could not open T-matrix file %s", path); 
   qpms_errno_t retval = 
     qpms_read_scuff_tmatrix(f, bs, n, freqs, freqs_su, tmatrices_array, tmdata);
-  if(fclose(f)) abort(); // Well, that would be weird. A read-only file failing to close.
+  if(fclose(f)) qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
+        "Could not close the T-matrix file %s (well, that's weird, "
+        "since it's read only).", path); 
+
   return retval;
 }
 
