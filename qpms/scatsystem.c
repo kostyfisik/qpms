@@ -11,6 +11,7 @@
 #include "vectors.h"
 #include "wigner.h"
 #include <string.h>
+#include "qpms_error.h"
 
 
 #define QPMS_SCATSYS_LEN_RTOL 1e-13
@@ -84,6 +85,71 @@ qpms_tmatrix_t *qpms_tmatrix_apply_symop(
       CblasConjTrans,
       n, n, n, &one, tmp, n, M, n, &zero, t->m, n);
   return t;
+}
+
+qpms_errno_t qpms_symmetrise_tmdata_irot3arr(
+    complex double *tmdata, const size_t tmcount,
+    const qpms_vswf_set_spec_t *bspec,
+    const size_t n_symops, const qpms_irot3_t *symops) {
+  const size_t n = bspec->n;
+  qpms_tmatrix_t *tmcopy = qpms_tmatrix_init(bspec);
+  complex double *symop_matrices = malloc(n*n*sizeof(complex double) * n_symops);
+  if(!symop_matrices) qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+      "malloc() failed.");
+  for (size_t i = 0; i < n_symops; ++i) 
+    qpms_irot3_uvswfi_dense(symop_matrices + i*n*n, bspec, symops[i]);
+  complex double tmp[n][n];
+  const complex double one = 1, zero = 0;
+  for (size_t tmi = 0; tmi < tmcount; ++tmi) {
+    // Move the data in tmcopy; we will then write the sum directly into tmdata.
+    memcpy(tmcopy->m, tmdata+n*n*tmi, n*n*sizeof(complex double));
+    memset(tmdata+n*n*tmi, 0, n*n*sizeof(complex double));
+    for (size_t i = 0; i < n_symops; ++i) {
+      const complex double *const M = symop_matrices + i*n*n;
+      // tmp = M T
+      cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+          n, n, n, &one, M, n, tmcopy->m, n, &zero, tmp, n);
+      // tmdata[...] += tmp M* = M T M*
+      cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasConjTrans,
+          n, n, n, &one, tmp, n, M, n, &one, tmdata + tmi*n*n, n);
+    }
+    for (size_t ii = 0; ii < n*n; ++ii)
+      tmdata[n*n*tmi+ii] /= n_symops;
+  }
+  free(symop_matrices);
+  qpms_tmatrix_free(tmcopy);
+  return QPMS_SUCCESS;
+}
+
+qpms_errno_t qpms_symmetrise_tmdata_finite_group(
+    complex double *tmdata, const size_t tmcount,
+    const qpms_vswf_set_spec_t *bspec,
+    const qpms_finite_group_t *pointgroup) {
+  if (!(pointgroup->rep3d)) qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+      "This function requires pointgroup->rep3d to be set correctly!");
+  return qpms_symmetrise_tmdata_irot3arr(tmdata, tmcount, bspec,
+      pointgroup->order, pointgroup->rep3d);
+}
+
+qpms_tmatrix_t *qpms_tmatrix_symmetrise_irot3arr_inplace(
+    qpms_tmatrix_t *T,
+    size_t n_symops,
+    const qpms_irot3_t *symops
+    ) {
+  if(qpms_symmetrise_tmdata_irot3arr(T->m, 1,
+        T->spec, n_symops, symops) != QPMS_SUCCESS)
+    return NULL;
+  else return T;
+}
+
+qpms_tmatrix_t *qpms_tmatrix_symmetrise_finite_group_inplace(
+    qpms_tmatrix_t *T,
+    const qpms_finite_group_t *pointgroup
+    ) {
+  if(qpms_symmetrise_tmdata_finite_group(T->m, 1,
+        T->spec, pointgroup) != QPMS_SUCCESS)
+    return NULL;
+  else return T;
 }
 
 qpms_tmatrix_t *qpms_tmatrix_symmetrise_involution_inplace(

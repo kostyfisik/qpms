@@ -1,5 +1,12 @@
 /*! \file scatsystem.h
  * \brief Modern interface for finite lattice calculations, including symmetries.
+ *
+ * N.B. Only "reasonably normalised" waves are supported now in most of the
+ * functions defined here, i.e. those that can be rotated by the usual
+ * Wigner matrices, i.e. the "power" or "spharm" -normalised ones.
+ * 
+ * TODO FIXME check whether Condon-Shortley phase can have some nasty influence
+ * here; I fear that yes.
  */
 #ifndef QPMS_SCATSYSTEM_H
 #define QPMS_SCATSYSTEM_H
@@ -26,6 +33,9 @@ typedef struct qpms_tmatrix_t {
 	complex double *m; ///< Matrix elements in row-major order.
 	bool owns_m; ///< Information wheter m shall be deallocated with qpms_tmatrix_free()
 } qpms_tmatrix_t;
+
+struct qpms_finite_group_t;
+typedef struct qpms_finite_group_t qpms_finite_group_t;
 
 /// Returns a pointer to the beginning of the T-matrix row \a rowno.
 static inline complex double *qpms_tmatrix_row(qpms_tmatrix_t *t, size_t rowno){
@@ -162,7 +172,6 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 		qpms_tmatrix_t **tmatrices_array, 
 		complex double **tmdata ///< The T-matrices raw contents
 		);
-
 /// Loads a scuff-tmatrix generated file.
 /** A simple wrapper over qpms_read_scuff_tmatrix() that needs a 
  * path instead of open FILE.
@@ -185,20 +194,53 @@ qpms_errno_t qpms_read_scuff_tmatrix(
 		complex double ** tmdata 
 		);
 
-/// Loads scuff-tmatrix generated files.
-/** 
- * freqs, freqs_su, tmatrices_array and tmdata arrays are allocated by this function
- * and have to be freed by the caller after use.
- * The contents of tmatrices_array is NOT supposed to be freed element per element.
+/// In-place application of point group elements on raw T-matrix data.
+/** \a tmdata can be e.g. obtained by qpms_load_scuff_tmatrix().
+ * The \a symops array should always contain all elements of a finite
+ * point (sub)group, including the identity operation.
+ *
+ * TODO more doc.
  */
-qpms_errno_t qpms_load_scuff_tmatrix(
-		const char *path, ///< Path to the TMatrix file
-		const qpms_vswf_set_spec_t *bspec, ///< VSWF set spec
-		size_t *n, ///< Number of successfully loaded t-matrices
-		double **freqs, ///< Frequencies in SI units
-		double **freqs_su, ///< Frequencies in SCUFF units (optional)
-		qpms_tmatrix_t **tmatrices_array, ///< The resulting T-matrices.
-		complex double **tmdata ///< The t-matrices raw contents
+qpms_errno_t qpms_symmetrise_tmdata_irot3arr(
+		complex double *tmdata, const size_t tmcount,
+		const qpms_vswf_set_spec_t *bspec,
+		size_t n_symops,
+		const qpms_irot3_t *symops
+		);
+
+/// In-place application of a point group on raw T-matrix data.
+/** This does the same as qpms_symmetrise_tmdata_irot3arr(),
+ * but takes a valid finite point group as an argument.
+ *
+ * TODO more doc.
+ */
+qpms_errno_t qpms_symmetrise_tmdata_finite_group(
+		complex double *tmdata, const size_t tmcount,
+		const qpms_vswf_set_spec_t *bspec,
+		const qpms_finite_group_t *pointgroup
+		);
+
+/// In-place application of point group elements on a T-matrix.
+/** The \a symops array should always contain all elements of a finite
+ * point (sub)group, including the identity operation.
+ *
+ * TODO more doc.
+ */
+qpms_tmatrix_t *qpms_tmatrix_symmetrise_irot3arr_inplace(
+		qpms_tmatrix_t *T,
+		size_t n_symops,
+		const qpms_irot3_t *symops
+		);
+
+/// In-place application of point group elements on a T-matrix.
+/** This does the same as qpms_tmatrix_symmetrise_irot3arr(),
+ * but takes a valid finite point group as an argument.
+ *
+ * TODO more doc.
+ */
+qpms_tmatrix_t *qpms_tmatrix_symmetrise_finite_group_inplace(
+		qpms_tmatrix_t *T,
+		const qpms_finite_group_t *pointgroup
 		);
 
 /* Fuck this, include the whole <gsl/gsl_spline.h>
@@ -244,7 +286,6 @@ typedef struct qpms_particle_tid_t {
 	qpms_ss_tmi_t tmatrix_id; ///< T-matrix index
 } qpms_particle_tid_t;
 
-struct qpms_finite_group_t;
 
 typedef qpms_gmi_t qpms_ss_orbit_pi_t; ///< Auxilliary type used in qpms_ss_orbit_type_t for labeling particles inside orbits.
 typedef qpms_ss_tmi_t qpms_ss_oti_t; ///< Auxilliary type used for labeling orbit types.
