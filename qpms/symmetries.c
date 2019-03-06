@@ -207,4 +207,27 @@ complex double *qpms_irot3_uvswfi_dense(
   return target;
 }
 
- 
+size_t qpms_zero_roundoff_clean(double *arr, size_t nmemb, double atol) {
+  size_t changed = 0;
+  for(size_t i = 0; i < nmemb; ++i)
+    if(fabs(arr[i]) <= atol) {
+      arr[i] = 0;
+      ++changed;
+    }
+  return changed;
+}
+
+size_t qpms_czero_roundoff_clean(complex double *arr, size_t nmemb, double atol) {
+  size_t changed = 0;
+  for(size_t i = 0; i < nmemb; ++i) {
+    if(fabs(creal(arr[i])) <= atol) {
+      arr[i] = I*cimag(arr[i]);
+      ++changed;
+    }
+    if(fabs(cimag(arr[i])) <= atol) {
+      arr[i] = creal(arr[i]);
+      ++changed;
+    }
+  }
+}
+

@@ -58,4 +58,21 @@ complex double *qpms_irot3_uvswfi_dense(
 		const qpms_vswf_set_spec_t *bspec,
 		const qpms_irot3_t transf);
 
+// Some auxilliary functions for "numerical cleaning" of the roundoff error
+
+/// Cleans the roundoff error of an array.
+/**
+ * Replaces all the array members \a x for which |\a x| <= \a atol
+ * with exact zeros.
+ *
+ * Returns the count of modified array members.
+ */
+size_t qpms_zero_roundoff_clean(double *arr, size_t nmemb, double atol);
+
+/// Cleans the roundoff error of an array.
+/**
+ * Works on real and imaginary parts separately.
+ * TODO doc.
+ */
+size_t qpms_czero_roundoff_clean(complex double *arr, size_t nmemb, double atol);
 #endif // SYMMETRIES_H
