@@ -7,6 +7,7 @@ from qpms_cdefs cimport *
 cimport cython
 from cython.parallel cimport parallel, prange
 import enum
+import warnings
 
 
 # Here will be enum and dtype definitions; maybe move these to a separate file
@@ -1084,6 +1085,17 @@ cdef class TMatrixInterpolator:
                 &(self.nfreqs), &(self.freqs), &(self.freqs_su),
                 &(self.tmatrices_array), &(self.tmdata)):
             raise IOError("Could not read T-matrix from %s" % filename)
+        if 'symmetrise' in kwargs:
+            sym = kwargs['symmetrise']
+            if isinstance(sym, FinitePointGroup):
+                if QPMS_SUCCESS != qpms_symmetrise_tmdata_finite_group(
+                        self.tmdata, self.nfreqs, self.spec.rawpointer(),
+                        (<FinitePointGroup?>sym).rawpointer()):
+                    raise Exception("This should not happen.")
+                atol = kwargs['atol'] if 'atol' in kwargs else 1e-16
+                qpms_czero_roundoff_clean(self.tmdata, self.nfreqs * len(bspec)**2, atol)
+            else:
+                warnings.warn('symmetrise argument type not supported; ignoring.')
         self.interp = qpms_tmatrix_interpolator_create(self.nfreqs,
                 self.freqs, self.tmatrices_array, gsl_interp_cspline)
         if not self.interp: raise Exception("Unexpected NULL at interpolator creation.")
