@@ -29,6 +29,15 @@ def grouprep_try(tdict, src, im, srcgens, imgens, immultop = None, imcmp = None)
             raise ValueError("Homomorphism inconsistency detected")                
     return
 
+def group_dps_try(elemlist, elem, gens):
+    '''Deterministic group depth-first search'''
+    elemlist.append(elem)
+    for i in range(len(gens)):
+        newelem = elem * gens[i]
+        if newelem not in elemlist:
+            group_dps_try(elemlist, newelem, gens)
+    return
+
 class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyty, not I_ptypty or something alike
     def __init__(self,
                  name,
@@ -59,6 +68,11 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
                 permgroupgens, rep3d_gens,
                 immultop = None, imcmp = (lambda x, y: x.isclose(y))
                 )
+
+    def deterministic_elemlist(self):
+        thelist = list()
+        group_dps_try(thelist, self.permgroup.identity, self.permgroupgens)
+        return thelist
     
     def svwf_rep(self, lMax, *rep_gen_func_args, **rep_gen_func_kwargs):
         '''
@@ -85,7 +99,7 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         Generates a string with a chunk of C code with a definition of a qpms_finite_group_t instance.
         See also groups.h.
         '''
-        permlist = list(self.permgroup.elements) # all elements ordered
+        permlist = self.deterministic_elemlist()
         order = len(permlist)
         permindices = {perm: i for i, perm in enumerate(permlist)} # 'invert' permlist
         identity = self.permgroup.identity

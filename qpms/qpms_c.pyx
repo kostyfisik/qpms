@@ -1185,7 +1185,7 @@ cdef class FinitePointGroup:
         '''Constructs a FinitePointGroup from PointGroupInfo'''
         # TODO maybe I might use a try..finally statement to avoid leaks
         # First, generate all basic data from info
-        permlist = list(info.permgroup.elements)
+        permlist = info.deterministic_elemlist()
         cdef int order = len(permlist)
         permindices = {perm: i for i, perm in enumerate(permlist)} # 'invert' permlist
         identity = info.permgroup.identity
