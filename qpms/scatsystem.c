@@ -362,6 +362,7 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
 
   const qpms_vswf_set_spec_t *bspec = ss->tm[ot_current->tmatrices[0]]->spec;
   const size_t bspecn = bspec->n;
+  ot_new->bspecn = bspecn;
   
   const size_t actionsiz = sizeof(ot_current->action[0]) * ot_current->size 
     * ss->sym->order;
@@ -381,6 +382,8 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
   ss->otspace_end += irbase_sizes_siz;
   ot_new->irbase_cumsizes = (void *) (ss->otspace_end);
   ss->otspace_end += irbase_sizes_siz;
+  ot_new->irbase_offsets = (void *) (ss->otspace_end);
+  ss->otspace_end += irbase_sizes_siz;
   
   const size_t irbases_siz = sizeof(ot_new->irbases[0]) * SQ(ot_new->size * bspecn);
   ot_new->irbases = (void *) (ss->otspace_end);
@@ -388,6 +391,7 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
 
   size_t lastbs, bs_cumsum = 0;
   for(qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
+    ot_new->irbase_offsets[iri] = bs_cumsum * bspecn * ot_new->size;
     qpms_orbit_irrep_basis(&lastbs, 
         ot_new->irbases + bs_cumsum*ot_new->size*bspecn,
         ot_new, bspec, ss->sym, iri);
@@ -447,7 +451,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
 
   // Copy T-matrices; checking for duplicities
   
-  size_t max_bspecn = 0; // We'll need it later.for memory alloc estimates.
+  ss->max_bspecn = 0; // We'll need it later.for memory alloc estimates.
 
   qpms_ss_tmi_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities
   ss->tm_count = 0;
@@ -462,7 +466,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       ++(ss->tm_count);
     } 
     tm_dupl_remap[i] = j;
-    max_bspecn = MAX(ss->tm[i]->spec->n, max_bspecn);
+    ss->max_bspecn = MAX(ss->tm[i]->spec->n, ss->max_bspecn);
   }
 
   // Copy particles, remapping the t-matrix indices
@@ -508,8 +512,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   ss->otspace_end = ss->otspace = malloc( // reallocate later
       (sizeof(qpms_ss_orbit_pi_t) * sym->order * sym->order
        + sizeof(qpms_ss_tmi_t) * sym->order
-       + 2*sizeof(size_t) * sym->nirreps
-       + sizeof(complex double) * SQ(sym->order * max_bspecn)) * ss->p_count
+       + 3*sizeof(size_t) * sym->nirreps
+       + sizeof(complex double) * SQ(sym->order * ss->max_bspecn)) * ss->p_count
        );
   
   // Workspace for the orbit type determination
@@ -614,6 +618,18 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
     ss->fecv_size += ss->tm[ss->p[pi].tmatrix_id]->spec->n; // That's a lot of dereferencing!
   }
 
+  ss->saecv_sizes = malloc(sizeof(size_t) * sym->nirreps); if (!ss->saecv_sizes) abort();
+  ss->saecv_ot_offsets = malloc(sizeof(size_t) * sym->nirreps * ss->orbit_type_count);
+  if (!ss->saecv_ot_offsets) abort();
+  for(qpms_iri_t iri = 0; iri < sym->nirreps; ++iri) {
+    ss->saecv_sizes[iri] = 0;
+    for(qpms_ss_oti_t oti = 0; oti < ss->orbit_type_count; ++oti) {
+      ss->saecv_ot_offsets[iri * ss->orbit_type_count + oti] = ss->saecv_sizes[iri];
+      const qpms_ss_orbit_type_t *ot = &(ss->orbit_types[oti]);
+      ss->saecv_sizes[iri] += ot->instance_count * ot->irbase_sizes[iri];
+    }
+  }
+
   return ss;
 }
 
@@ -628,6 +644,7 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
     free(ss->otspace);
     free(ss->p_orbitinfo);
     free(ss->orbit_types);
+    free(ss->saecv_sizes);
   }
   free(ss);
 }
@@ -766,5 +783,95 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   return target;
 }
 
+
+complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
+		const complex double *orig_full, const qpms_scatsys_t *ss,
+		qpms_iri_t iri);
+
+/// Transforms a big "packed" matrix into the full basis.
+/** TODO doc */
+complex double *qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
+		const complex double *orig_packed, const qpms_scatsys_t *ss,
+		qpms_iri_t iri, bool add);
+
+/// Projects a "big" vector onto an irrep.
+/** TODO doc */
+complex double *qpms_scatsys_irrep_pack_vector(complex double *target_packed,
+		const complex double *orig_full, const qpms_scatsys_t *ss,
+		const qpms_iri_t iri) {
+  const size_t packedlen = ss->saecv_sizes[iri];
+  if (target_packed == NULL)
+    target_packed = malloc(packedlen*sizeof(complex double));
+  if (target_packed == NULL) abort();
+  memset(target_packed, 0, packedlen*sizeof(complex double));
+
+  const complex double one = 1;
+
+  size_t fullvec_offset = 0;
+  for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    const size_t bspecn = ss->tm[ss->p[pi].tmatrix_id]->spec->n;
+    const qpms_ss_oti_t oti = ss->p_orbitinfo[pi].t;
+    const qpms_ss_orbit_type_t *const ot = ss->orbit_types + oti;
+    const qpms_ss_osn_t osn = ss->p_orbitinfo[pi].osn;
+    const qpms_ss_orbit_pi_t opi = ss->p_orbitinfo[pi].p;
+    // This is where the particle's orbit starts in the "packed" vector:
+    const size_t packed_orbit_offset = ss->saecv_ot_offsets[iri*ss->orbit_type_count + oti] 
+      + osn * ot->irbase_sizes[iri];
+    // Orbit coeff vector's full size:
+    const size_t orbit_fullsize = ot->size * ot->bspecn;
+    const size_t particle_fullsize = ot->bspecn;
+    const size_t orbit_packedsize = ot->irbase_sizes[iri];
+    // This is the orbit-level matrix projecting the whole orbit onto the irrep.
+    const complex double *om = ot->irbases + ot->irbase_offsets[iri];
+
+    cblas_zgemv(CblasRowMajor, CblasNoTrans,
+        orbit_packedsize, particle_fullsize, &one, om + opi*particle_fullsize, orbit_fullsize,
+        orig_full+fullvec_offset, 1,
+        &one, target_packed+packed_orbit_offset, 1);
+
+    fullvec_offset += bspecn;
+  }
+  return target_packed;
+}
+
+/// Transforms a big "packed" vector into the full basis.
+/** TODO doc */
+complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
+		const complex double *orig_packed, const qpms_scatsys_t *ss,
+		const qpms_iri_t iri, bool add) {
+  const size_t full_len = ss->fecv_size;
+  if (target_full == NULL)
+    target_full = malloc(full_len*sizeof(complex double));
+  if (target_full == NULL) abort();
+  if (!add) memset(target_full, 0, full_len*sizeof(complex double));
+
+  const complex double one = 1;
+ 
+  size_t fullvec_offset = 0;
+  for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    const size_t bspecn = ss->tm[ss->p[pi].tmatrix_id]->spec->n;
+    const qpms_ss_oti_t oti = ss->p_orbitinfo[pi].t;
+    const qpms_ss_orbit_type_t *const ot = ss->orbit_types + oti;
+    const qpms_ss_osn_t osn = ss->p_orbitinfo[pi].osn;
+    const qpms_ss_orbit_pi_t opi = ss->p_orbitinfo[pi].p;
+    // This is where the particle's orbit starts in the "packed" vector:
+    const size_t packed_orbit_offset = ss->saecv_ot_offsets[iri*ss->orbit_type_count + oti] 
+      + osn * ot->irbase_sizes[iri];
+    // Orbit coeff vector's full size:
+    const size_t orbit_fullsize = ot->size * ot->bspecn;
+    const size_t particle_fullsize = ot->bspecn;
+    const size_t orbit_packedsize = ot->irbase_sizes[iri];
+    // This is the orbit-level matrix projecting the whole orbit onto the irrep.
+    const complex double *om = ot->irbases + ot->irbase_offsets[iri];
+
+    cblas_zgemv(CblasRowMajor, CblasConjTrans,
+        orbit_packedsize, particle_fullsize, &one, om + opi*particle_fullsize, orbit_fullsize,
+        orig_packed+packed_orbit_offset, 1,
+        &one, target_full+fullvec_offset, 1);
+
+    fullvec_offset += bspecn;
+  }
+  return target_full; 
+}
 
 

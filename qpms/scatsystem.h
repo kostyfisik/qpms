@@ -314,7 +314,8 @@ typedef qpms_ss_tmi_t qpms_ss_oti_t; ///< Auxilliary type used for labeling orbi
  *
  */
 typedef struct qpms_ss_orbit_type_t {
-	qpms_ss_orbit_pi_t size; ///< Size of the orbit (a divisor of the group order).
+	qpms_ss_orbit_pi_t size; ///< Size of the orbit (a divisor of the group order), i.e. number of particles on the orbit.
+	size_t bspecn; ///< Individual particle's coefficient vector length. The same as ss->tm[this.tmatrices[0]]->spec->n.
 	/// Action of the group elements onto the elements in this orbit.
 	/** Its size is sym->order * this.size
 	 *  and its values lie between 0 and \a this.size − 1.
@@ -341,8 +342,11 @@ typedef struct qpms_ss_orbit_type_t {
 	 * TODO doc.
 	 */
 	size_t *irbase_sizes;
+	//The following are pretty redundant, TODO reduce them at some point.
 	/// Cumulative sums of irbase_sizes.
 	size_t *irbase_cumsizes;
+	/// TODO doc.
+	size_t *irbase_offsets;
 	/// Per-orbit irreducible representation orthonormal bases.
 	/** This also defines the unitary operator that transforms the orbital excitation coefficients
 	 * in the symmetry-adapted basis.
@@ -356,11 +360,13 @@ typedef struct qpms_ss_orbit_type_t {
 	size_t instance_count;
 } qpms_ss_orbit_type_t;
 
+typedef ptrdiff_t qpms_ss_osn_t; ///< "serial number" of av orbit in a given type.
+
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
 typedef struct qpms_ss_particle_orbitinfo {
 	qpms_ss_oti_t t; ///< Orbit type.
 #define QPMS_SS_P_ORBITINFO_UNDEF (-1) ///< This labels that the particle has not yet been assigned to an orbit.
-	ptrdiff_t osn; ///< "Serial number" of the orbit in the given type. TODO type and more doc.
+	qpms_ss_osn_t osn; ///< "Serial number" of the orbit in the given type. TODO type and more doc.
 	qpms_ss_orbit_pi_t p; ///< Order (sija, ei rankki) of the particle inside that orbit type.
 } qpms_ss_particle_orbitinfo_t;
 
@@ -386,15 +392,19 @@ typedef struct qpms_scatsys_t {
 	qpms_ss_particle_orbitinfo_t *p_orbitinfo; ///< Orbit type identification of each particle. (Array length is \a p_count.)
 
 	size_t fecv_size; ///< Number of elements of a full excitation coefficient vector size. 
-	//size_t *saecv_sizes; ///< NI. Number of elements of symmetry-adjusted coefficient vector sizes (order as in sym->irreps). 
+	size_t *saecv_sizes; ///< Number of elements of symmetry-adjusted coefficient vector sizes (order as in sym->irreps).
 
 	size_t *fecv_pstarts; ///< Indices of where pi'th particle's excitation coeffs start in a full excitation coefficient vector.
+	size_t *saecv_ot_offsets; ///< TODO DOC. In the packed vector, saecv_ot_offsets[iri * orbit_type_count + oti] indicates start of ot
+	/**< TODO maybe move it to qpms_ss_orbit_type_t, ffs. */
 	//size_t **saecv_pstarts; ///< NI. Indices of where pi'th particle's excitation coeff start in a symmetry-adjusted e.c.v.
 	///**< First index is irrep index as in sym->irreps, second index is particle index. */
 
 	// TODO shifted origin of the symmetry group etc.
 	// TODO some indices for fast operations here.
 	// private
+	size_t max_bspecn; ///< Maximum tm[...]->spec->n. Mainly for workspace allocation.
+	
 	
 	// We keep the p_orbitinfo arrays in this chunk in order to avoid memory fragmentation
 	char *otspace;
@@ -416,27 +426,27 @@ void qpms_scatsys_free(qpms_scatsys_t *s);
 
 /// Projects a "big" matrix onto an irrep.
 /** TODO doc */
-qpms_errno_t qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
+complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
 		const complex double *orig_full, const qpms_scatsys_t *ss,
 		qpms_iri_t iri);
 
 /// Transforms a big "packed" matrix into the full basis.
 /** TODO doc */
-qpms_errno_t qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
+complex double *qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
 		const complex double *orig_packed, const qpms_scatsys_t *ss,
-		bool add);
+		qpms_iri_t iri, bool add);
 
 /// Projects a "big" vector onto an irrep.
 /** TODO doc */
-qpms_errno_t qpms_scatsys_irrep_pack_vector(complex double *target_packed,
+complex double *qpms_scatsys_irrep_pack_vector(complex double *target_packed,
 		const complex double *orig_full, const qpms_scatsys_t *ss,
 		qpms_iri_t iri);
 
 /// Transforms a big "packed" vector into the full basis.
 /** TODO doc */
-qpms_errno_t qpms_scatsys_irrep_unpack_vector(complex double *target_full,
+complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
 		const complex double *orig_packed, const qpms_scatsys_t *ss,
-		bool add);
+		qpms_iri_t iri, bool add);
 
 /// NOT IMPLEMENTED Dumps a qpms_scatsys_t structure to a file.
 qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);
