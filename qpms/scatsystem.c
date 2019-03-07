@@ -400,6 +400,7 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
         "The cumulative size of the symmetry-adapted bases is wrong; "
         "expected %d = %d * %d, got %d.",
         ot_new->size * bspecn, ot_new->size, bspecn, bs_cumsum);
+  ot_new->instance_count = 0;
 }
 
 
@@ -580,7 +581,9 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
         const qpms_ss_pi_t pi_opi = current_orbit[opi];
         ss->p_orbitinfo[pi_opi].t = oti;
         ss->p_orbitinfo[pi_opi].p = opi;
+        ss->p_orbitinfo[pi_opi].osn = ss->orbit_types[oti].instance_count;
       }
+      ss->orbit_types[oti].instance_count++;
     }
   }
   // Possibly free some space using the new ss->p_count instead of (old) ss->p_count*sym->order

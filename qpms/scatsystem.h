@@ -352,13 +352,15 @@ typedef struct qpms_ss_orbit_type_t {
 	 * TODO doc.
 	 */
 	complex double *irbases;
-	
+	/// TODO doc.
+	size_t instance_count;
 } qpms_ss_orbit_type_t;
 
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
 typedef struct qpms_ss_particle_orbitinfo {
 	qpms_ss_oti_t t; ///< Orbit type.
 #define QPMS_SS_P_ORBITINFO_UNDEF (-1) ///< This labels that the particle has not yet been assigned to an orbit.
+	ptrdiff_t osn; ///< "Serial number" of the orbit in the given type. TODO type and more doc.
 	qpms_ss_orbit_pi_t p; ///< Order (sija, ei rankki) of the particle inside that orbit type.
 } qpms_ss_particle_orbitinfo_t;
 
