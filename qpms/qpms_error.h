@@ -13,6 +13,9 @@ void qpms_pr_error_at_flf(const char *filename, unsigned int linenum,
 		const char *func,
 	       const char *fmt, ...);
 
+void qpms_pr_debug_at_flf(const char *filename, unsigned int linenum,
+		const char *func,
+	       const char *fmt, ...);
 //void qpms_error_at_line(const char *filename, unsigned int linenum,
 //		const char *fmt, ...);
 

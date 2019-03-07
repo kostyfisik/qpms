@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <cblas.h>
+#include <lapacke.h>
 #include "scatsystem.h"
 #include "indexing.h"
 #include "vswf.h"
@@ -13,7 +14,7 @@
 #include <string.h>
 #include "qpms_error.h"
 
-
+#define SQ(x) ((x)*(x))
 #define QPMS_SCATSYS_LEN_RTOL 1e-13
 #define QPMS_SCATSYS_TMATRIX_ATOL 1e-14
 #define QPMS_SCATSYS_TMATRIX_RTOL 1e-12
@@ -358,6 +359,10 @@ static void extend_orbit_action(qpms_scatsys_t *ss, qpms_ss_orbit_type_t *ot) {
 static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_current) {
   qpms_ss_orbit_type_t * const ot_new = & (ss->orbit_types[ss->orbit_type_count]);
   ot_new->size = ot_current->size;
+
+  const qpms_vswf_set_spec_t *bspec = ss->tm[ot_current->tmatrices[0]]->spec;
+  const size_t bspecn = bspec->n;
+  
   const size_t actionsiz = sizeof(ot_current->action[0]) * ot_current->size 
     * ss->sym->order;
   ot_new->action = (void *) (ss->otspace_end);
@@ -365,10 +370,36 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
   // N.B. we copied mostly garbage ^^^, most of it is initialized just now:
   extend_orbit_action(ss, ot_new);
   ss->otspace_end += actionsiz;
+  
   const size_t tmsiz = sizeof(ot_current->tmatrices[0]) * ot_current->size;
   ot_new->tmatrices = (void *) (ss->otspace_end);
   memcpy(ot_new->tmatrices, ot_current->tmatrices, tmsiz);
   ss->otspace_end += tmsiz;
+
+  const size_t irbase_sizes_siz = sizeof(ot_new->irbase_sizes[0]) * ss->sym->nirreps;
+  ot_new->irbase_sizes = (void *) (ss->otspace_end);
+  ss->otspace_end += irbase_sizes_siz;
+  ot_new->irbase_cumsizes = (void *) (ss->otspace_end);
+  ss->otspace_end += irbase_sizes_siz;
+  
+  const size_t irbases_siz = sizeof(ot_new->irbases[0]) * SQ(ot_new->size * bspecn);
+  ot_new->irbases = (void *) (ss->otspace_end);
+  ss->otspace_end += irbases_siz;
+
+  size_t lastbs, bs_cumsum = 0;
+  for(qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
+    qpms_orbit_irrep_basis(&lastbs, 
+        ot_new->irbases + bs_cumsum*ot_new->size*bspecn,
+        ot_new, bspec, ss->sym, iri);
+    ot_new->irbase_sizes[iri] = lastbs;
+    bs_cumsum += lastbs;
+    ot_new->irbase_cumsizes[iri] = bs_cumsum;
+  }
+  if(bs_cumsum != ot_new->size * bspecn)
+    qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+        "The cumulative size of the symmetry-adapted bases is wrong; "
+        "expected %d = %d * %d, got %d.",
+        ot_new->size * bspecn, ot_new->size, bspecn, bs_cumsum);
 }
 
 
@@ -414,6 +445,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   }
 
   // Copy T-matrices; checking for duplicities
+  
+  size_t max_bspecn = 0; // We'll need it later.for memory alloc estimates.
 
   qpms_ss_tmi_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities
   ss->tm_count = 0;
@@ -428,6 +461,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       ++(ss->tm_count);
     } 
     tm_dupl_remap[i] = j;
+    max_bspecn = MAX(ss->tm[i]->spec->n, max_bspecn);
   }
 
   // Copy particles, remapping the t-matrix indices
@@ -472,7 +506,10 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
 
   ss->otspace_end = ss->otspace = malloc( // reallocate later
       (sizeof(qpms_ss_orbit_pi_t) * sym->order * sym->order
-       + sizeof(qpms_ss_tmi_t) * sym->order) * ss->p_count);
+       + sizeof(qpms_ss_tmi_t) * sym->order
+       + 2*sizeof(size_t) * sym->nirreps
+       + sizeof(complex double) * SQ(sym->order * max_bspecn)) * ss->p_count
+       );
   
   // Workspace for the orbit type determination
   qpms_ss_orbit_type_t ot_current;
@@ -502,7 +539,11 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       for (pj = 0; pj < ss->p_count; ++pj)
         if (cart3_isclose(newpoint, ss->p[pj].pos, 0, ss->lenscale * QPMS_SCATSYS_LEN_RTOL)) {
           if (new_tmi != ss->p[pj].tmatrix_id)
-            abort(); // The particle is mapped to another (or itself) without having the required symmetry.  TODO give some error message.
+            qpms_pr_error("The %d. particle with coords (%lg, %lg, %lg) "
+                "is mapped to %d. another (or itself) with cords (%lg, %lg, %lg) "
+                "without having the required symmetry", (int)pi,
+                ss->p[pi].pos.x, ss->p[pi].pos.y, ss->p[pi].pos.z,
+                (int)pj, ss->p[pj].pos.x, ss->p[pj].pos.y, ss->p[pj].pos.z);
           break;
         }
       if (pj < ss->p_count) { // HIT, the particle is transformed to an "existing" one.
@@ -557,6 +598,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       for (size_t oi = 0; oi < ss->orbit_type_count; ++oi) {
         ss->orbit_types[oi].action = (void *)(((char *) (ss->orbit_types[oi].action)) + shift);
         ss->orbit_types[oi].tmatrices = (void *)(((char *) (ss->orbit_types[oi].tmatrices)) + shift);
+        ss->orbit_types[oi].irbase_sizes = (void *)(((char *) (ss->orbit_types[oi].irbase_sizes)) + shift);
+        ss->orbit_types[oi].irbases = (void *)(((char *) (ss->orbit_types[oi].irbases)) + shift);
       }
   }
 
@@ -659,5 +702,66 @@ complex double *qpms_orbit_irrep_projector_matrix(complex double *target,
   free(tmp);
   return target;
 }
+
+#define SVD_ATOL 1e-8
+
+complex double *qpms_orbit_irrep_basis(size_t *basis_size, 
+    complex double *target,
+    const qpms_ss_orbit_type_t *ot, const qpms_vswf_set_spec_t *bspec,
+    const qpms_finite_group_t *sym, const qpms_iri_t iri) {
+  assert(sym);
+  assert(sym->rep3d);
+  assert(ot); assert(ot->size > 0);
+  assert(iri < sym->nirreps); assert(sym->irreps);
+  check_norm_compat(bspec);
+  const size_t n = bspec->n;
+  const qpms_gmi_t N = ot->size;
+  if (target == NULL)
+    target = malloc(n*n*N*N*sizeof(complex double));
+  if (target == NULL) abort();
+  memset(target, 0, n*n*N*N*sizeof(complex double));
+
+  // Get the projector (also workspace for right sg. vect.)
+  complex double *projector = qpms_orbit_irrep_projector_matrix(NULL,
+    ot, bspec, sym, iri);
+  if(!projector) abort();
+  // Workspace for the right singular vectors.
+  complex double *V_H = malloc(n*n*N*N*sizeof(complex double));
+  if(!V_H) abort();
+  // THIS SHOULD NOT BE NECESSARY
+  complex double *U = malloc(n*n*N*N*sizeof(complex double));
+  if(!U) abort();
+  double *s = malloc(n*N*sizeof(double)); if(!s) abort();
+
+  int info = LAPACKE_zgesdd(LAPACK_ROW_MAJOR,
+      'A', // jobz; overwrite projector with left sg.vec. and write right into V_H
+      n*N /* m */, n*N /* n */, projector /* a */, n*N /* lda */,
+      s /* s */, U /* u */, n*N /* ldu, irrelev. */, V_H /* vt */,
+      n*N /* ldvt */);
+  if (info) qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+        "Something went wrong with the SVD.");
+
+
+  size_t bs;
+  for(bs = 0; bs < n*N; ++bs) {
+    qpms_pr_debug_at_flf(__FILE__, __LINE__, __func__,
+        "%d. irrep, %zd. SV: %.16lf", (int) iri, bs, s[bs]);
+    if(s[bs] > 1 + SVD_ATOL) qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+        "%zd. SV too large: %.16lf", bs, s[bs]);
+    if(s[bs] > SVD_ATOL && fabs(1-s[bs]) > SVD_ATOL) 
+      qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+        "%zd. SV in the 'wrong' interval: %.16lf", bs, s[bs]);
+    if(s[bs] < SVD_ATOL) break;
+  }
+
+  memcpy(target, V_H, bs*N*n*n*sizeof(complex double));
+  if(basis_size) *basis_size = bs;
+
+  free(U);
+  free(V_H);
+  free(projector);
+  return target;
+}
+
 
 

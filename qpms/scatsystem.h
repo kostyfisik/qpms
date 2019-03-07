@@ -332,13 +332,34 @@ typedef struct qpms_ss_orbit_type_t {
 	 * The size of this array is \a size.
 	 */
 	qpms_ss_tmi_t *tmatrices;
+	/// Sizes of the per-orbit irrep bases. 
+	/**
+	 * The order of the irreps corresponds to the order in \a ss->sym->irreps.
+	 * The size of this array is (obviously) \a ss->sym->nirreps.
+	 *
+	 * TODO different type? 
+	 * TODO doc.
+	 */
+	size_t *irbase_sizes;
+	/// Cumulative sums of irbase_sizes.
+	size_t *irbase_cumsizes;
+	/// Per-orbit irreducible representation orthonormal bases.
+	/** This also defines the unitary operator that transforms the orbital excitation coefficients
+	 * in the symmetry-adapted basis.
+	 *
+	 * The size is (\a this->size * \a this->tmatrices[0].spec->n)**2.
+	 *
+	 * TODO doc.
+	 */
+	complex double *irbases;
+	
 } qpms_ss_orbit_type_t;
 
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
 typedef struct qpms_ss_particle_orbitinfo {
 	qpms_ss_oti_t t; ///< Orbit type.
 #define QPMS_SS_P_ORBITINFO_UNDEF (-1) ///< This labels that the particle has not yet been assigned to an orbit.
-	qpms_ss_orbit_pi_t p; ///< "Order" of the particle inside that orbit type.
+	qpms_ss_orbit_pi_t p; ///< Order (sija, ei rankki) of the particle inside that orbit type.
 } qpms_ss_particle_orbitinfo_t;
 
 
@@ -434,6 +455,26 @@ complex double *qpms_orbit_irrep_projector_matrix(
 		const struct qpms_finite_group_t *sym,
 		/// The index of the irreducible representation of sym.
 		const qpms_iri_t iri);
+
+/// TODO DOC!!!!!
+complex double *qpms_orbit_irrep_basis(
+		/// Here theh size of theh basis shall be saved,
+		size_t *basis_size,
+		/// Target array. If NULL, a new one is allocated.
+		/** The size of the array is basis_size * (orbit->size * bspec->n)
+		 * (it makes sense to assume all the T-matrices share their spec).
+		 */
+		complex double *target,
+		/// The orbit (type).
+		const qpms_ss_orbit_type_t *orbit,
+		/// Base spec of the t-matrices (we don't know it from orbit, as it has 
+		/// only T-matrix indices.
+		const qpms_vswf_set_spec_t *bspec,
+		/// The symmetry group used to generate the orbit (must have rep3d filled).
+		const struct qpms_finite_group_t *sym,
+		/// The index of the irreducible representation of sym.
+		const qpms_iri_t iri);
+
 
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries

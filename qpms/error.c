@@ -43,6 +43,20 @@ void qpms_pr_error_at_flf(const char *filename, unsigned int linenum,
   fflush(stderr);
   abort();
 }
+
+void qpms_pr_debug_at_flf(const char *filename, unsigned int linenum,
+    const char *func,
+		const char *fmt, ...) {
+  fprintf(stderr, "%s:%u, %s: ", filename, linenum, func);
+  va_list ap;
+  va_start(ap, fmt);
+  vfprintf(stderr, fmt, ap);
+  va_end(ap);
+  fputc('\n', stderr);
+  fflush(stderr);
+}
+
+
 //void qpms_error_at_line(const char *filename, unsigned int linenum,
 //		const char *fmt, ...);
 
