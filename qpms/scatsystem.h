@@ -412,6 +412,30 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const st
 /// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.
 void qpms_scatsys_free(qpms_scatsys_t *s);
 
+/// Projects a "big" matrix onto an irrep.
+/** TODO doc */
+qpms_errno_t qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
+		const complex double *orig_full, const qpms_scatsys_t *ss,
+		qpms_iri_t iri);
+
+/// Transforms a big "packed" matrix into the full basis.
+/** TODO doc */
+qpms_errno_t qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
+		const complex double *orig_packed, const qpms_scatsys_t *ss,
+		bool add);
+
+/// Projects a "big" vector onto an irrep.
+/** TODO doc */
+qpms_errno_t qpms_scatsys_irrep_pack_vector(complex double *target_packed,
+		const complex double *orig_full, const qpms_scatsys_t *ss,
+		qpms_iri_t iri);
+
+/// Transforms a big "packed" vector into the full basis.
+/** TODO doc */
+qpms_errno_t qpms_scatsys_irrep_unpack_vector(complex double *target_full,
+		const complex double *orig_packed, const qpms_scatsys_t *ss,
+		bool add);
+
 /// NOT IMPLEMENTED Dumps a qpms_scatsys_t structure to a file.
 qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);
 

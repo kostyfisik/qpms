@@ -3,4 +3,6 @@
 *.swp
 *.out
 *.pdf
+*.o
 docs/*
+qpms/qpms_c.c
