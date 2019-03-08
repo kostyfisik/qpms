@@ -20,3 +20,13 @@ unpackedvectors = np.array([ss.unpack_vector(v[1], v[0]) for v in packedvectors]
 rec_fullvector = np.sum(unpackedvectors, axis=0)
 thediff = np.amax(abs(rec_fullvector-fullvector))
 assert(thediff < 1e-14)
+
+packedmatrices = list()
+for iri in range(ss.nirreps):
+    d = ss.saecv_sizes[iri]
+    m = np.random.rand(d,d)+1j*np.random.rand(d,d)
+    packedmatrices.append((iri,m))
+
+fullmatrix = np.zeros((ss.fecv_size, ss.fecv_size), dtype=complex)
+for iri, m in packedmatrices:
+    fullmatrix += ss.unpack_matrix(m, iri)

@@ -1392,31 +1392,73 @@ cdef class ScatteringSystem:
     property fecv_size: 
         def __get__(self): return self.s[0].fecv_size
     property saecv_sizes: 
-        def __get__(self): return [self.s[0].saecv_sizes[i] for i in range(self.s[0].sym[0].nirreps)]
+        def __get__(self): 
+            return [self.s[0].saecv_sizes[i] 
+                for i in range(self.s[0].sym[0].nirreps)]
     property irrep_names: 
         def __get__(self): 
-            return [string_c2py(self.s[0].sym[0].irreps[iri].name) if (self.s[0].sym[0].irreps[iri].name) else None
+            return [string_c2py(self.s[0].sym[0].irreps[iri].name) 
+                    if (self.s[0].sym[0].irreps[iri].name) else None
                 for iri in range(self.s[0].sym[0].nirreps)]
     property nirreps: 
         def __get__(self): return self.s[0].sym[0].nirreps
 
     def pack_vector(self, vect, iri):
-        if len(vect) != self.fecv_size: raise ValueError("Length of a full vector has to be %d, not %d" % (self.fecv_size, len(vect)))
+        if len(vect) != self.fecv_size: 
+            raise ValueError("Length of a full vector has to be %d, not %d" 
+                    % (self.fecv_size, len(vect)))
         vect = np.array(vect, dtype=complex, copy=False, order='C')
         cdef cdouble[::1] vect_view = vect;
-        cdef np.ndarray[np.complex_t, ndim=1] target_np = np.empty((self.saecv_sizes[iri],), dtype=complex)
+        cdef np.ndarray[np.complex_t, ndim=1] target_np = np.empty(
+                (self.saecv_sizes[iri],), dtype=complex, order='C')
         cdef cdouble[::1] target_view = target_np
         qpms_scatsys_irrep_pack_vector(&target_view[0], &vect_view[0], self.s, iri)
         return target_np
     def unpack_vector(self, packed, iri):
-        if len(packed) != self.saecv_sizes[iri]: raise ValueError("Length of %d. irrep-packed vector has to be %d, not %d"
-                                                                    % (iri, self.saecv_sizes, len(packed)))
+        if len(packed) != self.saecv_sizes[iri]: 
+            raise ValueError("Length of %d. irrep-packed vector has to be %d, not %d"
+                    % (iri, self.saecv_sizes, len(packed)))
         packed = np.array(packed, dtype=complex, copy=False, order='C')
         cdef cdouble[::1] packed_view = packed
-        cdef np.ndarray[np.complex_t, ndim=1] target_np = np.empty((self.fecv_size,), dtype=complex)
+        cdef np.ndarray[np.complex_t, ndim=1] target_np = np.empty(
+                (self.fecv_size,), dtype=complex)
         cdef cdouble[::1] target_view = target_np
-        qpms_scatsys_irrep_unpack_vector(&target_view[0], &packed_view[0], self.s, iri, 0)
+        qpms_scatsys_irrep_unpack_vector(&target_view[0], &packed_view[0], 
+                self.s, iri, 0)
         return target_np
+    def pack_matrix(self, fullmatrix, iri):
+        (iri < self.nirreps)
+        cdef size_t flen = self.s[0].fecv_size
+        cdef size_t rlen = self.saecv_sizes[iri]
+        fullmatrix = np.array(fullmatrix, dtype=complex, copy=False, order='C')
+        if fullmatrix.shape != (flen, flen):
+            raise ValueError("Full matrix shape should be (%d,%d), is %s."
+                    % (flen, flen, repr(fullmatrix.shape)))
+        cdef cdouble[:,::1] fullmatrix_view = fullmatrix
+        cdef np.ndarray[np.complex_t, ndim=2] target_np = np.empty(
+                (rlen, rlen), dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target_np
+        qpms_scatsys_irrep_pack_matrix(&target_view[0][0], &fullmatrix_view[0][0],
+                self.s, iri)
+        return target_np
+    def unpack_matrix(self, packedmatrix, iri):
+        (iri < self.nirreps)
+        cdef size_t flen = self.s[0].fecv_size
+        cdef size_t rlen = self.saecv_sizes[iri]
+        packedmatrix = np.array(packedmatrix, dtype=complex, copy=False, order='C')
+        if packedmatrix.shape != (rlen, rlen):
+            raise ValueError("Packed matrix shape should be (%d,%d), is %s."
+                    % (rlen, rlen, repr(packedmatrix.shape)))
+        cdef cdouble[:,::1] packedmatrix_view = packedmatrix
+        cdef np.ndarray[np.complex_t, ndim=2] target_np = np.empty(
+                (flen, flen), dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target_np
+        qpms_scatsys_irrep_unpack_matrix(&target_view[0][0], &packedmatrix_view[0][0],
+                self.s, iri, 0)
+        return target_np
+
+
+
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc

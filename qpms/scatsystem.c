@@ -926,7 +926,7 @@ complex double *qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
       cblas_zgemm(CblasRowMajor, CblasConjTrans, CblasNoTrans,
           particle_fullsizeR /*M*/, particle_fullsizeC /*N*/, orbit_packedsizeR /*K*/,
           &one /*alpha*/, omR + full_len*packed_orbit_offsetR + fullvec_offsetR/*A*/,
-          full_len/*ldA*/,
+          packed_len/*ldA*/,
           tmp /*B*/, orbit_packedsizeR /*ldB*/, &one /*beta*/,
           target_full + full_len*fullvec_offsetR + fullvec_offsetC /*C*/,
           full_len /*ldC*/);
@@ -969,10 +969,11 @@ complex double *qpms_scatsys_irrep_pack_vector(complex double *target_packed,
     // This is the orbit-level matrix projecting the whole orbit onto the irrep.
     const complex double *om = ot->irbases + ot->irbase_offsets[iri];
 
-    cblas_zgemv(CblasRowMajor, CblasNoTrans,
-        orbit_packedsize, particle_fullsize, &one, om + opi*particle_fullsize, orbit_fullsize,
-        orig_full+fullvec_offset, 1,
-        &one, target_packed+packed_orbit_offset, 1);
+    cblas_zgemv(CblasRowMajor/*order*/, CblasNoTrans/*transA*/,
+        orbit_packedsize/*M*/, particle_fullsize/*N*/, &one/*alpha*/, 
+        om + opi*particle_fullsize/*A*/, orbit_fullsize/*lda*/,
+        orig_full+fullvec_offset/*X*/, 1/*incX*/,
+        &one/*beta*/, target_packed+packed_orbit_offset/*Y*/, 1/*incY*/);
 
     fullvec_offset += ot->bspecn;
   }
@@ -1008,10 +1009,10 @@ complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
     // This is the orbit-level matrix projecting the whole orbit onto the irrep.
     const complex double *om = ot->irbases + ot->irbase_offsets[iri];
 
-    cblas_zgemv(CblasRowMajor, CblasConjTrans,
-        orbit_packedsize, particle_fullsize, &one, om + opi*particle_fullsize, orbit_fullsize,
-        orig_packed+packed_orbit_offset, 1,
-        &one, target_full+fullvec_offset, 1);
+    cblas_zgemv(CblasRowMajor/*order*/, CblasConjTrans/*transA*/,
+        orbit_packedsize/*M*/, particle_fullsize/*N*/, &one/*alpha*/, om + opi*particle_fullsize/*A*/,
+        orbit_fullsize/*lda*/, orig_packed+packed_orbit_offset /*X*/, 1/*incX*/, &one/*beta*/, 
+        target_full+fullvec_offset/*Y*/, 1/*incY*/);
 
     fullvec_offset += ot->bspecn;
   }
