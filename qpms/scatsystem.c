@@ -405,6 +405,7 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
         "expected %d = %d * %d, got %d.",
         ot_new->size * bspecn, ot_new->size, bspecn, bs_cumsum);
   ot_new->instance_count = 0;
+  ss->orbit_type_count++;
 }
 
 
