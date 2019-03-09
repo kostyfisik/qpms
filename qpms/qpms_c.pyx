@@ -1463,6 +1463,15 @@ cdef class ScatteringSystem:
         qpms_scatsys_build_modeproblem_matrix_full(&target_view[0][0], self.s, k)
         return target
 
+    def translation_matrix_full(self, double k):
+        cdef size_t flen = self.s[0].fecv_size
+        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
+                (flen,flen),dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target
+        qpms_scatsys_build_translation_matrix_full(&target_view[0][0], self.s, k)
+        return target
+
+
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc

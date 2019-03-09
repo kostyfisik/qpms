@@ -287,6 +287,8 @@ cdef extern from "scatsystem.h":
             const cdouble *orig_packed, const qpms_scatsys_t *ss, qpms_iri_t iri, bint add)
     cdouble *qpms_scatsys_build_modeproblem_matrix_full(cdouble *target,
             const qpms_scatsys_t *ss, double k)
+    cdouble *qpms_scatsys_build_translation_matrix_full(cdouble *target,
+            const qpms_scatsys_t *ss, double k)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed(cdouble *target,
             const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
 

@@ -1032,6 +1032,43 @@ complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
   return target_full; 
 }
 
+complex double *qpms_scatsys_build_translation_matrix_full(
+    /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+    complex double *target,
+    const qpms_scatsys_t *ss,
+    double k ///< Wave number to use in the translation matrix.
+    )
+{
+  const size_t full_len = ss->fecv_size;
+  if(!target)
+    QPMS_CRASHING_MALLOC(target, SQ(full_len) * sizeof(complex double));
+  memset(target, 0, SQ(full_len) * sizeof(complex double)); //unnecessary?
+  { // Non-diagonal part; M[piR, piC] = T[piR] S(piR<-piC)
+    size_t fullvec_offsetR = 0;
+    for(qpms_ss_pi_t piR = 0; piR < ss->p_count; ++piR) {
+      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[piR].tmatrix_id]->spec;
+      const cart3_t posR = ss->p[piR].pos;
+      size_t fullvec_offsetC = 0;
+      for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) {
+        if(piC == piR) continue; // The diagonal will be dealt with later.
+        const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+        const cart3_t posC = ss->p[piC].pos;
+        QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
+              target + fullvec_offsetR*full_len + fullvec_offsetC,
+              bspecR, full_len, bspecC, 1,
+              k, posR, posC));      
+        fullvec_offsetC += bspecC->n;
+      }
+      assert(fullvec_offsetC = full_len);
+      fullvec_offsetR += bspecR->n;
+    }
+    assert(fullvec_offsetR == full_len);
+  }
+  
+  return target;
+}
+
+
 complex double *qpms_scatsys_build_modeproblem_matrix_full(
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,

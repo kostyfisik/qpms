@@ -450,6 +450,12 @@ complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
 		const complex double *orig_packed, const qpms_scatsys_t *ss,
 		qpms_iri_t iri, bool add);
 
+complex double *qpms_scatsys_build_translation_matrix_full(
+		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+		complex double *target,
+		const qpms_scatsys_t *ss,
+		double k ///< Wave number to use in the translation matrix.
+		);
 complex double *qpms_scatsys_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
