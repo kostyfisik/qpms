@@ -748,8 +748,9 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   check_norm_compat(bspec);
   const size_t n = bspec->n;
   const qpms_gmi_t N = ot->size;
-  if (target == NULL)
-    target = malloc(n*n*N*N*sizeof(complex double));
+  const bool newtarget = (target == NULL);
+  if (newtarget)
+    QPMS_CRASHING_MALLOC(target,n*n*N*N*sizeof(complex double));
   if (target == NULL) abort();
   memset(target, 0, n*n*N*N*sizeof(complex double));
 
@@ -786,7 +787,8 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
     if(s[bs] < SVD_ATOL) break;
   }
 
-  memcpy(target, V_H, bs*N*n*n*sizeof(complex double));
+  memcpy(target, V_H, bs*N*n*sizeof(complex double));
+  if(newtarget) QPMS_CRASHING_REALLOC(target, bs*N*n*sizeof(complex double));
   if(basis_size) *basis_size = bs;
 
   free(U);
