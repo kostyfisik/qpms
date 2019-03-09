@@ -370,6 +370,7 @@ typedef struct qpms_ss_particle_orbitinfo {
 	qpms_ss_orbit_pi_t p; ///< Order (sija, ei rankki) of the particle inside that orbit type.
 } qpms_ss_particle_orbitinfo_t;
 
+struct qpms_trans_calculator;
 
 typedef struct qpms_scatsys_t {
 	// TODO does bspec belong here?
@@ -410,6 +411,7 @@ typedef struct qpms_scatsys_t {
 	char *otspace;
 	char *otspace_end;
 	double lenscale; // radius of the array, used as a relative tolerance measure
+	struct qpms_trans_calculator *c;
 } qpms_scatsys_t;
 
 /// Creates a new scatsys by applying a symmetry group, copying particles if needed.
@@ -447,6 +449,19 @@ complex double *qpms_scatsys_irrep_pack_vector(complex double *target_packed,
 complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
 		const complex double *orig_packed, const qpms_scatsys_t *ss,
 		qpms_iri_t iri, bool add);
+
+complex double *qpms_scatsys_build_modeproblem_matrix_full(
+		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+		complex double *target,
+		const qpms_scatsys_t *ss,
+		double k ///< Wave number to use in the translation matrix.
+		);
+complex double *qpms_scatsys_build_modeproblem_irrep_packed(
+		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+		complex double *target,
+		const qpms_scatsys_t *ss, qpms_iri_t iri,
+		double k ///< Wave number to use in the translation matrix.
+		);
 
 /// NOT IMPLEMENTED Dumps a qpms_scatsys_t structure to a file.
 qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);
@@ -510,6 +525,7 @@ complex double *qpms_orbit_irrep_basis(
 		const struct qpms_finite_group_t *sym,
 		/// The index of the irreducible representation of sym.
 		const qpms_iri_t iri);
+
 
 
 #if 0

@@ -1185,7 +1185,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
         = (srct == destt) ? A[desty][srcy] : B[desty][srcy];
     }
   }
-  return QPMS_SUCCESS;
+  return retval;
 }
 
 /// Version with \a k and cartesian particle positions

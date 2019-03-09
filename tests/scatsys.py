@@ -19,7 +19,7 @@ packedvectors = [(iri, ss.pack_vector(fullvector, iri)) for iri in range(ss.nirr
 unpackedvectors = np.array([ss.unpack_vector(v[1], v[0]) for v in packedvectors])
 rec_fullvector = np.sum(unpackedvectors, axis=0)
 thediff = np.amax(abs(rec_fullvector-fullvector))
-assert(thediff < 1e-14)
+assert(thediff < 1e-8)
 
 packedmatrices = list()
 for iri in range(ss.nirreps):
@@ -35,4 +35,11 @@ for iri, m in packedmatrices:
     print (m.shape)
     repackedmatrix = ss.pack_matrix(fullmatrix,iri)
     print(np.amax(abs(repackedmatrix-m)))
-    
+
+k = 1.7
+modematrix_full = ss.modeproblem_matrix_full(k)
+modematrix_packed_list = [(iri, ss.pack_matrix(modematrix_full,iri)) for iri in range(ss.nirreps)]
+modematrix_full_rec = np.empty((ss.fecv_size, ss.fecv_size), dtype=complex)
+for iri, m in modematrix_packed_list:
+    modematrix_full_rec += ss.unpack_matrix(m,iri)
+print(np.amax(abs(modematrix_full-modematrix_full_rec)))

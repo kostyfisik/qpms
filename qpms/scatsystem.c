@@ -13,6 +13,7 @@
 #include "wigner.h"
 #include <string.h>
 #include "qpms_error.h"
+#include "translations.h"
 
 #define SQ(x) ((x)*(x))
 #define QPMS_SCATSYS_LEN_RTOL 1e-13
@@ -413,6 +414,9 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
 qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym) {
   // TODO check data sanity
 
+  qpms_l_t lMax = 0; // the overall lMax of all base specs.
+  qpms_normalisation_t normalisation = QPMS_NORMALISATION_UNDEF;
+
   // First, determine the rough radius of the array
   double lenscale = 0;
   {
@@ -468,6 +472,11 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
     } 
     tm_dupl_remap[i] = j;
     ss->max_bspecn = MAX(ss->tm[i]->spec->n, ss->max_bspecn);
+    if (normalisation == QPMS_NORMALISATION_UNDEF)
+      normalisation = ss->tm[i]->spec->norm;
+    // We expect all bspec norms to be the same.
+    else assert(normalisation == ss->tm[i]->spec->norm); 
+    lMax = MAX(lMax, ss->tm[i]->spec->lMax);
   }
 
   // Copy particles, remapping the t-matrix indices
@@ -630,7 +639,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       ss->saecv_sizes[iri] += ot->instance_count * ot->irbase_sizes[iri];
     }
   }
-
+  
+  ss->c = qpms_trans_calculator_init(lMax, normalisation);
   return ss;
 }
 
@@ -646,6 +656,7 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
     free(ss->p_orbitinfo);
     free(ss->orbit_types);
     free(ss->saecv_sizes);
+    qpms_trans_calculator_free(ss->c);
   }
   free(ss);
 }
@@ -796,7 +807,7 @@ complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
 
   // Workspace for the intermediate particle-orbit matrix result
   complex double *tmp = malloc(sizeof(complex double) * SQ(ss->max_bspecn)
-      * ss->sym->order); if (!tmp) abort;
+      * ss->sym->order); if (!tmp) abort();
 
   const complex double one = 1, zero = 0;
 
@@ -875,7 +886,7 @@ complex double *qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
 
   // Workspace for the intermediate particle-orbit matrix result
   complex double *tmp = malloc(sizeof(complex double) * SQ(ss->max_bspecn)
-      * ss->sym->order); if (!tmp) abort;
+      * ss->sym->order); if (!tmp) abort();
 
   const complex double one = 1, zero = 0;
 
@@ -1021,4 +1032,61 @@ complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
   return target_full; 
 }
 
+complex double *qpms_scatsys_build_modeproblem_matrix_full(
+    /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+    complex double *target,
+    const qpms_scatsys_t *ss,
+    double k ///< Wave number to use in the translation matrix.
+    )
+{
+  const size_t full_len = ss->fecv_size;
+  if(!target)
+    QPMS_CRASHING_MALLOC(target, SQ(full_len) * sizeof(complex double));
+  complex double *tmp;
+  QPMS_CRASHING_MALLOC(tmp, SQ(ss->max_bspecn) * sizeof(complex double));
+  memset(target, 0, SQ(full_len) * sizeof(complex double)); //unnecessary?
+  complex double one = 1, zero = 0;
+  { // Non-diagonal part; M[piR, piC] = T[piR] S(piR<-piC)
+    size_t fullvec_offsetR = 0;
+    for(qpms_ss_pi_t piR = 0; piR < ss->p_count; ++piR) {
+      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[piR].tmatrix_id]->spec;
+      const cart3_t posR = ss->p[piR].pos;
+      size_t fullvec_offsetC = 0;
+      // dest particle T-matrix
+      const complex double *tmmR = ss->tm[ss->p[piR].tmatrix_id]->m;
+      for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) {
+        if(piC == piR) continue; // The diagonal will be dealt with later.
+        const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+        const cart3_t posC = ss->p[piC].pos;
+        QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
+              tmp, // tmp is S(piR<-piC)
+              bspecR, bspecC->n, bspecC, 1,
+              k, posR, posC));      
+        cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+              bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/, 
+              &one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
+              tmp/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
+              target + fullvec_offsetR*full_len + fullvec_offsetC /*c*/,
+              full_len /*ldc*/);
+        fullvec_offsetC += bspecC->n;
+      }
+      fullvec_offsetR += bspecR->n;
+    }
+  }
+  // diagonal part M[pi,pi] = -1
+  for (size_t i = 0; i < full_len; ++i) target[full_len * i + i] = -1;
+  
+  free(tmp);
+  return target;
+}
+
+
+
+
+complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
+    /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
+    complex double *target,
+    const qpms_scatsys_t *ss, qpms_iri_t iri,
+    double k ///< Wave number to use in the translation matrix.
+    );
 

@@ -1427,7 +1427,6 @@ cdef class ScatteringSystem:
                 self.s, iri, 0)
         return target_np
     def pack_matrix(self, fullmatrix, iri):
-        (iri < self.nirreps)
         cdef size_t flen = self.s[0].fecv_size
         cdef size_t rlen = self.saecv_sizes[iri]
         fullmatrix = np.array(fullmatrix, dtype=complex, copy=False, order='C')
@@ -1442,7 +1441,6 @@ cdef class ScatteringSystem:
                 self.s, iri)
         return target_np
     def unpack_matrix(self, packedmatrix, iri):
-        (iri < self.nirreps)
         cdef size_t flen = self.s[0].fecv_size
         cdef size_t rlen = self.saecv_sizes[iri]
         packedmatrix = np.array(packedmatrix, dtype=complex, copy=False, order='C')
@@ -1457,7 +1455,13 @@ cdef class ScatteringSystem:
                 self.s, iri, 0)
         return target_np
 
-
+    def modeproblem_matrix_full(self, double k):
+        cdef size_t flen = self.s[0].fecv_size
+        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
+                (flen,flen),dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target
+        qpms_scatsys_build_modeproblem_matrix_full(&target_view[0][0], self.s, k)
+        return target
 
 
 def tlm2uvswfi(t, l, m):
