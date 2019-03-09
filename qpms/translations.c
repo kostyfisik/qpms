@@ -11,6 +11,7 @@
 #include "kahansum.h"
 #include <stdlib.h> //abort()
 #include <gsl/gsl_sf_coupling.h>
+#include "qpms_error.h"
 
 
 /*
@@ -1153,7 +1154,59 @@ int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
       bes, leg);
 }
 
+// Convenience functions using VSWF base specs
+qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *c,
+    complex double *target,
+    /// Must be destspec->lMax <= c-> lMax && destspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *destspec, size_t deststride,
+    /// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+    sph_t kdlj, bool r_ge_d, qpms_bessel_t J) 
+{
+  assert(c->normalisation == destspec->norm && c->normalisation == srcspec->norm);
+  assert(c->lMax >= destspec->lMax && c->lMax >= srcspec->lMax);
+  assert(!destspec->lMax_L && !srcspec->lMax_L);
+  complex double A[c->nelem][c->nelem];
+  complex double B[c->nelem][c->nelem];
+  qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays(c,
+      A[0], B[0], c->nelem, 1,
+      kdlj, r_ge_d, J);
+  for (size_t desti = 0; desti < destspec->n; ++desti) {
+    qpms_y_t desty; qpms_vswf_type_t destt;
+    if(QPMS_SUCCESS != qpms_uvswfi2ty(destspec->ilist[desti], &destt, &desty))
+        qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,
+          "Invalid u. vswf index %llx.", destspec->ilist[desti]);
+    for (size_t srci = 0; srci < srcspec->n; ++srci){
+      qpms_y_t srcy; qpms_vswf_type_t srct;
+      if(QPMS_SUCCESS != qpms_uvswfi2ty(srcspec->ilist[srci], &srct, &srcy))
+          qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,
+            "Invalid u. vswf index %llx.", srcspec->ilist[srci]);
+      target[srci * srcstride + desti * deststride]
+        = (srct == destt) ? A[desty][srcy] : B[desty][srcy];
+    }
+  }
+  return QPMS_SUCCESS;
+}
 
+/// Version with \a k and cartesian particle positions
+/// and with automatic \a kdlj = false and \a J = QPMS_HANKEL_PLUS.
+qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p( 
+    const qpms_trans_calculator *c,
+    complex double *target,
+    /// Must be destspec->lMax <= c-> lMax && destspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *destspec, size_t deststride,
+    /// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+    double k, cart3_t destpos, cart3_t srcpos
+    /// Workspace has to be at least 2 * c->neleme**2 long
+    )
+{
+  sph_t kdlj = cart2sph(cart3_substract(destpos, srcpos));
+  kdlj.r *= k;
+  return qpms_trans_calculator_get_trans_array(c, target,
+      destspec, deststride, srcspec, srcstride, kdlj, 
+      false, QPMS_HANKEL_PLUS);
+}
 
 #ifdef LATTICESUMS31
 int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_trans_calculator *c,
@@ -1270,7 +1323,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
   }
   return 0;
 }
-#endif LATTICESUMS_31
+#endif // LATTICESUMS_31
 
 
 #ifdef LATTICESUMS32

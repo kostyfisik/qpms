@@ -105,7 +105,6 @@ int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
 		size_t deststride, size_t srcstride,
 		sph_t kdlj, bool r_ge_d, qpms_bessel_t J); 
 
-
 // TODO update the types later
 complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
 		int m, int n, int mu, int nu, double kdlj_r,
@@ -125,6 +124,28 @@ int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
 		size_t deststride, size_t srcstride,
 		double kdlj_r, double kdlj_theta, double kdlj_phi,
 		int r_ge_d, int J);
+
+// Convenience functions using VSWF base specs
+qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *c,
+		complex double *target, 
+		/// Must be destspec->lMax <= c-> lMax && destspec->norm == c->norm. 
+		const qpms_vswf_set_spec_t *destspec, size_t deststride,
+		/// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm. 
+		const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+		sph_t kdlj, bool r_ge_d, qpms_bessel_t J);
+
+/// Version with \a k and cartesian particle positions
+/// and with automatic \a kdlj = false and \a J = QPMS_HANKEL_PLUS.
+qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p(
+		const qpms_trans_calculator *c,
+		complex double *target, 
+		/// Must be destspec->lMax <= c-> lMax && destspec->norm == c->norm. 
+		const qpms_vswf_set_spec_t *destspec, size_t deststride,
+		/// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm. 
+		const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+		double k, cart3_t destpos, cart3_t srcpos
+		/// Workspace has to be at least 2 * c->neleme**2 long
+		);
 
 #ifdef LATTICESUMS_OLD 
 // Short-range parts of the translation coefficients

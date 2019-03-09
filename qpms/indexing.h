@@ -72,6 +72,18 @@ static inline qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u,
 	return QPMS_SUCCESS;
 }
 
+/// Conversion from universal VSWF index u to type and the traditional layout index.
+/** Does not for allow longitudinal waves. */
+static inline qpms_errno_t qpms_uvswfi2ty(qpms_uvswfi_t u,
+		qpms_vswf_type_t *t, qpms_y_t *y) {
+	*t = u & 3;
+	*y = u / 4 - 1;
+	if (*t == 0 || *t == 3) return QPMS_ERROR;
+	if (*y < 0) return QPMS_ERROR;
+	return QPMS_SUCCESS;
+}
+
+
 /// Extract degree \a m from an universal VSWF index \a u.
 static inline qpms_m_t qpms_uvswfi2m(qpms_uvswfi_t u) {
 	qpms_vswf_type_t t; qpms_m_t m; qpms_l_t n;
