@@ -27,6 +27,9 @@ bool qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a,
 		const qpms_vswf_set_spec_t *b);
 /// Copies an instance of qpms_vswf_set_spec_t
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_copy(const qpms_vswf_set_spec_t *orig);
+/// Creates an instance of qpms_vswf_set_spec_t in the 'traditional' layout.
+qpms_vswf_set_spec_t *qpms_vswf_set_spec_from_lMax(qpms_l_t lMax,
+		qpms_normalisation_t norm);
 
 /// Finds the position of a given index in the bspec's ilist.
 /** If not found, returns -1. */

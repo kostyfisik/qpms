@@ -69,6 +69,22 @@ qpms_vswf_set_spec_t *qpms_vswf_set_spec_copy(const qpms_vswf_set_spec_t *or){
   return c;
 }
 
+qpms_vswf_set_spec_t *qpms_vswf_set_spec_from_lMax(qpms_l_t lMax, 
+    qpms_normalisation_t norm) {
+  qpms_vswf_set_spec_t *c = malloc(sizeof(qpms_vswf_set_spec_t));
+  if (!c) abort(); // return NULL
+  c->n = c->capacity = 2 * qpms_lMax2nelem(lMax);
+  c->ilist = malloc(sizeof(qpms_uvswfi_t) * c->capacity);
+  size_t i = 0;
+  for (int it = 0; it < 2; ++it)
+    for (qpms_l_t n = 1; n <= lMax; ++n)
+      for (qpms_m_t m = -n; m <= n; ++m) 
+        c->ilist[i++] = 
+          qpms_tmn2uvswfi(it ? QPMS_VSWF_MAGNETIC : QPMS_VSWF_ELECTRIC, m, n);
+  c->norm = norm;
+  return c;
+}
+
 void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *s) {
   if(s) free(s->ilist);
   free(s);
