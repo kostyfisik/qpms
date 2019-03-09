@@ -30,3 +30,9 @@ for iri in range(ss.nirreps):
 fullmatrix = np.zeros((ss.fecv_size, ss.fecv_size), dtype=complex)
 for iri, m in packedmatrices:
     fullmatrix += ss.unpack_matrix(m, iri)
+
+for iri, m in packedmatrices:
+    print (m.shape)
+    repackedmatrix = ss.pack_matrix(fullmatrix,iri)
+    print(np.amax(abs(repackedmatrix-m)))
+    

@@ -839,16 +839,16 @@ complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
           particle_fullsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeC /*K*/,
           &one /*alpha*/, orig_full + full_len*fullvec_offsetR + fullvec_offsetC/*A*/,
           full_len/*ldA*/, 
-          omC + full_len*packed_orbit_offsetC + fullvec_offsetC /*B*/,
-          full_len/*ldB*/, &zero /*beta*/,
+          omC + opiC*particle_fullsizeC /*B*/,
+          orbit_fullsizeC/*ldB*/, &zero /*beta*/,
           tmp /*C*/, orbit_packedsizeC /*LDC*/);
 
       // target[oiR|piR,oiC|piC] += U[...] tmp[...]
       cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
           orbit_packedsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeR /*K*/,
-          &one /*alpha*/, omR + full_len*packed_orbit_offsetR + fullvec_offsetR/*A*/,
-          full_len/*ldA*/,
-          tmp /*B*/, particle_fullsizeR /*ldB*/, &one /*beta*/,
+          &one /*alpha*/, omR + opiR*particle_fullsizeR/*A*/,
+          orbit_fullsizeR/*ldA*/,
+          tmp /*B*/, orbit_packedsizeC /*ldB*/, &one /*beta*/,
           target_packed + packedlen*packed_orbit_offsetR + packed_orbit_offsetC /*C*/,
           packedlen /*ldC*/);
 
@@ -913,21 +913,21 @@ complex double *qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
       // This is the orbit-level matrix projecting the whole orbit onto the irrep.
       const complex double *omC = otC->irbases + otC->irbase_offsets[iri];
       // tmp = P U
-      // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]
+      // tmp[oiR|piR,piC] = ∑_K M[piR,K] U[K,piC]
       cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
           orbit_packedsizeR /*M*/, particle_fullsizeC /*N*/, orbit_packedsizeC /*K*/,
           &one /*alpha*/, orig_packed + packedlen*packed_orbit_offsetR + packed_orbit_offsetC/*A*/,
           packedlen/*ldA*/, 
-          omC + full_len*packed_orbit_offsetC + fullvec_offsetC /*B*/,
-          full_len/*ldB*/, &zero /*beta*/,
+          omC + opiC*particle_fullsizeC /*B*/,
+          orbit_fullsizeC/*ldB*/, &zero /*beta*/,
           tmp /*C*/, particle_fullsizeC /*LDC*/);
 
-      // target[oiR|piR,oiC|piC] += U[...] tmp[...]
+      // target[oiR|piR,oiC|piC] += U*[...] tmp[...]
       cblas_zgemm(CblasRowMajor, CblasConjTrans, CblasNoTrans,
           particle_fullsizeR /*M*/, particle_fullsizeC /*N*/, orbit_packedsizeR /*K*/,
-          &one /*alpha*/, omR + full_len*packed_orbit_offsetR + fullvec_offsetR/*A*/,
-          packed_len/*ldA*/,
-          tmp /*B*/, orbit_packedsizeR /*ldB*/, &one /*beta*/,
+          &one /*alpha*/, omR + opiR*particle_fullsizeR/*A*/,
+          orbit_fullsizeR/*ldA*/,
+          tmp /*B*/, particle_fullsizeC /*ldB*/, &one /*beta*/,
           target_full + full_len*fullvec_offsetR + fullvec_offsetC /*C*/,
           full_len /*ldC*/);
 
@@ -952,6 +952,7 @@ complex double *qpms_scatsys_irrep_pack_vector(complex double *target_packed,
   memset(target_packed, 0, packedlen*sizeof(complex double));
 
   const complex double one = 1;
+  const size_t full_len = ss->fecv_size;
 
   size_t fullvec_offset = 0;
   for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
@@ -992,6 +993,7 @@ complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
   if (!add) memset(target_full, 0, full_len*sizeof(complex double));
 
   const complex double one = 1;
+  const size_t packedlen = ss->saecv_sizes[iri];
  
   size_t fullvec_offset = 0;
   for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
