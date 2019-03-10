@@ -25,9 +25,10 @@ qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *s, const qpms_uvswf
   qpms_vswf_type_t t;
   if (qpms_uvswfi2tmn(u, &t, &m, &l)!=QPMS_SUCCESS) return QPMS_ERROR; // TODO WARN
   if (s->n + 1 > s->capacity) {
-    size_t newcap = (s->capacity > 32) ? 32 : 2*s->capacity;
+    size_t newcap = (s->capacity < 32) ? 32 : 2*s->capacity;
     qpms_uvswfi_t *newmem = realloc(s->ilist, newcap * sizeof(qpms_uvswfi_t));
     if (newmem == NULL) return QPMS_ENOMEM; // TODO WARN
+    s->capacity = newcap;
     s->ilist = newmem;
   }
   s->ilist[s->n] = u;

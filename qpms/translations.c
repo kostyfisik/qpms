@@ -1165,7 +1165,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
 {
   assert(c->normalisation == destspec->norm && c->normalisation == srcspec->norm);
   assert(c->lMax >= destspec->lMax && c->lMax >= srcspec->lMax);
-  assert(!destspec->lMax_L && !srcspec->lMax_L);
+  assert(destspec->lMax_L < 0 && srcspec->lMax_L < 0);
   complex double A[c->nelem][c->nelem];
   complex double B[c->nelem][c->nelem];
   qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays(c,

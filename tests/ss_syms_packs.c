@@ -4,9 +4,16 @@ typedef int qpms_gmi_t;// There is something wrong in the includes, apparently.
 #include <qpms/scatsystem.h>
 #include <stdlib.h>
 #include <qpms/vswf.h>
+#include <qpms/indexing.h>
+#include <stdio.h>
 #include "staticgroups.h"
 
 const qpms_finite_group_t *D3h = &QPMS_FINITE_GROUP_D3h;
+const qpms_finite_group_t *C4v = &QPMS_FINITE_GROUP_C4v;
+const qpms_finite_group_t *TRIVG = &QPMS_FINITE_GROUP_trivial_g;
+const qpms_finite_group_t *C2v = &QPMS_FINITE_GROUP_C2v;
+const qpms_finite_group_t *D2h = &QPMS_FINITE_GROUP_D2h;
+const qpms_finite_group_t *D4h = &QPMS_FINITE_GROUP_D4h;
 
 double uniform_random(double min, double max) {
   double random_value = min + (max-min)*(double)rand()/RAND_MAX;
@@ -16,10 +23,22 @@ double uniform_random(double min, double max) {
 int main()
 {
   srand(666);
-
+#if 0
   qpms_vswf_set_spec_t 
     *b1 = qpms_vswf_set_spec_from_lMax(1,QPMS_NORMALISATION_POWER_CS),
     *b2 = qpms_vswf_set_spec_from_lMax(2,QPMS_NORMALISATION_POWER_CS);
+#else
+  // Only electric waves
+  qpms_vswf_set_spec_t *b1 = qpms_vswf_set_spec_init(), 
+                       *b2 = qpms_vswf_set_spec_init();
+  b1->norm = b2-> norm = QPMS_NORMALISATION_POWER_CS;
+  for(qpms_l_t l = 1; l <= 1; ++l)
+    for (qpms_m_t m = -l; m <= l; ++m)
+      qpms_vswf_set_spec_append(b1, qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, m, l));
+  for(qpms_l_t l = 1; l <= 2; ++l)
+    for (qpms_m_t m = -l; m <= l; ++m)
+      qpms_vswf_set_spec_append(b2, qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, m, l));
+#endif
   qpms_tmatrix_t *t1 = qpms_tmatrix_init(b1);
   qpms_tmatrix_t *t2 = qpms_tmatrix_init(b2);
 
@@ -39,7 +58,11 @@ int main()
   protoss.p = plist;
   protoss.p_count=3;
 
-  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, D3h);
+  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, D4h);
+
+  printf("p_count: %d, tm_count: %d, nirreps: %d, orbit_type_count: %d\n",
+      (int)ss->p_count, (int)ss->tm_count, (int)ss->sym->nirreps,
+      (int)ss->orbit_type_count);
 
   const double k = 1.7;
 
@@ -61,6 +84,8 @@ int main()
     double err = cabs(S_full[i] - S_recfull[i]);
     maxerr = (err > maxerr) ? err : maxerr;
   }
+
+  printf("maxerr: %lg\n", maxerr);
   
   for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) free(S_packed[iri]);
   free(S_full);

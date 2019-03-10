@@ -703,6 +703,7 @@ cdef class BaseSpec:
             self.s.norm = QPMS_NORMALISATION_POWER
         # set the other metadata
         cdef qpms_l_t l
+        self.s.lMax_L = -1
         cdef qpms_m_t m
         cdef qpms_vswf_type_t t
         for i in range(self.s.n):
@@ -713,7 +714,7 @@ cdef class BaseSpec:
             elif (t == QPMS_VSWF_MAGNETIC):
                 self.s.lMax_M = max(self.s.lMax_M, l)
             elif (t == QPMS_VSWF_LONGITUDINAL):
-                self.s.lMax.L = max(self.s.lMax_L, l)
+                self.s.lMax_L = max(self.s.lMax_L, l)
             else:
                 raise ValueError # If this happens, it's probably a bug, as it should have failed already at qpms_uvswfi2tmn
             self.s.lMax = max(self.s.lMax, l)
