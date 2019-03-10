@@ -467,16 +467,18 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
         break;
       }
     if (j == ss->tm_count) { // duplicity not found, copy the t-matrix
-      ss->tm[i] = qpms_tmatrix_copy(orig->tm[i]);
+      ss->tm[j] = qpms_tmatrix_copy(orig->tm[i]);
+      ss->max_bspecn = MAX(ss->tm[j]->spec->n, ss->max_bspecn);
+      lMax = MAX(lMax, ss->tm[j]->spec->lMax);
       ++(ss->tm_count);
     } 
     tm_dupl_remap[i] = j;
-    ss->max_bspecn = MAX(ss->tm[i]->spec->n, ss->max_bspecn);
     if (normalisation == QPMS_NORMALISATION_UNDEF)
       normalisation = ss->tm[i]->spec->norm;
     // We expect all bspec norms to be the same.
-    else assert(normalisation == ss->tm[i]->spec->norm); 
-    lMax = MAX(lMax, ss->tm[i]->spec->lMax);
+    else QPMS_ENSURE(normalisation == ss->tm[j]->spec->norm,
+        "Normalisation convention must be the same for all T-matrices."
+        " %d != %d\n", normalisation, ss->tm[j]->spec->norm);
   }
 
   // Copy particles, remapping the t-matrix indices
