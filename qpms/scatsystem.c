@@ -611,13 +611,17 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
     char *old_otspace = ss->otspace;
     ss->otspace = realloc(ss->otspace, otspace_sz);
     ptrdiff_t shift = ss->otspace - old_otspace;
-    if(shift)
+    if(shift) {
       for (size_t oi = 0; oi < ss->orbit_type_count; ++oi) {
         ss->orbit_types[oi].action = (void *)(((char *) (ss->orbit_types[oi].action)) + shift);
         ss->orbit_types[oi].tmatrices = (void *)(((char *) (ss->orbit_types[oi].tmatrices)) + shift);
         ss->orbit_types[oi].irbase_sizes = (void *)(((char *) (ss->orbit_types[oi].irbase_sizes)) + shift);
+        ss->orbit_types[oi].irbase_cumsizes = (void *)(((char *) (ss->orbit_types[oi].irbase_cumsizes)) + shift);
+        ss->orbit_types[oi].irbase_offsets = (void *)(((char *) (ss->orbit_types[oi].irbase_offsets)) + shift);
         ss->orbit_types[oi].irbases = (void *)(((char *) (ss->orbit_types[oi].irbases)) + shift);
       }
+      ss->otspace_end += shift;
+    }
   }
 
   // Set ss->fecv_size and ss->fecv_pstarts
