@@ -371,6 +371,16 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
   memcpy(ot_new->action, ot_current->action, actionsiz);
   // N.B. we copied mostly garbage ^^^, most of it is initialized just now:
   extend_orbit_action(ss, ot_new);
+#ifdef DUMP_ORBIT_ACTION
+  fprintf(stderr, "Orbit action:\n");
+  for (qpms_gmi_t gmi = 0; gmi < ss->sym->order; ++gmi)  {
+    fprintf(stderr, "%s\t", (ss->sym->permrep && ss->sym->permrep[gmi])?
+      ss->sym->permrep[gmi] : "");
+    for (qpms_ss_orbit_pi_t pi = 0; pi < ot_new->size; ++pi) 
+      fprintf(stderr, "%d\t", (int) ot_new->action[gmi + pi*ss->sym->order]);
+    fprintf(stderr, "\n");
+  }
+#endif
   ss->otspace_end += actionsiz;
   
   const size_t tmsiz = sizeof(ot_current->tmatrices[0]) * ot_current->size;
@@ -417,7 +427,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   qpms_l_t lMax = 0; // the overall lMax of all base specs.
   qpms_normalisation_t normalisation = QPMS_NORMALISATION_UNDEF;
 
-  // First, determine the rough radius of the array
+  // First, determine the rough radius of the array; it should be nonzero
+  // in order to particle position equivalence work correctly
   double lenscale = 0;
   {
     double minx = +INFINITY, miny = +INFINITY, minz = +INFINITY;
@@ -430,7 +441,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       maxy = MAX(maxy,orig->p[i].pos.y);
       maxz = MAX(maxz,orig->p[i].pos.z);
     }
-    lenscale = ((maxx-minx)+(maxy-miny)+(maxz-minz)) / 3;
+    lenscale = (fabs(maxx)+fabs(maxy)+fabs(maxz)+(maxx-minx)+(maxy-miny)+(maxz-minz)) / 3;
   }
 
   // Second, check that there are no duplicit positions in the input system.
@@ -589,6 +600,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       qpms_ss_oti_t oti;
       for(oti = 0; oti < ss->orbit_type_count; ++oti)
         if (orbit_types_equal(&ot_current, &(ss->orbit_types[oti]))) break; // HIT, orbit type already exists
+      assert(0 == sym->order % ot_current.size);
       if (oti == ss->orbit_type_count)  // MISS, add the new orbit type
         add_orbit_type(ss, &ot_current);
       
@@ -706,6 +718,24 @@ complex double *qpms_orbit_action_matrix(complex double *target,
       for(size_t col = 0; col < bspec->n; ++col)
         target[n*n*N*Row + n*Col + n*N*row + col] = tmp[row][col]; //CHECKCONJ
   }
+#ifdef DUMP_ACTIONMATRIX
+  fprintf(stderr,"%d: %s\n", 
+      (int) g, (sym->permrep && sym->permrep[g])?
+      sym->permrep[g] : "");
+  for (size_t Row = 0; Row < ot->size; ++Row) {
+    fprintf(stderr, "--------------------------\n");
+    for (size_t row = 0; row < bspec->n; ++row) {
+      for (size_t Col = 0; Col < ot->size; ++Col) {
+        fprintf(stderr, "| ");
+        for (size_t col = 0; col < bspec->n; ++col)
+          fprintf(stderr, "%+2.3f%+2.3fj ", creal(target[n*n*N*Row + n*Col + n*N*row + col]),cimag(target[n*n*N*Row + n*Col + n*N*row + col]));
+      }
+      fprintf(stderr, "|\n");
+    }
+  }
+  fprintf(stderr, "-------------------------------\n\n");
+#endif
+
   return target;
 }
 
@@ -731,6 +761,9 @@ complex double *qpms_orbit_irrep_projector_matrix(complex double *target,
     for(qpms_gmi_t g = 0; g < sym->order; ++g) {
       // We use the diagonal elements of D_g
       complex double D_g_conj = sym->irreps[iri].m[g*d*d + partner*d + partner];
+#ifdef DUMP_ACTIONMATRIX
+      fprintf(stderr,"(factor %+g%+gj) ", creal(D_g_conj), cimag(D_g_conj));
+#endif
       qpms_orbit_action_matrix(tmp, ot, bspec, sym, g);
       // TODO kahan sum?
       for(size_t i = 0; i < n*n*N*N; ++i)
@@ -738,6 +771,22 @@ complex double *qpms_orbit_irrep_projector_matrix(complex double *target,
     }
   }
   free(tmp);
+#ifdef DUMP_PROJECTORMATRIX
+  fprintf(stderr,"Projector %d (%s):\n", (int) iri, 
+      sym->irreps[iri].name?sym->irreps[iri].name:"");
+  for (size_t Row = 0; Row < ot->size; ++Row) {
+    fprintf(stderr, "--------------------------\n");
+    for (size_t row = 0; row < bspec->n; ++row) {
+      for (size_t Col = 0; Col < ot->size; ++Col) {
+        fprintf(stderr, "| ");
+        for (size_t col = 0; col < bspec->n; ++col)
+          fprintf(stderr, "%+2.3f%+2.3fj ", creal(target[n*n*N*Row + n*Col + n*N*row + col]),cimag(target[n*n*N*Row + n*Col + n*N*row + col]));
+      }
+      fprintf(stderr, "|\n");
+    }
+  }
+  fprintf(stderr, "-------------------------------\n\n");
+#endif
   return target;
 }
 
