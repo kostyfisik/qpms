@@ -45,7 +45,7 @@ static inline qpms_quat_t qpms_quat_add(qpms_quat_t p, qpms_quat_t q) {
 	return r;
 }
 
-/// Exponential function of a quaternion \f$e^Q$\f.
+/// Exponential function of a quaternion \f$e^Q$\f. MAYBE WRONG.
 static inline qpms_quat_t qpms_quat_exp(const qpms_quat_t q) {
 	const qpms_quat4d_t q4 = qpms_quat_4d_from_2c(q);
 	const double vn = sqrt(q4.ci*q4.ci + q4.cj*q4.cj + q4.ck *q4.ck);
@@ -54,8 +54,6 @@ static inline qpms_quat_t qpms_quat_exp(const qpms_quat_t q) {
 	const qpms_quat4d_t r4 = {ea * cos(vn), cv*q4.ci, cv*q4.cj, cv*q4.ck};
 	return qpms_quat_2c_from_4d(r4);
 }
-
-	
 
 /// Quaternion scaling with a real number.
 static inline qpms_quat_t qpms_quat_rscale(double s, qpms_quat_t q) {
@@ -92,12 +90,12 @@ static inline qpms_quat_t qpms_quat_normalise(qpms_quat_t q) {
 	return qpms_quat_rscale(1/n, q);
 }
 
-/// Logarithm of a quaternion.
+/// Logarithm of a quaternion. MAYBE AND PROBABLY WRONG.
 static inline qpms_quat_t qpms_quat_log(const qpms_quat_t q) {
 	const double n = qpms_quat_norm(q);
 	const double imnorm = qpms_quat_imnorm(q);
 	if (imnorm != 0.) {
-		const double vc = acos(creal(q.a)/n) / qpms_quat_imnorm(q);
+		const double vc = acos(creal(q.a)/n) / imnorm;
 		const qpms_quat_t r = {log(n) + cimag(q.a)*vc*I,
 			q.b*vc};
 		return r;
@@ -108,13 +106,33 @@ static inline qpms_quat_t qpms_quat_log(const qpms_quat_t q) {
 	}
 }
 
-/// Quaternion power to a real exponent.
+/// Quaternion power to a real exponent. PROBABLY WRONG!!!
 static inline qpms_quat_t qpms_quat_pow(const qpms_quat_t q, const double exponent) {
 	const qpms_quat_t qe = qpms_quat_rscale(exponent, 
 			qpms_quat_log(q));
 	return qpms_quat_exp(qe);
 }
 
+#if 0
+/// Quaternion conjugation \a q*.
+// A very stupid but correct (hopefully) implementation
+static inline qpms_quat_t qpms_quat_conj(const qpms_quat_t q) {
+	return qpms_quat_rscale(-0.5,
+		qpms_quat_add(q,
+		qpms_quat_add(qpms_quat_mult(qpms_quat_i,qpms_quat_mult(q,qpms_quat_i)),
+		qpms_quat_add(qpms_quat_mult(qpms_quat_j,qpms_quat_mult(q,qpms_quat_j)),
+		qpms_quat_mult(qpms_quat_k,qpms_quat_mult(q,qpms_quat_k))))));
+}
+#endif
+
+/// Quaternion inversion.
+/** \f[ q^{-1} = \frac{q*}{|q|}. \f] */
+static inline qpms_quat_t qpms_quat_inv(const qpms_quat_t q) {
+	const double norm = qpms_quat_norm(q);
+	return qpms_quat_rscale(1./(norm*norm),
+			qpms_quat_conj(q));
+}
+			
 /// Make a pure imaginary quaternion from a 3d cartesian vector.
 static inline qpms_quat_t qpms_quat_from_cart3(const cart3_t c) {
 	const qpms_quat4d_t q4 = {0, c.x, c.y, c.z};
@@ -131,7 +149,8 @@ static inline cart3_t qpms_quat_to_cart3(const qpms_quat_t q) {
 /// Rotate a 3-dimensional cartesian vector using the quaternion/versor representation.
 static inline cart3_t qpms_quat_rot_cart3(qpms_quat_t q, const cart3_t v) {
 	q = qpms_quat_normalise(q);
-	const qpms_quat_t qc = qpms_quat_normalise(qpms_quat_pow(q, -1));
+	//const qpms_quat_t qc = qpms_quat_normalise(qpms_quat_pow(q, -1)); // implementation of _pow wrong!
+	const qpms_quat_t qc = qpms_quat_conj(q);
 	const qpms_quat_t vv = qpms_quat_from_cart3(v);
 	return qpms_quat_to_cart3(qpms_quat_mult(qc,
 				qpms_quat_mult(vv, q)));
