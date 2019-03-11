@@ -374,6 +374,9 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
 #ifdef DUMP_ORBIT_ACTION
   fprintf(stderr, "Orbit action:\n");
   for (qpms_gmi_t gmi = 0; gmi < ss->sym->order; ++gmi)  {
+    const qpms_quat4d_t q = qpms_quat_4d_from_2c(ss->sym->rep3d[gmi].rot);
+    fprintf(stderr, "%+d[%g %g %g %g] ", (int)ss->sym->rep3d[gmi].det,
+        q.c1, q.ci, q.cj, q.ck);
     fprintf(stderr, "%s\t", (ss->sym->permrep && ss->sym->permrep[gmi])?
       ss->sym->permrep[gmi] : "");
     for (qpms_ss_orbit_pi_t pi = 0; pi < ot_new->size; ++pi) 
@@ -581,8 +584,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
         ss->p[ss->p_count] = newparticle;
         ++(ss->p_count);
       }
-      ss->p_sym_map[gmi + pi * sym->order] = pi;
-      
+      ss->p_sym_map[gmi + pi * sym->order] = pj;
+
       if (new_orbit) {
         // Now check whether the particle (result of the symmetry op) is already in the current orbit
         qpms_ss_orbit_pi_t opj;
@@ -603,7 +606,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       assert(0 == sym->order % ot_current.size);
       if (oti == ss->orbit_type_count)  // MISS, add the new orbit type
         add_orbit_type(ss, &ot_current);
-      
+
       // Walk through the orbit again and set up the orbit info of the particles
       for (qpms_ss_orbit_pi_t opi = 0; opi < ot_current.size; ++opi) {
         const qpms_ss_pi_t pi_opi = current_orbit[opi];
