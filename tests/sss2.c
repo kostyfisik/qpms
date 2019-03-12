@@ -1,4 +1,4 @@
-//  c99 -g -I.. ss_syms_packs.c staticgroups.c ../qpms/scatsystem.c ../qpms/vswf.c ../qpms/error.c  ../qpms/translations.c ../qpms/symmetries.c ../qpms/legendre.c ../qpms/gaunt.c  ../qpms/wigner.c -lm -lgsl -lblas -llapacke
+//  c99 -g -DZLINE -DDAGRUP=D3h -DDUMP_PARTICLE_POSITIONS -DDUMP_ORBIT_ACTION -DDUMP_PROJECTORMATRIX -DDUMP_ACTIONMATRIX  -I.. sss2.c staticgroups.c ../qpms/scatsystem.c ../qpms/vswf.c ../qpms/error.c  ../qpms/translations.c ../qpms/symmetries.c ../qpms/legendre.c ../qpms/gaunt.c  ../qpms/wigner.c -lm -lgsl -lblas -llapacke
 typedef int qpms_gmi_t;// There is something wrong in the includes, apparently.
 #include <qpms/qpms_types.h>
 #include <qpms/scatsystem.h>
@@ -12,8 +12,16 @@ const qpms_finite_group_t *D3h = &QPMS_FINITE_GROUP_D3h;
 const qpms_finite_group_t *C4v = &QPMS_FINITE_GROUP_C4v;
 const qpms_finite_group_t *TRIVG = &QPMS_FINITE_GROUP_trivial_g;
 const qpms_finite_group_t *C2v = &QPMS_FINITE_GROUP_C2v;
+const qpms_finite_group_t *C2 = &QPMS_FINITE_GROUP_C2;
+const qpms_finite_group_t *C4 = &QPMS_FINITE_GROUP_C4;
 const qpms_finite_group_t *D2h = &QPMS_FINITE_GROUP_D2h;
 const qpms_finite_group_t *D4h = &QPMS_FINITE_GROUP_D4h;
+const qpms_finite_group_t *x_and_z_flip = &QPMS_FINITE_GROUP_x_and_z_flip;
+const qpms_finite_group_t *y_and_z_flip = &QPMS_FINITE_GROUP_y_and_z_flip;
+
+#ifndef DAGRUP
+#define DAGRUP D4h
+#endif
 
 double uniform_random(double min, double max) {
   double random_value = min + (max-min)*(double)rand()/RAND_MAX;
@@ -23,7 +31,7 @@ double uniform_random(double min, double max) {
 int main()
 {
   srand(666);
-#if 1
+#if 0
   qpms_vswf_set_spec_t 
     *b1 = qpms_vswf_set_spec_from_lMax(1,QPMS_NORMALISATION_POWER_CS),
     *b2 = qpms_vswf_set_spec_from_lMax(2,QPMS_NORMALISATION_POWER_CS);
@@ -55,8 +63,16 @@ int main()
     t2->m[i + i*b2->n] = 1;
 #endif
 
-  const cart3_t pp1 = {0, 0, 1};
+#ifdef YLINE
+  const cart3_t pp1 = {0, 1.1, 0};
+  const cart3_t pp2 = {0, 1.4, 0};
+#elif defined XLINE
+  const cart3_t pp1 = {1.1, 0, 0};
+  const cart3_t pp2 = {1.4, 0, 0};
+#else
+  const cart3_t pp1 = {0, 0, 1.1};
   const cart3_t pp2 = {0, 0, 1.4};
+#endif
   const cart3_t pp3 = {0, 0, 0};
   qpms_tmatrix_t * tmlist[] = {t1, t2};
   qpms_particle_tid_t plist[] = {{pp1, 0}, {pp2, 1}, {pp3, 1}};
@@ -67,7 +83,7 @@ int main()
   protoss.p = plist;
   protoss.p_count=sizeof(plist)/sizeof(qpms_particle_tid_t);
 
-  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, C4v);
+  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, DAGRUP);
 
   printf("p_count: %d, tm_count: %d, nirreps: %d, orbit_type_count: %d\n",
       (int)ss->p_count, (int)ss->tm_count, (int)ss->sym->nirreps,
