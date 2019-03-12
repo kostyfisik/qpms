@@ -1120,13 +1120,14 @@ complex double *qpms_scatsys_build_translation_matrix_full(
       const cart3_t posR = ss->p[piR].pos;
       size_t fullvec_offsetC = 0;
       for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) {
-        if(piC == piR) continue; // The diagonal will be dealt with later.
         const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
-        const cart3_t posC = ss->p[piC].pos;
-        QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
-              target + fullvec_offsetR*full_len + fullvec_offsetC,
-              bspecR, full_len, bspecC, 1,
-              k, posR, posC));      
+        if(piC != piR)  { // The diagonal will be dealt with later.
+          const cart3_t posC = ss->p[piC].pos;
+          QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
+                target + fullvec_offsetR*full_len + fullvec_offsetC,
+                bspecR, full_len, bspecC, 1,
+                k, posR, posC));      
+        }
         fullvec_offsetC += bspecC->n;
       }
       assert(fullvec_offsetC = full_len);
@@ -1162,19 +1163,20 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
       // dest particle T-matrix
       const complex double *tmmR = ss->tm[ss->p[piR].tmatrix_id]->m;
       for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) {
-        if(piC == piR) continue; // The diagonal will be dealt with later.
         const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
-        const cart3_t posC = ss->p[piC].pos;
-        QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
-              tmp, // tmp is S(piR<-piC)
-              bspecR, bspecC->n, bspecC, 1,
-              k, posR, posC));      
-        cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+        if(piC != piR) { // The diagonal will be dealt with later.
+          const cart3_t posC = ss->p[piC].pos;
+          QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
+                tmp, // tmp is S(piR<-piC)
+                bspecR, bspecC->n, bspecC, 1,
+                k, posR, posC));      
+          cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
               bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/, 
               &one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
               tmp/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
               target + fullvec_offsetR*full_len + fullvec_offsetC /*c*/,
               full_len /*ldc*/);
+        }
         fullvec_offsetC += bspecC->n;
       }
       fullvec_offsetR += bspecR->n;
