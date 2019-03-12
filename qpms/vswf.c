@@ -84,7 +84,7 @@ qpms_vswf_set_spec_t *qpms_vswf_set_spec_from_lMax(qpms_l_t lMax,
           qpms_tmn2uvswfi(it ? QPMS_VSWF_MAGNETIC : QPMS_VSWF_ELECTRIC, m, n);
   c->norm = norm;
   c->lMax = c->lMax_M = c->lMax_N = lMax;
-  c->lMax_L = 0;
+  c->lMax_L = -1;
   return c;
 }
 
