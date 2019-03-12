@@ -55,17 +55,17 @@ int main()
     t2->m[i + i*b2->n] = 1;
 #endif
 
-  const cart3_t pp1 = {0, 0, 1}, pp2 = {0,0, 2}, pp3 = {0,0 , 0};
+  const cart3_t pp1 = {1, 1, 0};
   qpms_tmatrix_t * tmlist[] = {t1, t2};
-  qpms_particle_tid_t plist[] = {{pp1, 0}, {pp2, 0}, {pp3, 1}};
+  qpms_particle_tid_t plist[] = {{pp1, 0}};
 
   qpms_scatsys_t protoss;
   protoss.tm = tmlist;
   protoss.tm_count=2;
   protoss.p = plist;
-  protoss.p_count=3;
+  protoss.p_count=1;
 
-  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, D3h);
+  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, D2h);
 
   printf("p_count: %d, tm_count: %d, nirreps: %d, orbit_type_count: %d\n",
       (int)ss->p_count, (int)ss->tm_count, (int)ss->sym->nirreps,

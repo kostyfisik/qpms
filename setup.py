@@ -31,11 +31,14 @@ qpms_c = Extension('qpms_c',
             'qpms/error.c'],
         extra_compile_args=['-std=c99','-ggdb', '-O0',
             '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # this is required
+            #'-DAN2',
+            #'-DBN2',
             #'-DQPMS_USE_OMP',
             '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules
             #'-fopenmp',
             ],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', #'omp'
+        libraries=['gsl', 'lapacke', 'cblas_LINUX', 'blas_LINUX', 
+            'gslcblas', #'omp'
             # TODO resolve the problem with openblas (missing gotoblas symbol) and preferable use other blas library
 	],
         runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':') if 'LD_LIBRARY_PATH' in os.environ else []
