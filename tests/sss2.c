@@ -23,7 +23,7 @@ double uniform_random(double min, double max) {
 int main()
 {
   srand(666);
-#if 0
+#if 1
   qpms_vswf_set_spec_t 
     *b1 = qpms_vswf_set_spec_from_lMax(1,QPMS_NORMALISATION_POWER_CS),
     *b2 = qpms_vswf_set_spec_from_lMax(2,QPMS_NORMALISATION_POWER_CS);
@@ -55,7 +55,7 @@ int main()
     t2->m[i + i*b2->n] = 1;
 #endif
 
-  const cart3_t pp1 = {0, 0, 1};
+  const cart3_t pp1 = {1, 2, 0};
   qpms_tmatrix_t * tmlist[] = {t1, t2};
   qpms_particle_tid_t plist[] = {{pp1, 0}};
 
@@ -75,6 +75,39 @@ int main()
 
   complex double *S_full = qpms_scatsys_build_translation_matrix_full(
       NULL, ss, k); 
+  {
+    const size_t full_len = ss->fecv_size;
+    size_t fullvec_offset_dest = 0;
+    for (qpms_ss_pi_t pdest = 0; pdest < ss->p_count; pdest++) {
+      size_t fullvec_offset_src = 0;
+      const size_t bspecn_dest = ss->tm[ss->p[pdest].tmatrix_id]->spec->n;
+      for (qpms_ss_pi_t psrc = 0; psrc < ss->p_count; psrc++) {
+        const size_t bspecn_src = ss->tm[ss->p[psrc].tmatrix_id]->spec->n;
+        fprintf(stderr, "Translation matrix element %d<-%d; (%g %g %g)<-(%g %g %g):\n",
+            (int)pdest, (int)psrc, ss->p[pdest].pos.x, ss->p[pdest].pos.y, ss->p[pdest].pos.z,
+            ss->p[psrc].pos.x, ss->p[psrc].pos.y, ss->p[psrc].pos.z);
+
+        for(size_t row = 0; row < bspecn_dest; ++row) {
+          for(size_t col = 0; col < bspecn_src; ++col)
+            fprintf(stderr, "%+2.3f%+2.3fj ", creal(S_full[full_len * (fullvec_offset_dest+row) + fullvec_offset_src+col]),
+                cimag(S_full[full_len * (fullvec_offset_dest+row) + fullvec_offset_src+col]));
+          fputc('\n', stderr);
+          fullvec_offset_src += bspecn_src;
+        }
+        fullvec_offset_dest += bspecn_dest;
+      }
+    }
+  }
+  {
+    fputs("\n\n", stderr);
+    const size_t full_len = ss->fecv_size;
+    for (size_t row = 0 ; row < full_len; ++row) {
+      for (size_t col = 0 ; col < full_len; ++col)
+        fprintf(stderr, "%+2.3f%+2.3fj ", creal(S_full[full_len * row + col]), cimag(S_full[full_len * row + col]));
+      fputc('\n', stderr);
+    }
+  }
+
   complex double *S_packed[ss->sym->nirreps];
   for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri)
     S_packed[iri] = qpms_scatsys_irrep_pack_matrix(NULL,
