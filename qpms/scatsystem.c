@@ -561,6 +561,10 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       current_orbit[0] = pi;
       ot_current.size = 1; 
       ot_current.tmatrices[0] = ss->p[pi].tmatrix_id;
+#ifdef DUMP_PARTICLE_POSITIONS
+      cart3_t pos = ss->p[pi].pos;
+      fprintf(stderr, "An orbit [%.4g, %.4g, %.4g] => ", pos.x, pos.y, pos.z);
+#endif
     }
 
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi) {
@@ -583,6 +587,10 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
         qpms_particle_tid_t newparticle = {newpoint, new_tmi};
         ss->p[ss->p_count] = newparticle;
         ++(ss->p_count);
+#ifdef DUMP_PARTICLE_POSITIONS
+        if(new_orbit)
+          fprintf(stderr, "[%.4g, %.4g, %.4g] ", newpoint.x, newpoint.y, newpoint.z);
+#endif
       }
       ss->p_sym_map[gmi + pi * sym->order] = pj;
 
@@ -600,6 +608,9 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       }
     }
     if (new_orbit) { // Now compare if the new orbit corresponds to some of the existing types.
+#ifdef DUMP_PARTICLE_POSITIONS
+      fputc('\n', stderr);
+#endif
       qpms_ss_oti_t oti;
       for(oti = 0; oti < ss->orbit_type_count; ++oti)
         if (orbit_types_equal(&ot_current, &(ss->orbit_types[oti]))) break; // HIT, orbit type already exists
