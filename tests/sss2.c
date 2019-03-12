@@ -55,17 +55,19 @@ int main()
     t2->m[i + i*b2->n] = 1;
 #endif
 
-  const cart3_t pp1 = {1, 2, 0};
+  const cart3_t pp1 = {0, 0, 1};
+  const cart3_t pp2 = {0, 0, 1.4};
+  const cart3_t pp3 = {0, 0, 0};
   qpms_tmatrix_t * tmlist[] = {t1, t2};
-  qpms_particle_tid_t plist[] = {{pp1, 0}};
+  qpms_particle_tid_t plist[] = {{pp1, 0}, {pp2, 1}, {pp3, 1}};
 
   qpms_scatsys_t protoss;
   protoss.tm = tmlist;
-  protoss.tm_count=2;
+  protoss.tm_count=sizeof(tmlist)/sizeof(qpms_tmatrix_t *);
   protoss.p = plist;
-  protoss.p_count=1;
+  protoss.p_count=sizeof(plist)/sizeof(qpms_particle_tid_t);
 
-  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, D2h);
+  qpms_scatsys_t *ss = qpms_scatsys_apply_symmetry(&protoss, C4v);
 
   printf("p_count: %d, tm_count: %d, nirreps: %d, orbit_type_count: %d\n",
       (int)ss->p_count, (int)ss->tm_count, (int)ss->sym->nirreps,
@@ -92,10 +94,10 @@ int main()
             fprintf(stderr, "%+2.3f%+2.3fj ", creal(S_full[full_len * (fullvec_offset_dest+row) + fullvec_offset_src+col]),
                 cimag(S_full[full_len * (fullvec_offset_dest+row) + fullvec_offset_src+col]));
           fputc('\n', stderr);
-          fullvec_offset_src += bspecn_src;
         }
-        fullvec_offset_dest += bspecn_dest;
+        fullvec_offset_src += bspecn_src;
       }
+      fullvec_offset_dest += bspecn_dest;
     }
   }
   {
