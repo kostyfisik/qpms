@@ -1,4 +1,42 @@
-#include "staticgroups.h"
+#include <qpms/groups.h>
+const qpms_finite_group_t QPMS_FINITE_GROUP_C2 = {
+  "C2", // name
+  2, // order
+  0, // idi
+  (qpms_gmi_t[]) { // mt
+    0, 1,
+    1, 0,
+  },
+  (qpms_gmi_t[]) { // invi
+    0, 1
+  },
+  (qpms_gmi_t[]) {1}, // gens
+  1, // ngens
+  (qpms_permutation_t[]){ // permrep
+    "(1)",
+    "(0 1)",
+  },
+  NULL, // elemlabels
+  2, // permrep_nelem
+  (qpms_irot3_t[]) { // rep3d
+   {{1.0+0.0*I, 0.0+0.0*I}, 1},
+   {{6.123233995736766e-17+1.0*I, 0.0+0.0*I}, 1},
+  },
+  2, // nirreps
+  (struct qpms_finite_group_irrep_t[]) { // irreps
+    {
+      1, // dim
+      "B", //name
+      (complex double []) {1, -1} // m
+    },
+    {
+      1, // dim
+      "A", //name
+      (complex double []) {1, 1} // m
+    },
+  } // end of irreps
+};
+
 const qpms_finite_group_t QPMS_FINITE_GROUP_C2v = {
   "C2v", // name
   4, // order
@@ -37,6 +75,11 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_C2v = {
     },
     {
       1, // dim
+      "A2", //name
+      (complex double []) {1, -1, 1, -1} // m
+    },
+    {
+      1, // dim
       "B2", //name
       (complex double []) {1, -1, -1, 1} // m
     },
@@ -45,10 +88,241 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_C2v = {
       "B1", //name
       (complex double []) {1, 1, -1, -1} // m
     },
+  } // end of irreps
+};
+
+const qpms_finite_group_t QPMS_FINITE_GROUP_C4 = {
+  "C4", // name
+  4, // order
+  0, // idi
+  (qpms_gmi_t[]) { // mt
+    0, 1, 2, 3,
+    1, 2, 3, 0,
+    2, 3, 0, 1,
+    3, 0, 1, 2,
+  },
+  (qpms_gmi_t[]) { // invi
+    0, 3, 2, 1
+  },
+  (qpms_gmi_t[]) {1}, // gens
+  1, // ngens
+  (qpms_permutation_t[]){ // permrep
+    "(3)",
+    "(0 1 2 3)",
+    "(0 2)(1 3)",
+    "(0 3 2 1)",
+  },
+  NULL, // elemlabels
+  4, // permrep_nelem
+  (qpms_irot3_t[]) { // rep3d
+   {{1.0+0.0*I, 0.0+0.0*I}, 1},
+   {{0.7071067811865476+0.7071067811865475*I, 0.0+0.0*I}, 1},
+   {{2.220446049250313e-16+1.0*I, 0.0+0.0*I}, 1},
+   {{-0.7071067811865474+0.7071067811865477*I, 0.0+0.0*I}, 1},
+  },
+  4, // nirreps
+  (struct qpms_finite_group_irrep_t[]) { // irreps
+    {
+      1, // dim
+      "B", //name
+      (complex double []) {1, -1, 1, -1} // m
+    },
+    {
+      1, // dim
+      "2E", //name
+      (complex double []) {1, 1j, (-1+0j), (-0-1j)} // m
+    },
+    {
+      1, // dim
+      "A", //name
+      (complex double []) {1, 1, 1, 1} // m
+    },
+    {
+      1, // dim
+      "1E", //name
+      (complex double []) {1, -1j, (-1+0j), 1j} // m
+    },
+  } // end of irreps
+};
+
+const qpms_finite_group_t QPMS_FINITE_GROUP_C4v = {
+  "C4v", // name
+  8, // order
+  0, // idi
+  (qpms_gmi_t[]) { // mt
+    0, 1, 2, 3, 4, 5, 6, 7,
+    1, 2, 3, 0, 7, 4, 5, 6,
+    2, 3, 0, 1, 6, 7, 4, 5,
+    3, 0, 1, 2, 5, 6, 7, 4,
+    4, 5, 6, 7, 0, 1, 2, 3,
+    5, 6, 7, 4, 3, 0, 1, 2,
+    6, 7, 4, 5, 2, 3, 0, 1,
+    7, 4, 5, 6, 1, 2, 3, 0,
+  },
+  (qpms_gmi_t[]) { // invi
+    0, 3, 2, 1, 4, 5, 6, 7
+  },
+  (qpms_gmi_t[]) {1, 7}, // gens
+  2, // ngens
+  (qpms_permutation_t[]){ // permrep
+    "(3)",
+    "(0 1 2 3)",
+    "(0 2)(1 3)",
+    "(0 3 2 1)",
+    "(3)(0 2)",
+    "(0 3)(1 2)",
+    "(1 3)",
+    "(0 1)(2 3)",
+  },
+  NULL, // elemlabels
+  4, // permrep_nelem
+  (qpms_irot3_t[]) { // rep3d
+   {{1.0+0.0*I, 0.0+0.0*I}, 1},
+   {{0.7071067811865476+0.7071067811865475*I, 0.0+0.0*I}, 1},
+   {{2.220446049250313e-16+1.0*I, 0.0+0.0*I}, 1},
+   {{-0.7071067811865474+0.7071067811865477*I, 0.0+0.0*I}, 1},
+   {{0.0+0.0*I, 0.7071067811865477-0.7071067811865474*I}, -1},
+   {{0.0+0.0*I, 1.0+2.220446049250313e-16*I}, -1},
+   {{0.0+0.0*I, 0.7071067811865475+0.7071067811865476*I}, -1},
+   {{0.0+0.0*I, 0.0+1.0*I}, -1},
+  },
+  5, // nirreps
+  (struct qpms_finite_group_irrep_t[]) { // irreps
+    {
+      1, // dim
+      "A1", //name
+      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1} // m
+    },
     {
       1, // dim
       "A2", //name
-      (complex double []) {1, -1, 1, -1} // m
+      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1} // m
+    },
+    {
+      2, // dim
+      "E", //name
+      (complex double []) {
+        // (3)
+        1.0, 0.0, 
+        0.0, 1.0, 
+        // (0 1 2 3)
+        0.0, -1.0, 
+        1.0, 0.0, 
+        // (0 2)(1 3)
+        -1.0, 0.0, 
+        0.0, -1.0, 
+        // (0 3 2 1)
+        0.0, 1.0, 
+        -1.0, 0.0, 
+        // (3)(0 2)
+        0.0, 1.0, 
+        1.0, 0.0, 
+        // (0 3)(1 2)
+        1.0, 0.0, 
+        0.0, -1.0, 
+        // (1 3)
+        0.0, -1.0, 
+        -1.0, 0.0, 
+        // (0 1)(2 3)
+        -1.0, 0.0, 
+        0.0, 1.0, 
+      }
+    },
+    {
+      1, // dim
+      "B2", //name
+      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1} // m
+    },
+    {
+      1, // dim
+      "B1", //name
+      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1} // m
+    },
+  } // end of irreps
+};
+
+const qpms_finite_group_t QPMS_FINITE_GROUP_D2h = {
+  "D2h", // name
+  8, // order
+  0, // idi
+  (qpms_gmi_t[]) { // mt
+    0, 1, 2, 3, 4, 5, 6, 7,
+    1, 0, 3, 2, 5, 4, 7, 6,
+    2, 3, 0, 1, 6, 7, 4, 5,
+    3, 2, 1, 0, 7, 6, 5, 4,
+    4, 5, 6, 7, 0, 1, 2, 3,
+    5, 4, 7, 6, 1, 0, 3, 2,
+    6, 7, 4, 5, 2, 3, 0, 1,
+    7, 6, 5, 4, 3, 2, 1, 0,
+  },
+  (qpms_gmi_t[]) { // invi
+    0, 1, 2, 3, 4, 5, 6, 7
+  },
+  (qpms_gmi_t[]) {1, 3, 7}, // gens
+  3, // ngens
+  (qpms_permutation_t[]){ // permrep
+    "(5)",
+    "(5)(0 1)(2 3)",
+    "(5)(0 2)(1 3)",
+    "(5)(0 3)(1 2)",
+    "(0 3)(1 2)(4 5)",
+    "(0 2)(1 3)(4 5)",
+    "(0 1)(2 3)(4 5)",
+    "(4 5)",
+  },
+  NULL, // elemlabels
+  6, // permrep_nelem
+  (qpms_irot3_t[]) { // rep3d
+   {{1.0+0.0*I, 0.0+0.0*I}, 1},
+   {{0.0+0.0*I, 0.0+1.0*I}, -1},
+   {{0.0+1.0*I, 0.0+0.0*I}, 1},
+   {{0.0+0.0*I, 1.0+0.0*I}, -1},
+   {{0.0+0.0*I, 0.0+1.0*I}, 1},
+   {{-1.0+0.0*I, 0.0+0.0*I}, -1},
+   {{0.0+0.0*I, -1.0+0.0*I}, 1},
+   {{0.0+1.0*I, 0.0+0.0*I}, -1},
+  },
+  8, // nirreps
+  (struct qpms_finite_group_irrep_t[]) { // irreps
+    {
+      1, // dim
+      "A2\'", //name
+      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1} // m
+    },
+    {
+      1, // dim
+      "B1\'", //name
+      (complex double []) {1, 1, -1, -1, -1, -1, 1, 1} // m
+    },
+    {
+      1, // dim
+      "A2\'\'", //name
+      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1} // m
+    },
+    {
+      1, // dim
+      "B2\'", //name
+      (complex double []) {1, -1, -1, 1, 1, -1, -1, 1} // m
+    },
+    {
+      1, // dim
+      "A1\'", //name
+      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1} // m
+    },
+    {
+      1, // dim
+      "A1\'\'", //name
+      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1} // m
+    },
+    {
+      1, // dim
+      "B2\'\'", //name
+      (complex double []) {1, 1, -1, -1, 1, 1, -1, -1} // m
+    },
+    {
+      1, // dim
+      "B1\'\'", //name
+      (complex double []) {1, -1, -1, 1, -1, 1, 1, -1} // m
     },
   } // end of irreps
 };
@@ -109,6 +383,11 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_D3h = {
   6, // nirreps
   (struct qpms_finite_group_irrep_t[]) { // irreps
     {
+      1, // dim
+      "A2\'", //name
+      (complex double []) {1, 1, 1, -1, -1, -1, -1, -1, -1, 1, 1, 1} // m
+    },
+    {
       2, // dim
       "E\'", //name
       (complex double []) {
@@ -151,6 +430,21 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_D3h = {
       }
     },
     {
+      1, // dim
+      "A2\'\'", //name
+      (complex double []) {1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1} // m
+    },
+    {
+      1, // dim
+      "A1\'", //name
+      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} // m
+    },
+    {
+      1, // dim
+      "A1\'\'", //name
+      (complex double []) {1, 1, 1, -1, -1, -1, 1, 1, 1, -1, -1, -1} // m
+    },
+    {
       2, // dim
       "E\'\'", //name
       (complex double []) {
@@ -191,26 +485,6 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_D3h = {
         -0.9999999999999996, 0.0, 
         0.0, -0.9999999999999996, 
       }
-    },
-    {
-      1, // dim
-      "A2\'", //name
-      (complex double []) {1, 1, 1, -1, -1, -1, -1, -1, -1, 1, 1, 1} // m
-    },
-    {
-      1, // dim
-      "A1\'\'", //name
-      (complex double []) {1, 1, 1, -1, -1, -1, 1, 1, 1, -1, -1, -1} // m
-    },
-    {
-      1, // dim
-      "A1\'", //name
-      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} // m
-    },
-    {
-      1, // dim
-      "A2\'\'", //name
-      (complex double []) {1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1} // m
     },
   } // end of irreps
 };
@@ -284,8 +558,13 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_D4h = {
   (struct qpms_finite_group_irrep_t[]) { // irreps
     {
       1, // dim
-      "B1\'\'", //name
-      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1} // m
+      "A2\'", //name
+      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1} // m
+    },
+    {
+      1, // dim
+      "B1\'", //name
+      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 1, -1, 1} // m
     },
     {
       2, // dim
@@ -342,6 +621,36 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_D4h = {
       }
     },
     {
+      1, // dim
+      "A2\'\'", //name
+      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1} // m
+    },
+    {
+      1, // dim
+      "B2\'", //name
+      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, 1} // m
+    },
+    {
+      1, // dim
+      "A1\'", //name
+      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} // m
+    },
+    {
+      1, // dim
+      "A1\'\'", //name
+      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1, 1, 1, 1, 1, -1, -1, -1, -1} // m
+    },
+    {
+      1, // dim
+      "B2\'\'", //name
+      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, 1, 1, -1, 1, -1} // m
+    },
+    {
+      1, // dim
+      "B1\'\'", //name
+      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1} // m
+    },
+    {
       2, // dim
       "E\'\'", //name
       (complex double []) {
@@ -395,41 +704,6 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_D4h = {
         0.0, -1.0, 
       }
     },
-    {
-      1, // dim
-      "B1\'", //name
-      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 1, -1, 1} // m
-    },
-    {
-      1, // dim
-      "A2\'\'", //name
-      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1} // m
-    },
-    {
-      1, // dim
-      "B2\'", //name
-      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, 1} // m
-    },
-    {
-      1, // dim
-      "A1\'\'", //name
-      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1, 1, 1, 1, 1, -1, -1, -1, -1} // m
-    },
-    {
-      1, // dim
-      "A2\'", //name
-      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1} // m
-    },
-    {
-      1, // dim
-      "B2\'\'", //name
-      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, 1, 1, -1, 1, -1} // m
-    },
-    {
-      1, // dim
-      "A1\'", //name
-      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1} // m
-    },
   } // end of irreps
 };
 
@@ -463,184 +737,110 @@ const qpms_finite_group_t QPMS_FINITE_GROUP_trivial_g = {
   } // end of irreps
 };
 
-const qpms_finite_group_t QPMS_FINITE_GROUP_C4v = {
-  "C4v", // name
-  8, // order
+const qpms_finite_group_t QPMS_FINITE_GROUP_x_and_z_flip = {
+  "x_and_z_flip", // name
+  4, // order
   0, // idi
   (qpms_gmi_t[]) { // mt
-    0, 1, 2, 3, 4, 5, 6, 7,
-    1, 2, 3, 0, 7, 4, 5, 6,
-    2, 3, 0, 1, 6, 7, 4, 5,
-    3, 0, 1, 2, 5, 6, 7, 4,
-    4, 5, 6, 7, 0, 1, 2, 3,
-    5, 6, 7, 4, 3, 0, 1, 2,
-    6, 7, 4, 5, 2, 3, 0, 1,
-    7, 4, 5, 6, 1, 2, 3, 0,
+    0, 1, 2, 3,
+    1, 0, 3, 2,
+    2, 3, 0, 1,
+    3, 2, 1, 0,
   },
   (qpms_gmi_t[]) { // invi
-    0, 3, 2, 1, 4, 5, 6, 7
+    0, 1, 2, 3
   },
-  (qpms_gmi_t[]) {1, 7}, // gens
+  (qpms_gmi_t[]) {1, 3}, // gens
   2, // ngens
   (qpms_permutation_t[]){ // permrep
     "(3)",
-    "(0 1 2 3)",
-    "(0 2)(1 3)",
-    "(0 3 2 1)",
-    "(3)(0 2)",
-    "(0 3)(1 2)",
-    "(1 3)",
+    "(3)(0 1)",
     "(0 1)(2 3)",
+    "(2 3)",
   },
   NULL, // elemlabels
   4, // permrep_nelem
   (qpms_irot3_t[]) { // rep3d
    {{1.0+0.0*I, 0.0+0.0*I}, 1},
-   {{0.7071067811865476+0.7071067811865475*I, 0.0+0.0*I}, 1},
-   {{2.220446049250313e-16+1.0*I, 0.0+0.0*I}, 1},
-   {{-0.7071067811865474+0.7071067811865477*I, 0.0+0.0*I}, 1},
-   {{0.0+0.0*I, 0.7071067811865477-0.7071067811865474*I}, -1},
-   {{0.0+0.0*I, 1.0+2.220446049250313e-16*I}, -1},
-   {{0.0+0.0*I, 0.7071067811865475+0.7071067811865476*I}, -1},
    {{0.0+0.0*I, 0.0+1.0*I}, -1},
+   {{0.0+0.0*I, -1.0+0.0*I}, 1},
+   {{0.0+1.0*I, 0.0+0.0*I}, -1},
   },
-  5, // nirreps
+  4, // nirreps
   (struct qpms_finite_group_irrep_t[]) { // irreps
     {
-      2, // dim
-      "E", //name
-      (complex double []) {
-        // (3)
-        1.0, 0.0, 
-        0.0, 1.0, 
-        // (0 1 2 3)
-        0.0, -1.0, 
-        1.0, 0.0, 
-        // (0 2)(1 3)
-        -1.0, 0.0, 
-        0.0, -1.0, 
-        // (0 3 2 1)
-        0.0, 1.0, 
-        -1.0, 0.0, 
-        // (3)(0 2)
-        0.0, 1.0, 
-        1.0, 0.0, 
-        // (0 3)(1 2)
-        1.0, 0.0, 
-        0.0, -1.0, 
-        // (1 3)
-        0.0, -1.0, 
-        -1.0, 0.0, 
-        // (0 1)(2 3)
-        -1.0, 0.0, 
-        0.0, 1.0, 
-      }
+      1, // dim
+      "P\'\'", //name
+      (complex double []) {1, -1, 1, -1} // m
     },
     {
       1, // dim
-      "A1", //name
-      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1} // m
+      "P\'", //name
+      (complex double []) {1, 1, 1, 1} // m
     },
     {
       1, // dim
-      "B2", //name
-      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1} // m
+      "R\'\'", //name
+      (complex double []) {1, 1, -1, -1} // m
     },
     {
       1, // dim
-      "B1", //name
-      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1} // m
-    },
-    {
-      1, // dim
-      "A2", //name
-      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1} // m
+      "R\'", //name
+      (complex double []) {1, -1, -1, 1} // m
     },
   } // end of irreps
 };
 
-const qpms_finite_group_t QPMS_FINITE_GROUP_D2h = {
-  "D2h", // name
-  8, // order
+const qpms_finite_group_t QPMS_FINITE_GROUP_y_and_z_flip = {
+  "y_and_z_flip", // name
+  4, // order
   0, // idi
   (qpms_gmi_t[]) { // mt
-    0, 1, 2, 3, 4, 5, 6, 7,
-    1, 0, 3, 2, 5, 4, 7, 6,
-    2, 3, 0, 1, 6, 7, 4, 5,
-    3, 2, 1, 0, 7, 6, 5, 4,
-    4, 5, 6, 7, 0, 1, 2, 3,
-    5, 4, 7, 6, 1, 0, 3, 2,
-    6, 7, 4, 5, 2, 3, 0, 1,
-    7, 6, 5, 4, 3, 2, 1, 0,
+    0, 1, 2, 3,
+    1, 0, 3, 2,
+    2, 3, 0, 1,
+    3, 2, 1, 0,
   },
   (qpms_gmi_t[]) { // invi
-    0, 1, 2, 3, 4, 5, 6, 7
+    0, 1, 2, 3
   },
-  (qpms_gmi_t[]) {1, 3, 7}, // gens
-  3, // ngens
+  (qpms_gmi_t[]) {1, 3}, // gens
+  2, // ngens
   (qpms_permutation_t[]){ // permrep
-    "(5)",
-    "(5)(0 1)(2 3)",
-    "(5)(0 2)(1 3)",
-    "(5)(0 3)(1 2)",
-    "(0 3)(1 2)(4 5)",
-    "(0 2)(1 3)(4 5)",
-    "(0 1)(2 3)(4 5)",
-    "(4 5)",
+    "(3)",
+    "(3)(0 1)",
+    "(0 1)(2 3)",
+    "(2 3)",
   },
   NULL, // elemlabels
-  6, // permrep_nelem
+  4, // permrep_nelem
   (qpms_irot3_t[]) { // rep3d
    {{1.0+0.0*I, 0.0+0.0*I}, 1},
-   {{0.0+0.0*I, 0.0+1.0*I}, -1},
-   {{0.0+1.0*I, 0.0+0.0*I}, 1},
    {{0.0+0.0*I, 1.0+0.0*I}, -1},
    {{0.0+0.0*I, 0.0+1.0*I}, 1},
-   {{-1.0+0.0*I, 0.0+0.0*I}, -1},
-   {{0.0+0.0*I, -1.0+0.0*I}, 1},
    {{0.0+1.0*I, 0.0+0.0*I}, -1},
   },
-  8, // nirreps
+  4, // nirreps
   (struct qpms_finite_group_irrep_t[]) { // irreps
     {
       1, // dim
-      "B1\'\'", //name
-      (complex double []) {1, -1, -1, 1, -1, 1, 1, -1} // m
+      "P\'\'", //name
+      (complex double []) {1, -1, 1, -1} // m
     },
     {
       1, // dim
-      "A2\'\'", //name
-      (complex double []) {1, 1, 1, 1, -1, -1, -1, -1} // m
+      "P\'", //name
+      (complex double []) {1, 1, 1, 1} // m
     },
     {
       1, // dim
-      "B1\'", //name
-      (complex double []) {1, 1, -1, -1, -1, -1, 1, 1} // m
+      "R\'\'", //name
+      (complex double []) {1, 1, -1, -1} // m
     },
     {
       1, // dim
-      "A2\'", //name
-      (complex double []) {1, -1, 1, -1, -1, 1, -1, 1} // m
-    },
-    {
-      1, // dim
-      "A1\'\'", //name
-      (complex double []) {1, -1, 1, -1, 1, -1, 1, -1} // m
-    },
-    {
-      1, // dim
-      "B2\'", //name
-      (complex double []) {1, -1, -1, 1, 1, -1, -1, 1} // m
-    },
-    {
-      1, // dim
-      "B2\'\'", //name
-      (complex double []) {1, 1, -1, -1, 1, 1, -1, -1} // m
-    },
-    {
-      1, // dim
-      "A1\'", //name
-      (complex double []) {1, 1, 1, 1, 1, 1, 1, 1} // m
+      "R\'", //name
+      (complex double []) {1, -1, -1, 1} // m
     },
   } // end of irreps
 };
