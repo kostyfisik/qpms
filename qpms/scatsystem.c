@@ -886,7 +886,6 @@ complex double *qpms_scatsys_irrep_transform_matrix(complex double *U,
       + osn * ot->irbase_sizes[iri];
     // Orbit coeff vector's full size:
     const size_t orbit_fullsize = ot->size * ot->bspecn;
-    const size_t particle_fullsize = ot->bspecn;
     const size_t orbit_packedsize = ot->irbase_sizes[iri];
     // This is the orbit-level matrix projecting the whole orbit onto the irrep.
     const complex double *om = ot->irbases + ot->irbase_offsets[iri];
@@ -1157,7 +1156,6 @@ complex double *qpms_scatsys_irrep_pack_vector(complex double *target_packed,
   memset(target_packed, 0, packedlen*sizeof(complex double));
 
   const complex double one = 1;
-  const size_t full_len = ss->fecv_size;
 
   size_t fullvec_offset = 0;
   for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
@@ -1324,7 +1322,6 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
   const size_t packedlen = ss->saecv_sizes[iri];
   if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
     return target_packed; 
-  const size_t full_len = ss->fecv_size;
   if (target_packed == NULL)
     target_packed = malloc(SQ(packedlen)*sizeof(complex double));
   if (target_packed == NULL) abort();
