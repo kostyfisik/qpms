@@ -730,7 +730,7 @@ complex double *qpms_orbit_action_matrix(complex double *target,
     const qpms_gmi_t Row = ot->action[sym->order * Col + g];
     for(size_t row = 0; row < bspec->n; ++row)
       for(size_t col = 0; col < bspec->n; ++col)
-        target[n*n*N*Row + n*Col + n*N*row + col] = tmp[row][col]; //CHECKCONJ
+        target[n*n*N*Row + n*Col + n*N*row + col] = conj(tmp[row][col]); //CHECKCONJ
   }
 #ifdef DUMP_ACTIONMATRIX
   fprintf(stderr,"%d: %s\n", 
