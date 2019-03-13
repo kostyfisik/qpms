@@ -167,6 +167,29 @@ int main()
       fputc('\n', stderr);
     }
   }
+  {
+    complex double *S_partrecfull = qpms_scatsys_irrep_unpack_matrix(NULL,
+        S_packed[0], ss, 0, false);
+    for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
+      qpms_scatsys_irrep_unpack_matrix(S_partrecfull, S_packed[iri],
+          ss, iri, false);
+      fprintf(stderr, "\nPartial reconstruction %d (%s):\n", (int)iri, ss->sym->irreps[iri].name);
+      const size_t full_len = ss->fecv_size;
+      for (size_t row = 0 ; row < full_len; ++row) {
+        for (size_t col = 0 ; col < full_len; ++col)
+          fprintf(stderr, "%+2.3f%+2.3fj ", creal(S_partrecfull[full_len * row + col]), cimag(S_partrecfull[full_len * row + col]));
+        fputc('\n', stderr);
+      }
+    }
+
+    double maxerr = 0;
+    for (size_t i = 0; i < ss->fecv_size; ++i) {
+      double err = cabs(S_full[i] - S_partrecfull[i]);
+      maxerr = (err > maxerr) ? err : maxerr;
+    }
+    free(S_partrecfull);
+  }
+
 
   complex double *S_recfull = qpms_scatsys_irrep_unpack_matrix(NULL,
       S_packed[0], ss, 0, false);
