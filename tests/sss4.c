@@ -1,4 +1,4 @@
-//  c99 -g -DZLINE -DDAGRUP=D3h -DDUMP_PARTICLE_POSITIONS -DDUMP_ORBIT_ACTION -DDUMP_PROJECTORMATRIX -DDUMP_ACTIONMATRIX  -I.. sss2.c staticgroups.c ../qpms/scatsystem.c ../qpms/vswf.c ../qpms/error.c  ../qpms/translations.c ../qpms/symmetries.c ../qpms/legendre.c ../qpms/gaunt.c  ../qpms/wigner.c -lm -lgsl -lblas -llapacke
+// c99 -g -DNLINE -DDAGRUP=C4v -DDUMP_PARTICLE_POSITIONS -DDUMP_ORBIT_ACTION -DDUMP_PROJECTORMATRIX -DDUMP_ACTIONMATRIX -I.. sss3.c staticgroups.c ../qpms/scatsystem.c ../qpms/vswf.c ../qpms/error.c  ../qpms/translations.c ../qpms/symmetries.c ../qpms/legendre.c ../qpms/gaunt.c  ../qpms/wigner.c -lm -lgsl  -llapacke ~/repo/CBLAS/lib/cblas_LINUX.a ~/repo/BLAS-3.8.0/blas_LINUX.a
 typedef int qpms_gmi_t;// There is something wrong in the includes, apparently.
 #include <qpms/qpms_types.h>
 #include <qpms/scatsystem.h>
@@ -31,7 +31,7 @@ double uniform_random(double min, double max) {
 int main()
 {
   srand(666);
-#if 0
+#if 1
   qpms_vswf_set_spec_t 
     *b1 = qpms_vswf_set_spec_from_lMax(1,QPMS_NORMALISATION_POWER_CS),
     *b2 = qpms_vswf_set_spec_from_lMax(2,QPMS_NORMALISATION_POWER_CS);
@@ -41,10 +41,10 @@ int main()
                        *b2 = qpms_vswf_set_spec_init();
   b1->norm = b2-> norm = QPMS_NORMALISATION_POWER_CS;
   for(qpms_l_t l = 1; l <= 1; ++l)
-    for (qpms_m_t m = -0l; m <= l; m += 2)
+    for (qpms_m_t m = -l; m <= l; m += 1)
       qpms_vswf_set_spec_append(b1, qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, m, l));
   for(qpms_l_t l = 1; l <= 1; ++l)
-    for (qpms_m_t m = -0l; m <= l; m += 2)
+    for (qpms_m_t m = -l; m <= l; m += 1)
       qpms_vswf_set_spec_append(b2, qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, m, l));
 #endif
   qpms_tmatrix_t *t1 = qpms_tmatrix_init(b1);
@@ -75,10 +75,11 @@ int main()
 #else
   const cart3_t pp1 = {1.1, 1, 0};
   const cart3_t pp2 = {0, 1.4, 0};
+  const cart3_t pp4 = {2, 1.4, 0};
 #endif
-  const cart3_t pp3 = {0, 0, 1};
+  const cart3_t pp3 = {0, 0, 0};
   qpms_tmatrix_t * tmlist[] = {t1, t2};
-  qpms_particle_tid_t plist[] = {{pp1,1}, {pp2, 0},  {pp3, 1},
+  qpms_particle_tid_t plist[] = {{pp1,1}, {pp2, 0},  {pp3, 1}, {pp4,1}
   };
 
   qpms_scatsys_t protoss;
@@ -92,6 +93,30 @@ int main()
   printf("p_count: %d, tm_count: %d, nirreps: %d, orbit_type_count: %d\n",
       (int)ss->p_count, (int)ss->tm_count, (int)ss->sym->nirreps,
       (int)ss->orbit_type_count);
+
+  fputs("Orbit projection matrices:\n", stderr);
+  for (qpms_ss_oti_t oti = 0; oti < ss->orbit_type_count; ++oti) {
+    fprintf(stderr, "Orbit type %d:\n", (int)oti);
+    const qpms_ss_orbit_type_t *ot = &(ss->orbit_types[oti]);
+    size_t row = 0;
+    for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
+      assert(row*ot->size*ot->bspecn == ot->irbase_offsets[iri]);
+      fprintf(stderr, "---------- IR %d (%s) -------------\n", (int)iri, ss->sym->irreps[iri].name);
+      for (size_t irbi = 0; irbi < ot->irbase_sizes[iri]; ++irbi) {
+        for(qpms_ss_orbit_pi_t opi = 0; opi < ot->size; ++opi){
+          fputs("| ", stderr);
+          for(size_t i = 0; i < ot->bspecn; ++i) {
+            const complex double elem = ot->irbases[row * ot->size * ot->bspecn
+            + opi * ot->bspecn + i];
+            fprintf(stderr, "%+.3f%+.3fj ", creal(elem), cimag(elem));
+          }
+        }
+        fputs("|\n", stderr);
+        ++row;
+      }
+    }
+    fputs("------------------------\n\n",stderr);
+  }
 
   const double k = 1.7;
 
@@ -131,14 +156,46 @@ int main()
   }
 
   complex double *S_packed[ss->sym->nirreps];
-  for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri)
-    S_packed[iri] = qpms_scatsys_irrep_pack_matrix(NULL,
+  for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
+    S_packed[iri] = qpms_scatsys_irrep_pack_matrix_stupid(NULL,
         S_full, ss, iri);
+    fprintf(stderr, "--- Packed matrix for irrep %d (%s):\n", (int) iri, ss->sym->irreps[iri].name);
+    for (size_t row = 0; row < ss->saecv_sizes[iri]; ++row) {
+      for (size_t col = 0; col < ss->saecv_sizes[iri]; ++col) {
+        complex double elem = S_packed[iri][row * ss->saecv_sizes[iri] + col];
+        fprintf(stderr, "%+.3f+%.3fj ", creal(elem), cimag(elem));
+      }
+      fputc('\n', stderr);
+    }
+  }
+  {
+    complex double *S_partrecfull = qpms_scatsys_irrep_unpack_matrix_stupid(NULL,
+        S_packed[0], ss, 0, false);
+    for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
+      qpms_scatsys_irrep_unpack_matrix_stupid(S_partrecfull, S_packed[iri],
+          ss, iri, false);
+      fprintf(stderr, "\nPartial reconstruction %d (%s):\n", (int)iri, ss->sym->irreps[iri].name);
+      const size_t full_len = ss->fecv_size;
+      for (size_t row = 0 ; row < full_len; ++row) {
+        for (size_t col = 0 ; col < full_len; ++col)
+          fprintf(stderr, "%+2.3f%+2.3fj ", creal(S_partrecfull[full_len * row + col]), cimag(S_partrecfull[full_len * row + col]));
+        fputc('\n', stderr);
+      }
+    }
 
-  complex double *S_recfull = qpms_scatsys_irrep_unpack_matrix(NULL,
+    double maxerr = 0;
+    for (size_t i = 0; i < ss->fecv_size; ++i) {
+      double err = cabs(S_full[i] - S_partrecfull[i]);
+      maxerr = (err > maxerr) ? err : maxerr;
+    }
+    free(S_partrecfull);
+  }
+
+
+  complex double *S_recfull = qpms_scatsys_irrep_unpack_matrix_stupid(NULL,
       S_packed[0], ss, 0, false);
   for (qpms_iri_t iri = 1; iri < ss->sym->nirreps; ++iri)
-    qpms_scatsys_irrep_unpack_matrix(S_recfull, S_packed[iri],
+    qpms_scatsys_irrep_unpack_matrix_stupid(S_recfull, S_packed[iri],
         ss, iri, true);
   {
     fputs("\n\n", stderr);
