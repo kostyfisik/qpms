@@ -33,9 +33,9 @@ qpms_errno_t qpms_read_scuff_tmatrix(
   if (!(freqs && n && tmdata)) 
     qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
       "freqs, n, and tmdata are mandatory arguments and must not be NULL.");
-  if (bs->norm != QPMS_NORMALISATION_POWER) // CHECKME CORRECT?
+  if (bs->norm != QPMS_NORMALISATION_POWER_CS) // CHECKME CORRECT?
     qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
-        "Not implemented; only QPMS_NORMALISATION_POWER (CHECKME)"
+        "Not implemented; only QPMS_NORMALISATION_POWER_CS (CHECKME)"
         " norm supported right now.");
   int n_alloc = 128; // First chunk to allocate
   *n = 0;

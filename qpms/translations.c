@@ -229,8 +229,14 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm,
 #elif defined AN3
       * ipow (nu - n)
 #endif
+#ifdef AM1
+      * ipow(-m+mu)
+#endif //NNU
 #ifdef AM2
       * min1pow(-m+mu)
+#endif //NNU
+#ifdef AM3
+      * ipow(m-mu)
 #endif //NNU
   ;
   return presum * sum;
@@ -409,8 +415,14 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
 #elif defined AN3
       * ipow (nu - n)
 #endif
+#ifdef AM1
+      * ipow(-m+mu)
+#endif //NNU
 #ifdef AM2
       * min1pow(-m+mu)
+#endif //NNU
+#ifdef AM3
+      * ipow(m-mu)
 #endif //NNU
   ;
 
@@ -559,8 +571,14 @@ static void qpms_trans_calculator_multipliers_A_general(
 #elif defined AN3
       * ipow (nu - n)
 #endif
+#ifdef AM1
+      * ipow(-m+mu)
+#endif //NNU
 #ifdef AM2
       * min1pow(-m+mu)
+#endif //NNU
+#ifdef AM3
+      * ipow(m-mu)
 #endif //NNU
       ;
     // FIXME I might not need complex here
@@ -615,8 +633,14 @@ void qpms_trans_calculator_multipliers_B_general(
 #elif defined BN3
       * ipow (nu - n)
 #endif
+#ifdef BM1
+      * ipow(-m+mu)
+#endif  
 #ifdef BM2
       * min1pow(-m+mu)
+#endif  
+#ifdef BM3
+      * ipow(m-mu)
 #endif  
 #ifdef BF1
       * I

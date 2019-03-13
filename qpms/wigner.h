@@ -152,8 +152,8 @@ static inline cart3_t qpms_quat_rot_cart3(qpms_quat_t q, const cart3_t v) {
 	//const qpms_quat_t qc = qpms_quat_normalise(qpms_quat_pow(q, -1)); // implementation of _pow wrong!
 	const qpms_quat_t qc = qpms_quat_conj(q);
 	const qpms_quat_t vv = qpms_quat_from_cart3(v);
-	return qpms_quat_to_cart3(qpms_quat_mult(qc,
-				qpms_quat_mult(vv, q)));
+	return qpms_quat_to_cart3(qpms_quat_mult(q,
+				qpms_quat_mult(vv, qc)));
 }
 
 /// Wigner D matrix element from a rotator quaternion for integer \a l.

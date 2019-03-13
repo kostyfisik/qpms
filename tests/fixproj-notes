@@ -1,0 +1,4 @@
+c99 -g -DDUMP_ORBIT_ACTION -DDUMP_PROJECTORMATRIX -DDUMP_ACTIONMATRIX -I.. sss1.c staticgroups.c ../qpms/scatsystem.c ../qpms/vswf.c ../qpms/error.c  ../qpms/translations.c ../qpms/symmetries.c ../qpms/legendre.c ../qpms/gaunt.c  ../qpms/wigner.c -lm -lgsl  -llapacke ~/repo/CBLAS/lib/cblas_LINUX.a ~/repo/BLAS-3.8.0/blas_LINUX.a
+
+
+LD_LIBRARY_PATH=$HOME/repo/CBLAS/lib/ LDFLAGS=-L../CBLAS/lib/ python3 setup.py install --user

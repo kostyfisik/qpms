@@ -2,6 +2,8 @@ from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSyste
 from qpms.symmetries import point_group_info
 import numpy as np
 
+np.random.seed(444)
+
 sym = FinitePointGroup(point_group_info['D3h'])
 bspec2 = BaseSpec(lMax=2)
 bspec1 = BaseSpec(lMax=1)

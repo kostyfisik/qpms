@@ -561,6 +561,10 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       current_orbit[0] = pi;
       ot_current.size = 1; 
       ot_current.tmatrices[0] = ss->p[pi].tmatrix_id;
+#ifdef DUMP_PARTICLE_POSITIONS
+      cart3_t pos = ss->p[pi].pos;
+      fprintf(stderr, "An orbit [%.4g, %.4g, %.4g] => ", pos.x, pos.y, pos.z);
+#endif
     }
 
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi) {
@@ -583,6 +587,10 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
         qpms_particle_tid_t newparticle = {newpoint, new_tmi};
         ss->p[ss->p_count] = newparticle;
         ++(ss->p_count);
+#ifdef DUMP_PARTICLE_POSITIONS
+        if(new_orbit)
+          fprintf(stderr, "[%.4g, %.4g, %.4g] ", newpoint.x, newpoint.y, newpoint.z);
+#endif
       }
       ss->p_sym_map[gmi + pi * sym->order] = pj;
 
@@ -600,6 +608,9 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       }
     }
     if (new_orbit) { // Now compare if the new orbit corresponds to some of the existing types.
+#ifdef DUMP_PARTICLE_POSITIONS
+      fputc('\n', stderr);
+#endif
       qpms_ss_oti_t oti;
       for(oti = 0; oti < ss->orbit_type_count; ++oti)
         if (orbit_types_equal(&ot_current, &(ss->orbit_types[oti]))) break; // HIT, orbit type already exists
@@ -719,7 +730,7 @@ complex double *qpms_orbit_action_matrix(complex double *target,
     const qpms_gmi_t Row = ot->action[sym->order * Col + g];
     for(size_t row = 0; row < bspec->n; ++row)
       for(size_t col = 0; col < bspec->n; ++col)
-        target[n*n*N*Row + n*Col + n*N*row + col] = tmp[row][col]; //CHECKCONJ
+        target[n*n*N*Row + n*Col + n*N*row + col] = conj(tmp[row][col]); //CHECKCONJ
   }
 #ifdef DUMP_ACTIONMATRIX
   fprintf(stderr,"%d: %s\n", 
@@ -855,6 +866,119 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   return target;
 }
 
+complex double *qpms_scatsys_irrep_transform_matrix(complex double *U,
+    const qpms_scatsys_t *ss, qpms_iri_t iri) {
+  const size_t packedlen = ss->saecv_sizes[iri];
+  const size_t full_len = ss->fecv_size;
+  if (U == NULL)
+    QPMS_CRASHING_MALLOC(U,full_len * packedlen * sizeof(complex double));
+  memset(U, 0, full_len * packedlen * sizeof(complex double));
+
+  size_t fullvec_offset = 0;
+
+  for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    const qpms_ss_oti_t oti = ss->p_orbitinfo[pi].t;
+    const qpms_ss_orbit_type_t *const ot = ss->orbit_types + oti;
+    const qpms_ss_osn_t osn = ss->p_orbitinfo[pi].osn;
+    const qpms_ss_orbit_pi_t opi = ss->p_orbitinfo[pi].p;
+    // This is where the particle's orbit starts in the "packed" vector:
+    const size_t packed_orbit_offset = ss->saecv_ot_offsets[iri*ss->orbit_type_count + oti]
+      + osn * ot->irbase_sizes[iri];
+    // Orbit coeff vector's full size:
+    const size_t orbit_fullsize = ot->size * ot->bspecn;
+    const size_t particle_fullsize = ot->bspecn;
+    const size_t orbit_packedsize = ot->irbase_sizes[iri];
+    // This is the orbit-level matrix projecting the whole orbit onto the irrep.
+    const complex double *om = ot->irbases + ot->irbase_offsets[iri];
+
+    for (size_t prow = 0; prow < orbit_packedsize; ++prow) 
+      for (size_t pcol = 0; pcol < ot->bspecn; ++pcol) 
+        U[full_len * (packed_orbit_offset + prow) + (fullvec_offset + pcol)]
+          = om[orbit_fullsize * prow + (opi * ot->bspecn + pcol)];
+    fullvec_offset += ot->bspecn;
+  }
+
+  return U;
+}
+
+complex double *qpms_scatsys_irrep_pack_matrix_stupid(complex double *target_packed,
+		const complex double *orig_full, const qpms_scatsys_t *ss,
+		qpms_iri_t iri){
+  const size_t packedlen = ss->saecv_sizes[iri];
+  if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
+    return target_packed; 
+  const size_t full_len = ss->fecv_size;
+  if (target_packed == NULL)
+    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
+  if (target_packed == NULL) abort();
+  memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
+
+  // Workspace for the intermediate matrix
+  complex double *tmp; 
+  QPMS_CRASHING_MALLOC(tmp, full_len * packedlen * sizeof(complex double));
+
+  complex double *U = qpms_scatsys_irrep_transform_matrix(NULL, ss, iri);
+
+  const complex double one = 1, zero = 0;
+  
+  // tmp = F U*
+  cblas_zgemm(
+      CblasRowMajor, CblasNoTrans, CblasConjTrans,
+      full_len /*M*/, packedlen /*N*/, full_len /*K*/,
+      &one /*alpha*/, orig_full/*A*/, full_len/*ldA*/, 
+      U /*B*/, full_len/*ldB*/, 
+      &zero /*beta*/, tmp /*C*/, packedlen /*LDC*/);
+  // target = U tmp
+  cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+      packedlen /*M*/, packedlen /*N*/, full_len /*K*/,
+      &one /*alpha*/, U/*A*/, full_len/*ldA*/,
+      tmp /*B*/, packedlen /*ldB*/, &zero /*beta*/,
+      target_packed /*C*/, packedlen /*ldC*/);
+  
+  free(tmp);
+  free(U);
+  return target_packed;
+}
+  
+/// Transforms a big "packed" matrix into the full basis (trivial implementation).
+complex double *qpms_scatsys_irrep_unpack_matrix_stupid(complex double *target_full,
+		const complex double *orig_packed, const qpms_scatsys_t *ss,
+		qpms_iri_t iri, bool add){
+  const size_t packedlen = ss->saecv_sizes[iri];
+  const size_t full_len = ss->fecv_size;
+  if (target_full == NULL)
+    target_full = malloc(SQ(full_len)*sizeof(complex double));
+  if (target_full == NULL) abort();
+  if(!add) memset(target_full, 0, SQ(full_len)*sizeof(complex double));
+
+  if(!packedlen) return target_full; // Empty irrep, do nothing.
+
+  // Workspace for the intermediate matrix result
+  complex double *tmp; 
+  QPMS_CRASHING_MALLOC(tmp, full_len * packedlen * sizeof(complex double));
+
+  complex double *U = qpms_scatsys_irrep_transform_matrix(NULL, ss, iri);
+
+  const complex double one = 1, zero = 0;
+  
+  // tmp = P U
+  cblas_zgemm(
+      CblasRowMajor, CblasNoTrans, CblasNoTrans,
+      packedlen /*M*/, full_len /*N*/, packedlen /*K*/,
+      &one /*alpha*/, orig_packed/*A*/, packedlen/*ldA*/, 
+      U /*B*/, full_len/*ldB*/, 
+      &zero /*beta*/, tmp /*C*/, full_len /*LDC*/);
+  // target += U* tmp
+  cblas_zgemm(CblasRowMajor, CblasConjTrans, CblasNoTrans,
+      full_len /*M*/, full_len /*N*/, packedlen /*K*/,
+      &one /*alpha*/, U/*A*/, full_len/*ldA*/,
+      tmp /*B*/, full_len /*ldB*/, &one /*beta*/,
+      target_full /*C*/, full_len /*ldC*/);
+  free(tmp);
+  free(U);
+  return target_full;
+}
+
 complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
 		const complex double *orig_full, const qpms_scatsys_t *ss,
 		qpms_iri_t iri){
@@ -929,12 +1053,13 @@ complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
         }
         fullvec_offsetC += otC->bspecn;
       }
-      fullvec_offsetR += otR->bspecn;
     }
+    fullvec_offsetR += otR->bspecn;
   }
   free(tmp);
   return target_packed;
 }
+
 
 /// Transforms a big "packed" matrix into the full basis.
 /** TODO doc */

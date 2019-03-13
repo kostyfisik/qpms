@@ -3,14 +3,18 @@
 
 int main() {
   cart3_t v = {1, 2, 3};
-  qpms_quat4d_t q4[4] = {
+  qpms_quat4d_t q4[8] = {
     {1, 0, 0, 0},
     {0, 1, 0, 0},
     {0, 0, 1, 0},
     {0, 0, 0, 1},
+    {-1, 0, 0, 0},
+    {0, -1, 0, 0},
+    {0, 0, -1, 0},
+    {0, 0, 0, -1},
   };
   printf("original: (%g, %g, %g)\n", v.x, v.y, v.z);
-  for(int i = 0; i < 4; ++i) {
+  for(int i = 0; i < 8; ++i) {
     for (int det = -1; det < 2; det += 2) {
       const qpms_quat4d_t qr = q4[i];
       const qpms_quat_t qc = qpms_quat_2c_from_4d(qr);
