@@ -29,7 +29,7 @@ qpms_c = Extension('qpms_c',
             'qpms/legendre.c',
             'qpms/tmatrix_io.c',
             'qpms/error.c'],
-        extra_compile_args=['-std=c99','-ggdb', '-O0',
+        extra_compile_args=['-std=c99','-ggdb', '-O3',
             '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # this is required
             #'-DQPMS_USE_OMP',
             '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules

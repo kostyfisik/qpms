@@ -1116,6 +1116,9 @@ cdef class TMatrixInterpolator:
         free(self.tmdata)
         free(self.freqs_su)
         free(self.freqs)
+    property freq_interval:
+        def __get__(self):
+            return [self.freqs[0], self.freqs[self.nfreqs-1]]
 
 cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py!
     '''
@@ -1479,8 +1482,31 @@ cdef class ScatteringSystem:
         cdef cdouble[:,::1] target_view = target
         qpms_scatsys_build_translation_matrix_full(&target_view[0][0], self.s, k)
         return target
+    
+    def fullvec_psizes(self):
+        cdef np.ndarray[int32_t, ndim=1] ar = np.empty((self.s[0].p_count,), dtype=np.int32)
+        cdef int32_t[::1] ar_view = ar
+        for pi in range(self.s[0].p_count):
+            ar_view[pi] = self.s[0].tm[self.s[0].p[pi].tmatrix_id].spec[0].n
+        return ar
 
+    def fullvec_poffsets(self):
+        cdef np.ndarray[intptr_t, ndim=1] ar = np.empty((self.s[0].p_count,), dtype=np.intp)
+        cdef intptr_t[::1] ar_view = ar
+        cdef intptr_t offset = 0
+        for pi in range(self.s[0].p_count):
+            ar_view[pi] = offset
+            offset += self.s[0].tm[self.s[0].p[pi].tmatrix_id].spec[0].n
+        return ar
 
+    def positions(self):
+        cdef np.ndarray[np.double_t, ndim=2] ar = np.empty((self.s[0].p_count, 3), dtype=float)
+        cdef np.double_t[:,::1] ar_view = ar
+        for pi in range(self.s[0].p_count):
+            ar_view[pi,0] = self.s[0].p[pi].pos.x
+            ar_view[pi,1] = self.s[0].p[pi].pos.y
+            ar_view[pi,2] = self.s[0].p[pi].pos.z
+        return ar
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc
