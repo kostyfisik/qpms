@@ -93,6 +93,30 @@ int main()
       (int)ss->p_count, (int)ss->tm_count, (int)ss->sym->nirreps,
       (int)ss->orbit_type_count);
 
+  fputs("Orbit projection matrices:\n", stderr);
+  for (qpms_ss_oti_t oti = 0; oti < ss->orbit_type_count; ++oti) {
+    fprintf(stderr, "Orbit type %d:\n", (int)oti);
+    const qpms_ss_orbit_type_t *ot = &(ss->orbit_types[oti]);
+    size_t row = 0;
+    for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
+      assert(row*ot->size*ot->bspecn == ot->irbase_offsets[iri]);
+      fprintf(stderr, "---------- IR %d (%s) -------------\n", (int)iri, ss->sym->irreps[iri].name);
+      for (size_t irbi = 0; irbi < ot->irbase_sizes[iri]; ++irbi) {
+        for(qpms_ss_orbit_pi_t opi = 0; opi < ot->size; ++opi){
+          fputs("| ", stderr);
+          for(size_t i = 0; i < ot->bspecn; ++i) {
+            const complex double elem = ot->irbases[row * ot->size * ot->bspecn
+            + opi * ot->bspecn + i];
+            fprintf(stderr, "%+.3f%+.3fj ", creal(elem), cimag(elem));
+          }
+        }
+        fputs("|\n", stderr);
+        ++row;
+      }
+    }
+    fputs("------------------------\n\n",stderr);
+  }
+
   const double k = 1.7;
 
   complex double *S_full = qpms_scatsys_build_translation_matrix_full(
