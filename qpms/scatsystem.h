@@ -426,6 +426,26 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const st
 /// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.
 void qpms_scatsys_free(qpms_scatsys_t *s);
 
+/// Creates a "full" transformation matrix U that takes a full vector and projects it onto an symmetry adapted basis.
+/** Mostly as a reference and a debugging tool, as multiplicating these big matrices would be inefficient.
+ * 
+ * TODO doc about shape etc.
+ */
+complex double *qpms_scatsys_irrep_transform_matrix(complex double *target_U,
+		const qpms_scatsys_t *ss, qpms_iri_t iri);
+
+/// Projects a "big" matrix onto an irrep (slow reference implementation).
+/** TODO doc */
+complex double *qpms_scatsys_irrep_pack_matrix_stupid(complex double *target_packed,
+		const complex double *orig_full, const qpms_scatsys_t *ss,
+		qpms_iri_t iri);
+
+/// Transforms a big "packed" matrix into the full basis (slow reference implementation).
+/** TODO doc */
+complex double *qpms_scatsys_irrep_unpack_matrix_stupid(complex double *target_full,
+		const complex double *orig_packed, const qpms_scatsys_t *ss,
+		qpms_iri_t iri, bool add);
+
 /// Projects a "big" matrix onto an irrep.
 /** TODO doc */
 complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
