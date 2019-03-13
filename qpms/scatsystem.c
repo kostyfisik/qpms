@@ -1053,8 +1053,8 @@ complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
         }
         fullvec_offsetC += otC->bspecn;
       }
-      fullvec_offsetR += otR->bspecn;
     }
+    fullvec_offsetR += otR->bspecn;
   }
   free(tmp);
   return target_packed;
