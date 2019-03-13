@@ -155,9 +155,18 @@ int main()
   }
 
   complex double *S_packed[ss->sym->nirreps];
-  for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri)
+  for (qpms_iri_t iri = 0; iri < ss->sym->nirreps; ++iri) {
     S_packed[iri] = qpms_scatsys_irrep_pack_matrix(NULL,
         S_full, ss, iri);
+    fprintf(stderr, "--- Packed matrix for irrep %d (%s):\n", (int) iri, ss->sym->irreps[iri].name);
+    for (size_t row = 0; row < ss->saecv_sizes[iri]; ++row) {
+      for (size_t col = 0; col < ss->saecv_sizes[iri]; ++col) {
+        complex double elem = S_packed[iri][row * ss->saecv_sizes[iri] + col];
+        fprintf(stderr, "%+.3f+%.3fj ", creal(elem), cimag(elem));
+      }
+      fputc('\n', stderr);
+    }
+  }
 
   complex double *S_recfull = qpms_scatsys_irrep_unpack_matrix(NULL,
       S_packed[0], ss, 0, false);
