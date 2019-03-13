@@ -45,8 +45,8 @@ for iri in range(ss.nirreps):
     mm_iri = ss.modeproblem_matrix_packed(k, iri)
     U, S, Vh = np.linalg.svd(mm_iri)
     print(iri, ss.irrep_names[iri], S[-1])
-    starti = np.searchsorted(S, sv_threshold, side='right')
+    starti = max(0,len(S) - np.searchsorted(S[::-1], sv_threshold, side='left')-1)
     np.savez(os.path.join(outputdatadir, 'Nx%d_Ny%d_%geV_ir%d.npz'%(Nx, Ny, omega/eV*hbar, iri)),
-        S=S[starti:], omega=omega, Vh = Vh[starti:], iri=iri, )
-
+        S=S[starti:], omega=omega, Vh = Vh[starti:], iri=iri, Nx = Nx, Ny= Ny )
+    # Don't forget to conjugate Vh before transforming it to the full vector!
 
