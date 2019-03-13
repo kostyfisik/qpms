@@ -846,8 +846,10 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
 
   size_t bs;
   for(bs = 0; bs < n*N; ++bs) {
+#if 0
     qpms_pr_debug_at_flf(__FILE__, __LINE__, __func__,
         "%d. irrep, %zd. SV: %.16lf", (int) iri, bs, s[bs]);
+#endif
     if(s[bs] > 1 + SVD_ATOL) qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
         "%zd. SV too large: %.16lf", bs, s[bs]);
     if(s[bs] > SVD_ATOL && fabs(1-s[bs]) > SVD_ATOL) 
