@@ -145,7 +145,8 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         s += '  %d, // nirreps\n' % len(self.irreps)
         # struct qpms_finite_grep_irrep_t irreps[]
         s += '  (struct qpms_finite_group_irrep_t[]) { // irreps\n'
-        for irname, irrep in self.irreps.items():
+        for irname  in sorted(self.irreps.keys()):
+            irrep = self.irreps[irname]
             s += '    {\n' 
             is1d = isinstance(irrep[identity], (int, float, complex))
             dim = 1 if is1d else irrep[identity].shape[0]

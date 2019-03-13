@@ -1230,7 +1230,8 @@ cdef class FinitePointGroup:
         self.G[0].irreps = <qpms_finite_group_irrep_t *>calloc(self.G[0].nirreps, sizeof(qpms_finite_group_irrep_t))
         if not self.G[0].irreps: raise MemoryError
         cdef int dim
-        for iri, (irname, irrep) in enumerate(info.irreps.items()):
+        for iri, irname in enumerate(sorted(info.irreps.keys())):
+            irrep = info.irreps[irname]
             is1d = isinstance(irrep[identity], (int, float, complex))
             dim = 1 if is1d else irrep[identity].shape[0]
             self.G[0].irreps[iri].dim = dim
