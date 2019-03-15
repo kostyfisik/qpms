@@ -45,7 +45,7 @@ static inline qpms_quat_t qpms_quat_add(qpms_quat_t p, qpms_quat_t q) {
 	return r;
 }
 
-/// Exponential function of a quaternion \f$e^Q$\f. MAYBE WRONG.
+/// Exponential function of a quaternion \f$e^Q$\f.
 static inline qpms_quat_t qpms_quat_exp(const qpms_quat_t q) {
 	const qpms_quat4d_t q4 = qpms_quat_4d_from_2c(q);
 	const double vn = sqrt(q4.ci*q4.ci + q4.cj*q4.cj + q4.ck *q4.ck);
@@ -90,7 +90,7 @@ static inline qpms_quat_t qpms_quat_normalise(qpms_quat_t q) {
 	return qpms_quat_rscale(1/n, q);
 }
 
-/// Logarithm of a quaternion. MAYBE AND PROBABLY WRONG.
+/// Logarithm of a quaternion.
 static inline qpms_quat_t qpms_quat_log(const qpms_quat_t q) {
 	const double n = qpms_quat_norm(q);
 	const double imnorm = qpms_quat_imnorm(q);
@@ -106,24 +106,12 @@ static inline qpms_quat_t qpms_quat_log(const qpms_quat_t q) {
 	}
 }
 
-/// Quaternion power to a real exponent. PROBABLY WRONG!!!
+/// Quaternion power to a real exponent.
 static inline qpms_quat_t qpms_quat_pow(const qpms_quat_t q, const double exponent) {
 	const qpms_quat_t qe = qpms_quat_rscale(exponent, 
 			qpms_quat_log(q));
 	return qpms_quat_exp(qe);
 }
-
-#if 0
-/// Quaternion conjugation \a q*.
-// A very stupid but correct (hopefully) implementation
-static inline qpms_quat_t qpms_quat_conj(const qpms_quat_t q) {
-	return qpms_quat_rscale(-0.5,
-		qpms_quat_add(q,
-		qpms_quat_add(qpms_quat_mult(qpms_quat_i,qpms_quat_mult(q,qpms_quat_i)),
-		qpms_quat_add(qpms_quat_mult(qpms_quat_j,qpms_quat_mult(q,qpms_quat_j)),
-		qpms_quat_mult(qpms_quat_k,qpms_quat_mult(q,qpms_quat_k))))));
-}
-#endif
 
 /// Quaternion inversion.
 /** \f[ q^{-1} = \frac{q*}{|q|}. \f] */
