@@ -671,6 +671,22 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
       ss->saecv_sizes[iri] += ot->instance_count * ot->irbase_sizes[iri];
     }
   }
+
+  qpms_ss_pi_t p_ot_cumsum = 0;
+  for (qpms_ss_oti_t oti = 0; oti < ss->orbit_type_count; ++oti) {
+    qpms_ss_orbit_type_t *ot = ss->orbit_types + oti;
+    ot->p_offset = p_ot_cumsum;
+    p_ot_cumsum += ot->size * ot->instance_count;
+  }
+
+  // Set ss->p_by_orbit[]
+  QPMS_CRASHING_MALLOC(ss->p_by_orbit, sizeof(qpms_ss_pi_t) * ss->p_count);
+  for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    const qpms_ss_particle_orbitinfo_t *oi = ss->p_orbitinfo + pi;
+    const qpms_ss_oti_t oti = oi->t;
+    const qpms_ss_orbit_type_t *ot = ss->orbit_types + oti;
+    ss->p_by_orbit[ot->p_offset + ot->size * oi->osn + oi->p] = pi;
+  }
   
   ss->c = qpms_trans_calculator_init(lMax, normalisation);
   return ss;
@@ -688,6 +704,7 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
     free(ss->p_orbitinfo);
     free(ss->orbit_types);
     free(ss->saecv_sizes);
+    free(ss->p_by_orbit);
     qpms_trans_calculator_free(ss->c);
   }
   free(ss);

@@ -358,6 +358,8 @@ typedef struct qpms_ss_orbit_type_t {
 	complex double *irbases;
 	/// TODO doc.
 	size_t instance_count;
+	/// Cumulative sum of the preceding ot->siza * ot->instance_count;
+	qpms_ss_pi_t p_offset;
 } qpms_ss_orbit_type_t;
 
 typedef ptrdiff_t qpms_ss_osn_t; ///< "serial number" of av orbit in a given type.
@@ -406,7 +408,9 @@ typedef struct qpms_scatsys_t {
 	// private
 	size_t max_bspecn; ///< Maximum tm[...]->spec->n. Mainly for workspace allocation.
 	
-	
+	/// Particles grouped by orbit (in the order corresponding to the packed memory layout).
+	qpms_ss_pi_t *p_by_orbit;
+
 	// We keep the p_orbitinfo arrays in this chunk in order to avoid memory fragmentation
 	char *otspace;
 	char *otspace_end;
