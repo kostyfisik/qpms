@@ -1468,12 +1468,15 @@ cdef class ScatteringSystem:
         qpms_scatsys_build_modeproblem_matrix_full(&target_view[0][0], self.s, k)
         return target
 
-    def modeproblem_matrix_packed(self, double k, qpms_iri_t iri):
+    def modeproblem_matrix_packed(self, double k, qpms_iri_t iri, version=None):
         cdef size_t rlen = self.saecv_sizes[iri]
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (rlen,rlen),dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
-        qpms_scatsys_build_modeproblem_matrix_irrep_packed(&target_view[0][0], self.s, iri, k)
+        if (version == 'R'):
+            qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(&target_view[0][0], self.s, iri, k)
+        else:
+            qpms_scatsys_build_modeproblem_matrix_irrep_packed(&target_view[0][0], self.s, iri, k)
         return target
 
     def translation_matrix_full(self, double k):
