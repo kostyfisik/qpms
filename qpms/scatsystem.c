@@ -1472,7 +1472,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
   const complex double one = 1, zero = 0;
 
   for(qpms_ss_pi_t opistartR = 0; opistartR < ss->p_count; 
-      opistartR += ss->orbit_types[ss->p_orbitinfo[opistartR].t].size //orbit_p_countR; might write a while() instead
+      opistartR += ss->orbit_types[ss->p_orbitinfo[ss->p_by_orbit[opistartR]].t].size //orbit_p_countR; might write a while() instead
      ) {
     const qpms_ss_pi_t orbitstartpiR = ss->p_by_orbit[opistartR];
     const qpms_ss_oti_t otiR = ss->p_orbitinfo[orbitstartpiR].t;
@@ -1495,7 +1495,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
       for(qpms_ss_orbit_pi_t opiR = 0; opiR < orbit_p_countR; ++opiR) {
         qpms_ss_pi_t piR = ss->p_by_orbit[opistartR + opiR];
         assert(opiR == ss->p_orbitinfo[piR].p);
-        const qpms_ss_oti_t otiR = ss->p_orbitinfo[piR].t;
+        assert(otiR == ss->p_orbitinfo[piR].t);
         assert(ss->p_orbitinfo[piR].osn == osnR);
         const cart3_t posR = ss->p[piR].pos;
         // dest particle T-matrix
