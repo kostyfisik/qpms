@@ -221,9 +221,9 @@ def loadScuffTMatrices(fileName, normalisation = 1, version = 'old', freqscale =
     if ((order == ('N', 'M')) and not oldversion): # reverse order for the new version
         reorder = (1,0) 
     # TODO reverse order for the old version...
-    for inc_type in reorder:
-        for outc_type in reorder:
-            TMatrices[:,outc_type,:,inc_type,:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
+    for inc_type in (0,1):
+        for outc_type in (0,1):
+            TMatrices[:,reorder[outc_type],:,reorder[inc_type],:] = TMatrices_tmp_real[:,:,outc_type,:,inc_type]+1j*TMatrices_tmp_imag[:,:,outc_type,:,inc_type]
     # IMPORTANT: now we are going from Reid's/Kristensson's/Jackson's/whoseever convention to Taylor's convention
     # TODO make these consistent with what is defined in qpms_types.h (implement all possibilities)
     if normalisation == 1:
