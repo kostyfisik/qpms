@@ -16,6 +16,7 @@
 #include <string.h>
 #include "qpms_error.h"
 #include "tmatrices.h"
+#include "qpms_specfunc.h"
 
 #define HBAR (1.05457162825e-34)
 #define ELECTRONVOLT (1.602176487e-19)
@@ -314,15 +315,20 @@ void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *ip) {
 
 qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *ip, double freq) {
   qpms_tmatrix_t *t = qpms_tmatrix_init(ip->bspec);
+  QPMS_ENSURE_SUCCESS(qpms_tmatrix_interpolator_eval_fill(t, ip, freq));
+  return t;
+}
+
+qpms_errno_t qpms_tmatrix_interpolator_eval_fill(qpms_tmatrix_t *t,
+    const qpms_tmatrix_interpolator_t *ip, double freq) {
+  QPMS_ENSURE(qpms_vswf_set_spec_isidentical(t->spec, ip->bspec), "Tried to fill a T-matrix with an incompatible interpolator!");
   const size_t n = ip->bspec->n;
   for (size_t i = 0; i < n*n; ++i){
     if (ip->splines_real[i]) t->m[i] = gsl_spline_eval(ip->splines_real[i], freq, NULL /*does this work?*/);
     if (ip->splines_imag[i]) t->m[i] += I* gsl_spline_eval(ip->splines_imag[i], freq, NULL /*does this work?*/);
   }
-  return t;
+  return QPMS_SUCCESS;
 }
-
-
 
 double qpms_SU2eV(double e_SU) {
   return e_SU * SCUFF_OMEGAUNIT / (ELECTRONVOLT / HBAR);
@@ -452,5 +458,84 @@ qpms_errno_t qpms_load_scuff_tmatrix(
         "since it's read only).", path); 
 
   return retval;
+}
+
+complex double *qpms_mie_coefficients_reflection(
+		complex double *target, ///< Target array of length bspec->n. If NULL, a new one will be allocated.
+		const qpms_vswf_set_spec_t *bspec, ///< Defines which of the coefficients are calculated.
+		double a, ///< Radius of the sphere.
+		complex double k_i, ///< Wave number of the internal material of the sphere.
+		complex double k_e, ///< Wave number of the surrounding medium.
+		complex double mu_i, ///< Relative permeability of the sphere material.
+		complex double mu_e, ///< Relative permeability of the surrounding medium.
+    qpms_bessel_t J_ext,
+    qpms_bessel_t J_scat
+		// TODO J_ext, J_scat?
+		) {
+  /*
+   *  This implementation pretty much copies mie_coefficients() from qpms_p.py, so 
+   *  any bugs there should affect this function as well and perhaps vice versa.
+   */
+  QPMS_ENSURE(J_ext != J_scat, "J_ext and J_scat must not be equal. Perhaps you want J_ext = 1 and J_scat = 3 anyways.");
+  if (!target) QPMS_CRASHING_MALLOC(target, bspec->n * sizeof(complex double));
+  qpms_l_t lMax = bspec->lMax;
+  complex double x_i = k_i * a;
+  complex double x_e = k_e * a;
+  complex double m = k_i / k_e;
+  complex double eta_inv_i = k_i / mu_i;
+  complex double eta_inv_e = k_e / mu_e;
+
+  complex double zi[lMax + 2];
+  complex double ze[lMax + 2];
+  complex double zs[lMax + 2];
+  complex double RH[lMax + 1] /* MAGNETIC */, RV[lMax+1] /* ELECTRIC */;
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(QPMS_BESSEL_REGULAR, lMax+1, x_i, zi));
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J_ext, lMax+1, x_e, ze));
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J_scat, lMax+1, x_e, zs));
+  for (qpms_l_t l = 0; l <= lMax; ++l) {
+    // Bessel function derivatives as in DLMF 10.51.2
+    complex double dzi = -zi[l+1] + l/x_i*zi[l];
+    complex double dze = -ze[l+1] + l/x_e*ze[l];
+    complex double dzs = -zs[l+1] + l/x_e*zs[l];
+    complex double fi = zi[l]/x_i+dzi;
+    complex double fs = zs[l]/x_e+dzs;
+    complex double fe = ze[l]/x_e+dze;
+    RV[l] = -((-eta_inv_i * fe * zi[l] + eta_inv_e * ze[l] * fi)/(-eta_inv_e * fi * zs[l] + eta_inv_i * zi[l] * fs));
+    RH[l] = -((-eta_inv_e * fe * zi[l] + eta_inv_i * ze[l] * fi)/(-eta_inv_i * fi * zs[l] + eta_inv_e * zi[l] * fs));
+  }
+
+  for (size_t i = 0; i < bspec->n; ++i) {
+    qpms_l_t l; qpms_m_t m; qpms_vswf_type_t t;
+    QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(bspec->ilist[i], &t, &m, &l));
+    assert(l <= lMax);
+    switch(t) {
+      case QPMS_VSWF_ELECTRIC:
+        target[i] = RV[l];
+        break;
+      case QPMS_VSWF_MAGNETIC:
+        target[i] = RH[l];
+        break;
+      default: QPMS_WTF;
+    }
+  }
+  return target;
+}
+
+/// Replaces the contents of an existing T-matrix with that of a spherical nanoparticle calculated using the Lorentz-mie theory.
+qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
+		double a, ///< Radius of the sphere.
+		complex double k_i, ///< Wave number of the internal material of the sphere.
+		complex double k_e, ///< Wave number of the surrounding medium.
+		complex double mu_i, ///< Relative permeability of the sphere material.
+		complex double mu_e ///< Relative permeability of the surrounding medium.
+		) {
+  qpms_l_t lMax = t->spec->lMax;
+  complex double *miecoeffs = qpms_mie_coefficients_reflection(NULL, t->spec, a, k_i, k_e, mu_i, mu_e,
+    QPMS_BESSEL_REGULAR, QPMS_HANKEL_PLUS);
+  memset(t->m, 0, SQ(t->spec->n));
+  for(size_t i = 0; i < t->spec->n; ++i) 
+    t->m[t->spec->n*i + i] = miecoeffs[i];
+  free(miecoeffs);
+  return QPMS_SUCCESS;
 }
 

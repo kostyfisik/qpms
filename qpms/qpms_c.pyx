@@ -1131,8 +1131,11 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
     def __cinit__(CTMatrix self, BaseSpec spec, matrix):
         self.spec = spec
         self.t.spec = self.spec.rawpointer();
-        # The following will raise an exception if shape is wrong
-        self.m = np.array(matrix, dtype=complex, copy=True, order='C').reshape((len(spec), len(spec)))
+        if matrix is None or matrix == 0:
+            self.m = np.zeros((len(spec),len(spec)), dtype=complex, order='C')
+        else:
+            # The following will raise an exception if shape is wrong
+            self.m = np.array(matrix, dtype=complex, copy=True, order='C').reshape((len(spec), len(spec)))
         #self.m.setflags(write=False) # checkme
         cdef cdouble[:,:] m_memview = self.m
         self.t.m = &(m_memview[0,0])
@@ -1157,6 +1160,19 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
         ''' Returns a copy of the T-matrix as a numpy array.'''
         # Maybe not totally needed after all, as np.array(T[...]) should be equivalent and not longer
         return np.array(self.m, copy=True)
+
+    def spherical_fill(CTMatrix self, double radius, cdouble k_int,
+            cdouble k_ext, cdouble mu_int = 1, cdouble mu_ext = 1):
+        ''' Replaces the contents of the T-matrix with those of a spherical particle. '''
+        qpms_tmatrix_spherical_fill(&self.t, radius, k_int, k_ext, mu_int, mu_ext)
+    
+    @staticmethod
+    def spherical(BaseSpec spec, double radius, cdouble k_int, cdouble k_ext, 
+            cdouble mu_int = 1, cdouble mu_ext = 1):
+        ''' Creates a T-matrix of a spherical nanoparticle. '''
+        tm = CTMatrix(spec, 0)
+        tm.spherical_fill(radius, k_int, k_ext, mu_int, mu_ext)
+        return tm
 
 cdef char *make_c_string(pythonstring):
     '''

@@ -6,6 +6,7 @@
 #include "kahansum.h"
 #include <gsl/gsl_sf_bessel.h>
 #include <complex.h>
+#include "qpms_error.h"
 
 #ifndef M_LN2
 #define M_LN2   0.69314718055994530942  /* log_e 2 */
@@ -16,7 +17,7 @@ static inline complex double ipow(int x) {
 }
 
 // There is a big issue with gsl's precision of spherical bessel function; these have to be implemented differently
-qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array) {
+qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array) {
   int retval;
   double tmparr[lmax+1];
   switch(typ) {
@@ -47,6 +48,14 @@ qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, co
       //return GSL_EDOM;
   }
   assert(0);
+}
+
+qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, complex double x, complex double *result_array) {
+  int retval = qpms_sph_bessel_realx_fill(typ, lmax, creal(x), result_array);
+  if(!cimag(x))
+    return retval;
+  else
+    QPMS_NOT_IMPLEMENTED("complex argument of Bessel function.");
 }
 
 static inline ptrdiff_t akn_index(qpms_l_t n, qpms_l_t k) {

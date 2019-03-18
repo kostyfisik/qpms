@@ -29,4 +29,7 @@ void qpms_pr_debug_at_flf(const char *filename, unsigned int linenum,
 
 #define QPMS_ENSURE(x, msg, ...) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
 
+#define QPMS_NOT_IMPLEMENTED(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, \
+		"Not implemented:" msg, ##__VA_ARGS__)
+
 #endif 

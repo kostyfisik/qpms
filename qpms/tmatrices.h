@@ -233,6 +233,10 @@ typedef struct qpms_tmatrix_interpolator_t {
 /// Free a T-matrix interpolator.
 void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp);
 
+/// Fills an existing T-matrix with new interpolated values.
+qpms_errno_t qpms_tmatrix_interpolator_eval_fill(qpms_tmatrix_t *target, ///< T-matrix to be updated, not NULL.
+		const qpms_tmatrix_interpolator_t *interp, double freq);
+
 /// Evaluate a T-matrix interpolated value.
 /** The result is to be freed using qpms_tmatrix_free().*/
 qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *interp, double freq);
@@ -244,6 +248,63 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Num
 	       //, bool copy_bspec ///< if true, copies its own copy of basis spec from the first T-matrix.
        	       /*, ...? */);
 
+/// Calculates the reflection Mie-Lorentz coefficients for a spherical particle.
+/**
+ * This function is based on the previous python implementation mie_coefficients() from qpms_p.py,
+ * so any bugs therein should affect this function as well and perhaps vice versa.
+ *
+ * Most importantly, the case of magnetic material, \a mu_i != 0 or \a mu_e != 0 has never been tested
+ * and might give wrong results.
+ *
+ * \return Array with the Mie-Lorentz reflection coefficients in the order determined by bspec.
+ * If \a target was not NULL, this is target, otherwise a newly allocated array.
+ *
+ * TODO better doc.
+ */
+complex double *qpms_mie_coefficients_reflection(
+		complex double *target, ///< Target array of length bspec->n. If NULL, a new one will be allocated.
+		const qpms_vswf_set_spec_t *bspec, ///< Defines which of the coefficients are calculated.
+		double a, ///< Radius of the sphere.
+		complex double k_i, ///< Wave number of the internal material of the sphere.
+		complex double k_e, ///< Wave number of the surrounding medium.
+		complex double mu_i, ///< Relative permeability of the sphere material.
+		complex double mu_e, ///< Relative permeability of the surrounding medium.
+		qpms_bessel_t J_ext, ///< Kind of the "incoming" waves. Most likely QPMS_BESSEL_REGULAR.
+		qpms_bessel_t J_scat ///< Kind of the "scattered" waves. Most likely QPMS_HANKEL_PLUS.
+		);
+
+/// Replaces the contents of an existing T-matrix with that of a spherical nanoparticle calculated using the Lorentz-mie theory.
+qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
+		double a, ///< Radius of the sphere.
+		complex double k_i, ///< Wave number of the internal material of the sphere.
+		complex double k_e, ///< Wave number of the surrounding medium.
+		complex double mu_i, ///< Relative permeability of the sphere material.
+		complex double mu_e ///< Relative permeability of the surrounding medium.
+		);
+
+/// Creates a new T-matrix of a spherical particle using the Lorentz-Mie theory.
+static inline qpms_tmatrix_t *qpms_tmatrix_spherical(
+		const qpms_vswf_set_spec_t *bspec,
+		double a, ///< Radius of the sphere.
+		complex double k_i, ///< Wave number of the internal material of the sphere.
+		complex double k_e, ///< Wave number of the surrounding medium.
+		complex double mu_i, ///< Relative permeability of the sphere material.
+		complex double mu_e ///< Relative permeability of the surrounding medium.
+		) {
+	qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
+	qpms_tmatrix_spherical_fill(t, a, k_i, k_e, mu_i, mu_e);
+	return t;
+}
+
+/// Relative permittivity from the Drude model.
+static inline complex double qpms_drude_epsilon(
+		complex double eps_inf, ///< Permittivity at 
+		complex double omega_p, ///< Plasma frequency \f$ \omega_p \f$ of the material.
+		complex double gamma_p, ///< Decay constant \f$ \gamma_p \f$ of the material.
+		complex double omega ///< Frequency \f$ \omega \f$ at which the permittivity is evaluated.
+		) {
+	return eps_inf - omega_p*omega_p/(omega*(omega+I*gamma_p));
+}
 
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries

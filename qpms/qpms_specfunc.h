@@ -8,7 +8,7 @@
  ******************************************************************************/
 
 // TODO unify types
-qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array);
+qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, complex double x, complex double *result_array);
 
 
 

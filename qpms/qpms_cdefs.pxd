@@ -38,6 +38,12 @@ cdef extern from "qpms_types.h":
         QPMS_NORMALISATION_SPHARM
         QPMS_NORMALISATION_SPHARM_CS
         QPMS_NORMALISATION_UNDEF
+    ctypedef enum qpms_bessel_t:
+        QPMS_BESSEL_REGULAR
+        QPMS_BESSEL_SINGULAR
+        QPMS_HANKEL_PLUS
+        QPMS_HANKEL_MINUS
+        QPMS_HANKEL_UNDEF
     ctypedef int qpms_lm_t
     ctypedef int qpms_l_t
     ctypedef int qpms_m_t
@@ -258,6 +264,12 @@ cdef extern from "tmatrices.h":
     qpms_errno_t qpms_load_scuff_tmatrix(const char *path, const qpms_vswf_set_spec_t *bspec,
             size_t *n, double **freqs, double **freqs_su, qpms_tmatrix_t **tmatrices_array,
             cdouble **tmdata)
+    cdouble *qpms_mie_coefficients_reflection(cdouble *target, const qpms_vswf_set_spec_t *bspec,
+            double a, cdouble k_i, cdouble k_e, cdouble mu_i, cdouble mu_e, qpms_bessel_t J_ext, qpms_bessel_t J_scat)
+    qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, double a, 
+            cdouble k_i, cdouble k_e, cdouble mu_i, cdouble mu_e)
+    qpms_tmatrix_t *qpms_tmatrix_spherical(const qpms_vswf_set_spec_t *bspec,
+            double a, cdouble k_i, cdouble k_e, cdouble mu_i, cdouble mu_e)
 
 cdef extern from "scatsystem.h":
     struct qpms_particle_t:
