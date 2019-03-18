@@ -75,6 +75,10 @@ cdef extern from "qpms_types.h":
     ctypedef int qpms_gmi_t
     ctypedef int qpms_iri_t
     ctypedef const char * qpms_permutation_t
+    struct qpms_tmatrix_t:
+        qpms_vswf_set_spec_t *spec
+        cdouble *m
+        bint owns_m # FIXME in fact bool
     # maybe more if needed
 
 cdef extern from "indexing.h":
@@ -221,17 +225,7 @@ cdef extern from "gsl/gsl_interp.h":
     const gsl_interp_type *gsl_interp_cspline
     # ^^^ These are probably the only relevant ones.
 
-cdef extern from "scatsystem.h":
-    struct qpms_tmatrix_t:
-        qpms_vswf_set_spec_t *spec
-        cdouble *m
-        bint owns_m # FIXME in fact bool
-    struct qpms_particle_t:
-        cart3_t pos
-        const qpms_tmatrix_t *tmatrix
-    struct qpms_particle_tid_t:
-        cart3_t pos
-        qpms_ss_tmi_t tmatrix_id
+cdef extern from "tmatrices.h":
     struct qpms_tmatrix_interpolator_t:
         const qpms_vswf_set_spec_t *bspec
     void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp)
@@ -239,19 +233,6 @@ cdef extern from "scatsystem.h":
     qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, double *freqs, 
             const qpms_tmatrix_t *tmatrices_array, const gsl_interp_type *iptype)
     void qpms_tmatrix_free(qpms_tmatrix_t *tmatrix)
-    struct qpms_scatsys_t:
-        qpms_tmatrix_t **tm
-        qpms_ss_tmi_t tm_count
-        qpms_particle_tid_t *p
-        qpms_ss_pi_t p_count
-        # We shouldn't need more to construct a symmetric scatsystem ^^^
-        size_t fecv_size
-        size_t *saecv_sizes
-        const qpms_finite_group_t *sym
-    qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym)
-    void qpms_scatsys_free(qpms_scatsys_t *s)
-    qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path) #NI
-    qpms_scatsys_t *qpms_scatsys_load(char *path) #NI
     qpms_tmatrix_isclose(const qpms_tmatrix_t *A, const qpms_tmatrix_t *B,
                 const double rtol, const double atol)
     qpms_errno_t qpms_symmetrise_tmdata_irot3arr(
@@ -277,6 +258,27 @@ cdef extern from "scatsystem.h":
     qpms_errno_t qpms_load_scuff_tmatrix(const char *path, const qpms_vswf_set_spec_t *bspec,
             size_t *n, double **freqs, double **freqs_su, qpms_tmatrix_t **tmatrices_array,
             cdouble **tmdata)
+
+cdef extern from "scatsystem.h":
+    struct qpms_particle_t:
+        cart3_t pos
+        const qpms_tmatrix_t *tmatrix
+    struct qpms_particle_tid_t:
+        cart3_t pos
+        qpms_ss_tmi_t tmatrix_id
+    struct qpms_scatsys_t:
+        qpms_tmatrix_t **tm
+        qpms_ss_tmi_t tm_count
+        qpms_particle_tid_t *p
+        qpms_ss_pi_t p_count
+        # We shouldn't need more to construct a symmetric scatsystem ^^^
+        size_t fecv_size
+        size_t *saecv_sizes
+        const qpms_finite_group_t *sym
+    qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym)
+    void qpms_scatsys_free(qpms_scatsys_t *s)
+    qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path) #NI
+    qpms_scatsys_t *qpms_scatsys_load(char *path) #NI
     cdouble *qpms_scatsys_irrep_pack_matrix(cdouble *target_packed,
             const cdouble *orig_full, const qpms_scatsys_t *ss, qpms_iri_t iri)
     cdouble *qpms_scatsys_irrep_unpack_matrix(cdouble *target_full, 

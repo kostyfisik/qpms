@@ -330,6 +330,24 @@ typedef int qpms_iri_t;
  */
 typedef const char * qpms_permutation_t;
 
+/// A T-matrix.
+/** In the future, I might rather use a more abstract approach in which T-matrix
+ *  is a mapping (function) of the field expansion coefficients.
+ *  So the interface might change.
+ *  For now, let me stick to the square dense matrix representation.
+ */
+typedef struct qpms_tmatrix_t {
+        /** \brief VSWF basis specification, NOT owned by qpms_tmatrix_t by default.
+         *
+         *  Usually not checked for meaningfulness by the functions (methods),
+         *  so the caller should take care that \a spec->ilist does not
+         *  contain any duplicities and that for each wave with order \a m
+         *  there is also one with order \a −m.
+         */
+        const qpms_vswf_set_spec_t *spec;
+        complex double *m; ///< Matrix elements in row-major order.
+        bool owns_m; ///< Information wheter m shall be deallocated with qpms_tmatrix_free()
+} qpms_tmatrix_t;
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES
