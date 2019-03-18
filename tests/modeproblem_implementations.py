@@ -38,7 +38,8 @@ ss = ScatteringSystem(particles, sym)
 k = n * omega / c
 
 for iri in range(ss.nirreps):
-    mm_iri_orig = ss.modeproblem_matrix_packed(k, iri)
+    mm_iri_orig = ss.modeproblem_matrix_packed(k, iri, version = None)
     mm_iri_alt = ss.modeproblem_matrix_packed(k, iri, version='R')
-    print(np.amax(abs(mm_iri_orig-mm_iri_alt)))
+    mm_iri_paral = ss.modeproblem_matrix_packed(k, iri, version='pR')
+    print(np.amax(abs(mm_iri_orig-mm_iri_alt)), np.amax(abs(mm_iri_orig-mm_iri_paral)))
 
