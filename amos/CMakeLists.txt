@@ -1,4 +1,12 @@
 enable_language (Fortran)
+include(FortranCInterface)
+
+FortranCInterface_HEADER(amos.h
+	MACRO_NAMESPACE "AMOS_"
+	SYMBOL_NAMESPACE "amos_"
+	SYMBOLS zbesj zbesy zbesi zbesk zsqrt
+	)
+
 add_library(amos 
 	dgamln.f zabs.f zasyi.f zbinu.f zdiv.f zmlri.f zshch.f zunhj.f zunk1.f
 	d1mach.f zacai.f zbesh.f zbknu.f zexp.f zmlt.f zsqrt.f zunik.f zunk2.f
