@@ -24,9 +24,9 @@ void qpms_sbessel_calculator_pfree(qpms_sbessel_calculator_t *c);
 qpms_errno_t qpms_sbessel_calc_fill(qpms_sbessel_calculator_t *c, qpms_bessel_t typ, qpms_l_t lmax,
 	double x, complex double *result_array);
 
-complex double qpms_sbessel_calc_h1(qpms_sbessel_calculator_t *c, qpms_l_t n, double x);
+complex double qpms_sbessel_calc_h1(qpms_sbessel_calculator_t *c, qpms_l_t n, complex double x);
 qpms_errno_t qpms_sbessel_calc_h1_fill(qpms_sbessel_calculator_t *c, qpms_l_t lmax,
-		double x, complex double *result_array);
+		complex double x, complex double *result_array);
 
 
 /******************************************************************************

@@ -13,8 +13,12 @@ just run ``apt-get install libgsl-dev`` under root. Alternatively,
 you can `get the source 
 <https://www.gnu.org/software/gsl/>`_ get the source and compile it yourself.
 
+You also need a fresh enough version of ``cmake``.
+
 After GSL is installed, you can install qpms to your local python library using::
 
+  cmake .
+  make amos
   python3 setup.py install --user
 
 If GSL is not installed the standard library path on your system, you might 

@@ -1,5 +1,6 @@
 #include <math.h>
 #include "qpms_types.h"
+#include "qpms_specfunc.h"
 #include "gaunt.h"
 #include "translations.h"
 #include "indexing.h" // TODO replace size_t and int with own index types here
@@ -89,6 +90,7 @@ static inline int gauntB_Q_max(int M, int n, int mu, int nu) {
   return imin(n, imin(nu, (n+nu+1-abs(M+mu))/2));
 }
 
+#if 0 //Apparently, this is duplicit to that in bessel.c (which also support complex x)
 int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *result_array) {
   int retval;
   double tmparr[lmax+1];
@@ -121,6 +123,7 @@ int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *
   }
   assert(0);
 }
+#endif 
 
 static inline double qpms_trans_normlogfac(qpms_normalisation_t norm,
     int m, int n, int mu, int nu) {
