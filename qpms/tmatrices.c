@@ -20,6 +20,7 @@
 
 #define HBAR (1.05457162825e-34)
 #define ELECTRONVOLT (1.602176487e-19)
+#define SPEED_OF_LIGHT (2.99792458e8)
 #define SCUFF_OMEGAUNIT (3e14)
 
 #define SQ(x) ((x)*(x))
@@ -250,7 +251,7 @@ bool qpms_tmatrix_isclose(const qpms_tmatrix_t *A, const qpms_tmatrix_t *B,
   }
   return true;
 }
-    
+
 qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(const size_t incount,
     const double *freqs, const qpms_tmatrix_t *ta, const gsl_interp_type *iptype//, const bool copy_bspec
     ) {
@@ -537,5 +538,131 @@ qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, ///< T-matrix whose 
     t->m[t->spec->n*i + i] = miecoeffs[i];
   free(miecoeffs);
   return QPMS_SUCCESS;
+}
+
+qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(
+    const size_t incount, const double *wavelen_m, const double *n, const double *k,
+    const gsl_interp_type *iptype) 
+{
+  if (incount <= 0) return NULL;
+  qpms_permittivity_interpolator_t *ip;
+  QPMS_CRASHING_MALLOC(ip, sizeof(qpms_permittivity_interpolator_t));
+  ip->spline_n = gsl_spline_alloc(iptype, incount);
+  ip->spline_k = gsl_spline_alloc(iptype, incount);
+  QPMS_ENSURE_SUCCESS(gsl_spline_init(ip->spline_n, wavelen_m, n, incount));
+  QPMS_ENSURE_SUCCESS(gsl_spline_init(ip->spline_k, wavelen_m, k, incount));
+  return ip;
+}
+
+void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp) 
+{
+  if(interp) {
+    gsl_spline_free(interp->spline_n);
+    gsl_spline_free(interp->spline_k);
+  }
+  free(interp);
+}
+
+qpms_errno_t qpms_read_refractiveindex_yml(
+    FILE *f, ///< file handle
+    size_t *const count, ///< Number of successfully loaded triples.
+    double* *const lambdas_m, ///< Vacuum wavelengths in metres.
+    double* *const n, ///< Read refraction indices.
+    double* *const k ///< Read attenuation coeffs.
+    ) 
+{
+  QPMS_ENSURE(f && lambdas_m && n && k,"f, lambdas_m, n, k are mandatory arguments and must not be NULL.");
+  int count_alloc = 128; // First chunk to allocate
+  *count = 0;
+  QPMS_CRASHING_MALLOC(*lambdas_m, count_alloc * sizeof(double));
+  QPMS_CRASHING_MALLOC(*n, count_alloc * sizeof(double));
+  QPMS_CRASHING_MALLOC(*k, count_alloc * sizeof(double));
+  size_t linebufsz = 256;
+  char *linebuf;
+  QPMS_CRASHING_MALLOC(linebuf, linebufsz);
+  ssize_t readchars;
+  bool data_started = false;
+  while((readchars = getline(&linebuf, &linebufsz, f)) != -1) {
+    if (linebuf[0] == '#') continue;
+    // We need to find the beginning of the tabulated data; everything before that is ignored.
+    if (!data_started) {
+      char *test = strstr(linebuf, "data: |");
+      if(test) data_started = true;
+      continue;
+    }
+
+    if (3 == sscanf(linebuf, "%lf %lf %lf", *lambdas_m + *count, *n + *count , *k + *count)) {
+      (*lambdas_m)[*count] *= 1e-6; // The original data is in micrometres.
+      ++*count;
+      if (*count > count_alloc) {
+        count_alloc *= 2;
+        QPMS_CRASHING_REALLOC(*lambdas_m, count_alloc * sizeof(double));
+        QPMS_CRASHING_REALLOC(*n, count_alloc * sizeof(double));
+        QPMS_CRASHING_REALLOC(*k, count_alloc * sizeof(double));
+      }
+    } else break;
+  }
+  QPMS_ENSURE(*count > 0, "Could not read any refractive index data; the format must be wrong!");
+  free(linebuf);
+  return QPMS_SUCCESS; 
+}
+
+qpms_errno_t qpms_load_refractiveindex_yml(
+    const char *path,
+    size_t *const count, ///< Number of successfully loaded triples.
+    double* *const lambdas_m, ///< Vacuum wavelengths in metres.
+    double* *const n, ///< Read refraction indices.
+    double* *const k ///< Read attenuation coeffs.
+    ) 
+{
+  FILE *f = fopen(path, "r");
+  QPMS_ENSURE(f, "Could not open refractive index file %s", path); 
+  qpms_errno_t retval = 
+    qpms_read_refractiveindex_yml(f, count, lambdas_m, n, k);
+  QPMS_ENSURE_SUCCESS(fclose(f)); 
+  return retval;
+}
+
+qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(
+		const char *path, ///< Path to the yml file.
+		const gsl_interp_type *iptype ///< GSL interpolator type
+		) 
+{
+  size_t count;
+  double *lambdas_m, *n, *k;
+  QPMS_ENSURE_SUCCESS(qpms_load_refractiveindex_yml(path, &count, &lambdas_m, &n, &k));
+  qpms_permittivity_interpolator_t *ip = qpms_permittivity_interpolator_create(
+      count, lambdas_m, n, k, iptype);
+  free(lambdas_m);
+  free(n);
+  free(k);
+  return ip;
+}
+
+complex double qpms_permittivity_interpolator_eps_at_omega(
+    const qpms_permittivity_interpolator_t *ip,  double omega_SI) 
+{
+  double lambda, n, k;
+  lambda = 2*M_PI*SPEED_OF_LIGHT/omega_SI;
+  n = gsl_spline_eval(ip->spline_n, lambda, NULL);
+  k = gsl_spline_eval(ip->spline_k, lambda, NULL);
+  complex double epsilon = n*n - k*k + 2*n*k*I;
+  return epsilon;
+}
+
+
+/// Convenience function to calculate T-matrix of a non-magnetic spherical \
+particle using the permittivity values, replacing existing T-matrix data.
+qpms_errno_t qpms_tmatrix_spherical_mu0_fill(
+		qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
+		double a, ///< Radius of the sphere.
+		double omega, ///< Angular frequency.
+		complex double epsilon_fg, ///< Permittivity of the sphere.
+		complex double epsilon_bg ///< Permittivity of the background medium.
+		) 
+{
+  complex double k_i = csqrt(epsilon_fg) * omega / SPEED_OF_LIGHT;
+  complex double k_e = csqrt(epsilon_bg) * omega / SPEED_OF_LIGHT;
+  return qpms_tmatrix_spherical_fill(t, a, k_i, k_e, 1, 1);
 }
 

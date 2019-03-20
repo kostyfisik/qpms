@@ -5,6 +5,7 @@
 #define TMATRICES_H
 #include "qpms_types.h"
 #include <gsl/gsl_spline.h>
+#include <stdio.h>
 
 struct qpms_finite_group_t;
 typedef struct qpms_finite_group_t qpms_finite_group_t;
@@ -137,6 +138,7 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 		qpms_tmatrix_t **tmatrices_array, 
 		complex double **tmdata ///< The T-matrices raw contents
 		);
+
 /// Loads a scuff-tmatrix generated file.
 /** A simple wrapper over qpms_read_scuff_tmatrix() that needs a 
  * path instead of open FILE.
@@ -248,6 +250,33 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Num
 	       //, bool copy_bspec ///< if true, copies its own copy of basis spec from the first T-matrix.
        	       /*, ...? */);
 
+
+/// Interpolator of tabulated optical properties.
+typedef struct qpms_permittivity_interpolator_t {
+	gsl_spline *spline_n;
+	gsl_spline *spline_k; 
+} qpms_permittivity_interpolator_t;
+
+/// Creates a permittivity interpolator from tabulated wavelengths, refraction indices and extinction coeffs.
+qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(const size_t incount,
+		const double *wavelength_m, ///< Tabulated vacuum wavelength in metres, in strictly increasing order. 
+		const double *n, ///< Tabulated refraction indices at omega.
+	       	const double *k, ///< Tabulated extinction coefficients.
+		const gsl_interp_type *iptype ///< GSL interpolator type
+		);
+
+/// Creates a permittivity interpolator from an yml file downloaded from refractiveindex.info website.
+qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(
+		const char *path, ///< Path to the yml file.
+		const gsl_interp_type *iptype ///< GSL interpolator type
+		);
+
+/// Evaluates interpolated material permittivity at a given angular frequency.
+complex double qpms_permittivity_interpolator_eps_at_omega(const qpms_permittivity_interpolator_t *interp, double omega_SI);
+
+/// Destroy a permittivity interpolator.
+void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp);
+
 /// Calculates the reflection Mie-Lorentz coefficients for a spherical particle.
 /**
  * This function is based on the previous python implementation mie_coefficients() from qpms_p.py,
@@ -298,13 +327,38 @@ static inline qpms_tmatrix_t *qpms_tmatrix_spherical(
 
 /// Relative permittivity from the Drude model.
 static inline complex double qpms_drude_epsilon(
-		complex double eps_inf, ///< Permittivity at 
+		complex double eps_inf, ///< Relative permittivity "at infinity".
 		complex double omega_p, ///< Plasma frequency \f$ \omega_p \f$ of the material.
 		complex double gamma_p, ///< Decay constant \f$ \gamma_p \f$ of the material.
 		complex double omega ///< Frequency \f$ \omega \f$ at which the permittivity is evaluated.
 		) {
 	return eps_inf - omega_p*omega_p/(omega*(omega+I*gamma_p));
 }
+
+/// Convenience function to calculate T-matrix of a non-magnetic spherical \
+particle using the permittivity values, replacing existing T-matrix data.
+qpms_errno_t qpms_tmatrix_spherical_mu0_fill(
+		qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
+		double a, ///< Radius of the sphere.
+		double omega, ///< Angular frequency.
+		complex double epsilon_fg, ///< Relative permittivity of the sphere.
+		complex double epsilon_bg ///< Relative permittivity of the background medium.
+		); 
+
+/// Convenience function to calculate T-matrix of a non-magnetic spherical particle using the permittivity values.
+static inline qpms_tmatrix_t *qpms_tmatrix_spherical_mu0(
+		const qpms_vswf_set_spec_t *bspec,
+		double a, ///< Radius of the sphere.
+		double omega, ///< Angular frequency.
+		complex double epsilon_fg, ///< Relative permittivity of the sphere.
+		complex double epsilon_bg ///< Relative permittivity of the background medium.
+		) {
+	qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
+	qpms_tmatrix_spherical_mu0_fill(t, a, omega, epsilon_fg, epsilon_bg);
+};
+
+
+
 
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries
