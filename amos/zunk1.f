@@ -9,7 +9,7 @@ C     UNIFORM ASYMPTOTIC EXPANSION.
 C     MR INDICATES THE DIRECTION OF ROTATION FOR ANALYTIC CONTINUATION.
 C     NZ=-1 MEANS AN OVERFLOW WILL OCCUR
 C
-C***ROUTINES CALLED  ZKSCL,ZS1S2,ZUCHK,ZUNIK,D1MACH,ZABS
+C***ROUTINES CALLED  ZKSCL,ZS1S2,ZUCHK,ZUNIK,D1MACH,AZABS
 C***END PROLOGUE  ZUNK1
 C     COMPLEX CFN,CK,CONE,CRSC,CS,CSCL,CSGN,CSPN,CSR,CSS,CWRK,CY,CZERO,
 C    *C1,C2,PHI,PHID,RZ,SUM,SUMD,S1,S2,Y,Z,ZETA1,ZETA1D,ZETA2,ZETA2D,ZR
@@ -19,7 +19,7 @@ C    *C1,C2,PHI,PHID,RZ,SUM,SUMD,S1,S2,Y,Z,ZETA1,ZETA1D,ZETA2,ZETA2D,ZR
      * FNF, FNU, PHIDI, PHIDR, PHII, PHIR, PI, RAST, RAZR, RS1, RZI,
      * RZR, SGN, STI, STR, SUMDI, SUMDR, SUMI, SUMR, S1I, S1R, S2I,
      * S2R, TOL, YI, YR, ZEROI, ZEROR, ZETA1I, ZETA1R, ZETA2I, ZETA2R,
-     * ZET1DI, ZET1DR, ZET2DI, ZET2DR, ZI, ZR, ZRI, ZRR, D1MACH, ZABS
+     * ZET1DI, ZET1DR, ZET2DI, ZET2DR, ZI, ZR, ZRI, ZRR, D1MACH, AZABS
       INTEGER I, IB, IFLAG, IFN, IL, INIT, INU, IUF, K, KDFLG, KFLAG,
      * KK, KODE, MR, N, NW, NZ, INITD, IC, IPARD, J
       DIMENSION BRY(3), INIT(2), YR(N), YI(N), SUMR(2), SUMI(2),
@@ -65,7 +65,7 @@ C-----------------------------------------------------------------------
         IF (KODE.EQ.1) GO TO 20
         STR = ZRR + ZETA2R(J)
         STI = ZRI + ZETA2I(J)
-        RAST = FN/ZABS(STR,STI)
+        RAST = FN/AZABS(STR,STI)
         STR = STR*RAST*RAST
         STI = -STI*RAST*RAST
         S1R = ZETA1R(J) - STR
@@ -85,7 +85,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     REFINE  TEST AND SCALE
 C-----------------------------------------------------------------------
-        APHI = ZABS(PHIR(J),PHII(J))
+        APHI = AZABS(PHIR(J),PHII(J))
         RS1 = RS1 + DLOG(APHI)
         IF (DABS(RS1).GT.ELIM) GO TO 60
         IF (KDFLG.EQ.1) KFLAG = 1
@@ -133,7 +133,7 @@ C-----------------------------------------------------------------------
    70 CONTINUE
       I = N
    75 CONTINUE
-      RAZR = 1.0D0/ZABS(ZRR,ZRI)
+      RAZR = 1.0D0/AZABS(ZRR,ZRI)
       STR = ZRR*RAZR
       STI = -ZRI*RAZR
       RZR = (STR+STR)*RAZR
@@ -156,7 +156,7 @@ C-----------------------------------------------------------------------
       IF (KODE.EQ.1) GO TO 80
       STR = ZRR + ZET2DR
       STI = ZRI + ZET2DI
-      RAST = FN/ZABS(STR,STI)
+      RAST = FN/AZABS(STR,STI)
       STR = STR*RAST*RAST
       STI = -STI*RAST*RAST
       S1R = ZET1DR - STR
@@ -172,7 +172,7 @@ C-----------------------------------------------------------------------
 C----------------------------------------------------------------------------
 C     REFINE ESTIMATE AND TEST
 C-------------------------------------------------------------------------
-      APHI = ZABS(PHIDR,PHIDI)
+      APHI = AZABS(PHIDR,PHIDI)
       RS1 = RS1+DLOG(APHI)
       IF (DABS(RS1).LT.ELIM) GO TO 100
    95 CONTINUE
@@ -287,7 +287,7 @@ C-----------------------------------------------------------------------
         IF (KODE.EQ.1) GO TO 200
         STR = ZRR + ZET2DR
         STI = ZRI + ZET2DI
-        RAST = FN/ZABS(STR,STI)
+        RAST = FN/AZABS(STR,STI)
         STR = STR*RAST*RAST
         STI = -STI*RAST*RAST
         S1R = -ZET1DR + STR
@@ -307,7 +307,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     REFINE  TEST AND SCALE
 C-----------------------------------------------------------------------
-        APHI = ZABS(PHIDR,PHIDI)
+        APHI = AZABS(PHIDR,PHIDI)
         RS1 = RS1 + DLOG(APHI)
         IF (DABS(RS1).GT.ELIM) GO TO 260
         IF (KDFLG.EQ.1) IFLAG = 1

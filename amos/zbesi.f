@@ -1,54 +1,54 @@
-      SUBROUTINE ZBESJ(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, IERR)
-C***BEGIN PROLOGUE  ZBESJ
+      SUBROUTINE ZBESI(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, IERR)
+C***BEGIN PROLOGUE  ZBESI
 C***DATE WRITTEN   830501   (YYMMDD)
 C***REVISION DATE  890801   (YYMMDD)
 C***CATEGORY NO.  B5K
-C***KEYWORDS  J-BESSEL FUNCTION,BESSEL FUNCTION OF COMPLEX ARGUMENT,
-C             BESSEL FUNCTION OF FIRST KIND
+C***KEYWORDS  I-BESSEL FUNCTION,COMPLEX BESSEL FUNCTION,
+C             MODIFIED BESSEL FUNCTION OF THE FIRST KIND
 C***AUTHOR  AMOS, DONALD E., SANDIA NATIONAL LABORATORIES
-C***PURPOSE  TO COMPUTE THE J-BESSEL FUNCTION OF A COMPLEX ARGUMENT
+C***PURPOSE  TO COMPUTE I-BESSEL FUNCTIONS OF COMPLEX ARGUMENT
 C***DESCRIPTION
 C
-C                      ***A DOUBLE PRECISION ROUTINE***
-C         ON KODE=1, CBESJ COMPUTES AN N MEMBER  SEQUENCE OF COMPLEX
-C         BESSEL FUNCTIONS CY(I)=J(FNU+I-1,Z) FOR REAL, NONNEGATIVE
-C         ORDERS FNU+I-1, I=1,...,N AND COMPLEX Z IN THE CUT PLANE
-C         -PI.LT.ARG(Z).LE.PI. ON KODE=2, CBESJ RETURNS THE SCALED
+C                    ***A DOUBLE PRECISION ROUTINE***
+C         ON KODE=1, ZBESI COMPUTES AN N MEMBER SEQUENCE OF COMPLEX
+C         BESSEL FUNCTIONS CY(J)=I(FNU+J-1,Z) FOR REAL, NONNEGATIVE
+C         ORDERS FNU+J-1, J=1,...,N AND COMPLEX Z IN THE CUT PLANE
+C         -PI.LT.ARG(Z).LE.PI. ON KODE=2, ZBESI RETURNS THE SCALED
 C         FUNCTIONS
 C
-C         CY(I)=EXP(-ABS(Y))*J(FNU+I-1,Z)   I = 1,...,N , Y=AIMAG(Z)
+C         CY(J)=EXP(-ABS(X))*I(FNU+J-1,Z)   J = 1,...,N , X=REAL(Z)
 C
-C         WHICH REMOVE THE EXPONENTIAL GROWTH IN BOTH THE UPPER AND
-C         LOWER HALF PLANES FOR Z TO INFINITY. DEFINITIONS AND NOTATION
+C         WITH THE EXPONENTIAL GROWTH REMOVED IN BOTH THE LEFT AND
+C         RIGHT HALF PLANES FOR Z TO INFINITY. DEFINITIONS AND NOTATION
 C         ARE FOUND IN THE NBS HANDBOOK OF MATHEMATICAL FUNCTIONS
 C         (REF. 1).
 C
 C         INPUT      ZR,ZI,FNU ARE DOUBLE PRECISION
 C           ZR,ZI  - Z=CMPLX(ZR,ZI),  -PI.LT.ARG(Z).LE.PI
-C           FNU    - ORDER OF INITIAL J FUNCTION, FNU.GE.0.0D0
+C           FNU    - ORDER OF INITIAL I FUNCTION, FNU.GE.0.0D0
 C           KODE   - A PARAMETER TO INDICATE THE SCALING OPTION
 C                    KODE= 1  RETURNS
-C                             CY(I)=J(FNU+I-1,Z), I=1,...,N
+C                             CY(J)=I(FNU+J-1,Z), J=1,...,N
 C                        = 2  RETURNS
-C                             CY(I)=J(FNU+I-1,Z)EXP(-ABS(Y)), I=1,...,N
+C                             CY(J)=I(FNU+J-1,Z)*EXP(-ABS(X)), J=1,...,N
 C           N      - NUMBER OF MEMBERS OF THE SEQUENCE, N.GE.1
 C
 C         OUTPUT     CYR,CYI ARE DOUBLE PRECISION
 C           CYR,CYI- DOUBLE PRECISION VECTORS WHOSE FIRST N COMPONENTS
 C                    CONTAIN REAL AND IMAGINARY PARTS FOR THE SEQUENCE
-C                    CY(I)=J(FNU+I-1,Z)  OR
-C                    CY(I)=J(FNU+I-1,Z)EXP(-ABS(Y))  I=1,...,N
-C                    DEPENDING ON KODE, Y=AIMAG(Z).
+C                    CY(J)=I(FNU+J-1,Z)  OR
+C                    CY(J)=I(FNU+J-1,Z)*EXP(-ABS(X))  J=1,...,N
+C                    DEPENDING ON KODE, X=REAL(Z)
 C           NZ     - NUMBER OF COMPONENTS SET TO ZERO DUE TO UNDERFLOW,
 C                    NZ= 0   , NORMAL RETURN
-C                    NZ.GT.0 , LAST NZ COMPONENTS OF CY SET  ZERO DUE
-C                              TO UNDERFLOW, CY(I)=CMPLX(0.0D0,0.0D0),
-C                              I = N-NZ+1,...,N
+C                    NZ.GT.0 , LAST NZ COMPONENTS OF CY SET TO ZERO
+C                              TO UNDERFLOW, CY(J)=CMPLX(0.0D0,0.0D0)
+C                              J = N-NZ+1,...,N
 C           IERR   - ERROR FLAG
 C                    IERR=0, NORMAL RETURN - COMPUTATION COMPLETED
 C                    IERR=1, INPUT ERROR   - NO COMPUTATION
-C                    IERR=2, OVERFLOW      - NO COMPUTATION, AIMAG(Z)
-C                            TOO LARGE ON KODE=1
+C                    IERR=2, OVERFLOW      - NO COMPUTATION, REAL(Z) TOO
+C                            LARGE ON KODE=1
 C                    IERR=3, CABS(Z) OR FNU+N-1 LARGE - COMPUTATION DONE
 C                            BUT LOSSES OF SIGNIFCANCE BY ARGUMENT
 C                            REDUCTION PRODUCE LESS THAN HALF OF MACHINE
@@ -61,23 +61,29 @@ C                            ALGORITHM TERMINATION CONDITION NOT MET
 C
 C***LONG DESCRIPTION
 C
-C         THE COMPUTATION IS CARRIED OUT BY THE FORMULA
+C         THE COMPUTATION IS CARRIED OUT BY THE POWER SERIES FOR
+C         SMALL CABS(Z), THE ASYMPTOTIC EXPANSION FOR LARGE CABS(Z),
+C         THE MILLER ALGORITHM NORMALIZED BY THE WRONSKIAN AND A
+C         NEUMANN SERIES FOR IMTERMEDIATE MAGNITUDES, AND THE
+C         UNIFORM ASYMPTOTIC EXPANSIONS FOR I(FNU,Z) AND J(FNU,Z)
+C         FOR LARGE ORDERS. BACKWARD RECURRENCE IS USED TO GENERATE
+C         SEQUENCES OR REDUCE ORDERS WHEN NECESSARY.
 C
-C         J(FNU,Z)=EXP( FNU*PI*I/2)*I(FNU,-I*Z)    AIMAG(Z).GE.0.0
+C         THE CALCULATIONS ABOVE ARE DONE IN THE RIGHT HALF PLANE AND
+C         CONTINUED INTO THE LEFT HALF PLANE BY THE FORMULA
 C
-C         J(FNU,Z)=EXP(-FNU*PI*I/2)*I(FNU, I*Z)    AIMAG(Z).LT.0.0
-C
-C         WHERE I**2 = -1 AND I(FNU,Z) IS THE I BESSEL FUNCTION.
+C         I(FNU,Z*EXP(M*PI)) = EXP(M*PI*FNU)*I(FNU,Z)  REAL(Z).GT.0.0
+C                       M = +I OR -I,  I**2=-1
 C
 C         FOR NEGATIVE ORDERS,THE FORMULA
 C
-C              J(-FNU,Z) = J(FNU,Z)*COS(PI*FNU) - Y(FNU,Z)*SIN(PI*FNU)
+C              I(-FNU,Z) = I(FNU,Z) + (2/PI)*SIN(PI*FNU)*K(FNU,Z)
 C
 C         CAN BE USED. HOWEVER,FOR LARGE ORDERS CLOSE TO INTEGERS, THE
 C         THE FUNCTION CHANGES RADICALLY. WHEN FNU IS A LARGE POSITIVE
-C         INTEGER,THE MAGNITUDE OF J(-FNU,Z)=J(FNU,Z)*COS(PI*FNU) IS A
-C         LARGE NEGATIVE POWER OF TEN. BUT WHEN FNU IS NOT AN INTEGER,
-C         Y(FNU,Z) DOMINATES IN MAGNITUDE WITH A LARGE POSITIVE POWER OF
+C         INTEGER,THE MAGNITUDE OF I(-FNU,Z)=I(FNU,Z) IS A LARGE
+C         NEGATIVE POWER OF TEN. BUT WHEN FNU IS NOT AN INTEGER,
+C         K(FNU,Z) DOMINATES IN MAGNITUDE WITH A LARGE POSITIVE POWER OF
 C         TEN AND THE MOST THAT THE SECOND TERM CAN BE REDUCED IS BY
 C         UNIT ROUNDOFF FROM THE COEFFICIENT. THUS, WIDE CHANGES CAN
 C         OCCUR WITHIN UNIT ROUNDOFF OF A LARGE INTEGER FOR FNU. HERE,
@@ -142,17 +148,17 @@ C                 ARGUMENT AND NONNEGATIVE ORDER BY D. E. AMOS, TRANS.
 C                 MATH. SOFTWARE, 1986
 C
 C***ROUTINES CALLED  ZBINU,I1MACH,D1MACH
-C***END PROLOGUE  ZBESJ
-C
-C     COMPLEX CI,CSGN,CY,Z,ZN
-      DOUBLE PRECISION AA, ALIM, ARG, CII, CSGNI, CSGNR, CYI, CYR, DIG,
-     * ELIM, FNU, FNUL, HPI, RL, R1M5, STR, TOL, ZI, ZNI, ZNR, ZR,
-     * D1MACH, BB, FN, AZ, AZABS, ASCLE, RTOL, ATOL, STI
-      INTEGER I, IERR, INU, INUH, IR, K, KODE, K1, K2, N, NL, NZ, I1MACH
+C***END PROLOGUE  ZBESI
+C     COMPLEX CONE,CSGN,CW,CY,CZERO,Z,ZN
+      DOUBLE PRECISION AA, ALIM, ARG, CONEI, CONER, CSGNI, CSGNR, CYI,
+     * CYR, DIG, ELIM, FNU, FNUL, PI, RL, R1M5, STR, TOL, ZI, ZNI, ZNR,
+     * ZR, D1MACH, AZ, BB, FN, AZABS, ASCLE, RTOL, ATOL, STI
+      INTEGER I, IERR, INU, K, KODE, K1,K2,N,NZ,NN, I1MACH
       DIMENSION CYR(N), CYI(N)
-      DATA HPI /1.57079632679489662D0/
+      DATA PI /3.14159265358979324D0/
+      DATA CONER, CONEI /1.0D0,0.0D0/
 C
-C***FIRST EXECUTABLE STATEMENT  ZBESJ
+C***FIRST EXECUTABLE STATEMENT  ZBESI
       IERR = 0
       NZ=0
       IF (FNU.LT.0.0D0) IERR=1
@@ -183,7 +189,7 @@ C-----------------------------------------------------------------------
       ALIM = ELIM + DMAX1(-AA,-41.45D0)
       RL = 1.2D0*DIG + 3.0D0
       FNUL = 10.0D0 + 6.0D0*(DIG-3.0D0)
-C-----------------------------------------------------------------------
+C-----------------------------------------------------------------------------
 C     TEST FOR PROPER RANGE
 C-----------------------------------------------------------------------
       AZ = AZABS(ZR,ZI)
@@ -196,40 +202,38 @@ C-----------------------------------------------------------------------
       AA = DSQRT(AA)
       IF (AZ.GT.AA) IERR=3
       IF (FN.GT.AA) IERR=3
+      ZNR = ZR
+      ZNI = ZI
+      CSGNR = CONER
+      CSGNI = CONEI
+      IF (ZR.GE.0.0D0) GO TO 40
+      ZNR = -ZR
+      ZNI = -ZI
 C-----------------------------------------------------------------------
-C     CALCULATE CSGN=EXP(FNU*HPI*I) TO MINIMIZE LOSSES OF SIGNIFICANCE
+C     CALCULATE CSGN=EXP(FNU*PI*I) TO MINIMIZE LOSSES OF SIGNIFICANCE
 C     WHEN FNU IS LARGE
 C-----------------------------------------------------------------------
-      CII = 1.0D0
       INU = INT(SNGL(FNU))
-      INUH = INU/2
-      IR = INU - 2*INUH
-      ARG = (FNU-DBLE(FLOAT(INU-IR)))*HPI
+      ARG = (FNU-DBLE(FLOAT(INU)))*PI
+      IF (ZI.LT.0.0D0) ARG = -ARG
       CSGNR = DCOS(ARG)
       CSGNI = DSIN(ARG)
-      IF (MOD(INUH,2).EQ.0) GO TO 40
+      IF (MOD(INU,2).EQ.0) GO TO 40
       CSGNR = -CSGNR
       CSGNI = -CSGNI
    40 CONTINUE
-C-----------------------------------------------------------------------
-C     ZN IS IN THE RIGHT HALF PLANE
-C-----------------------------------------------------------------------
-      ZNR = ZI
-      ZNI = -ZR
-      IF (ZI.GE.0.0D0) GO TO 50
-      ZNR = -ZNR
-      ZNI = -ZNI
-      CSGNI = -CSGNI
-      CII = -CII
-   50 CONTINUE
       CALL ZBINU(ZNR, ZNI, FNU, KODE, N, CYR, CYI, NZ, RL, FNUL, TOL,
      * ELIM, ALIM)
-      IF (NZ.LT.0) GO TO 130
-      NL = N - NZ
-      IF (NL.EQ.0) RETURN
+      IF (NZ.LT.0) GO TO 120
+      IF (ZR.GE.0.0D0) RETURN
+C-----------------------------------------------------------------------
+C     ANALYTIC CONTINUATION TO THE LEFT HALF PLANE
+C-----------------------------------------------------------------------
+      NN = N - NZ
+      IF (NN.EQ.0) RETURN
       RTOL = 1.0D0/TOL
       ASCLE = D1MACH(1)*RTOL*1.0D+3
-      DO 60 I=1,NL
+      DO 50 I=1,NN
 C       STR = CYR(I)*CSGNR - CYI(I)*CSGNI
 C       CYI(I) = CYR(I)*CSGNI + CYI(I)*CSGNR
 C       CYR(I) = STR
@@ -245,17 +249,16 @@ C       CYR(I) = STR
         STI = AA*CSGNI + BB*CSGNR
         CYR(I) = STR*ATOL
         CYI(I) = STI*ATOL
-        STR = -CSGNI*CII
-        CSGNI = CSGNR*CII
-        CSGNR = STR
-   60 CONTINUE
+        CSGNR = -CSGNR
+        CSGNI = -CSGNI
+   50 CONTINUE
+      RETURN
+  120 CONTINUE
+      IF(NZ.EQ.(-2)) GO TO 130
+      NZ = 0
+      IERR=2
       RETURN
   130 CONTINUE
-      IF(NZ.EQ.(-2)) GO TO 140
-      NZ = 0
-      IERR = 2
-      RETURN
-  140 CONTINUE
       NZ=0
       IERR=5
       RETURN

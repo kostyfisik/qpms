@@ -9,18 +9,18 @@ C     MATHEMATICAL SCIENCES, VOL 77B, P111-114, SEPTEMBER, 1973,
 C     BESSEL FUNCTIONS I AND J OF COMPLEX ARGUMENT AND INTEGER ORDER,
 C     BY D. J. SOOKNE.
 C
-C***ROUTINES CALLED  ZABS,ZDIV
+C***ROUTINES CALLED  AZABS,ZDIV
 C***END PROLOGUE  ZRATI
 C     COMPLEX Z,CY(1),CONE,CZERO,P1,P2,T1,RZ,PT,CDFNU
       DOUBLE PRECISION AK, AMAGZ, AP1, AP2, ARG, AZ, CDFNUI, CDFNUR,
      * CONEI, CONER, CYI, CYR, CZEROI, CZEROR, DFNU, FDNU, FLAM, FNU,
      * FNUP, PTI, PTR, P1I, P1R, P2I, P2R, RAK, RAP1, RHO, RT2, RZI,
-     * RZR, TEST, TEST1, TOL, TTI, TTR, T1I, T1R, ZI, ZR, ZABS
+     * RZR, TEST, TEST1, TOL, TTI, TTR, T1I, T1R, ZI, ZR, AZABS
       INTEGER I, ID, IDNU, INU, ITIME, K, KK, MAGZ, N
       DIMENSION CYR(N), CYI(N)
       DATA CZEROR,CZEROI,CONER,CONEI,RT2/
      1 0.0D0, 0.0D0, 1.0D0, 0.0D0, 1.41421356237309505D0 /
-      AZ = ZABS(ZR,ZI)
+      AZ = AZABS(ZR,ZI)
       INU = INT(SNGL(FNU))
       IDNU = INU + N - 1
       MAGZ = INT(SNGL(AZ))
@@ -42,8 +42,8 @@ C     COMPLEX Z,CY(1),CONE,CZERO,P1,P2,T1,RZ,PT,CDFNU
       T1R = T1R + RZR
       T1I = T1I + RZI
       IF (ID.GT.0) ID = 0
-      AP2 = ZABS(P2R,P2I)
-      AP1 = ZABS(P1R,P1I)
+      AP2 = AZABS(P2R,P2I)
+      AP1 = AZABS(P1R,P1I)
 C-----------------------------------------------------------------------
 C     THE OVERFLOW TEST ON K(FNU+I-1,Z) BEFORE THE CALL TO CBKNU
 C     GUARANTEES THAT P2 IS ON SCALE. SCALE TEST1 AND ALL SUBSEQUENT
@@ -70,10 +70,10 @@ C-----------------------------------------------------------------------
       P1I = PTI
       T1R = T1R + RZR
       T1I = T1I + RZI
-      AP2 = ZABS(P2R,P2I)
+      AP2 = AZABS(P2R,P2I)
       IF (AP1.LE.TEST) GO TO 10
       IF (ITIME.EQ.2) GO TO 20
-      AK = ZABS(T1R,T1I)*0.5D0
+      AK = AZABS(T1R,T1I)*0.5D0
       FLAM = AK + DSQRT(AK*AK-1.0D0)
       RHO = DMIN1(AP2/AP1,FLAM)
       TEST = TEST1*DSQRT(RHO/(RHO*RHO-1.0D0))
@@ -116,7 +116,7 @@ C-----------------------------------------------------------------------
       DO 60 I=2,N
         PTR = CDFNUR + (T1R*RZR-T1I*RZI) + CYR(K+1)
         PTI = CDFNUI + (T1R*RZI+T1I*RZR) + CYI(K+1)
-        AK = ZABS(PTR,PTI)
+        AK = AZABS(PTR,PTI)
         IF (AK.NE.CZEROR) GO TO 50
         PTR = TOL
         PTI = TOL

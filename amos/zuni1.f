@@ -12,7 +12,7 @@ C     NLAST.NE.0 IS THE NUMBER LEFT TO BE COMPUTED BY ANOTHER
 C     FORMULA FOR ORDERS FNU TO FNU+NLAST-1 BECAUSE FNU+NLAST-1.LT.FNUL.
 C     Y(I)=CZERO FOR I=NLAST+1,N
 C
-C***ROUTINES CALLED  ZUCHK,ZUNIK,ZUOIK,D1MACH,ZABS
+C***ROUTINES CALLED  ZUCHK,ZUNIK,ZUOIK,D1MACH,AZABS
 C***END PROLOGUE  ZUNI1
 C     COMPLEX CFN,CONE,CRSC,CSCL,CSR,CSS,CWRK,CZERO,C1,C2,PHI,RZ,SUM,S1,
 C    *S2,Y,Z,ZETA1,ZETA2
@@ -20,7 +20,7 @@ C    *S2,Y,Z,ZETA1,ZETA2
      * CSCL, CSRR, CSSR, CWRKI, CWRKR, C1R, C2I, C2M, C2R, ELIM, FN,
      * FNU, FNUL, PHII, PHIR, RAST, RS1, RZI, RZR, STI, STR, SUMI,
      * SUMR, S1I, S1R, S2I, S2R, TOL, YI, YR, ZEROI, ZEROR, ZETA1I,
-     * ZETA1R, ZETA2I, ZETA2R, ZI, ZR, CYR, CYI, D1MACH, ZABS
+     * ZETA1R, ZETA2I, ZETA2R, ZI, ZR, CYR, CYI, D1MACH, AZABS
       INTEGER I, IFLAG, INIT, K, KODE, M, N, ND, NLAST, NN, NUF, NW, NZ
       DIMENSION BRY(3), YR(N), YI(N), CWRKR(16), CWRKI(16), CSSR(3),
      * CSRR(3), CYR(2), CYI(2)
@@ -53,7 +53,7 @@ C-----------------------------------------------------------------------
       IF (KODE.EQ.1) GO TO 10
       STR = ZR + ZETA2R
       STI = ZI + ZETA2I
-      RAST = FN/ZABS(STR,STI)
+      RAST = FN/AZABS(STR,STI)
       STR = STR*RAST*RAST
       STI = -STI*RAST*RAST
       S1R = -ZETA1R + STR
@@ -75,7 +75,7 @@ C-----------------------------------------------------------------------
         IF (KODE.EQ.1) GO TO 40
         STR = ZR + ZETA2R
         STI = ZI + ZETA2I
-        RAST = FN/ZABS(STR,STI)
+        RAST = FN/AZABS(STR,STI)
         STR = STR*RAST*RAST
         STI = -STI*RAST*RAST
         S1R = -ZETA1R + STR
@@ -95,7 +95,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     REFINE  TEST AND SCALE
 C-----------------------------------------------------------------------
-        APHI = ZABS(PHIR,PHII)
+        APHI = AZABS(PHIR,PHII)
         RS1 = RS1 + DLOG(APHI)
         IF (DABS(RS1).GT.ELIM) GO TO 110
         IF (I.EQ.1) IFLAG = 1
@@ -124,7 +124,7 @@ C-----------------------------------------------------------------------
         YI(M) = S2I*CSRR(IFLAG)
    80 CONTINUE
       IF (ND.LE.2) GO TO 100
-      RAST = 1.0D0/ZABS(ZR,ZI)
+      RAST = 1.0D0/AZABS(ZR,ZI)
       STR = ZR*RAST
       STI = -ZI*RAST
       RZR = (STR+STR)*RAST

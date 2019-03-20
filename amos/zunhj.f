@@ -29,7 +29,7 @@ C         MCONJ=SIGN OF AIMAG(Z), BUT IS AMBIGUOUS WHEN Z IS REAL AND
 C         MUST BE SPECIFIED. IPMTR=0 RETURNS ALL PARAMETERS. IPMTR=
 C         1 COMPUTES ALL EXCEPT ASUM AND BSUM.
 C
-C***ROUTINES CALLED  ZABS,ZDIV,ZLOG,ZSQRT,D1MACH
+C***ROUTINES CALLED  AZABS,ZDIV,AZLOG,AZSQRT,D1MACH
 C***END PROLOGUE  ZUNHJ
 C     COMPLEX ARG,ASUM,BSUM,CFNU,CONE,CR,CZERO,DR,P,PHI,PRZTH,PTFN,
 C    *RFN13,RTZTA,RZTH,SUMA,SUMB,TFN,T2,UP,W,W2,Z,ZA,ZB,ZC,ZETA,ZETA1,
@@ -42,7 +42,7 @@ C    *ZETA2,ZTH
      * SUMAI, SUMAR, SUMBI, SUMBR, TEST, TFNI, TFNR, THPI, TOL, TZAI,
      * TZAR, T2I, T2R, UPI, UPR, WI, WR, W2I, W2R, ZAI, ZAR, ZBI, ZBR,
      * ZCI, ZCR, ZEROI, ZEROR, ZETAI, ZETAR, ZETA1I, ZETA1R, ZETA2I,
-     * ZETA2R, ZI, ZR, ZTHI, ZTHR, ZABS, AC, D1MACH
+     * ZETA2R, ZI, ZR, ZTHI, ZTHR, AZABS, AC, D1MACH
       INTEGER IAS, IBS, IPMTR, IS, J, JR, JU, K, KMAX, KP1, KS, L, LR,
      * LRP1, L1, L2, M, IDUM
       DIMENSION AR(14), BR(14), C(105), ALFA(180), BETA(210), GAMA(30),
@@ -457,7 +457,7 @@ C-----------------------------------------------------------------------
       RFN13 = 1.0D0/FN13
       W2R = CONER - ZBR*ZBR + ZBI*ZBI
       W2I = CONEI - ZBR*ZBI - ZBR*ZBI
-      AW2 = ZABS(W2R,W2I)
+      AW2 = AZABS(W2R,W2I)
       IF (AW2.GT.0.25D0) GO TO 130
 C-----------------------------------------------------------------------
 C     POWER SERIES FOR CABS(W2).LE.0.25D0
@@ -484,8 +484,8 @@ C-----------------------------------------------------------------------
       ZETAI = W2R*SUMAI + W2I*SUMAR
       ARGR = ZETAR*FN23
       ARGI = ZETAI*FN23
-      CALL ZSQRT(SUMAR, SUMAI, ZAR, ZAI)
-      CALL ZSQRT(W2R, W2I, STR, STI)
+      CALL AZSQRT(SUMAR, SUMAI, ZAR, ZAI)
+      CALL AZSQRT(W2R, W2I, STR, STI)
       ZETA2R = STR*FNU
       ZETA2I = STI*FNU
       STR = CONER + EX2*(ZETAR*ZAR-ZETAI*ZAI)
@@ -494,7 +494,7 @@ C-----------------------------------------------------------------------
       ZETA1I = STR*ZETA2I + STI*ZETA2R
       ZAR = ZAR + ZAR
       ZAI = ZAI + ZAI
-      CALL ZSQRT(ZAR, ZAI, STR, STI)
+      CALL AZSQRT(ZAR, ZAI, STR, STI)
       PHIR = STR*RFN13
       PHII = STI*RFN13
       IF (IPMTR.EQ.1) GO TO 120
@@ -565,13 +565,13 @@ C-----------------------------------------------------------------------
 C     CABS(W2).GT.0.25D0
 C-----------------------------------------------------------------------
   130 CONTINUE
-      CALL ZSQRT(W2R, W2I, WR, WI)
+      CALL AZSQRT(W2R, W2I, WR, WI)
       IF (WR.LT.0.0D0) WR = 0.0D0
       IF (WI.LT.0.0D0) WI = 0.0D0
       STR = CONER + WR
       STI = WI
       CALL ZDIV(STR, STI, ZBR, ZBI, ZAR, ZAI)
-      CALL ZLOG(ZAR, ZAI, ZCR, ZCI, IDUM)
+      CALL AZLOG(ZAR, ZAI, ZCR, ZCI, IDUM)
       IF (ZCI.LT.0.0D0) ZCI = 0.0D0
       IF (ZCI.GT.HPI) ZCI = HPI
       IF (ZCR.LT.0.0D0) ZCR = 0.0D0
@@ -581,7 +581,7 @@ C-----------------------------------------------------------------------
       ZETA1I = ZCI*FNU
       ZETA2R = WR*FNU
       ZETA2I = WI*FNU
-      AZTH = ZABS(ZTHR,ZTHI)
+      AZTH = AZABS(ZTHR,ZTHI)
       ANG = THPI
       IF (ZTHR.GE.0.0D0 .AND. ZTHI.LT.0.0D0) GO TO 140
       ANG = HPI
@@ -600,7 +600,7 @@ C-----------------------------------------------------------------------
       CALL ZDIV(RTZTR, RTZTI, WR, WI, ZAR, ZAI)
       TZAR = ZAR + ZAR
       TZAI = ZAI + ZAI
-      CALL ZSQRT(TZAR, TZAI, STR, STI)
+      CALL AZSQRT(TZAR, TZAI, STR, STI)
       PHIR = STR*RFN13
       PHII = STI*RFN13
       IF (IPMTR.EQ.1) GO TO 120

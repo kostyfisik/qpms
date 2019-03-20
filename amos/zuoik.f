@@ -23,7 +23,7 @@ C     IKFLG=2 AND NUF.EQ.N MEANS ALL Y VALUES WERE SET TO ZERO
 C     IKFLG=2 AND 0.LT.NUF.LT.N NOT CONSIDERED. Y MUST BE SET BY
 C             ANOTHER ROUTINE
 C
-C***ROUTINES CALLED  ZUCHK,ZUNHJ,ZUNIK,D1MACH,ZABS,ZLOG
+C***ROUTINES CALLED  ZUCHK,ZUNHJ,ZUNIK,D1MACH,AZABS,AZLOG
 C***END PROLOGUE  ZUOIK
 C     COMPLEX ARG,ASUM,BSUM,CWRK,CZ,CZERO,PHI,SUM,Y,Z,ZB,ZETA1,ZETA2,ZN,
 C    *ZR
@@ -31,7 +31,7 @@ C    *ZR
      * ASCLE, AX, AY, BSUMI, BSUMR, CWRKI, CWRKR, CZI, CZR, ELIM, FNN,
      * FNU, GNN, GNU, PHII, PHIR, RCZ, STR, STI, SUMI, SUMR, TOL, YI,
      * YR, ZBI, ZBR, ZEROI, ZEROR, ZETA1I, ZETA1R, ZETA2I, ZETA2R, ZI,
-     * ZNI, ZNR, ZR, ZRI, ZRR, D1MACH, ZABS
+     * ZNI, ZNR, ZR, ZRI, ZRR, D1MACH, AZABS
       INTEGER I, IDUM, IFORM, IKFLG, INIT, KODE, N, NN, NUF, NW
       DIMENSION YR(N), YI(N), CWRKR(16), CWRKI(16)
       DATA ZEROR,ZEROI / 0.0D0, 0.0D0 /
@@ -78,7 +78,7 @@ C-----------------------------------------------------------------------
      * ZETA1I, ZETA2R, ZETA2I, ASUMR, ASUMI, BSUMR, BSUMI)
       CZR = -ZETA1R + ZETA2R
       CZI = -ZETA1I + ZETA2I
-      AARG = ZABS(ARGR,ARGI)
+      AARG = AZABS(ARGR,ARGI)
    50 CONTINUE
       IF (KODE.EQ.1) GO TO 60
       CZR = CZR - ZBR
@@ -88,7 +88,7 @@ C-----------------------------------------------------------------------
       CZR = -CZR
       CZI = -CZI
    70 CONTINUE
-      APHI = ZABS(PHIR,PHII)
+      APHI = AZABS(PHIR,PHII)
       RCZ = CZR
 C-----------------------------------------------------------------------
 C     OVERFLOW TEST
@@ -117,11 +117,11 @@ C-----------------------------------------------------------------------
       RETURN
   110 CONTINUE
       ASCLE = 1.0D+3*D1MACH(1)/TOL
-      CALL ZLOG(PHIR, PHII, STR, STI, IDUM)
+      CALL AZLOG(PHIR, PHII, STR, STI, IDUM)
       CZR = CZR + STR
       CZI = CZI + STI
       IF (IFORM.EQ.1) GO TO 120
-      CALL ZLOG(ARGR, ARGI, STR, STI, IDUM)
+      CALL AZLOG(ARGR, ARGI, STR, STI, IDUM)
       CZR = CZR - 0.25D0*STR - AIC
       CZI = CZI - 0.25D0*STI
   120 CONTINUE
@@ -151,13 +151,13 @@ C-----------------------------------------------------------------------
      * ZETA1I, ZETA2R, ZETA2I, ASUMR, ASUMI, BSUMR, BSUMI)
       CZR = -ZETA1R + ZETA2R
       CZI = -ZETA1I + ZETA2I
-      AARG = ZABS(ARGR,ARGI)
+      AARG = AZABS(ARGR,ARGI)
   160 CONTINUE
       IF (KODE.EQ.1) GO TO 170
       CZR = CZR - ZBR
       CZI = CZI - ZBI
   170 CONTINUE
-      APHI = ZABS(PHIR,PHII)
+      APHI = AZABS(PHIR,PHII)
       RCZ = CZR
       IF (RCZ.LT.(-ELIM)) GO TO 180
       IF (RCZ.GT.(-ALIM)) RETURN
@@ -173,11 +173,11 @@ C-----------------------------------------------------------------------
       GO TO 140
   190 CONTINUE
       ASCLE = 1.0D+3*D1MACH(1)/TOL
-      CALL ZLOG(PHIR, PHII, STR, STI, IDUM)
+      CALL AZLOG(PHIR, PHII, STR, STI, IDUM)
       CZR = CZR + STR
       CZI = CZI + STI
       IF (IFORM.EQ.1) GO TO 200
-      CALL ZLOG(ARGR, ARGI, STR, STI, IDUM)
+      CALL AZLOG(ARGR, ARGI, STR, STI, IDUM)
       CZR = CZR - 0.25D0*STR - AIC
       CZI = CZI - 0.25D0*STI
   200 CONTINUE

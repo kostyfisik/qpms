@@ -9,12 +9,12 @@ C     FNU+N-1 GREATER THAN FNUL BY ADDING NUI AND COMPUTING
 C     ACCORDING TO THE UNIFORM ASYMPTOTIC EXPANSION FOR I(FNU,Z)
 C     ON IFORM=1 AND THE EXPANSION FOR J(FNU,Z) ON IFORM=2
 C
-C***ROUTINES CALLED  ZUNI1,ZUNI2,ZABS,D1MACH
+C***ROUTINES CALLED  ZUNI1,ZUNI2,AZABS,D1MACH
 C***END PROLOGUE  ZBUNI
 C     COMPLEX CSCL,CSCR,CY,RZ,ST,S1,S2,Y,Z
       DOUBLE PRECISION ALIM, AX, AY, CSCLR, CSCRR, CYI, CYR, DFNU,
      * ELIM, FNU, FNUI, FNUL, GNU, RAZ, RZI, RZR, STI, STR, S1I, S1R,
-     * S2I, S2R, TOL, YI, YR, ZI, ZR, ZABS, ASCLE, BRY, C1R, C1I, C1M,
+     * S2I, S2R, TOL, YI, YR, ZI, ZR, AZABS, ASCLE, BRY, C1R, C1I, C1M,
      * D1MACH
       INTEGER I, IFLAG, IFORM, K, KODE, N, NL, NLAST, NUI, NW, NZ
       DIMENSION YR(N), YI(N), CYR(2), CYI(2), BRY(3)
@@ -46,7 +46,7 @@ C-----------------------------------------------------------------------
    20 CONTINUE
       IF (NW.LT.0) GO TO 50
       IF (NW.NE.0) GO TO 90
-      STR = ZABS(CYR(1),CYI(1))
+      STR = AZABS(CYR(1),CYI(1))
 C----------------------------------------------------------------------
 C     SCALE BACKWARD RECURRENCE, BRY(3) IS DEFINED BUT NEVER USED
 C----------------------------------------------------------------------
@@ -72,7 +72,7 @@ C----------------------------------------------------------------------
       S1I = CYI(2)*CSCLR
       S2R = CYR(1)*CSCLR
       S2I = CYI(1)*CSCLR
-      RAZ = 1.0D0/ZABS(ZR,ZI)
+      RAZ = 1.0D0/AZABS(ZR,ZI)
       STR = ZR*RAZ
       STI = -ZI*RAZ
       RZR = (STR+STR)*RAZ

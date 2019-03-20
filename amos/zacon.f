@@ -11,7 +11,7 @@ C
 C     TO CONTINUE THE K FUNCTION FROM THE RIGHT HALF TO THE LEFT
 C     HALF Z PLANE
 C
-C***ROUTINES CALLED  ZBINU,ZBKNU,ZS1S2,D1MACH,ZABS,ZMLT
+C***ROUTINES CALLED  ZBINU,ZBKNU,ZS1S2,D1MACH,AZABS,ZMLT
 C***END PROLOGUE  ZACON
 C     COMPLEX CK,CONE,CSCL,CSCR,CSGN,CSPN,CY,CZERO,C1,C2,RZ,SC1,SC2,ST,
 C    *S1,S2,Y,Z,ZN
@@ -20,7 +20,7 @@ C    *S1,S2,Y,Z,ZN
      * CSR, CSRR, CSSR, CYI, CYR, C1I, C1M, C1R, C2I, C2R, ELIM, FMR,
      * FN, FNU, FNUL, PI, PTI, PTR, RAZN, RL, RZI, RZR, SC1I, SC1R,
      * SC2I, SC2R, SGN, SPN, STI, STR, S1I, S1R, S2I, S2R, TOL, YI, YR,
-     * YY, ZEROR, ZI, ZNI, ZNR, ZR, D1MACH, ZABS
+     * YY, ZEROR, ZI, ZNI, ZNR, ZR, D1MACH, AZABS
       INTEGER I, INU, IUF, KFLAG, KODE, MR, N, NN, NW, NZ
       DIMENSION YR(N), YI(N), CYR(2), CYI(2), CSSR(3), CSRR(3), BRY(3)
       DATA PI / 3.14159265358979324D0 /
@@ -102,7 +102,7 @@ C-----------------------------------------------------------------------
       IF (N.EQ.2) RETURN
       CSPNR = -CSPNR
       CSPNI = -CSPNI
-      AZN = ZABS(ZNR,ZNI)
+      AZN = AZABS(ZNR,ZNI)
       RAZN = 1.0D0/AZN
       STR = ZNR*RAZN
       STI = -ZNI*RAZN
@@ -125,7 +125,7 @@ C-----------------------------------------------------------------------
       BRY(1) = ASCLE
       BRY(2) = 1.0D0/ASCLE
       BRY(3) = D1MACH(2)
-      AS2 = ZABS(S2R,S2I)
+      AS2 = AZABS(S2R,S2I)
       KFLAG = 2
       IF (AS2.GT.BRY(1)) GO TO 50
       KFLAG = 1

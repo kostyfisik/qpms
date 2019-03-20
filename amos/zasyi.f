@@ -8,21 +8,21 @@ C     MEANS OF THE ASYMPTOTIC EXPANSION FOR LARGE CABS(Z) IN THE
 C     REGION CABS(Z).GT.MAX(RL,FNU*FNU/2). NZ=0 IS A NORMAL RETURN.
 C     NZ.LT.0 INDICATES AN OVERFLOW ON KODE=1.
 C
-C***ROUTINES CALLED  D1MACH,ZABS,ZDIV,ZEXP,ZMLT,ZSQRT
+C***ROUTINES CALLED  D1MACH,AZABS,ZDIV,AZEXP,ZMLT,AZSQRT
 C***END PROLOGUE  ZASYI
 C     COMPLEX AK1,CK,CONE,CS1,CS2,CZ,CZERO,DK,EZ,P1,RZ,S2,Y,Z
       DOUBLE PRECISION AA, AEZ, AK, AK1I, AK1R, ALIM, ARG, ARM, ATOL,
      * AZ, BB, BK, CKI, CKR, CONEI, CONER, CS1I, CS1R, CS2I, CS2R, CZI,
      * CZR, DFNU, DKI, DKR, DNU2, ELIM, EZI, EZR, FDN, FNU, PI, P1I,
      * P1R, RAZ, RL, RTPI, RTR1, RZI, RZR, S, SGN, SQK, STI, STR, S2I,
-     * S2R, TOL, TZI, TZR, YI, YR, ZEROI, ZEROR, ZI, ZR, D1MACH, ZABS
+     * S2R, TOL, TZI, TZR, YI, YR, ZEROI, ZEROR, ZI, ZR, D1MACH, AZABS
       INTEGER I, IB, IL, INU, J, JL, K, KODE, KODED, M, N, NN, NZ
       DIMENSION YR(N), YI(N)
       DATA PI, RTPI  /3.14159265358979324D0 , 0.159154943091895336D0 /
       DATA ZEROR,ZEROI,CONER,CONEI / 0.0D0, 0.0D0, 1.0D0, 0.0D0 /
 C
       NZ = 0
-      AZ = ZABS(ZR,ZI)
+      AZ = AZABS(ZR,ZI)
       ARM = 1.0D+3*D1MACH(1)
       RTR1 = DSQRT(ARM)
       IL = MIN0(2,N)
@@ -35,7 +35,7 @@ C-----------------------------------------------------------------------
       STI = -ZI*RAZ
       AK1R = RTPI*STR*RAZ
       AK1I = RTPI*STI*RAZ
-      CALL ZSQRT(AK1R, AK1I, AK1R, AK1I)
+      CALL AZSQRT(AK1R, AK1I, AK1R, AK1I)
       CZR = ZR
       CZI = ZI
       IF (KODE.NE.2) GO TO 10
@@ -47,7 +47,7 @@ C-----------------------------------------------------------------------
       KODED = 1
       IF ((DABS(CZR).GT.ALIM) .AND. (N.GT.2)) GO TO 20
       KODED = 0
-      CALL ZEXP(CZR, CZI, STR, STI)
+      CALL AZEXP(CZR, CZI, STR, STI)
       CALL ZMLT(AK1R, AK1I, STR, STI, AK1R, AK1I)
    20 CONTINUE
       FDN = 0.0D0
@@ -120,7 +120,7 @@ C-----------------------------------------------------------------------
         IF (ZR+ZR.GE.ELIM) GO TO 60
         TZR = ZR + ZR
         TZI = ZI + ZI
-        CALL ZEXP(-TZR, -TZI, STR, STI)
+        CALL AZEXP(-TZR, -TZI, STR, STI)
         CALL ZMLT(STR, STI, P1R, P1I, STR, STI)
         CALL ZMLT(STR, STI, CS2R, CS2I, STR, STI)
         S2R = S2R + STR
@@ -149,7 +149,7 @@ C-----------------------------------------------------------------------
         K = K - 1
    80 CONTINUE
       IF (KODED.EQ.0) RETURN
-      CALL ZEXP(CZR, CZI, CKR, CKI)
+      CALL AZEXP(CZR, CZI, CKR, CKI)
       DO 90 I=1,NN
         STR = YR(I)*CKR - YI(I)*CKI
         YI(I) = YR(I)*CKI + YI(I)*CKR

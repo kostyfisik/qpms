@@ -1,24 +1,20 @@
-      SUBROUTINE ZAIRY(ZR, ZI, ID, KODE, AIR, AII, NZ, IERR)
-C***BEGIN PROLOGUE  ZAIRY
+      SUBROUTINE ZBIRY(ZR, ZI, ID, KODE, BIR, BII, IERR)
+C***BEGIN PROLOGUE  ZBIRY
 C***DATE WRITTEN   830501   (YYMMDD)
 C***REVISION DATE  890801   (YYMMDD)
 C***CATEGORY NO.  B5K
 C***KEYWORDS  AIRY FUNCTION,BESSEL FUNCTIONS OF ORDER ONE THIRD
 C***AUTHOR  AMOS, DONALD E., SANDIA NATIONAL LABORATORIES
-C***PURPOSE  TO COMPUTE AIRY FUNCTIONS AI(Z) AND DAI(Z) FOR COMPLEX Z
+C***PURPOSE  TO COMPUTE AIRY FUNCTIONS BI(Z) AND DBI(Z) FOR COMPLEX Z
 C***DESCRIPTION
 C
 C                      ***A DOUBLE PRECISION ROUTINE***
-C         ON KODE=1, ZAIRY COMPUTES THE COMPLEX AIRY FUNCTION AI(Z) OR
-C         ITS DERIVATIVE DAI(Z)/DZ ON ID=0 OR ID=1 RESPECTIVELY. ON
-C         KODE=2, A SCALING OPTION CEXP(ZTA)*AI(Z) OR CEXP(ZTA)*
-C         DAI(Z)/DZ IS PROVIDED TO REMOVE THE EXPONENTIAL DECAY IN
-C         -PI/3.LT.ARG(Z).LT.PI/3 AND THE EXPONENTIAL GROWTH IN
-C         PI/3.LT.ABS(ARG(Z)).LT.PI WHERE ZTA=(2/3)*Z*CSQRT(Z).
-C
-C         WHILE THE AIRY FUNCTIONS AI(Z) AND DAI(Z)/DZ ARE ANALYTIC IN
-C         THE WHOLE Z PLANE, THE CORRESPONDING SCALED FUNCTIONS DEFINED
-C         FOR KODE=2 HAVE A CUT ALONG THE NEGATIVE REAL AXIS.
+C         ON KODE=1, CBIRY COMPUTES THE COMPLEX AIRY FUNCTION BI(Z) OR
+C         ITS DERIVATIVE DBI(Z)/DZ ON ID=0 OR ID=1 RESPECTIVELY. ON
+C         KODE=2, A SCALING OPTION CEXP(-AXZTA)*BI(Z) OR CEXP(-AXZTA)*
+C         DBI(Z)/DZ IS PROVIDED TO REMOVE THE EXPONENTIAL BEHAVIOR IN
+C         BOTH THE LEFT AND RIGHT HALF PLANES WHERE
+C         ZTA=(2/3)*Z*CSQRT(Z)=CMPLX(XZTA,YZTA) AND AXZTA=ABS(XZTA).
 C         DEFINITIONS AND NOTATION ARE FOUND IN THE NBS HANDBOOK OF
 C         MATHEMATICAL FUNCTIONS (REF. 1).
 C
@@ -27,24 +23,21 @@ C           ZR,ZI  - Z=CMPLX(ZR,ZI)
 C           ID     - ORDER OF DERIVATIVE, ID=0 OR ID=1
 C           KODE   - A PARAMETER TO INDICATE THE SCALING OPTION
 C                    KODE= 1  RETURNS
-C                             AI=AI(Z)                ON ID=0 OR
-C                             AI=DAI(Z)/DZ            ON ID=1
+C                             BI=BI(Z)                 ON ID=0 OR
+C                             BI=DBI(Z)/DZ             ON ID=1
 C                        = 2  RETURNS
-C                             AI=CEXP(ZTA)*AI(Z)       ON ID=0 OR
-C                             AI=CEXP(ZTA)*DAI(Z)/DZ   ON ID=1 WHERE
-C                             ZTA=(2/3)*Z*CSQRT(Z)
+C                             BI=CEXP(-AXZTA)*BI(Z)     ON ID=0 OR
+C                             BI=CEXP(-AXZTA)*DBI(Z)/DZ ON ID=1 WHERE
+C                             ZTA=(2/3)*Z*CSQRT(Z)=CMPLX(XZTA,YZTA)
+C                             AND AXZTA=ABS(XZTA)
 C
-C         OUTPUT     AIR,AII ARE DOUBLE PRECISION
-C           AIR,AII- COMPLEX ANSWER DEPENDING ON THE CHOICES FOR ID AND
+C         OUTPUT     BIR,BII ARE DOUBLE PRECISION
+C           BIR,BII- COMPLEX ANSWER DEPENDING ON THE CHOICES FOR ID AND
 C                    KODE
-C           NZ     - UNDERFLOW INDICATOR
-C                    NZ= 0   , NORMAL RETURN
-C                    NZ= 1   , AI=CMPLX(0.0D0,0.0D0) DUE TO UNDERFLOW IN
-C                              -PI/3.LT.ARG(Z).LT.PI/3 ON KODE=1
 C           IERR   - ERROR FLAG
 C                    IERR=0, NORMAL RETURN - COMPUTATION COMPLETED
 C                    IERR=1, INPUT ERROR   - NO COMPUTATION
-C                    IERR=2, OVERFLOW      - NO COMPUTATION, REAL(ZTA)
+C                    IERR=2, OVERFLOW      - NO COMPUTATION, REAL(Z)
 C                            TOO LARGE ON KODE=1
 C                    IERR=3, CABS(Z) LARGE      - COMPUTATION COMPLETED
 C                            LOSSES OF SIGNIFCANCE BY ARGUMENT REDUCTION
@@ -57,12 +50,13 @@ C                            ALGORITHM TERMINATION CONDITION NOT MET
 C
 C***LONG DESCRIPTION
 C
-C         AI AND DAI ARE COMPUTED FOR CABS(Z).GT.1.0 FROM THE K BESSEL
+C         BI AND DBI ARE COMPUTED FOR CABS(Z).GT.1.0 FROM THE I BESSEL
 C         FUNCTIONS BY
 C
-C            AI(Z)=C*SQRT(Z)*K(1/3,ZTA) , DAI(Z)=-C*Z*K(2/3,ZTA)
-C                           C=1.0/(PI*SQRT(3.0))
-C                            ZTA=(2/3)*Z**(3/2)
+C                BI(Z)=C*SQRT(Z)*( I(-1/3,ZTA) + I(1/3,ZTA) )
+C               DBI(Z)=C *  Z  * ( I(-2/3,ZTA) + I(2/3,ZTA) )
+C                               C=1.0/SQRT(3.0)
+C                             ZTA=(2/3)*Z**(3/2)
 C
 C         WITH THE POWER SERIES FOR CABS(Z).LE.1.0.
 C
@@ -124,21 +118,21 @@ C               A PORTABLE PACKAGE FOR BESSEL FUNCTIONS OF A COMPLEX
 C                 ARGUMENT AND NONNEGATIVE ORDER BY D. E. AMOS, TRANS.
 C                 MATH. SOFTWARE, 1986
 C
-C***ROUTINES CALLED  ZACAI,ZBKNU,AZEXP,AZSQRT,I1MACH,D1MACH
-C***END PROLOGUE  ZAIRY
-C     COMPLEX AI,CONE,CSQ,CY,S1,S2,TRM1,TRM2,Z,ZTA,Z3
-      DOUBLE PRECISION AA, AD, AII, AIR, AK, ALIM, ATRM, AZ, AZ3, BK,
-     * CC, CK, COEF, CONEI, CONER, CSQI, CSQR, CYI, CYR, C1, C2, DIG,
-     * DK, D1, D2, ELIM, FID, FNU, PTR, RL, R1M5, SFAC, STI, STR,
-     * S1I, S1R, S2I, S2R, TOL, TRM1I, TRM1R, TRM2I, TRM2R, TTH, ZEROI,
-     * ZEROR, ZI, ZR, ZTAI, ZTAR, Z3I, Z3R, D1MACH, AZABS, ALAZ, BB
-      INTEGER ID, IERR, IFLAG, K, KODE, K1, K2, MR, NN, NZ, I1MACH
-      DIMENSION CYR(1), CYI(1)
-      DATA TTH, C1, C2, COEF /6.66666666666666667D-01,
-     * 3.55028053887817240D-01,2.58819403792806799D-01,
-     * 1.83776298473930683D-01/
-      DATA ZEROR, ZEROI, CONER, CONEI /0.0D0,0.0D0,1.0D0,0.0D0/
-C***FIRST EXECUTABLE STATEMENT  ZAIRY
+C***ROUTINES CALLED  ZBINU,AZABS,ZDIV,AZSQRT,D1MACH,I1MACH
+C***END PROLOGUE  ZBIRY
+C     COMPLEX BI,CONE,CSQ,CY,S1,S2,TRM1,TRM2,Z,ZTA,Z3
+      DOUBLE PRECISION AA, AD, AK, ALIM, ATRM, AZ, AZ3, BB, BII, BIR,
+     * BK, CC, CK, COEF, CONEI, CONER, CSQI, CSQR, CYI, CYR, C1, C2,
+     * DIG, DK, D1, D2, EAA, ELIM, FID, FMR, FNU, FNUL, PI, RL, R1M5,
+     * SFAC, STI, STR, S1I, S1R, S2I, S2R, TOL, TRM1I, TRM1R, TRM2I,
+     * TRM2R, TTH, ZI, ZR, ZTAI, ZTAR, Z3I, Z3R, D1MACH, AZABS
+      INTEGER ID, IERR, K, KODE, K1, K2, NZ, I1MACH
+      DIMENSION CYR(2), CYI(2)
+      DATA TTH, C1, C2, COEF, PI /6.66666666666666667D-01,
+     * 6.14926627446000736D-01,4.48288357353826359D-01,
+     * 5.77350269189625765D-01,3.14159265358979324D+00/
+      DATA CONER, CONEI /1.0D0,0.0D0/
+C***FIRST EXECUTABLE STATEMENT  ZBIRY
       IERR = 0
       NZ=0
       IF (ID.LT.0 .OR. ID.GT.1) IERR=1
@@ -147,7 +141,7 @@ C***FIRST EXECUTABLE STATEMENT  ZAIRY
       AZ = AZABS(ZR,ZI)
       TOL = DMAX1(D1MACH(4),1.0D-18)
       FID = DBLE(FLOAT(ID))
-      IF (AZ.GT.1.0D0) GO TO 70
+      IF (AZ.GT.1.0E0) GO TO 70
 C-----------------------------------------------------------------------
 C     POWER SERIES FOR CABS(Z).LE.1.
 C-----------------------------------------------------------------------
@@ -155,7 +149,7 @@ C-----------------------------------------------------------------------
       S1I = CONEI
       S2R = CONER
       S2I = CONEI
-      IF (AZ.LT.TOL) GO TO 170
+      IF (AZ.LT.TOL) GO TO 130
       AA = AZ*AZ
       IF (AA.LT.TOL/AZ) GO TO 40
       TRM1R = CONER
@@ -198,35 +192,37 @@ C-----------------------------------------------------------------------
    30 CONTINUE
    40 CONTINUE
       IF (ID.EQ.1) GO TO 50
-      AIR = S1R*C1 - C2*(ZR*S2R-ZI*S2I)
-      AII = S1I*C1 - C2*(ZR*S2I+ZI*S2R)
+      BIR = C1*S1R + C2*(ZR*S2R-ZI*S2I)
+      BII = C1*S1I + C2*(ZR*S2I+ZI*S2R)
       IF (KODE.EQ.1) RETURN
       CALL AZSQRT(ZR, ZI, STR, STI)
       ZTAR = TTH*(ZR*STR-ZI*STI)
       ZTAI = TTH*(ZR*STI+ZI*STR)
-      CALL AZEXP(ZTAR, ZTAI, STR, STI)
-      PTR = AIR*STR - AII*STI
-      AII = AIR*STI + AII*STR
-      AIR = PTR
+      AA = ZTAR
+      AA = -DABS(AA)
+      EAA = DEXP(AA)
+      BIR = BIR*EAA
+      BII = BII*EAA
       RETURN
    50 CONTINUE
-      AIR = -S2R*C2
-      AII = -S2I*C2
+      BIR = S2R*C2
+      BII = S2I*C2
       IF (AZ.LE.TOL) GO TO 60
-      STR = ZR*S1R - ZI*S1I
-      STI = ZR*S1I + ZI*S1R
       CC = C1/(1.0D0+FID)
-      AIR = AIR + CC*(STR*ZR-STI*ZI)
-      AII = AII + CC*(STR*ZI+STI*ZR)
+      STR = S1R*ZR - S1I*ZI
+      STI = S1R*ZI + S1I*ZR
+      BIR = BIR + CC*(STR*ZR-STI*ZI)
+      BII = BII + CC*(STR*ZI+STI*ZR)
    60 CONTINUE
       IF (KODE.EQ.1) RETURN
       CALL AZSQRT(ZR, ZI, STR, STI)
       ZTAR = TTH*(ZR*STR-ZI*STI)
       ZTAI = TTH*(ZR*STI+ZI*STR)
-      CALL AZEXP(ZTAR, ZTAI, STR, STI)
-      PTR = STR*AIR - STI*AII
-      AII = STR*AII + STI*AIR
-      AIR = PTR
+      AA = ZTAR
+      AA = -DABS(AA)
+      EAA = DEXP(AA)
+      BIR = BIR*EAA
+      BII = BII*EAA
       RETURN
 C-----------------------------------------------------------------------
 C     CASE FOR CABS(Z).GT.1.0
@@ -235,13 +231,14 @@ C-----------------------------------------------------------------------
       FNU = (1.0D0+FID)/3.0D0
 C-----------------------------------------------------------------------
 C     SET PARAMETERS RELATED TO MACHINE CONSTANTS.
-C     TOL IS THE APPROXIMATE UNIT ROUNDOFF LIMITED TO 1.0D-18.
+C     TOL IS THE APPROXIMATE UNIT ROUNDOFF LIMITED TO 1.0E-18.
 C     ELIM IS THE APPROXIMATE EXPONENTIAL OVER- AND UNDERFLOW LIMIT.
 C     EXP(-ELIM).LT.EXP(-ALIM)=EXP(-ELIM)/TOL    AND
 C     EXP(ELIM).GT.EXP(ALIM)=EXP(ELIM)*TOL       ARE INTERVALS NEAR
 C     UNDERFLOW AND OVERFLOW LIMITS WHERE SCALED ARITHMETIC IS DONE.
 C     RL IS THE LOWER BOUNDARY OF THE ASYMPTOTIC EXPANSION FOR LARGE Z.
 C     DIG = NUMBER OF BASE 10 DIGITS IN TOL = 10**(-DIG).
+C     FNUL IS THE LOWER BOUNDARY OF THE ASYMPTOTIC SERIES FOR LARGE FNU.
 C-----------------------------------------------------------------------
       K1 = I1MACH(15)
       K2 = I1MACH(16)
@@ -254,9 +251,9 @@ C-----------------------------------------------------------------------
       AA = AA*2.303D0
       ALIM = ELIM + DMAX1(-AA,-41.45D0)
       RL = 1.2D0*DIG + 3.0D0
-      ALAZ = DLOG(AZ)
-C--------------------------------------------------------------------------
-C     TEST FOR PROPER RANGE
+      FNUL = 10.0D0 + 6.0D0*(DIG-3.0D0)
+C-----------------------------------------------------------------------
+C     TEST FOR RANGE
 C-----------------------------------------------------------------------
       AA=0.5D0/TOL
       BB=DBLE(FLOAT(I1MACH(9)))*0.5D0
@@ -271,7 +268,6 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     RE(ZTA).LE.0 WHEN RE(Z).LT.0, ESPECIALLY WHEN IM(Z) IS SMALL
 C-----------------------------------------------------------------------
-      IFLAG = 0
       SFAC = 1.0D0
       AK = ZTAI
       IF (ZR.GE.0.0D0) GO TO 80
@@ -280,109 +276,84 @@ C-----------------------------------------------------------------------
       ZTAR = CK
       ZTAI = AK
    80 CONTINUE
-      IF (ZI.NE.0.0D0) GO TO 90
-      IF (ZR.GT.0.0D0) GO TO 90
+      IF (ZI.NE.0.0D0 .OR. ZR.GT.0.0D0) GO TO 90
       ZTAR = 0.0D0
       ZTAI = AK
    90 CONTINUE
       AA = ZTAR
-      IF (AA.GE.0.0D0 .AND. ZR.GT.0.0D0) GO TO 110
       IF (KODE.EQ.2) GO TO 100
 C-----------------------------------------------------------------------
 C     OVERFLOW TEST
 C-----------------------------------------------------------------------
-      IF (AA.GT.(-ALIM)) GO TO 100
-      AA = -AA + 0.25D0*ALAZ
-      IFLAG = 1
+      BB = DABS(AA)
+      IF (BB.LT.ALIM) GO TO 100
+      BB = BB + 0.25D0*DLOG(AZ)
       SFAC = TOL
-      IF (AA.GT.ELIM) GO TO 270
+      IF (BB.GT.ELIM) GO TO 190
   100 CONTINUE
-C-----------------------------------------------------------------------
-C     CBKNU AND CACON RETURN EXP(ZTA)*K(FNU,ZTA) ON KODE=2
-C-----------------------------------------------------------------------
-      MR = 1
-      IF (ZI.LT.0.0D0) MR = -1
-      CALL ZACAI(ZTAR, ZTAI, FNU, KODE, MR, 1, CYR, CYI, NN, RL, TOL,
-     * ELIM, ALIM)
-      IF (NN.LT.0) GO TO 280
-      NZ = NZ + NN
-      GO TO 130
+      FMR = 0.0D0
+      IF (AA.GE.0.0D0 .AND. ZR.GT.0.0D0) GO TO 110
+      FMR = PI
+      IF (ZI.LT.0.0D0) FMR = -PI
+      ZTAR = -ZTAR
+      ZTAI = -ZTAI
   110 CONTINUE
-      IF (KODE.EQ.2) GO TO 120
 C-----------------------------------------------------------------------
-C     UNDERFLOW TEST
+C     AA=FACTOR FOR ANALYTIC CONTINUATION OF I(FNU,ZTA)
+C     KODE=2 RETURNS EXP(-ABS(XZTA))*I(FNU,ZTA) FROM CBESI
 C-----------------------------------------------------------------------
-      IF (AA.LT.ALIM) GO TO 120
-      AA = -AA - 0.25D0*ALAZ
-      IFLAG = 2
-      SFAC = 1.0D0/TOL
-      IF (AA.LT.(-ELIM)) GO TO 210
+      CALL ZBINU(ZTAR, ZTAI, FNU, KODE, 1, CYR, CYI, NZ, RL, FNUL, TOL,
+     * ELIM, ALIM)
+      IF (NZ.LT.0) GO TO 200
+      AA = FMR*FNU
+      Z3R = SFAC
+      STR = DCOS(AA)
+      STI = DSIN(AA)
+      S1R = (STR*CYR(1)-STI*CYI(1))*Z3R
+      S1I = (STR*CYI(1)+STI*CYR(1))*Z3R
+      FNU = (2.0D0-FID)/3.0D0
+      CALL ZBINU(ZTAR, ZTAI, FNU, KODE, 2, CYR, CYI, NZ, RL, FNUL, TOL,
+     * ELIM, ALIM)
+      CYR(1) = CYR(1)*Z3R
+      CYI(1) = CYI(1)*Z3R
+      CYR(2) = CYR(2)*Z3R
+      CYI(2) = CYI(2)*Z3R
+C-----------------------------------------------------------------------
+C     BACKWARD RECUR ONE STEP FOR ORDERS -1/3 OR -2/3
+C-----------------------------------------------------------------------
+      CALL ZDIV(CYR(1), CYI(1), ZTAR, ZTAI, STR, STI)
+      S2R = (FNU+FNU)*STR + CYR(2)
+      S2I = (FNU+FNU)*STI + CYI(2)
+      AA = FMR*(FNU-1.0D0)
+      STR = DCOS(AA)
+      STI = DSIN(AA)
+      S1R = COEF*(S1R+S2R*STR-S2I*STI)
+      S1I = COEF*(S1I+S2R*STI+S2I*STR)
+      IF (ID.EQ.1) GO TO 120
+      STR = CSQR*S1R - CSQI*S1I
+      S1I = CSQR*S1I + CSQI*S1R
+      S1R = STR
+      BIR = S1R/SFAC
+      BII = S1I/SFAC
+      RETURN
   120 CONTINUE
-      CALL ZBKNU(ZTAR, ZTAI, FNU, KODE, 1, CYR, CYI, NZ, TOL, ELIM,
-     * ALIM)
+      STR = ZR*S1R - ZI*S1I
+      S1I = ZR*S1I + ZI*S1R
+      S1R = STR
+      BIR = S1R/SFAC
+      BII = S1I/SFAC
+      RETURN
   130 CONTINUE
-      S1R = CYR(1)*COEF
-      S1I = CYI(1)*COEF
-      IF (IFLAG.NE.0) GO TO 150
-      IF (ID.EQ.1) GO TO 140
-      AIR = CSQR*S1R - CSQI*S1I
-      AII = CSQR*S1I + CSQI*S1R
-      RETURN
-  140 CONTINUE
-      AIR = -(ZR*S1R-ZI*S1I)
-      AII = -(ZR*S1I+ZI*S1R)
-      RETURN
-  150 CONTINUE
-      S1R = S1R*SFAC
-      S1I = S1I*SFAC
-      IF (ID.EQ.1) GO TO 160
-      STR = S1R*CSQR - S1I*CSQI
-      S1I = S1R*CSQI + S1I*CSQR
-      S1R = STR
-      AIR = S1R/SFAC
-      AII = S1I/SFAC
-      RETURN
-  160 CONTINUE
-      STR = -(S1R*ZR-S1I*ZI)
-      S1I = -(S1R*ZI+S1I*ZR)
-      S1R = STR
-      AIR = S1R/SFAC
-      AII = S1I/SFAC
-      RETURN
-  170 CONTINUE
-      AA = 1.0D+3*D1MACH(1)
-      S1R = ZEROR
-      S1I = ZEROI
-      IF (ID.EQ.1) GO TO 190
-      IF (AZ.LE.AA) GO TO 180
-      S1R = C2*ZR
-      S1I = C2*ZI
-  180 CONTINUE
-      AIR = C1 - S1R
-      AII = -S1I
+      AA = C1*(1.0D0-FID) + FID*C2
+      BIR = AA
+      BII = 0.0D0
       RETURN
   190 CONTINUE
-      AIR = -C2
-      AII = 0.0D0
-      AA = DSQRT(AA)
-      IF (AZ.LE.AA) GO TO 200
-      S1R = 0.5D0*(ZR*ZR-ZI*ZI)
-      S1I = ZR*ZI
-  200 CONTINUE
-      AIR = AIR + C1*S1R
-      AII = AII + C1*S1I
-      RETURN
-  210 CONTINUE
-      NZ = 1
-      AIR = ZEROR
-      AII = ZEROI
-      RETURN
-  270 CONTINUE
-      NZ = 0
       IERR=2
+      NZ=0
       RETURN
-  280 CONTINUE
-      IF(NN.EQ.(-1)) GO TO 270
+  200 CONTINUE
+      IF(NZ.EQ.(-1)) GO TO 190
       NZ=0
       IERR=5
       RETURN

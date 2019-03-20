@@ -13,7 +13,7 @@ C     NLAST.NE.0 IS THE NUMBER LEFT TO BE COMPUTED BY ANOTHER
 C     FORMULA FOR ORDERS FNU TO FNU+NLAST-1 BECAUSE FNU+NLAST-1.LT.FNUL.
 C     Y(I)=CZERO FOR I=NLAST+1,N
 C
-C***ROUTINES CALLED  ZAIRY,ZUCHK,ZUNHJ,ZUOIK,D1MACH,ZABS
+C***ROUTINES CALLED  ZAIRY,ZUCHK,ZUNHJ,ZUOIK,D1MACH,AZABS
 C***END PROLOGUE  ZUNI2
 C     COMPLEX AI,ARG,ASUM,BSUM,CFN,CI,CID,CIP,CONE,CRSC,CSCL,CSR,CSS,
 C    *CZERO,C1,C2,DAI,PHI,RZ,S1,S2,Y,Z,ZB,ZETA1,ZETA2,ZN
@@ -23,7 +23,7 @@ C    *CZERO,C1,C2,DAI,PHI,RZ,S1,S2,Y,Z,ZB,ZETA1,ZETA2,ZN
      * DAIR, ELIM, FN, FNU, FNUL, HPI, PHII, PHIR, RAST, RAZ, RS1, RZI,
      * RZR, STI, STR, S1I, S1R, S2I, S2R, TOL, YI, YR, ZBI, ZBR, ZEROI,
      * ZEROR, ZETA1I, ZETA1R, ZETA2I, ZETA2R, ZI, ZNI, ZNR, ZR, CYR,
-     * CYI, D1MACH, ZABS, CAR, SAR
+     * CYI, D1MACH, AZABS, CAR, SAR
       INTEGER I, IFLAG, IN, INU, J, K, KODE, N, NAI, ND, NDAI, NLAST,
      * NN, NUF, NW, NZ, IDUM
       DIMENSION BRY(3), YR(N), YI(N), CIPR(4), CIPI(4), CSSR(3),
@@ -85,7 +85,7 @@ C-----------------------------------------------------------------------
       IF (KODE.EQ.1) GO TO 20
       STR = ZBR + ZETA2R
       STI = ZBI + ZETA2I
-      RAST = FN/ZABS(STR,STI)
+      RAST = FN/AZABS(STR,STI)
       STR = STR*RAST*RAST
       STI = -STI*RAST*RAST
       S1R = -ZETA1R + STR
@@ -106,7 +106,7 @@ C-----------------------------------------------------------------------
         IF (KODE.EQ.1) GO TO 50
         STR = ZBR + ZETA2R
         STI = ZBI + ZETA2I
-        RAST = FN/ZABS(STR,STI)
+        RAST = FN/AZABS(STR,STI)
         STR = STR*RAST*RAST
         STI = -STI*RAST*RAST
         S1R = -ZETA1R + STR
@@ -127,8 +127,8 @@ C-----------------------------------------------------------------------
 C     REFINE  TEST AND SCALE
 C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
-        APHI = ZABS(PHIR,PHII)
-        AARG = ZABS(ARGR,ARGI)
+        APHI = AZABS(PHIR,PHII)
+        AARG = AZABS(ARGR,ARGI)
         RS1 = RS1 + DLOG(APHI) - 0.25D0*DLOG(AARG) - AIC
         IF (DABS(RS1).GT.ELIM) GO TO 120
         IF (I.EQ.1) IFLAG = 1
@@ -171,7 +171,7 @@ C-----------------------------------------------------------------------
         C2R = STR
    90 CONTINUE
       IF (ND.LE.2) GO TO 110
-      RAZ = 1.0D0/ZABS(ZR,ZI)
+      RAZ = 1.0D0/AZABS(ZR,ZI)
       STR = ZR*RAZ
       STI = -ZI*RAZ
       RZR = (STR+STR)*RAZ

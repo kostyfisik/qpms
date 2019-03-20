@@ -1,59 +1,60 @@
-      SUBROUTINE ZBESH(ZR, ZI, FNU, KODE, M, N, CYR, CYI, NZ, IERR)
-C***BEGIN PROLOGUE  ZBESH
+      SUBROUTINE ZBESK(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, IERR)
+C***BEGIN PROLOGUE  ZBESK
 C***DATE WRITTEN   830501   (YYMMDD)
 C***REVISION DATE  890801   (YYMMDD)
 C***CATEGORY NO.  B5K
-C***KEYWORDS  H-BESSEL FUNCTIONS,BESSEL FUNCTIONS OF COMPLEX ARGUMENT,
-C             BESSEL FUNCTIONS OF THIRD KIND,HANKEL FUNCTIONS
+C***KEYWORDS  K-BESSEL FUNCTION,COMPLEX BESSEL FUNCTION,
+C             MODIFIED BESSEL FUNCTION OF THE SECOND KIND,
+C             BESSEL FUNCTION OF THE THIRD KIND
 C***AUTHOR  AMOS, DONALD E., SANDIA NATIONAL LABORATORIES
-C***PURPOSE  TO COMPUTE THE H-BESSEL FUNCTIONS OF A COMPLEX ARGUMENT
+C***PURPOSE  TO COMPUTE K-BESSEL FUNCTIONS OF COMPLEX ARGUMENT
 C***DESCRIPTION
 C
 C                      ***A DOUBLE PRECISION ROUTINE***
-C         ON KODE=1, ZBESH COMPUTES AN N MEMBER SEQUENCE OF COMPLEX
-C         HANKEL (BESSEL) FUNCTIONS CY(J)=H(M,FNU+J-1,Z) FOR KINDS M=1
-C         OR 2, REAL, NONNEGATIVE ORDERS FNU+J-1, J=1,...,N, AND COMPLEX
-C         Z.NE.CMPLX(0.0,0.0) IN THE CUT PLANE -PI.LT.ARG(Z).LE.PI.
-C         ON KODE=2, ZBESH RETURNS THE SCALED HANKEL FUNCTIONS
 C
-C         CY(I)=EXP(-MM*Z*I)*H(M,FNU+J-1,Z)       MM=3-2*M,   I**2=-1.
+C         ON KODE=1, CBESK COMPUTES AN N MEMBER SEQUENCE OF COMPLEX
+C         BESSEL FUNCTIONS CY(J)=K(FNU+J-1,Z) FOR REAL, NONNEGATIVE
+C         ORDERS FNU+J-1, J=1,...,N AND COMPLEX Z.NE.CMPLX(0.0,0.0)
+C         IN THE CUT PLANE -PI.LT.ARG(Z).LE.PI. ON KODE=2, CBESK
+C         RETURNS THE SCALED K FUNCTIONS,
 C
-C         WHICH REMOVES THE EXPONENTIAL BEHAVIOR IN BOTH THE UPPER AND
-C         LOWER HALF PLANES. DEFINITIONS AND NOTATION ARE FOUND IN THE
-C         NBS HANDBOOK OF MATHEMATICAL FUNCTIONS (REF. 1).
+C         CY(J)=EXP(Z)*K(FNU+J-1,Z) , J=1,...,N,
+C
+C         WHICH REMOVE THE EXPONENTIAL BEHAVIOR IN BOTH THE LEFT AND
+C         RIGHT HALF PLANES FOR Z TO INFINITY. DEFINITIONS AND
+C         NOTATION ARE FOUND IN THE NBS HANDBOOK OF MATHEMATICAL
+C         FUNCTIONS (REF. 1).
 C
 C         INPUT      ZR,ZI,FNU ARE DOUBLE PRECISION
 C           ZR,ZI  - Z=CMPLX(ZR,ZI), Z.NE.CMPLX(0.0D0,0.0D0),
-C                    -PT.LT.ARG(Z).LE.PI
-C           FNU    - ORDER OF INITIAL H FUNCTION, FNU.GE.0.0D0
+C                    -PI.LT.ARG(Z).LE.PI
+C           FNU    - ORDER OF INITIAL K FUNCTION, FNU.GE.0.0D0
+C           N      - NUMBER OF MEMBERS OF THE SEQUENCE, N.GE.1
 C           KODE   - A PARAMETER TO INDICATE THE SCALING OPTION
 C                    KODE= 1  RETURNS
-C                             CY(J)=H(M,FNU+J-1,Z),   J=1,...,N
+C                             CY(I)=K(FNU+I-1,Z), I=1,...,N
 C                        = 2  RETURNS
-C                             CY(J)=H(M,FNU+J-1,Z)*EXP(-I*Z*(3-2M))
-C                                  J=1,...,N  ,  I**2=-1
-C           M      - KIND OF HANKEL FUNCTION, M=1 OR 2
-C           N      - NUMBER OF MEMBERS IN THE SEQUENCE, N.GE.1
+C                             CY(I)=K(FNU+I-1,Z)*EXP(Z), I=1,...,N
 C
 C         OUTPUT     CYR,CYI ARE DOUBLE PRECISION
 C           CYR,CYI- DOUBLE PRECISION VECTORS WHOSE FIRST N COMPONENTS
 C                    CONTAIN REAL AND IMAGINARY PARTS FOR THE SEQUENCE
-C                    CY(J)=H(M,FNU+J-1,Z)  OR
-C                    CY(J)=H(M,FNU+J-1,Z)*EXP(-I*Z*(3-2M))  J=1,...,N
-C                    DEPENDING ON KODE, I**2=-1.
-C           NZ     - NUMBER OF COMPONENTS SET TO ZERO DUE TO UNDERFLOW,
+C                    CY(I)=K(FNU+I-1,Z), I=1,...,N OR
+C                    CY(I)=K(FNU+I-1,Z)*EXP(Z), I=1,...,N
+C                    DEPENDING ON KODE
+C           NZ     - NUMBER OF COMPONENTS SET TO ZERO DUE TO UNDERFLOW.
 C                    NZ= 0   , NORMAL RETURN
 C                    NZ.GT.0 , FIRST NZ COMPONENTS OF CY SET TO ZERO DUE
-C                              TO UNDERFLOW, CY(J)=CMPLX(0.0D0,0.0D0)
-C                              J=1,...,NZ WHEN Y.GT.0.0 AND M=1 OR
-C                              Y.LT.0.0 AND M=2. FOR THE COMPLMENTARY
-C                              HALF PLANES, NZ STATES ONLY THE NUMBER
-C                              OF UNDERFLOWS.
+C                              TO UNDERFLOW, CY(I)=CMPLX(0.0D0,0.0D0),
+C                              I=1,...,N WHEN X.GE.0.0. WHEN X.LT.0.0
+C                              NZ STATES ONLY THE NUMBER OF UNDERFLOWS
+C                              IN THE SEQUENCE.
+C
 C           IERR   - ERROR FLAG
 C                    IERR=0, NORMAL RETURN - COMPUTATION COMPLETED
 C                    IERR=1, INPUT ERROR   - NO COMPUTATION
-C                    IERR=2, OVERFLOW      - NO COMPUTATION, FNU TOO
-C                            LARGE OR CABS(Z) TOO SMALL OR BOTH
+C                    IERR=2, OVERFLOW      - NO COMPUTATION, FNU IS
+C                            TOO LARGE OR CABS(Z) IS TOO SMALL OR BOTH
 C                    IERR=3, CABS(Z) OR FNU+N-1 LARGE - COMPUTATION DONE
 C                            BUT LOSSES OF SIGNIFCANCE BY ARGUMENT
 C                            REDUCTION PRODUCE LESS THAN HALF OF MACHINE
@@ -66,33 +67,27 @@ C                            ALGORITHM TERMINATION CONDITION NOT MET
 C
 C***LONG DESCRIPTION
 C
-C         THE COMPUTATION IS CARRIED OUT BY THE RELATION
-C
-C         H(M,FNU,Z)=(1/MP)*EXP(-MP*FNU)*K(FNU,Z*EXP(-MP))
-C             MP=MM*HPI*I,  MM=3-2*M,  HPI=PI/2,  I**2=-1
-C
-C         FOR M=1 OR 2 WHERE THE K BESSEL FUNCTION IS COMPUTED FOR THE
-C         RIGHT HALF PLANE RE(Z).GE.0.0. THE K FUNCTION IS CONTINUED
-C         TO THE LEFT HALF PLANE BY THE RELATION
+C         EQUATIONS OF THE REFERENCE ARE IMPLEMENTED FOR SMALL ORDERS
+C         DNU AND DNU+1.0 IN THE RIGHT HALF PLANE X.GE.0.0. FORWARD
+C         RECURRENCE GENERATES HIGHER ORDERS. K IS CONTINUED TO THE LEFT
+C         HALF PLANE BY THE RELATION
 C
 C         K(FNU,Z*EXP(MP)) = EXP(-MP*FNU)*K(FNU,Z)-MP*I(FNU,Z)
 C         MP=MR*PI*I, MR=+1 OR -1, RE(Z).GT.0, I**2=-1
 C
 C         WHERE I(FNU,Z) IS THE I BESSEL FUNCTION.
 C
-C         EXPONENTIAL DECAY OF H(M,FNU,Z) OCCURS IN THE UPPER HALF Z
-C         PLANE FOR M=1 AND THE LOWER HALF Z PLANE FOR M=2.  EXPONENTIAL
-C         GROWTH OCCURS IN THE COMPLEMENTARY HALF PLANES.  SCALING
-C         BY EXP(-MM*Z*I) REMOVES THE EXPONENTIAL BEHAVIOR IN THE
-C         WHOLE Z PLANE FOR Z TO INFINITY.
+C         FOR LARGE ORDERS, FNU.GT.FNUL, THE K FUNCTION IS COMPUTED
+C         BY MEANS OF ITS UNIFORM ASYMPTOTIC EXPANSIONS.
 C
-C         FOR NEGATIVE ORDERS,THE FORMULAE
+C         FOR NEGATIVE ORDERS, THE FORMULA
 C
-C               H(1,-FNU,Z) = H(1,FNU,Z)*CEXP( PI*FNU*I)
-C               H(2,-FNU,Z) = H(2,FNU,Z)*CEXP(-PI*FNU*I)
-C                         I**2=-1
+C                       K(-FNU,Z) = K(FNU,Z)
 C
 C         CAN BE USED.
+C
+C         CBESK ASSUMES THAT A SIGNIFICANT DIGIT SINH(X) FUNCTION IS
+C         AVAILABLE.
 C
 C         IN MOST COMPLEX VARIABLE COMPUTATION, ONE MUST EVALUATE ELE-
 C         MENTARY FUNCTIONS. WHEN THE MAGNITUDE OF Z OR FNU+N-1 IS
@@ -116,7 +111,7 @@ C         SIMILAR CONSIDERATIONS HOLD FOR OTHER MACHINES.
 C
 C         THE APPROXIMATE RELATIVE ERROR IN THE MAGNITUDE OF A COMPLEX
 C         BESSEL FUNCTION CAN BE EXPRESSED BY P*10**S WHERE P=MAX(UNIT
-C         ROUNDOFF,1.0D-18) IS THE NOMINAL PRECISION AND 10**S REPRE-
+C         ROUNDOFF,1.0E-18) IS THE NOMINAL PRECISION AND 10**S REPRE-
 C         SENTS THE INCREASE IN ERROR DUE TO ARGUMENT REDUCTION IN THE
 C         ELEMENTARY FUNCTIONS. HERE, S=MAX(1,ABS(LOG10(CABS(Z))),
 C         ABS(LOG10(FNU))) APPROXIMATELY (I.E. S=MAX(1,ABS(EXPONENT OF
@@ -142,7 +137,7 @@ C               COMPUTATION OF BESSEL FUNCTIONS OF COMPLEX ARGUMENT
 C                 BY D. E. AMOS, SAND83-0083, MAY, 1983.
 C
 C               COMPUTATION OF BESSEL FUNCTIONS OF COMPLEX ARGUMENT
-C                 AND LARGE ORDER BY D. E. AMOS, SAND83-0643, MAY, 1983
+C                 AND LARGE ORDER BY D. E. AMOS, SAND83-0643, MAY, 1983.
 C
 C               A SUBROUTINE PACKAGE FOR BESSEL FUNCTIONS OF A COMPLEX
 C                 ARGUMENT AND NONNEGATIVE ORDER BY D. E. AMOS, SAND85-
@@ -153,25 +148,18 @@ C                 ARGUMENT AND NONNEGATIVE ORDER BY D. E. AMOS, TRANS.
 C                 MATH. SOFTWARE, 1986
 C
 C***ROUTINES CALLED  ZACON,ZBKNU,ZBUNK,ZUOIK,AZABS,I1MACH,D1MACH
-C***END PROLOGUE  ZBESH
+C***END PROLOGUE  ZBESK
 C
-C     COMPLEX CY,Z,ZN,ZT,CSGN
-      DOUBLE PRECISION AA, ALIM, ALN, ARG, AZ, CYI, CYR, DIG, ELIM,
-     * FMM, FN, FNU, FNUL, HPI, RHPI, RL, R1M5, SGN, STR, TOL, UFL, ZI,
-     * ZNI, ZNR, ZR, ZTI, D1MACH, AZABS, BB, ASCLE, RTOL, ATOL, STI,
-     * CSGNR, CSGNI
-      INTEGER I, IERR, INU, INUH, IR, K, KODE, K1, K2, M,
-     * MM, MR, N, NN, NUF, NW, NZ, I1MACH
+C     COMPLEX CY,Z
+      DOUBLE PRECISION AA, ALIM, ALN, ARG, AZ, CYI, CYR, DIG, ELIM, FN,
+     * FNU, FNUL, RL, R1M5, TOL, UFL, ZI, ZR, D1MACH, AZABS, BB
+      INTEGER IERR, K, KODE, K1, K2, MR, N, NN, NUF, NW, NZ, I1MACH
       DIMENSION CYR(N), CYI(N)
-C
-      DATA HPI /1.57079632679489662D0/
-C
-C***FIRST EXECUTABLE STATEMENT  ZBESH
+C***FIRST EXECUTABLE STATEMENT  ZBESK
       IERR = 0
       NZ=0
-      IF (ZR.EQ.0.0D0 .AND. ZI.EQ.0.0D0) IERR=1
+      IF (ZI.EQ.0.0E0 .AND. ZR.EQ.0.0E0) IERR=1
       IF (FNU.LT.0.0D0) IERR=1
-      IF (M.LT.1 .OR. M.GT.2) IERR=1
       IF (KODE.LT.1 .OR. KODE.GT.2) IERR=1
       IF (N.LT.1) IERR=1
       IF (IERR.NE.0) RETURN
@@ -200,15 +188,11 @@ C-----------------------------------------------------------------------
       ALIM = ELIM + DMAX1(-AA,-41.45D0)
       FNUL = 10.0D0 + 6.0D0*(DIG-3.0D0)
       RL = 1.2D0*DIG + 3.0D0
-      FN = FNU + DBLE(FLOAT(NN-1))
-      MM = 3 - M - M
-      FMM = DBLE(FLOAT(MM))
-      ZNR = FMM*ZI
-      ZNI = -FMM*ZR
-C-----------------------------------------------------------------------
+C-----------------------------------------------------------------------------
 C     TEST FOR PROPER RANGE
 C-----------------------------------------------------------------------
       AZ = AZABS(ZR,ZI)
+      FN = FNU + DBLE(FLOAT(NN-1))
       AA = 0.5D0/TOL
       BB=DBLE(FLOAT(I1MACH(9)))*0.5D0
       AA = DMIN1(AA,BB)
@@ -220,124 +204,73 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     OVERFLOW TEST ON THE LAST MEMBER OF THE SEQUENCE
 C-----------------------------------------------------------------------
+C     UFL = DEXP(-ELIM)
       UFL = D1MACH(1)*1.0D+3
-      IF (AZ.LT.UFL) GO TO 230
-      IF (FNU.GT.FNUL) GO TO 90
-      IF (FN.LE.1.0D0) GO TO 70
-      IF (FN.GT.2.0D0) GO TO 60
-      IF (AZ.GT.TOL) GO TO 70
+      IF (AZ.LT.UFL) GO TO 180
+      IF (FNU.GT.FNUL) GO TO 80
+      IF (FN.LE.1.0D0) GO TO 60
+      IF (FN.GT.2.0D0) GO TO 50
+      IF (AZ.GT.TOL) GO TO 60
       ARG = 0.5D0*AZ
       ALN = -FN*DLOG(ARG)
-      IF (ALN.GT.ELIM) GO TO 230
-      GO TO 70
-   60 CONTINUE
-      CALL ZUOIK(ZNR, ZNI, FNU, KODE, 2, NN, CYR, CYI, NUF, TOL, ELIM,
+      IF (ALN.GT.ELIM) GO TO 180
+      GO TO 60
+   50 CONTINUE
+      CALL ZUOIK(ZR, ZI, FNU, KODE, 2, NN, CYR, CYI, NUF, TOL, ELIM,
      * ALIM)
-      IF (NUF.LT.0) GO TO 230
+      IF (NUF.LT.0) GO TO 180
       NZ = NZ + NUF
       NN = NN - NUF
 C-----------------------------------------------------------------------
 C     HERE NN=N OR NN=0 SINCE NUF=0,NN, OR -1 ON RETURN FROM CUOIK
 C     IF NUF=NN, THEN CY(I)=CZERO FOR ALL I
 C-----------------------------------------------------------------------
-      IF (NN.EQ.0) GO TO 140
-   70 CONTINUE
-      IF ((ZNR.LT.0.0D0) .OR. (ZNR.EQ.0.0D0 .AND. ZNI.LT.0.0D0 .AND.
-     * M.EQ.2)) GO TO 80
+      IF (NN.EQ.0) GO TO 100
+   60 CONTINUE
+      IF (ZR.LT.0.0D0) GO TO 70
 C-----------------------------------------------------------------------
-C     RIGHT HALF PLANE COMPUTATION, XN.GE.0. .AND. (XN.NE.0. .OR.
-C     YN.GE.0. .OR. M=1)
+C     RIGHT HALF PLANE COMPUTATION, REAL(Z).GE.0.
 C-----------------------------------------------------------------------
-      CALL ZBKNU(ZNR, ZNI, FNU, KODE, NN, CYR, CYI, NZ, TOL, ELIM, ALIM)
-      GO TO 110
+      CALL ZBKNU(ZR, ZI, FNU, KODE, NN, CYR, CYI, NW, TOL, ELIM, ALIM)
+      IF (NW.LT.0) GO TO 200
+      NZ=NW
+      RETURN
 C-----------------------------------------------------------------------
 C     LEFT HALF PLANE COMPUTATION
+C     PI/2.LT.ARG(Z).LE.PI AND -PI.LT.ARG(Z).LT.-PI/2.
 C-----------------------------------------------------------------------
-   80 CONTINUE
-      MR = -MM
-      CALL ZACON(ZNR, ZNI, FNU, KODE, MR, NN, CYR, CYI, NW, RL, FNUL,
+   70 CONTINUE
+      IF (NZ.NE.0) GO TO 180
+      MR = 1
+      IF (ZI.LT.0.0D0) MR = -1
+      CALL ZACON(ZR, ZI, FNU, KODE, MR, NN, CYR, CYI, NW, RL, FNUL,
      * TOL, ELIM, ALIM)
-      IF (NW.LT.0) GO TO 240
+      IF (NW.LT.0) GO TO 200
       NZ=NW
-      GO TO 110
-   90 CONTINUE
+      RETURN
 C-----------------------------------------------------------------------
 C     UNIFORM ASYMPTOTIC EXPANSIONS FOR FNU.GT.FNUL
 C-----------------------------------------------------------------------
+   80 CONTINUE
       MR = 0
-      IF ((ZNR.GE.0.0D0) .AND. (ZNR.NE.0.0D0 .OR. ZNI.GE.0.0D0 .OR.
-     * M.NE.2)) GO TO 100
-      MR = -MM
-      IF (ZNR.NE.0.0D0 .OR. ZNI.GE.0.0D0) GO TO 100
-      ZNR = -ZNR
-      ZNI = -ZNI
-  100 CONTINUE
-      CALL ZBUNK(ZNR, ZNI, FNU, KODE, MR, NN, CYR, CYI, NW, TOL, ELIM,
+      IF (ZR.GE.0.0D0) GO TO 90
+      MR = 1
+      IF (ZI.LT.0.0D0) MR = -1
+   90 CONTINUE
+      CALL ZBUNK(ZR, ZI, FNU, KODE, MR, NN, CYR, CYI, NW, TOL, ELIM,
      * ALIM)
-      IF (NW.LT.0) GO TO 240
+      IF (NW.LT.0) GO TO 200
       NZ = NZ + NW
-  110 CONTINUE
-C-----------------------------------------------------------------------
-C     H(M,FNU,Z) = -FMM*(I/HPI)*(ZT**FNU)*K(FNU,-Z*ZT)
-C
-C     ZT=EXP(-FMM*HPI*I) = CMPLX(0.0,-FMM), FMM=3-2*M, M=1,2
-C-----------------------------------------------------------------------
-      SGN = DSIGN(HPI,-FMM)
-C-----------------------------------------------------------------------
-C     CALCULATE EXP(FNU*HPI*I) TO MINIMIZE LOSSES OF SIGNIFICANCE
-C     WHEN FNU IS LARGE
-C-----------------------------------------------------------------------
-      INU = INT(SNGL(FNU))
-      INUH = INU/2
-      IR = INU - 2*INUH
-      ARG = (FNU-DBLE(FLOAT(INU-IR)))*SGN
-      RHPI = 1.0D0/SGN
-C     ZNI = RHPI*DCOS(ARG)
-C     ZNR = -RHPI*DSIN(ARG)
-      CSGNI = RHPI*DCOS(ARG)
-      CSGNR = -RHPI*DSIN(ARG)
-      IF (MOD(INUH,2).EQ.0) GO TO 120
-C     ZNR = -ZNR
-C     ZNI = -ZNI
-      CSGNR = -CSGNR
-      CSGNI = -CSGNI
-  120 CONTINUE
-      ZTI = -FMM
-      RTOL = 1.0D0/TOL
-      ASCLE = UFL*RTOL
-      DO 130 I=1,NN
-C       STR = CYR(I)*ZNR - CYI(I)*ZNI
-C       CYI(I) = CYR(I)*ZNI + CYI(I)*ZNR
-C       CYR(I) = STR
-C       STR = -ZNI*ZTI
-C       ZNI = ZNR*ZTI
-C       ZNR = STR
-        AA = CYR(I)
-        BB = CYI(I)
-        ATOL = 1.0D0
-        IF (DMAX1(DABS(AA),DABS(BB)).GT.ASCLE) GO TO 135
-          AA = AA*RTOL
-          BB = BB*RTOL
-          ATOL = TOL
-  135 CONTINUE
-      STR = AA*CSGNR - BB*CSGNI
-      STI = AA*CSGNI + BB*CSGNR
-      CYR(I) = STR*ATOL
-      CYI(I) = STI*ATOL
-      STR = -CSGNI*ZTI
-      CSGNI = CSGNR*ZTI
-      CSGNR = STR
-  130 CONTINUE
       RETURN
-  140 CONTINUE
-      IF (ZNR.LT.0.0D0) GO TO 230
+  100 CONTINUE
+      IF (ZR.LT.0.0D0) GO TO 180
       RETURN
-  230 CONTINUE
-      NZ=0
+  180 CONTINUE
+      NZ = 0
       IERR=2
       RETURN
-  240 CONTINUE
-      IF(NW.EQ.(-1)) GO TO 230
+  200 CONTINUE
+      IF(NW.EQ.(-1)) GO TO 180
       NZ=0
       IERR=5
       RETURN

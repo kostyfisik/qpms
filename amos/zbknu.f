@@ -5,8 +5,8 @@ C***REFER TO  ZBESI,ZBESK,ZAIRY,ZBESH
 C
 C     ZBKNU COMPUTES THE K BESSEL FUNCTION IN THE RIGHT HALF Z PLANE.
 C
-C***ROUTINES CALLED  DGAMLN,I1MACH,D1MACH,ZKSCL,ZSHCH,ZUCHK,ZABS,ZDIV,
-C                    ZEXP,ZLOG,ZMLT,ZSQRT
+C***ROUTINES CALLED  DGAMLN,I1MACH,D1MACH,ZKSCL,ZSHCH,ZUCHK,AZABS,ZDIV,
+C                    AZEXP,AZLOG,ZMLT,AZSQRT
 C***END PROLOGUE  ZBKNU
 C
       DOUBLE PRECISION AA, AK, ALIM, ASCLE, A1, A2, BB, BK, BRY, CAZ,
@@ -16,7 +16,7 @@ C
      * FI, FK, FKS, FMUI, FMUR, FNU, FPI, FR, G1, G2, HPI, PI, PR, PTI,
      * PTR, P1I, P1R, P2I, P2M, P2R, QI, QR, RAK, RCAZ, RTHPI, RZI,
      * RZR, R1, S, SMUI, SMUR, SPI, STI, STR, S1I, S1R, S2I, S2R, TM,
-     * TOL, TTH, T1, T2, YI, YR, ZI, ZR, DGAMLN, D1MACH, ZABS, ELM,
+     * TOL, TTH, T1, T2, YI, YR, ZI, ZR, DGAMLN, D1MACH, AZABS, ELM,
      * CELMR, ZDR, ZDI, AS, ALAS, HELIM, CYR, CYI
       INTEGER I, IFLAG, INU, K, KFLAG, KK, KMAX, KODE, KODED, N, NZ,
      * IDUM, I1MACH, J, IC, INUB, NW
@@ -38,7 +38,7 @@ C
      3    -2.15241674114950973D-04,    -2.01348547807882387D-05,
      4     1.13302723198169588D-06,     6.11609510448141582D-09/
 C
-      CAZ = ZABS(ZR,ZI)
+      CAZ = AZABS(ZR,ZI)
       CSCLR = 1.0D0/TOL
       CRSCR = TOL
       CSSR(1) = CSCLR
@@ -68,7 +68,7 @@ C-----------------------------------------------------------------------
 C     SERIES FOR CABS(Z).LE.R1
 C-----------------------------------------------------------------------
       FC = 1.0D0
-      CALL ZLOG(RZR, RZI, SMUR, SMUI, IDUM)
+      CALL AZLOG(RZR, RZI, SMUR, SMUI, IDUM)
       FMUR = SMUR*DNU
       FMUI = SMUI*DNU
       CALL ZSHCH(FMUR, FMUI, CSHR, CSHI, CCHR, CCHI)
@@ -104,7 +104,7 @@ C-----------------------------------------------------------------------
       G2 = (T1+T2)*0.5D0
       FR = FC*(CCHR*G1+SMUR*G2)
       FI = FC*(CCHI*G1+SMUI*G2)
-      CALL ZEXP(FMUR, FMUI, STR, STI)
+      CALL AZEXP(FMUR, FMUI, STR, STI)
       PR = 0.5D0*STR/T2
       PI = 0.5D0*STI/T2
       CALL ZDIV(0.5D0, 0.0D0, STR, STI, PTR, PTI)
@@ -151,7 +151,7 @@ C-----------------------------------------------------------------------
       YR(1) = S1R
       YI(1) = S1I
       IF (KODED.EQ.1) RETURN
-      CALL ZEXP(ZR, ZI, STR, STI)
+      CALL AZEXP(ZR, ZI, STR, STI)
       CALL ZMLT(S1R, S1I, STR, STI, YR(1), YI(1))
       RETURN
 C-----------------------------------------------------------------------
@@ -198,7 +198,7 @@ C-----------------------------------------------------------------------
       S1R = S1R*STR
       S1I = S1I*STR
       IF (KODED.EQ.1) GO TO 210
-      CALL ZEXP(ZR, ZI, FR, FI)
+      CALL AZEXP(ZR, ZI, FR, FI)
       CALL ZMLT(S1R, S1I, FR, FI, S1R, S1I)
       CALL ZMLT(S2R, S2I, FR, FI, S2R, S2I)
       GO TO 210
@@ -209,7 +209,7 @@ C     KODED=2 AND A TEST FOR ON SCALE VALUES IS MADE DURING FORWARD
 C     RECURSION
 C-----------------------------------------------------------------------
   110 CONTINUE
-      CALL ZSQRT(ZR, ZI, STR, STI)
+      CALL AZSQRT(ZR, ZI, STR, STI)
       CALL ZDIV(RTHPI, CZEROI, STR, STI, COEFR, COEFI)
       KFLAG = 2
       IF (KODED.EQ.2) GO TO 120
@@ -320,7 +320,7 @@ C-----------------------------------------------------------------------
 C     COMPUTE (P2/CS)=(P2/CABS(CS))*(CONJG(CS)/CABS(CS)) FOR BETTER
 C     SCALING
 C-----------------------------------------------------------------------
-      TM = ZABS(CSR,CSI)
+      TM = AZABS(CSR,CSI)
       PTR = 1.0D0/TM
       S1R = P2R*PTR
       S1I = P2I*PTR
@@ -337,7 +337,7 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     COMPUTE P1/P2=(P1/CABS(P2)*CONJG(P2)/CABS(P2) FOR SCALING
 C-----------------------------------------------------------------------
-      TM = ZABS(P2R,P2I)
+      TM = AZABS(P2R,P2I)
       PTR = 1.0D0/TM
       P1R = P1R*PTR
       P1I = P1I*PTR
@@ -472,11 +472,11 @@ C-----------------------------------------------------------------------
         S1I = STI
         CKR = CKR+RZR
         CKI = CKI+RZI
-        AS = ZABS(S2R,S2I)
+        AS = AZABS(S2R,S2I)
         ALAS = DLOG(AS)
         P2R = -ZDR+ALAS
         IF(P2R.LT.(-ELIM)) GO TO 263
-        CALL ZLOG(S2R,S2I,STR,STI,IDUM)
+        CALL AZLOG(S2R,S2I,STR,STI,IDUM)
         P2R = -ZDR+STR
         P2I = -ZDI+STI
         P2M = DEXP(P2R)/TOL

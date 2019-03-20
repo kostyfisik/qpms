@@ -12,7 +12,7 @@ C     HALF PLANE OR ZR=-Z IF Z IS IN THE LEFT HALF PLANE. MR INDIC-
 C     ATES THE DIRECTION OF ROTATION FOR ANALYTIC CONTINUATION.
 C     NZ=-1 MEANS AN OVERFLOW WILL OCCUR
 C
-C***ROUTINES CALLED  ZAIRY,ZKSCL,ZS1S2,ZUCHK,ZUNHJ,D1MACH,ZABS
+C***ROUTINES CALLED  ZAIRY,ZKSCL,ZS1S2,ZUCHK,ZUNHJ,D1MACH,AZABS
 C***END PROLOGUE  ZUNK2
 C     COMPLEX AI,ARG,ARGD,ASUM,ASUMD,BSUM,BSUMD,CFN,CI,CIP,CK,CONE,CRSC,
 C    *CR1,CR2,CS,CSCL,CSGN,CSPN,CSR,CSS,CY,CZERO,C1,C2,DAI,PHI,PHID,RZ,
@@ -26,7 +26,7 @@ C    *S1,S2,Y,Z,ZB,ZETA1,ZETA1D,ZETA2,ZETA2D,ZN,ZR
      * PHII, PHIR, PI, PTI, PTR, RAST, RAZR, RS1, RZI, RZR, SAR, SGN,
      * STI, STR, S1I, S1R, S2I, S2R, TOL, YI, YR, YY, ZBI, ZBR, ZEROI,
      * ZEROR, ZETA1I, ZETA1R, ZETA2I, ZETA2R, ZET1DI, ZET1DR, ZET2DI,
-     * ZET2DR, ZI, ZNI, ZNR, ZR, ZRI, ZRR, D1MACH, ZABS
+     * ZET2DR, ZI, ZNI, ZNR, ZR, ZRI, ZRR, D1MACH, AZABS
       INTEGER I, IB, IFLAG, IFN, IL, IN, INU, IUF, K, KDFLG, KFLAG, KK,
      * KODE, MR, N, NAI, NDAI, NW, NZ, IDUM, J, IPARD, IC
       DIMENSION BRY(3), YR(N), YI(N), ASUMR(2), ASUMI(2), BSUMR(2),
@@ -105,7 +105,7 @@ C-----------------------------------------------------------------------
         IF (KODE.EQ.1) GO TO 30
         STR = ZBR + ZETA2R(J)
         STI = ZBI + ZETA2I(J)
-        RAST = FN/ZABS(STR,STI)
+        RAST = FN/AZABS(STR,STI)
         STR = STR*RAST*RAST
         STI = -STI*RAST*RAST
         S1R = ZETA1R(J) - STR
@@ -125,8 +125,8 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     REFINE  TEST AND SCALE
 C-----------------------------------------------------------------------
-        APHI = ZABS(PHIR(J),PHII(J))
-        AARG = ZABS(ARGR(J),ARGI(J))
+        APHI = AZABS(PHIR(J),PHII(J))
+        AARG = AZABS(ARGR(J),ARGI(J))
         RS1 = RS1 + DLOG(APHI) - 0.25D0*DLOG(AARG) - AIC
         IF (DABS(RS1).GT.ELIM) GO TO 70
         IF (KDFLG.EQ.1) KFLAG = 1
@@ -193,7 +193,7 @@ C-----------------------------------------------------------------------
    80 CONTINUE
       I = N
    85 CONTINUE
-      RAZR = 1.0D0/ZABS(ZRR,ZRI)
+      RAZR = 1.0D0/AZABS(ZRR,ZRI)
       STR = ZRR*RAZR
       STI = -ZRI*RAZR
       RZR = (STR+STR)*RAZR
@@ -214,7 +214,7 @@ C-----------------------------------------------------------------------
       IF (KODE.EQ.1) GO TO 90
       STR = ZBR + ZET2DR
       STI = ZBI + ZET2DI
-      RAST = FN/ZABS(STR,STI)
+      RAST = FN/AZABS(STR,STI)
       STR = STR*RAST*RAST
       STI = -STI*RAST*RAST
       S1R = ZET1DR - STR
@@ -230,7 +230,7 @@ C-----------------------------------------------------------------------
 C----------------------------------------------------------------------------
 C     REFINE ESTIMATE AND TEST
 C-------------------------------------------------------------------------
-      APHI = ZABS(PHIDR,PHIDI)
+      APHI = AZABS(PHIDR,PHIDI)
       RS1 = RS1+DLOG(APHI)
       IF (DABS(RS1).LT.ELIM) GO TO 120
   105 CONTINUE
@@ -291,7 +291,7 @@ C-----------------------------------------------------------------------
       FMR = DBLE(FLOAT(MR))
       SGN = -DSIGN(PI,FMR)
 C-----------------------------------------------------------------------
-C     CSPN AND CSGN ARE COEFF OF K AND I FUNCIONS RESP.
+C     CSPN AND CSGN ARE COEFF OF K AND I FUNCTIONS RESP.
 C-----------------------------------------------------------------------
       CSGNI = SGN
       IF (YY.LE.0.0D0) CSGNI = -CSGNI
@@ -355,7 +355,7 @@ C-----------------------------------------------------------------------
         IF (KODE.EQ.1) GO TO 220
         STR = ZBR + ZET2DR
         STI = ZBI + ZET2DI
-        RAST = FN/ZABS(STR,STI)
+        RAST = FN/AZABS(STR,STI)
         STR = STR*RAST*RAST
         STI = -STI*RAST*RAST
         S1R = -ZET1DR + STR
@@ -375,8 +375,8 @@ C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C     REFINE  TEST AND SCALE
 C-----------------------------------------------------------------------
-        APHI = ZABS(PHIDR,PHIDI)
-        AARG = ZABS(ARGDR,ARGDI)
+        APHI = AZABS(PHIDR,PHIDI)
+        AARG = AZABS(ARGDR,ARGDI)
         RS1 = RS1 + DLOG(APHI) - 0.25D0*DLOG(AARG) - AIC
         IF (DABS(RS1).GT.ELIM) GO TO 280
         IF (KDFLG.EQ.1) IFLAG = 1

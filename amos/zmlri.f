@@ -5,20 +5,20 @@ C
 C     ZMLRI COMPUTES THE I BESSEL FUNCTION FOR RE(Z).GE.0.0 BY THE
 C     MILLER ALGORITHM NORMALIZED BY A NEUMANN SERIES.
 C
-C***ROUTINES CALLED  DGAMLN,D1MACH,ZABS,ZEXP,ZLOG,ZMLT
+C***ROUTINES CALLED  DGAMLN,D1MACH,AZABS,AZEXP,AZLOG,ZMLT
 C***END PROLOGUE  ZMLRI
 C     COMPLEX CK,CNORM,CONE,CTWO,CZERO,PT,P1,P2,RZ,SUM,Y,Z
       DOUBLE PRECISION ACK, AK, AP, AT, AZ, BK, CKI, CKR, CNORMI,
      * CNORMR, CONEI, CONER, FKAP, FKK, FLAM, FNF, FNU, PTI, PTR, P1I,
      * P1R, P2I, P2R, RAZ, RHO, RHO2, RZI, RZR, SCLE, STI, STR, SUMI,
      * SUMR, TFNF, TOL, TST, YI, YR, ZEROI, ZEROR, ZI, ZR, DGAMLN,
-     * D1MACH, ZABS
+     * D1MACH, AZABS
       INTEGER I, IAZ, IDUM, IFNU, INU, ITIME, K, KK, KM, KODE, M, N, NZ
       DIMENSION YR(N), YI(N)
       DATA ZEROR,ZEROI,CONER,CONEI / 0.0D0, 0.0D0, 1.0D0, 0.0D0 /
       SCLE = D1MACH(1)/TOL
       NZ=0
-      AZ = ZABS(ZR,ZI)
+      AZ = AZABS(ZR,ZI)
       IAZ = INT(SNGL(AZ))
       IFNU = INT(SNGL(FNU))
       INU = IFNU + N - 1
@@ -52,7 +52,7 @@ C-----------------------------------------------------------------------
         P1I = PTI
         CKR = CKR + RZR
         CKI = CKI + RZI
-        AP = ZABS(P2R,P2I)
+        AP = AZABS(P2R,P2I)
         IF (AP.GT.TST*AK*AK) GO TO 20
         AK = AK + 1.0D0
    10 CONTINUE
@@ -85,12 +85,12 @@ C-----------------------------------------------------------------------
         P1I = PTI
         CKR = CKR + RZR
         CKI = CKI + RZI
-        AP = ZABS(P2R,P2I)
+        AP = AZABS(P2R,P2I)
         IF (AP.LT.TST) GO TO 30
         IF (ITIME.EQ.2) GO TO 40
-        ACK = ZABS(CKR,CKI)
+        ACK = AZABS(CKR,CKI)
         FLAM = ACK + DSQRT(ACK*ACK-1.0D0)
-        FKAP = AP/ZABS(P1R,P1I)
+        FKAP = AP/AZABS(P1R,P1I)
         RHO = DMIN1(FLAM,FKAP)
         TST = TST*DSQRT(RHO/(RHO*RHO-1.0D0))
         ITIME = 2
@@ -172,7 +172,7 @@ C-----------------------------------------------------------------------
       PTR = ZR
       PTI = ZI
       IF (KODE.EQ.2) PTR = ZEROR
-      CALL ZLOG(RZR, RZI, STR, STI, IDUM)
+      CALL AZLOG(RZR, RZI, STR, STI, IDUM)
       P1R = -FNF*STR + PTR
       P1I = -FNF*STI + PTI
       AP = DGAMLN(1.0D0+FNF,IDUM)
@@ -184,9 +184,9 @@ C     IN THE DENOMINATOR BY SQUARING LARGE QUANTITIES
 C-----------------------------------------------------------------------
       P2R = P2R + SUMR
       P2I = P2I + SUMI
-      AP = ZABS(P2R,P2I)
+      AP = AZABS(P2R,P2I)
       P1R = 1.0D0/AP
-      CALL ZEXP(PTR, PTI, STR, STI)
+      CALL AZEXP(PTR, PTI, STR, STI)
       CKR = STR*P1R
       CKI = STI*P1R
       PTR = P2R*P1R

@@ -6,12 +6,12 @@ C
 C     ZWRSK COMPUTES THE I BESSEL FUNCTION FOR RE(Z).GE.0.0 BY
 C     NORMALIZING THE I FUNCTION RATIOS FROM ZRATI BY THE WRONSKIAN
 C
-C***ROUTINES CALLED  D1MACH,ZBKNU,ZRATI,ZABS
+C***ROUTINES CALLED  D1MACH,ZBKNU,ZRATI,AZABS
 C***END PROLOGUE  ZWRSK
 C     COMPLEX CINU,CSCL,CT,CW,C1,C2,RCT,ST,Y,ZR
       DOUBLE PRECISION ACT, ACW, ALIM, ASCLE, CINUI, CINUR, CSCLR, CTI,
      * CTR, CWI, CWR, C1I, C1R, C2I, C2R, ELIM, FNU, PTI, PTR, RACT,
-     * STI, STR, TOL, YI, YR, ZRI, ZRR, ZABS, D1MACH
+     * STI, STR, TOL, YI, YR, ZRI, ZRR, AZABS, D1MACH
       INTEGER I, KODE, N, NW, NZ
       DIMENSION YR(N), YI(N), CWR(2), CWI(2)
 C-----------------------------------------------------------------------
@@ -39,7 +39,7 @@ C     THE UNDER AND OVERFLOW LIMITS AND THE NORMALIZATION MUST BE
 C     SCALED TO PREVENT OVER OR UNDERFLOW. CUOIK HAS DETERMINED THAT
 C     THE RESULT IS ON SCALE.
 C-----------------------------------------------------------------------
-      ACW = ZABS(CWR(2),CWI(2))
+      ACW = AZABS(CWR(2),CWI(2))
       ASCLE = 1.0D+3*D1MACH(1)/TOL
       CSCLR = 1.0D0
       IF (ACW.GT.ASCLE) GO TO 20
@@ -66,7 +66,7 @@ C-----------------------------------------------------------------------
       PTI = PTI + C2I
       CTR = ZRR*PTR - ZRI*PTI
       CTI = ZRR*PTI + ZRI*PTR
-      ACT = ZABS(CTR,CTI)
+      ACT = AZABS(CTR,CTI)
       RACT = 1.0D0/ACT
       CTR = CTR*RACT
       CTI = -CTI*RACT
