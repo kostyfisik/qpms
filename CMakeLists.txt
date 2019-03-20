@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
+include(CMakeAddFortranSubdirectory)
 project (QPMS)
 
 macro(use_c99)
@@ -13,5 +14,9 @@ endmacro(use_c99)
 
 set (QPMS_VERSION_MAJOR 0)
 #set (QPMS_VERSION_MINOR 3)
+cmake_add_fortran_subdirectory (amos
+	PROJECT amos
+	LIBRARIES amos
+	NO_EXTERNAL_INSTALL)
 add_subdirectory (qpms)
 
