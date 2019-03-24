@@ -234,6 +234,8 @@ cdef extern from "gsl/gsl_interp.h":
 cdef extern from "tmatrices.h":
     struct qpms_tmatrix_interpolator_t:
         const qpms_vswf_set_spec_t *bspec
+    struct qpms_permittivity_interpolator_t:
+        pass
     void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp)
     qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *interp, double freq)
     qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, double *freqs, 
@@ -266,10 +268,26 @@ cdef extern from "tmatrices.h":
             cdouble **tmdata)
     cdouble *qpms_mie_coefficients_reflection(cdouble *target, const qpms_vswf_set_spec_t *bspec,
             double a, cdouble k_i, cdouble k_e, cdouble mu_i, cdouble mu_e, qpms_bessel_t J_ext, qpms_bessel_t J_scat)
+    qpms_tmatrix_t *qpms_tmatrix_spherical(const qpms_vswf_set_spec_t *bspec, double a, 
+            cdouble k_i, cdouble k_e, cdouble mu_i, cdouble mu_e)
     qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, double a, 
             cdouble k_i, cdouble k_e, cdouble mu_i, cdouble mu_e)
     qpms_tmatrix_t *qpms_tmatrix_spherical(const qpms_vswf_set_spec_t *bspec,
             double a, cdouble k_i, cdouble k_e, cdouble mu_i, cdouble mu_e)
+    cdouble qpms_drude_epsilon(cdouble eps_inf, cdouble omega_p, cdouble gamma_p, cdouble omega)
+    qpms_errno_t qpms_tmatrix_spherical_mu0_fill(qpms_tmatrix_t *t, double a, double omega,
+            cdouble epsilon_fg, cdouble epsilon_bg)
+    qpms_tmatrix_t *qpms_tmatrix_spherical_mu0(const qpms_vswf_set_spec_t *bspec, double a,
+            double omega, cdouble epsilon_fg, cdouble epsilon_bg)
+    qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(const size_t incount,
+            cdouble *wavelength_m, cdouble *n, cdouble *k, const gsl_interp_type *iptype)
+    qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(const char *path,
+            const gsl_interp_type *iptype)
+    cdouble qpms_permittivity_interpolator_eps_at_omega(const qpms_permittivity_interpolator_t *interp, double omega_SI)
+    double qpms_permittivity_interpolator_omega_max(const qpms_permittivity_interpolator_t *interp)
+    double qpms_permittivity_interpolator_omega_min(const qpms_permittivity_interpolator_t *interp)
+    void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp)
+
 
 cdef extern from "scatsystem.h":
     struct qpms_particle_t:
