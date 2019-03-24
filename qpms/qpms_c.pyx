@@ -1194,15 +1194,27 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
 
     def spherical_fill(CTMatrix self, double radius, cdouble k_int,
             cdouble k_ext, cdouble mu_int = 1, cdouble mu_ext = 1):
-        ''' Replaces the contents of the T-matrix with those of a spherical particle. '''
+        ''' Replaces the contents of the T-matrix with those of a spherical particle.'''
         qpms_tmatrix_spherical_fill(&self.t, radius, k_int, k_ext, mu_int, mu_ext)
-    
+
+    def spherical_perm_fill(CTMatrix self, double radius, double freq, cdouble epsilon_int,
+            cdouble epsilon_ext):
+        '''Replaces the contenst of the T-matrix with those of a spherical particle.'''
+        qpms_tmatrix_spherical_mu0_fill(&self.t, radius, freq, epsilon_int, epsilon_ext)
+        
     @staticmethod
     def spherical(BaseSpec spec, double radius, cdouble k_int, cdouble k_ext, 
             cdouble mu_int = 1, cdouble mu_ext = 1):
         ''' Creates a T-matrix of a spherical nanoparticle. '''
         tm = CTMatrix(spec, 0)
         tm.spherical_fill(radius, k_int, k_ext, mu_int, mu_ext)
+        return tm
+    
+    @staticmethod
+    def spherical_perm(BaseSpec spec, double radius, double freq, cdouble epsilon_int, cdouble epsilon_ext):
+        '''Creates a T-matrix of a spherical nanoparticle.'''
+        tm = CTMatrix(spec, 0)
+        tm.spherical_perm_fill(radius, freq, epsilon_int, epsilon_ext)
         return tm
 
 cdef char *make_c_string(pythonstring):
