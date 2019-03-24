@@ -252,9 +252,15 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Num
 
 
 /// Interpolator of tabulated optical properties.
+// TODO use gsl_interp instead of gsl_spline.
 typedef struct qpms_permittivity_interpolator_t {
-	gsl_spline *spline_n;
-	gsl_spline *spline_k; 
+	double *wavelength_m; ///< Wavelength array (in meters).
+	double *n; ///< Refraction index array.
+	double *k; ///< Attenuation coefficient array.
+	gsl_interp *interp_n; ///< Refraction index interpolator object.
+	gsl_interp *interp_k; ///< Attenuation coeff interpolator object.
+	size_t size; ///< Size of n[], k[], and wavelength_m[].
+	// I could add gsl_interp_accel, but that is not necessary.
 } qpms_permittivity_interpolator_t;
 
 /// Creates a permittivity interpolator from tabulated wavelengths, refraction indices and extinction coeffs.
@@ -272,7 +278,16 @@ qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(
 		);
 
 /// Evaluates interpolated material permittivity at a given angular frequency.
-complex double qpms_permittivity_interpolator_eps_at_omega(const qpms_permittivity_interpolator_t *interp, double omega_SI);
+complex double qpms_permittivity_interpolator_eps_at_omega(
+		const qpms_permittivity_interpolator_t *interp, double omega_SI);
+
+/// Returns the minimum angular frequency supported by the interpolator.
+double qpms_permittivity_interpolator_omega_min(
+		const qpms_permittivity_interpolator_t *ip);
+
+/// Returns the minimum angular frequency supported by the interpolator.
+double qpms_permittivity_interpolator_omega_max(
+		const qpms_permittivity_interpolator_t *ip);
 
 /// Destroy a permittivity interpolator.
 void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp);

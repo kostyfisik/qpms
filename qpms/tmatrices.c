@@ -547,18 +547,28 @@ qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(
   if (incount <= 0) return NULL;
   qpms_permittivity_interpolator_t *ip;
   QPMS_CRASHING_MALLOC(ip, sizeof(qpms_permittivity_interpolator_t));
-  ip->spline_n = gsl_spline_alloc(iptype, incount);
-  ip->spline_k = gsl_spline_alloc(iptype, incount);
-  QPMS_ENSURE_SUCCESS(gsl_spline_init(ip->spline_n, wavelen_m, n, incount));
-  QPMS_ENSURE_SUCCESS(gsl_spline_init(ip->spline_k, wavelen_m, k, incount));
+  ip->size = incount;
+  QPMS_CRASHING_MALLOC(ip->wavelength_m, incount * sizeof(double));
+  QPMS_CRASHING_MALLOC(ip->n, incount * sizeof(double));
+  QPMS_CRASHING_MALLOC(ip->k, incount * sizeof(double));
+  memcpy(ip->wavelength_m, wavelen_m, incount*sizeof(double));
+  memcpy(ip->k, k, incount*sizeof(double));
+  memcpy(ip->n, n, incount*sizeof(double));
+  ip->interp_n = gsl_interp_alloc(iptype, incount);
+  ip->interp_k = gsl_interp_alloc(iptype, incount);
+  QPMS_ENSURE_SUCCESS(gsl_interp_init(ip->interp_n, ip->wavelength_m, ip->n, incount));
+  QPMS_ENSURE_SUCCESS(gsl_interp_init(ip->interp_k, ip->wavelength_m, ip->k, incount));
   return ip;
 }
 
 void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp) 
 {
   if(interp) {
-    gsl_spline_free(interp->spline_n);
-    gsl_spline_free(interp->spline_k);
+    gsl_interp_free(interp->interp_n);
+    gsl_interp_free(interp->interp_k);
+    free(interp->n);
+    free(interp->k);
+    free(interp->wavelength_m);
   }
   free(interp);
 }
@@ -641,15 +651,26 @@ qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(
 
 complex double qpms_permittivity_interpolator_eps_at_omega(
     const qpms_permittivity_interpolator_t *ip,  double omega_SI) 
-{
+{ 
   double lambda, n, k;
   lambda = 2*M_PI*SPEED_OF_LIGHT/omega_SI;
-  n = gsl_spline_eval(ip->spline_n, lambda, NULL);
-  k = gsl_spline_eval(ip->spline_k, lambda, NULL);
+  n = gsl_interp_eval(ip->interp_n, ip->wavelength_m, ip->n, lambda, NULL);
+  k = gsl_interp_eval(ip->interp_k, ip->wavelength_m, ip->k, lambda, NULL);
   complex double epsilon = n*n - k*k + 2*n*k*I;
   return epsilon;
 }
 
+double qpms_permittivity_interpolator_omega_max(
+    const qpms_permittivity_interpolator_t *ip)
+{
+  return 2*M_PI*SPEED_OF_LIGHT / ip->wavelength_m[0];
+}
+
+double qpms_permittivity_interpolator_omega_min(
+    const qpms_permittivity_interpolator_t *ip)
+{
+  return 2*M_PI*SPEED_OF_LIGHT / ip->wavelength_m[ip->size-1];
+}
 
 /// Convenience function to calculate T-matrix of a non-magnetic spherical \
 particle using the permittivity values, replacing existing T-matrix data.
