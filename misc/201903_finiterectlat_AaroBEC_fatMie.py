@@ -9,10 +9,12 @@ nm = 1e-9
 
 rewrite_output = '--rewrite-output' in sys.argv
 
+radiusfactor = float(sys.argv[5])
+
 cyr_part_height = 50*nm
 cyr_part_radius = 50*nm
 cyr_part_volume = cyr_part_height * np.pi * cyr_part_radius**2
-eqv_sph_radius = (3/4/np.pi*cyr_part_volume)**(1/3)
+eqv_sph_radius = (3/4/np.pi*cyr_part_volume)**(1/3) * radiusfactor
 
 sym = FinitePointGroup(point_group_info['D2h'])
 bspec = BaseSpec(lMax = 2)
@@ -21,7 +23,7 @@ materialfile = '/home/necadam1/wrkdir/repo/refractiveindex.info-database/databas
 
 #outputdatadir = '/home/necadam1/wrkdir/AaroBECfinite_new'
 #outputdatadir = '/u/46/necadam1/unix/project/AaroBECfinite_sph'
-outputdatadir = '/home/necadam1/wrkdir/AaroBECfinite_sph'
+outputdatadir = '/home/necadam1/wrkdir/AaroBECfinite_fatsph'
 os.makedirs(outputdatadir, exist_ok = True)
 mi = MaterialInterpolator(materialfile)
 #interp = TMatrixInterpolator(tmfile, bspec, symmetrise = sym, atol = 1e-8)
@@ -30,6 +32,7 @@ mi = MaterialInterpolator(materialfile)
 
 omega = float(sys.argv[3]) * eV/hbar
 sv_threshold = float(sys.argv[4])
+
 
 # Now place the particles and set background index.
 px = 571*nm; py = 621*nm
@@ -54,7 +57,7 @@ k = n * omega / c
 
 
 for iri in range(ss.nirreps):
-    destpath = os.path.join(outputdatadir, 'Nx%d_Ny%d_%geV_ir%d.npz'%(Nx, Ny, omega/eV*hbar, iri))
+    destpath = os.path.join(outputdatadir, 'Nx%d_Ny%d_%geV_ir%d_r%gnm.npz'%(Nx, Ny, omega/eV*hbar, iri, eqv_sph_radius/nm))
     if os.path.isfile(destpath) and not rewrite_output:
       print(destpath, 'already exists, skipping')
       continue
