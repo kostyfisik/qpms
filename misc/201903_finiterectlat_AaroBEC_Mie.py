@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
-from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, eV, hbar, c
+from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, eV, hbar, c, MaterialInterpolator
 from qpms.symmetries import point_group_info
 import numpy as np
 import os
@@ -9,7 +9,7 @@ nm = 1e-9
 
 cyr_part_height = 50*nm
 cyr_part_radius = 50*nm
-cyr_part_volume = cyr_part_height * np.pi * cyr_part.radius**2
+cyr_part_volume = cyr_part_height * np.pi * cyr_part_radius**2
 eqv_sph_radius = (3/4/np.pi*cyr_part_volume)**(1/3)
 
 sym = FinitePointGroup(point_group_info['D2h'])
@@ -18,7 +18,8 @@ bspec = BaseSpec(lMax = 2)
 materialfile = '/home/necadam1/wrkdir/repo/refractiveindex.info-database/database/data/main/Au/Johnson.yml'
 
 #outputdatadir = '/home/necadam1/wrkdir/AaroBECfinite_new'
-outputdatadir = '/u/46/necadam1/unix/project/AaroBECfinite_sph'
+#outputdatadir = '/u/46/necadam1/unix/project/AaroBECfinite_sph'
+outputdatadir = '/home/necadam1/wrkdir/AaroBECfinite_sph'
 os.makedirs(outputdatadir, exist_ok = True)
 mi = MaterialInterpolator(materialfile)
 #interp = TMatrixInterpolator(tmfile, bspec, symmetrise = sym, atol = 1e-8)
