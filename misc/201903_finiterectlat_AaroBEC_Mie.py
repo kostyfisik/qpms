@@ -2,6 +2,7 @@
 # coding: utf-8
 from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, eV, hbar, c, MaterialInterpolator
 from qpms.symmetries import point_group_info
+from pathlib import Path
 import numpy as np
 import os
 import sys
@@ -55,7 +56,8 @@ k = n * omega / c
 
 for iri in range(ss.nirreps):
     destpath = os.path.join(outputdatadir, 'Nx%d_Ny%d_%geV_ir%d.npz'%(Nx, Ny, omega/eV*hbar, iri))
-    if os.path.isfile(destpath) and not rewrite_output:
+    touchpath = os.path.join(outputdatadir, 'Nx%d_Ny%d_%geV_ir%d.done'%(Nx, Ny, omega/eV*hbar, iri))
+    if (os.path.isfile(destpath) or os.path.isfile(touchpath)) and not rewrite_output:
       print(destpath, 'already exists, skipping')
       continue
     mm_iri = ss.modeproblem_matrix_packed(k, iri)
@@ -67,5 +69,6 @@ for iri in range(ss.nirreps):
         S=S[starti:], omega=omega, Vh = Vh[starti:], iri=iri, Nx = Nx, Ny= Ny )
     del S
     del Vh
+    Path(touchpath).touch()
     # Don't forget to conjugate Vh before transforming it to the full vector!
 
