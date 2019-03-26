@@ -21,6 +21,8 @@
 #define QPMS_SCATSYS_TMATRIX_ATOL 1e-14
 #define QPMS_SCATSYS_TMATRIX_RTOL 1e-12
 
+long qpms_scatsystem_nthreads_default = 4;
+
 // ------------ Stupid implementation of qpms_scatsys_apply_symmetry() -------------
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
@@ -1418,8 +1420,13 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
 
   // FIXME THIS IS NOT PORTABLE:
   long nthreads = sysconf(_SC_NPROCESSORS_ONLN);
-  if (nthreads < 1) nthreads = 1; // If something goes wrong...
-
+  if (nthreads < 1) {
+    QPMS_WARN("_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
+       nthreads, qpms_scatsystem_nthreads_default);
+    nthreads = qpms_scatsystem_nthreads_default; 
+  } else {
+    QPMS_DEBUG("_SC_NRPOCESSORS_ONLN returned %ld.", nthreads);
+  }
   pthread_t thread_ids[nthreads];
   for(long thi = 0; thi < nthreads; ++thi)
     QPMS_ENSURE_SUCCESS(pthread_create(thread_ids + thi, NULL,
