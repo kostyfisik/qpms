@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 if 'SLURM_CPUS_PER_TASK' in os.environ:
-    scatsystem_set_nthreads(os.environ['SLURM_CPUS_PER_TASK'])
+    scatsystem_set_nthreads(int(os.environ['SLURM_CPUS_PER_TASK']))
 
 nm = 1e-9
 
