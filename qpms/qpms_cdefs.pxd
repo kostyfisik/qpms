@@ -290,6 +290,7 @@ cdef extern from "tmatrices.h":
 
 
 cdef extern from "scatsystem.h":
+    void qpms_scatsystem_set_nthreads(long n)
     struct qpms_particle_t:
         cart3_t pos
         const qpms_tmatrix_t *tmatrix

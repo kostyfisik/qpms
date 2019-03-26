@@ -13,6 +13,11 @@
 #include "qpms_types.h"
 #include <stdbool.h>
 
+
+/// Overrides the number of threads spawned by the paralellized functions.
+/** TODO MORE DOC which are those? */
+void qpms_scatsystem_set_nthreads(long n);
+
 /// A particle, defined by its T-matrix and position.
 typedef struct qpms_particle_t {
 	// Does it make sense to ever use other than cartesian coords for this?

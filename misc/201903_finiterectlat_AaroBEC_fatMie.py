@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # coding: utf-8
-from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, eV, hbar, c, MaterialInterpolator
+from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, eV, hbar, c, MaterialInterpolator, scatsystem_set_nthreads
 from qpms.symmetries import point_group_info
 import numpy as np
 import os
 import sys
+
+if 'SLURM_CPUS_PER_TASK' in os.environ:
+    scatsystem_set_nthreads(os.environ['SLURM_CPUS_PER_TASK'])
+
 nm = 1e-9
 
 rewrite_output = '--rewrite-output' in sys.argv

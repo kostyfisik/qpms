@@ -22,6 +22,11 @@
 #define QPMS_SCATSYS_TMATRIX_RTOL 1e-12
 
 long qpms_scatsystem_nthreads_default = 4;
+long qpms_scatsystem_nthreads_override = 0;
+
+void qpms_scatsystem_set_nthreads(long n) {
+  qpms_scatsystem_nthreads_override = n;
+}
 
 // ------------ Stupid implementation of qpms_scatsys_apply_symmetry() -------------
 
@@ -1419,13 +1424,20 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
     arg = {ss, &opistartR, &opistartR_mutex, iri, target_packed, k};
 
   // FIXME THIS IS NOT PORTABLE:
-  long nthreads = sysconf(_SC_NPROCESSORS_ONLN);
-  if (nthreads < 1) {
-    QPMS_WARN("_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
-       nthreads, qpms_scatsystem_nthreads_default);
-    nthreads = qpms_scatsystem_nthreads_default; 
+  long nthreads;
+  if (qpms_scatsystem_nthreads_override > 0) {
+    nthreads = qpms_scatsystem_nthreads_override;
+    QPMS_WARN("Using overriding value of %ld thread(s).", 
+        nthreads);
   } else {
-    QPMS_DEBUG("_SC_NRPOCESSORS_ONLN returned %ld.", nthreads);
+    nthreads = sysconf(_SC_NPROCESSORS_ONLN);
+    if (nthreads < 1) {
+      QPMS_WARN("_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
+         nthreads, qpms_scatsystem_nthreads_default);
+      nthreads = qpms_scatsystem_nthreads_default; 
+    } else {
+      QPMS_DEBUG("_SC_NRPOCESSORS_ONLN returned %ld.", nthreads);
+    }
   }
   pthread_t thread_ids[nthreads];
   for(long thi = 0; thi < nthreads; ++thi)

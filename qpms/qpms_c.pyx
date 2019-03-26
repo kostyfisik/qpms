@@ -1398,6 +1398,10 @@ cdef class Particle:
             else:
                 raise ValueError("Position argument has to contain 3 or 2 cartesian coordinates")
 
+cpdef void scatsystem_set_nthreads(long n):
+    qpms_scatsystem_set_nthreads(n)
+    return
+
 cdef class ScatteringSystem:
     '''
     Wrapper over the C qpms_scatsys_t structure.
