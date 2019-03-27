@@ -34,6 +34,27 @@ class VSWFNorm(enum.IntEnum):
     TAYLOR = QPMS_NORMALISATION_TAYLOR
     TAYLOR_CS = QPMS_NORMALISATION_TAYLOR_CS
 
+try:
+    class DebugFlags(enum.IntFlag): # Should be IntFlag if python version >= 3.6
+        MISC = QPMS_DBGMSG_MISC
+        THREADS = QPMS_DBGMSG_THREADS
+    has_IntFlag = True
+except AttributeError: # For old versions of enum, use IntEnum instead
+    class DebugFlags(enum.IntEnum): 
+        MISC = QPMS_DBGMSG_MISC
+        THREADS = QPMS_DBGMSG_THREADS
+    has_IntFlag = False
+
+def dbgmsg_enable(qpms_dbgmsg_flags types):
+    flags = qpms_dbgmsg_enable(types)
+    return DebugFlags(flags) if has_IntFlag else flags
+def dbgmsg_disable(qpms_dbgmsg_flags types):
+    flags = qpms_dbgmsg_disable(types)
+    return DebugFlags(flags) if has_IntFlag else flags
+def dbgmsg_active():
+    flags = qpms_dbgmsg_enable(<qpms_dbgmsg_flags>0)
+    return DebugFlags(flags) if has_IntFlag else flags
+
 import math # for copysign in crep methods
 #import re # TODO for crep methods?
 

@@ -87,6 +87,14 @@ cdef extern from "qpms_types.h":
         bint owns_m # FIXME in fact bool
     # maybe more if needed
 
+cdef extern from "qpms_error.h":
+    ctypedef enum qpms_dbgmsg_flags:
+        QPMS_DBGMSG_MISC
+        QPMS_DBGMSG_THREADS
+    qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types)
+    qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types)
+
+
 cdef extern from "indexing.h":
     qpms_uvswfi_t qpms_tmn2uvswfi(qpms_vswf_type_t t, qpms_m_t m, qpms_l_t n)
     qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u, qpms_vswf_type_t* t, qpms_m_t* m, qpms_l_t* n)

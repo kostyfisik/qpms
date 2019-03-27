@@ -1427,16 +1427,16 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
   long nthreads;
   if (qpms_scatsystem_nthreads_override > 0) {
     nthreads = qpms_scatsystem_nthreads_override;
-    QPMS_WARN("Using overriding value of %ld thread(s).", 
+    QPMS_DEBUG(QPMS_DBGMSG_THREADS, "Using overriding value of %ld thread(s).", 
         nthreads);
   } else {
     nthreads = sysconf(_SC_NPROCESSORS_ONLN);
     if (nthreads < 1) {
-      QPMS_WARN("_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
+      QPMS_DEBUG(QPMS_DBGMSG_THREADS, "_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
          nthreads, qpms_scatsystem_nthreads_default);
       nthreads = qpms_scatsystem_nthreads_default; 
     } else {
-      QPMS_DEBUG("_SC_NRPOCESSORS_ONLN returned %ld.", nthreads);
+      QPMS_DEBUG(QPMS_DBGMSG_THREADS, "_SC_NRPOCESSORS_ONLN returned %ld.", nthreads);
     }
   }
   pthread_t thread_ids[nthreads];

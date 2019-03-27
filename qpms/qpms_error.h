@@ -25,9 +25,26 @@ void qpms_pr_debug_at_flf(const char *filename, unsigned int linenum,
 //		const char *fmt, ...);
 
 
+typedef enum {
+	QPMS_DBGMSG_MISC = 1, 
+	QPMS_DBGMSG_THREADS = 2 // Multithreading-related debug messages.
+} qpms_dbgmsg_flags;
+
+void qpms_debug_at_flf(const char *filename, unsigned int linenum,
+		const char *func,
+		qpms_dbgmsg_flags type,
+	        const char *fmt, ...);
+
+extern qpms_dbgmsg_flags qpms_dbgmsg_enabled;
+
+qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types);
+qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
+
+
+
 #define QPMS_WARN(msg, ...) qpms_warn_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__)
 
-#define QPMS_DEBUG(msg, ...) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__)
+#define QPMS_DEBUG(type, msg, ...) qpms_debug_at_flf(__FILE__,__LINE__,__func__,type,msg, ##__VA_ARGS__)
 
 #define QPMS_CRASHING_MALLOC(pointer, size) {(pointer) = malloc(size); if(!pointer && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Allocation of %zd bytes for " #pointer " failed.", (size_t) (size));}
 
