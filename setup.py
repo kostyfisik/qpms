@@ -74,10 +74,12 @@ qpms_c = Extension('qpms_c',
             'qpms/tmatrices.c',
             'qpms/error.c',
             'qpms/bessel.c',
+            'qpms/own_zgemm.c',
         ],
         extra_compile_args=['-std=c99','-ggdb', '-O3',
             '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # this is required
             #'-DQPMS_USE_OMP',
+            '-DQPMS_SCATSYSTEM_USE_OWN_BLAS',
             '-DDISABLE_NDEBUG', # uncomment to enable assertions in the modules
             #'-fopenmp',
             ],

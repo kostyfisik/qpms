@@ -16,6 +16,13 @@
 #include "tmatrices.h"
 #include <pthread.h>
 
+#ifdef QPMS_SCATSYSTEM_USE_OWN_BLAS
+#include "qpmsblas.h"
+#define SERIAL_ZGEMM qpms_zgemm
+#else
+#define SERIAL_ZGEMM cblas_zgemm
+#endif
+
 #define SQ(x) ((x)*(x))
 #define QPMS_SCATSYS_LEN_RTOL 1e-13
 #define QPMS_SCATSYS_TMATRIX_ATOL 1e-14
@@ -1362,7 +1369,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
                     bspecR, bspecC->n, bspecC, 1,
                     a->k, posR, posC));
 
-              cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+              SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                   bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
                   &one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
                   Sblock/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
@@ -1374,7 +1381,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
             }
 
             // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]
-            cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasConjTrans,
+            SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasConjTrans,
                 particle_fullsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeC /*K*/,
                 &one /*alpha*/, TSblock/*A*/, particle_fullsizeC/*ldA*/, 
                 omC + opiC*particle_fullsizeC /*B*/,
@@ -1382,7 +1389,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
                 tmp /*C*/, orbit_packedsizeC /*LDC*/);
 
             // target[oiR|piR,oiC|piC] += U[...] tmp[...]
-            cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+            SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                 orbit_packedsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeR /*K*/,
                 &one /*alpha*/, omR + opiR*particle_fullsizeR/*A*/, orbit_fullsizeR/*ldA*/,
                 tmp /*B*/, orbit_packedsizeC /*ldB*/, &one /*beta*/,
