@@ -510,7 +510,7 @@ void qpms_trans_calculator_free(qpms_trans_calculator *c) {
   free(c->B_multipliers[0]);
   free(c->B_multipliers);
 #ifdef LATTICESUMS
-  qpms_ewald32_constants_free(e32c);
+  qpms_ewald3_constants_free(e3c);
 #endif
 #ifdef LATTICESUMS_OLD
   free(c->hct);
@@ -939,7 +939,7 @@ qpms_trans_calculator
   c->hct = hankelcoefftable_init(2*lMax+1);
 #endif
 #ifdef LATTICESUMS32
-  c->e32c = qpms_ewald32_constants_init(2 * lMax + 1, /*csphase*/ qpms_normalisation_t_csphase(normalisation));
+  c->e3c = qpms_ewald3_constants_init(2 * lMax + 1, /*csphase*/ qpms_normalisation_t_csphase(normalisation));
 #endif
   c->legendre0 = malloc(gsl_sf_legendre_array_n(2*lMax+1) * sizeof(double));
   if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*lMax+1,
@@ -1249,7 +1249,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
     )
 {
 
-  const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e32c->lMax);
+  const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e3c->lMax);
   //const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
   const bool doerr = Aerr || Berr;
   const bool do_sigma0 = (particle_shift == 0)//DIFF21((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
@@ -1266,11 +1266,11 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
 
   int retval;
   retval = ewald31z_sigma_long_points_and_shift(sigmas_long, serr_long, //DIFF21
-      c->e32c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
+      c->e3c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
   if (retval) abort();
 
   retval = ewald31z_sigma_short_points_and_shift(sigmas_short, serr_short, //DIFF21
-      c->e32c, eta, k, nRpoints, Rpoints, beta, particle_shift);
+      c->e3c, eta, k, nRpoints, Rpoints, beta, particle_shift);
   if (retval) abort();
 
   for(qpms_y_t y = 0; y < nelem2_sc; ++y)
@@ -1280,7 +1280,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
 
   complex double sigma0 = 0; double sigma0_err = 0;
   if (do_sigma0) {
-    retval = ewald31z_sigma0(&sigma0, &sigma0_err, c->e32c, eta, k);//DIFF21
+    retval = ewald31z_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k);//DIFF21
     if(retval) abort();
     const qpms_l_t y = qpms_mn2y_sc(0,0);
     sigmas_total[y] += sigma0;
@@ -1355,6 +1355,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
 
 #ifdef LATTICESUMS32
 
+#if 0 // Legacy code, to be removed
 int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_trans_calculator *c,
     complex double * const Adest, double * const Aerr,
     complex double * const Bdest, double * const Berr,
@@ -1368,7 +1369,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
     )
 {
 
-  const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e32c->lMax);
+  const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e3c->lMax);
   //const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
   const bool doerr = Aerr || Berr;
   const bool do_sigma0 = ((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
@@ -1385,11 +1386,11 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
 
   int retval;
   retval = ewald32_sigma_long_points_and_shift(sigmas_long, serr_long,
-      c->e32c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
+      c->e3c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
   if (retval) abort();
 
   retval = ewald32_sigma_short_points_and_shift(sigmas_short, serr_short,
-      c->e32c, eta, k, nRpoints, Rpoints, beta, particle_shift);
+      c->e3c, eta, k, nRpoints, Rpoints, beta, particle_shift);
   if (retval) abort();
 
   for(qpms_y_t y = 0; y < nelem2_sc; ++y)
@@ -1399,7 +1400,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
 
   complex double sigma0 = 0; double sigma0_err = 0;
   if (do_sigma0) {
-    retval = ewald32_sigma0(&sigma0, &sigma0_err, c->e32c, eta, k);
+    retval = ewald32_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k);
     if(retval) abort();
     const qpms_l_t y = qpms_mn2y_sc(0,0);
     sigmas_total[y] += sigma0;
@@ -1469,6 +1470,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_tra
   }
   return 0;
 }
+#endif //0
 
 
 // N.B. alternative point generation strategy toggled by macro GEN_RSHIFTEDPOINTS
@@ -1488,7 +1490,7 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
     )
 {
 
-  const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e32c->lMax);
+  const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e3c->lMax);
   //const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
   const bool doerr = Aerr || Berr;
   const bool do_sigma0 = ((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
@@ -1524,8 +1526,8 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 
   int retval;
   //retval = ewald32_sigma_long_points_and_shift(sigmas_long, serr_long,
-  //    c->e32c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
-  retval = ewald3_sigma_long(sigmas_long, serr_long, c->e32c, eta, k, 
+  //    c->e3c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
+  retval = ewald3_sigma_long(sigmas_long, serr_long, c->e3c, eta, k, 
       unitcell_area, LAT_2D_IN_3D_XYONLY, &Kgen,
 #ifdef GEN_KSHIFTEDPOINTS
       true,
@@ -1536,8 +1538,8 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
   if (retval) abort();
 
   //retval = ewald32_sigma_short_points_and_shift(sigmas_short, serr_short,
-  //    c->e32c, eta, k, nRpoints, Rpoints, beta, particle_shift);
-  retval = ewald3_sigma_short(sigmas_short, serr_short, c->e32c, eta, k,
+  //    c->e3c, eta, k, nRpoints, Rpoints, beta, particle_shift);
+  retval = ewald3_sigma_short(sigmas_short, serr_short, c->e3c, eta, k,
       LAT_2D_IN_3D_XYONLY, &Rgen, 
 #ifdef GEN_RSHIFTEDPOINTS
       true,
@@ -1554,7 +1556,7 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 
   complex double sigma0 = 0; double sigma0_err = 0;
   if (do_sigma0) {
-    retval = ewald32_sigma0(&sigma0, &sigma0_err, c->e32c, eta, k);
+    retval = ewald3_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k);
     if(retval) abort();
     const qpms_l_t y = qpms_mn2y_sc(0,0);
     sigmas_total[y] += sigma0;

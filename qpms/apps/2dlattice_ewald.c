@@ -1,7 +1,8 @@
-// c99 -o ew_gen_kin -Wall -I ../.. -O2 -ggdb -DQPMS_VECTORS_NICE_TRANSFORMATIONS -DLATTICESUMS32 2dlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c ../latticegens.c -lgsl -lm -lblas 
+// c99 -o ew_gen_kin -Wall -I ../.. -I ../../amos/ -O2 -ggdb -DQPMS_VECTORS_NICE_TRANSFORMATIONS -DLATTICESUMS32 2dlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c ../latticegens.c ../bessel.c -lgsl -lm -lblas ../../amos/libamos.a -lgfortran ../error.c
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#define LATTICESUMS32
 #include <qpms/translations.h>
 #include <qpms/lattices.h>
 #include <gsl/gsl_const_mksa.h>

@@ -78,7 +78,7 @@ typedef struct qpms_trans_calculator {
 #endif
 
 #if defined LATTICESUMS32 || defined LATTICESUMS31
-	qpms_ewald32_constants_t *e32c;
+	qpms_ewald3_constants_t *e3c;
 #endif
 #ifdef LATTICESUMS_OLD
 	complex double *hct; // Hankel function coefficient table 
@@ -229,7 +229,7 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 #ifdef LATTICESUMS31
 // e31z means that the particles are positioned along the z-axis;
 // their positions and K-values are then denoted by a single z-coordinate
-in qpms_trans_calculator_get_AB_arrays_e31z_bost_points_and_shift(const qpms_trans_calculator *c,
+int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_trans_calculator *c,
 		complex double *Adest, double *Aerr,
 		complex double *Bdest, double *Berr,
 		const ptrdiff_t deststride, const ptrdiff_t srcstride,

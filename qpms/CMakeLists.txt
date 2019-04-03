@@ -3,6 +3,9 @@ find_package(GSL 2.0 REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
+add_definitions(-DLATTICESUMS32)
+add_definitions(-DQPMS_VECTORS_NICE_TRANSFORMATIONS)
+
 #includes
 set (DIRS ${GSL_INCLUDE_DIRS} ${GSLCBLAS_INCLUDE_DIRS})
 include_directories(${DIRS})
