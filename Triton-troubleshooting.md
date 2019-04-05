@@ -5,20 +5,22 @@ Running anything in a cluster environment can cause some unexpected problems.
 With these notes, one should be able to run qpms successfully on Aalto's Triton.
 
 The main problem is that it is often not completely trivial to ensure 
-mutual compatibility of various libraries and tools on which qpms depends.
+the mutual compatibility of various libraries and tools on which qpms depends.
 
 ## Triton+anaconda
 ### Installing qpms with anaconda
 
 This section shows how to use qpms in an anaconda virtual environment.
-First, we purge the modules to ensure that no other other conflicting python instances are loaded.
+First, we purge the modules to ensure that no other other conflicting python 
+instances are loaded.
 Then we load an anaconda3 module.
 ```
 module purge
 module load anaconda3
 ```
 Next, conda needs to infect our shell with some code in order to work properly.
-(If you use a different shell than bash, modify the following command accordingly.)
+(If you use a different shell than bash, modify the following command 
+accordingly.)
 ```
 conda init bash
 ```
@@ -64,8 +66,9 @@ cmake .
 make clean
 make amos
 ```
-Cmake builds in other directories are not supported right now, as qpms setup scripts now expects
-certain amos files at fixed relative paths. Therefore the `.` in `cmake .`.
+Cmake builds in other directories are not supported right now, as qpms setup
+scripts now expects certain amos files at fixed relative paths. Therefore 
+the `.` in `cmake .`.
 
 And finaly, build qpms.
 ```
@@ -77,12 +80,12 @@ needs updates.
 
 ### Running qpms with anaconda
 
-After installing the qpms python module, one should be able to import it and to use
-the scripts in the misc directory in the same shell session used for installing 
-qpms.
+After installing the qpms python module, one should be able to import it and to 
+use the scripts in the misc directory in the same shell session used 
+for installing qpms.
 
-To use qpms also later, one has to restore the environment, i.e. load the same modules and
-activate the anaconda virtual environment.
+To use qpms also later, one has to restore the environment, i.e. load the same
+modules and activate the anaconda virtual environment.
 ```
 module restore qpms_conda
 conda activate trqpms
