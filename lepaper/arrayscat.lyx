@@ -1,0 +1,279 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Some nice title about multiple scattering approach to photonic nanoparticle
+ arrays
+\end_layout
+
+\begin_layout Author
+Marek Nečada
+\end_layout
+
+\begin_layout Abstract
+TODO
+\end_layout
+
+\begin_layout Standard
+Excerpt from the SIAM Journal of Scientific Computing Editorial Policy:
+\end_layout
+
+\begin_layout Quotation
+The purpose of SIAM Journal on Scientific Computing (SISC) is to advance
+ computational methods for solving scientific and engineering problems.
+\end_layout
+
+\begin_layout Quotation
+SISC papers are classified into three categories:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Methods and Algorithms for Scientific Computing: Papers in this category
+ may include theoretical analysis, provided that the relevance to applications
+ in science and engineering is demonstrated.
+ They should contain meaningful computational results and theoretical results
+ or strong heuristics supporting the performance of new algorithms.
+ 
+\end_layout
+
+\begin_layout Itemize
+Computational Methods in Science and Engineering: Papers in this section
+ will typically describe novel methodologies for solving a specific problem
+ in computational science or engineering.
+ They should contain enough information about the application to orient
+ other computational scientists but should omit details of interest mainly
+ to the applications specialist.
+ 
+\end_layout
+
+\begin_layout Itemize
+Software and High-Performance Computing: Papers in this category should
+ concern the novel design and development of computational methods and high-qual
+ity software, parallel algorithms, high-performance computing issues, new
+ architectures, data analysis, or visualization.
+ The primary focus should be on computational methods that have potentially
+ large impact for an important class of scientific or engineering problems.
+\end_layout
+
+\end_deeper
+\begin_layout Quotation
+Authors are encouraged to indicate which category best fits their SISC submissio
+n.
+\end_layout
+
+\begin_layout Quotation
+All submissions to SISC must be well written and accessible to a wide variety
+ of readers, and should represent a clear advance in the state of the art.
+\end_layout
+
+\begin_layout Quotation
+Due to space limitations, articles are normally limited to 20 journal pages.
+ Exceptions can be made in special cases only with the concurrence of the
+ referees, the associate editor, and the editor-in-chief.
+ 
+\end_layout
+
+\begin_layout Standard
+Category: Methods and Algorithms for Scientific Computing?
+\end_layout
+
+\begin_layout Section
+Outline
+\end_layout
+
+\begin_layout Itemize
+Intro: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+problem of optical response of nanoparticle arrays
+\end_layout
+
+\begin_layout Itemize
+application domain of my method, computational complexity
+\end_layout
+
+\begin_layout Itemize
+brief comparison of complexities with the 
+\begin_inset Quotes eld
+\end_inset
+
+old-fashioned
+\begin_inset Quotes erd
+\end_inset
+
+ (FEM, FDTD)
+\end_layout
+
+\begin_layout Itemize
+my implementation
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Finite systems:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+motivation (classes of problems that this can solve: response to external
+ radiation, resonances, ...)
+\end_layout
+
+\begin_layout Itemize
+theory
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+T-matrix definition, basics
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+How to get it?
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+translation operators (TODO think about how explicit this should be)
+\end_layout
+
+\begin_layout Itemize
+employing point group symmetries and decomposing the problem to decrease
+ the computational complexity (maybe separately)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Example results (or maybe rather in the end)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Infinite lattices:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+motivation
+\end_layout
+
+\begin_layout Itemize
+theory
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Ewald sum of translation operators
+\end_layout
+
+\begin_layout Itemize
+applications: mode problem with SVD, transmision/reflection
+\end_layout
+
+\begin_layout Itemize
+space group symmetries (again, maybe all the symmetry-related stuff separately?)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Example results (or maybe all in the end)
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Topology related stuff (TODO)?
+\end_layout
+
+\begin_layout Itemize
+My implementation.
+\end_layout
+
+\begin_layout Itemize
+Maybe put the numerical results separately in the end.
+\end_layout
+
+\end_body
+\end_document
