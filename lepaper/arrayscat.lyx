@@ -82,15 +82,11 @@
 
 \begin_layout Title
 Some nice title about multiple scattering approach to photonic nanoparticle
- arrays
+ arrays (outline)
 \end_layout
 
 \begin_layout Author
 Marek Nečada
-\end_layout
-
-\begin_layout Abstract
-TODO
 \end_layout
 
 \begin_layout Standard
@@ -217,7 +213,9 @@ How to get it?
 
 \end_deeper
 \begin_layout Itemize
-translation operators (TODO think about how explicit this should be)
+translation operators (TODO think about how explicit this should be, but
+ I guess it might be useful to write them to write them explicitly (but
+ in the shortest possible form) in the normalisation used in my program)
 \end_layout
 
 \begin_layout Itemize
@@ -237,7 +235,7 @@ Infinite lattices:
 
 \begin_deeper
 \begin_layout Itemize
-motivation
+motivation (dispersion relations / modes, ...?)
 \end_layout
 
 \begin_layout Itemize
@@ -246,7 +244,12 @@ theory
 
 \begin_deeper
 \begin_layout Itemize
-Ewald sum of translation operators
+Ewald sum of translation operators (again, we shall see how explicit expressions
+ it will take to not make it too repulsive) 
+\end_layout
+
+\begin_layout Itemize
+singularities and convergence (TODO)
 \end_layout
 
 \begin_layout Itemize
