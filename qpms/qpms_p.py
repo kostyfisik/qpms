@@ -4,8 +4,7 @@ from qpms_c import *
 import scipy
 from scipy.constants import epsilon_0 as ε_0, c, pi as π, e, hbar as ℏ, mu_0 as μ_0
 eV = e
-from scipy.special import lpmn, lpmv, spherical_jn, spherical_yn, poch, gammaln
-from scipy.misc import factorial
+from scipy.special import lpmn, lpmv, spherical_jn, spherical_yn, poch, gammaln, factorial
 import math
 import cmath
 import os
