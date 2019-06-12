@@ -6,10 +6,10 @@ in several steps (assuming the T-matrices have already
 been obtained using `scuff-tmatrix` or can be obtained
 from Lorenz-Mie solution (spherical particles)):
 
- 1. Sampling the $k, \omega$ space.
+ 1. Sampling the *k*, *ω* space.
  2. Pre-calculating the
     Ewald-summed translation operators.
- 3. For each $k, \omega$ pair, build the LHS operator
+ 3. For each *k*, *ω* pair, build the LHS operator
     for the scattering problem (TODO reference), optionally decomposed
     into suitable irreducible representation subspaces.
  4. Evaluating the singular values and finding their minima.
@@ -31,15 +31,15 @@ manually like this:
   c99 -o ew_gen_kin -Wall -I ../.. -I ../../amos/ -O2 -ggdb -DQPMS_VECTORS_NICE_TRANSFORMATIONS -DLATTICESUMS32 2dlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c ../latticegens.c ../bessel.c -lgsl -lm -lblas ../../amos/libamos.a -lgfortran ../error.c
 ``` 
 
-Step 1: Sampling the $k, \omega$ space
+Step 1: Sampling the *k*, *ω* space
 --------------------------------------
 
-`ew_gen_kin` expects a list of $(k_x, k_y)$
+`ew_gen_kin` expects a list of (*k_x*, *k_y*)
 pairs on standard input (separated by whitespaces),
 the rest is specified via command line arguments.
 
 So if we want to examine the line between the Г point and the point
-$k = (0, 1\cdot10^5\mathrm{m}^{-1})$, we can generate an input
+\f$ k = (0, 10^5\,\mathrm{m}^{-1}) \f$, we can generate an input
 running
 ```
   for ky in $(seq 0 1e3 1e5); do
@@ -47,7 +47,7 @@ running
   done
 ```
 
-It also make sense to pre-generate the list of $\omega$ values,
+It also make sense to pre-generate the list of *ω* values,
 e.g. 
 ```
   seq 6.900 0.002 7.3 | sed -e 's/,/./g' > omegalist
