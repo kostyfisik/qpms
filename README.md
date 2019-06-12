@@ -77,8 +77,16 @@ repositories. On Debian and derivatives, simply run `apt-get install doxygen`
 under root.
 
 
+Tutorials
+---------
+
+  * [Infinite system (lattice) tutorial][tutorial-infinite]
+  * [Finite system tutorial][tutorial-finite]
+
 [SCUFF-EM]: https://homerreid.github.io/scuff-em-documentation/
 [GSL]: https://www.gnu.org/software/gsl/
 [cmake]: https://cmake.org
 [TRITON-README]: README.Triton.md
+[tutorial-finite]: finite_systems.md
+[tutorial-infinite]: lattices.md
 

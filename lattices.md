@@ -69,7 +69,7 @@ direct lattice vectors, `lMax` is the multipole degree cutoff,
 medium, `npart` number of particles in the unit cell, and `partN` are 
 the positions of these particles inside the unit cell.
 
-Assuming we have the `ew_gen_in` binary in our `${PATH}`, we can
+Assuming we have the `ew_gen_kin` binary in our `${PATH}`, we can
 now run e.g.
 ```
   for omega in $(cat omegalist); do
@@ -103,6 +103,7 @@ which would create a directory named `all` containing several
 Steps 3, 4
 ----------
 
-TODO. For the time being, see e.g. the [TODO SPECIFY] jupyter notebook
+TODO. For the time being, see e.g. the `SaraRect/dispersions.ipynb` jupyter notebook
+from the `qpms_ipynotebooks` repository
 for the remaining steps.
 
