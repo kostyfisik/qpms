@@ -12,7 +12,7 @@ under the symmetry operations.
 Let's have look how thinks are done on a small python script.
 The following script is located in `misc/201903_finiterectlat_AaroBEC.py`.
 
-```
+```{.py}
 #!/usr/bin/env python
 from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, eV, hbar, c
 from qpms.symmetries import point_group_info
@@ -67,7 +67,7 @@ for iri in range(ss.nirreps):
 
 Let's have a look at the imports.
 
-```
+```{.py}
 from qpms import Particle, CTMatrix, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, eV, hbar, c
 from qpms.symmetries import point_group_info
 ```
@@ -96,12 +96,12 @@ from qpms.symmetries import point_group_info
    mentioned earlier, containing info about the whole structure.
  * `TMatrixInterpolator` in a wrapper over the C structure 
    `qpms_tmatrix_interpolator_t`  which contains tabulated T-matrices 
-   (calculated e.g. using `scuff-tmatrix`)
-   and generates frequency-interpolated T-matrices base on these.
+   (calculated e.g. using [`scuff-tmatrix`][scuff-tmatrix])
+   and generates frequency-interpolated T-matrices based on these.
  * `eV`, `hbar`, `c` are numerical constants with rather obvious meanings.
   
 Let's go on:
-```
+```{.py}
 sym = FinitePointGroup(point_group_info['D2h'])
 bspec = BaseSpec(lMax = 2)
 tmfile = '/m/phys/project/qd/Marek/tmatrix-experiments/Cylinder/AaroBEC/cylinder_50nm_lMax4_cleaned.TMatrix'
@@ -119,7 +119,7 @@ possible asymmetries caused by the used mesh. The `atol` parameter just says
 that if the absolute value of a given T-matrix element is smaller than the
 `atol` value, it is set to zero.
 
-```
+```{.py}
 omega = float(sys.argv[3]) * eV/hbar
 sv_threshold = float(sys.argv[4])
 
@@ -145,7 +145,7 @@ of a rectangular array. Finally, these particles are used to generate
 the final scattering system – the rest of the particles is generated
 automatically to satisfy the specified system symmetry.
 
-```
+```{.py}
 for iri in range(ss.nirreps):
     mm_iri = ss.modeproblem_matrix_packed(k, iri)
     U, S, Vh = np.linalg.svd(mm_iri)
@@ -169,3 +169,4 @@ The singular vectors corresponding to zero singular values represent the
 
 [scatsystem.h]: @ref scatsystem.h
 [qpms_scatsys_t]: @ref qpms_scatsys_t
+[scuff-tmatrix]: https://homerreid.github.io/scuff-em-documentation/applications/scuff-tmatrix/scuff-tmatrix/
