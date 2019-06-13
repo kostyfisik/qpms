@@ -26,7 +26,7 @@ translation operators are computed using the `ew_gen_kin`
 utility located in the `qpms/apps` directory. It has to be built
 manually like this:
 
-```
+```bash
   cd qpms/apps
   c99 -o ew_gen_kin -Wall -I ../.. -I ../../amos/ -O2 -ggdb -DQPMS_VECTORS_NICE_TRANSFORMATIONS -DLATTICESUMS32 2dlattice_ewald.c ../translations.c ../ewald.c ../ewaldsf.c ../gaunt.c ../lattices2d.c ../latticegens.c ../bessel.c -lgsl -lm -lblas ../../amos/libamos.a -lgfortran ../error.c
 ``` 
@@ -41,7 +41,7 @@ the rest is specified via command line arguments.
 So if we want to examine the line between the Г point and the point
 \f$ k = (0, 10^5\,\mathrm{m}^{-1}) \f$, we can generate an input
 running
-```
+```bash
   for ky in $(seq 0 1e3 1e5); do
     echo 0 $ky >> klist
   done
@@ -49,7 +49,7 @@ running
 
 It also make sense to pre-generate the list of *ω* values,
 e.g. 
-```
+```bash
   seq 6.900 0.002 7.3 | sed -e 's/,/./g' > omegalist
 ```
 
@@ -71,7 +71,7 @@ the positions of these particles inside the unit cell.
 
 Assuming we have the `ew_gen_kin` binary in our `${PATH}`, we can
 now run e.g.
-```
+```bash
   for omega in $(cat omegalist); do
     ew_gen_kin $omega 621e-9 0 0 571e-9 3 w_$omega 1.52 1 0 0 < klist
   done
@@ -82,7 +82,7 @@ up to the octupole (`lMax` = 3) order, yielding one file per frequency.
 This can take some time and
 it makes sense to run a parallelised `for`-loop instead; this is a stupid but working
 way to do it in bash:
-```
+```bash
   N=4   # number of parallel processes
   for omega in $(cat omegalist); do
     ((i=i%N)); ((i++==0)) && wait

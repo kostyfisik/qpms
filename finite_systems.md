@@ -9,6 +9,10 @@ which holds information about particle positions and their T-matrices
 keeps track about the symmetry group and how the particles transform
 under the symmetry operations.
 
+
+SVD of a finite symmetric system of scatterers
+----------------------------------------------
+
 Let's have look how thinks are done on a small python script.
 The following script is located in `misc/201903_finiterectlat_AaroBEC.py`.
 
@@ -163,10 +167,22 @@ and saving the lowest singular values (or all singular values smaller than
 The singular vectors corresponding to zero singular values represent the 
 "modes" of the finite array.
 
+
+Analysing the results
+---------------------
+
 *TODO analyzing the resulting files.*
 
+Examples of how the data generated above can be analysed
+can be seen in the jupyter notebooks from the [qpms_ipynotebooks][]
+repository in the `AaroBEC` directory.
 
 
+
+
+
+
+[qpms_ipynotebooks]: https://version.aalto.fi/gitlab/qd/qpms_ipynotebooks 
 [scatsystem.h]: @ref scatsystem.h
 [qpms_scatsys_t]: @ref qpms_scatsys_t
 [scuff-tmatrix]: https://homerreid.github.io/scuff-em-documentation/applications/scuff-tmatrix/scuff-tmatrix/

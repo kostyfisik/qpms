@@ -47,7 +47,7 @@ You also need a fresh enough version of [cmake][].
 
 After GSL is installed, you can install qpms to your local python library using::
 
-```
+```{.sh}
   cmake .
   make amos
   python3 setup.py install --user
@@ -66,7 +66,7 @@ Documentation
 =============
 
 Documentation of QPMS is a work in progress. Most of the newer code
-is documented using doxygen comments. To build the documentation, just run
+is documented using [doxygen][] comments. To build the documentation, just run
 `doxygen`
 in the root directory; the documentation will then be found in 
 `docs/html/index.html`.
@@ -89,4 +89,4 @@ Tutorials
 [TRITON-README]: README.Triton.md
 [tutorial-finite]: finite_systems.md
 [tutorial-infinite]: lattices.md
-
+[doxygen]: http://doxygen.nl/
