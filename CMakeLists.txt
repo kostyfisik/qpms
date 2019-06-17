@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.0.2)
 include(CMakeAddFortranSubdirectory)
+include(version.cmake)
+
 project (QPMS)
+
+set(CMAKE_BUILD_TYPE Debug)
 
 macro(use_c99)
   if (CMAKE_VERSION VERSION_LESS "3.1")
@@ -24,4 +28,4 @@ cmake_add_fortran_subdirectory (amos
 	LIBRARIES amos
 	NO_EXTERNAL_INSTALL)
 add_subdirectory (qpms)
-
+#add_subdirectory (apps/transop-ewald)
