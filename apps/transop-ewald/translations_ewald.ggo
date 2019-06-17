@@ -4,6 +4,7 @@ purpose "Computes Ewald-summed VSWF translation matrix elements in arbitrary 2D-
 #versiontext ""
 
 #args "<command line options>"
+args "--file-name=transop_ewald_cmdline"
 
 # Options
 
