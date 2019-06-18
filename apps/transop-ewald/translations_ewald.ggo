@@ -14,6 +14,12 @@ option "output" o "Output file"
 	default=""
 	optional
 
+option "base-vector" b "Base vector"
+	details="Single base vector (two numbers separated by comma)"
+	string
+	typestr="X,Y"
+	multiple required
+
 option "error-estimate-output" E "Path to the output with error estimates"
 	string
 	optional
@@ -39,12 +45,13 @@ option "lMax" L "Maximum spherical multipole order to which the translation oper
 	int
 	required
 
-option "eta" n "Medium refractive index"
+option "refractive-index" n "Medium refractive index"
 	double
 	required
 
 option "particle" p "Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed."
 	string
+	typestr="X,Y"
 	multiple optional
 
 defmode "k_omega_points" modedesc="Specifying each (ω, k) pair separately."
@@ -59,6 +66,7 @@ modeoption "pointfile" T "Path to a file containing frequency, k_x, k_y triples\
 modeoption "point" t "Specifies a frequency, k_x, k_y triple, separated by commas."
 	mode="k_omega_points"
 	string
+	typestr="ω,k_x,k_y"
 	multiple optional
 
 modeoption "omegafile" F "Path to a file containing a list of frequencies\
@@ -67,9 +75,10 @@ separated by whitespaces."
 	string
 	multiple optional
 
-modeoption "omega" f "Specifies frequency (or multiple frequencies separated by semicolons) on the command line."
+modeoption "omega" f "Specifies frequency (or multiple frequencies separated by commas) on the command line."
 	mode="k_omega_meshgrid"
 	string
+	typestr="ω1[,ω2[,...]]"
 	multiple optional
 
 modeoption "kfile" K "Path to a file containing a list of k_x, k_y pairs."
@@ -81,6 +90,7 @@ modeoption "kfile" K "Path to a file containing a list of k_x, k_y pairs."
 modeoption "k" k "Specifies pair(s) of k_x, k_y values"
 	mode="k_omega_meshgrid"
 	string
+	typestr="k1_x,k1_y[,k2_x,k2_y[,...]]"
 	multiple optional
 
 

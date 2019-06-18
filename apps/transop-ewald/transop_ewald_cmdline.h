@@ -46,6 +46,11 @@ struct gengetopt_args_info
   char * output_arg;	/**< @brief Output file (default='').  */
   char * output_orig;	/**< @brief Output file original value given at command line.  */
   const char *output_help; /**< @brief Output file help description.  */
+  char ** base_vector_arg;	/**< @brief Base vector.  */
+  char ** base_vector_orig;	/**< @brief Base vector original value given at command line.  */
+  unsigned int base_vector_min; /**< @brief Base vector's minimum occurreces */
+  unsigned int base_vector_max; /**< @brief Base vector's maximum occurreces */
+  const char *base_vector_help; /**< @brief Base vector help description.  */
   char * error_estimate_output_arg;	/**< @brief Path to the output with error estimates.  */
   char * error_estimate_output_orig;	/**< @brief Path to the output with error estimates original value given at command line.  */
   const char *error_estimate_output_help; /**< @brief Path to the output with error estimates help description.  */
@@ -64,9 +69,9 @@ struct gengetopt_args_info
   int lMax_arg;	/**< @brief Maximum spherical multipole order to which the translation operator elements are calculated.  */
   char * lMax_orig;	/**< @brief Maximum spherical multipole order to which the translation operator elements are calculated original value given at command line.  */
   const char *lMax_help; /**< @brief Maximum spherical multipole order to which the translation operator elements are calculated help description.  */
-  double eta_arg;	/**< @brief Medium refractive index.  */
-  char * eta_orig;	/**< @brief Medium refractive index original value given at command line.  */
-  const char *eta_help; /**< @brief Medium refractive index help description.  */
+  double refractive_index_arg;	/**< @brief Medium refractive index.  */
+  char * refractive_index_orig;	/**< @brief Medium refractive index original value given at command line.  */
+  const char *refractive_index_help; /**< @brief Medium refractive index help description.  */
   char ** particle_arg;	/**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed..  */
   char ** particle_orig;	/**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed. original value given at command line.  */
   unsigned int particle_min; /**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed.'s minimum occurreces */
@@ -87,11 +92,11 @@ struct gengetopt_args_info
   unsigned int omegafile_min; /**< @brief Path to a file containing a list of frequenciesseparated by whitespaces.'s minimum occurreces */
   unsigned int omegafile_max; /**< @brief Path to a file containing a list of frequenciesseparated by whitespaces.'s maximum occurreces */
   const char *omegafile_help; /**< @brief Path to a file containing a list of frequenciesseparated by whitespaces. help description.  */
-  char ** omega_arg;	/**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line..  */
-  char ** omega_orig;	/**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line. original value given at command line.  */
-  unsigned int omega_min; /**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line.'s minimum occurreces */
-  unsigned int omega_max; /**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line.'s maximum occurreces */
-  const char *omega_help; /**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line. help description.  */
+  char ** omega_arg;	/**< @brief Specifies frequency (or multiple frequencies separated by commas) on the command line..  */
+  char ** omega_orig;	/**< @brief Specifies frequency (or multiple frequencies separated by commas) on the command line. original value given at command line.  */
+  unsigned int omega_min; /**< @brief Specifies frequency (or multiple frequencies separated by commas) on the command line.'s minimum occurreces */
+  unsigned int omega_max; /**< @brief Specifies frequency (or multiple frequencies separated by commas) on the command line.'s maximum occurreces */
+  const char *omega_help; /**< @brief Specifies frequency (or multiple frequencies separated by commas) on the command line. help description.  */
   char ** kfile_arg;	/**< @brief Path to a file containing a list of k_x, k_y pairs. (default='-').  */
   char ** kfile_orig;	/**< @brief Path to a file containing a list of k_x, k_y pairs. original value given at command line.  */
   unsigned int kfile_min; /**< @brief Path to a file containing a list of k_x, k_y pairs.'s minimum occurreces */
@@ -107,13 +112,14 @@ struct gengetopt_args_info
   unsigned int detailed_help_given ;	/**< @brief Whether detailed-help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
   unsigned int output_given ;	/**< @brief Whether output was given.  */
+  unsigned int base_vector_given ;	/**< @brief Whether base-vector was given.  */
   unsigned int error_estimate_output_given ;	/**< @brief Whether error-estimate-output was given.  */
   unsigned int normalisation_given ;	/**< @brief Whether normalisation was given.  */
   unsigned int csphase_given ;	/**< @brief Whether csphase was given.  */
   unsigned int Ewald_parameter_given ;	/**< @brief Whether Ewald-parameter was given.  */
   unsigned int frequency_unit_given ;	/**< @brief Whether frequency-unit was given.  */
   unsigned int lMax_given ;	/**< @brief Whether lMax was given.  */
-  unsigned int eta_given ;	/**< @brief Whether eta was given.  */
+  unsigned int refractive_index_given ;	/**< @brief Whether refractive-index was given.  */
   unsigned int particle_given ;	/**< @brief Whether particle was given.  */
   unsigned int pointfile_given ;	/**< @brief Whether pointfile was given.  */
   unsigned int point_given ;	/**< @brief Whether point was given.  */

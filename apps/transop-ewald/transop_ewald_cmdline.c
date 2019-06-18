@@ -39,22 +39,24 @@ const char *gengetopt_args_info_detailed_help[] = {
   "  -V, --version                 Print version and exit",
   "  -o, --output=STRING           Output file  (default=`')",
   "  Path to the output file. If not specified, print to the standard output.",
+  "  -b, --base-vector=X,Y         Base vector",
+  "  Single base vector (two numbers separated by comma)",
   "  -E, --error-estimate-output=STRING\n                                Path to the output with error estimates",
   "  -N, --normalisation=ENUM      VSWF normalisation convention  (possible\n                                  values=\"Power\", \"None\", \"SH\"\n                                  default=`Power')",
   "  -c, --csphase=INT             Whether the Condon-Shortley phase is included\n                                  in VSWF definition (-1) or not (+1)\n                                  (possible values=\"+1\", \"-1\" default=`-1')",
   "  -e, --Ewald-parameter=DOUBLE  The value of Ewald parameter η",
   "  -u, --frequency-unit=ENUM     Specifies the frequency unit is used for\n                                  inputs.  (possible values=\"eV\", \"scuff\"\n                                  default=`scuff')",
   "  -L, --lMax=INT                Maximum spherical multipole order to which the\n                                  translation operator elements are calculated",
-  "  -n, --eta=DOUBLE              Medium refractive index",
-  "  -p, --particle=STRING         Specify the x and y coordinates of a single\n                                  particle; If not specified, one particle per\n                                  unit cell is assumed.",
+  "  -n, --refractive-index=DOUBLE Medium refractive index",
+  "  -p, --particle=X,Y            Specify the x and y coordinates of a single\n                                  particle; If not specified, one particle per\n                                  unit cell is assumed.",
   "\n Mode: k_omega_points\n  Specifying each (ω, k) pair separately.",
   "  -T, --pointfile=STRING        Path to a file containing frequency, k_x, k_y\n                                  triples(separated by white spaces). If not\n                                  specified, read them from stdin.\n                                  (default=`-')",
-  "  -t, --point=STRING            Specifies a frequency, k_x, k_y triple,\n                                  separated by commas.",
+  "  -t, --point=ω,k_x,k_y        Specifies a frequency, k_x, k_y triple,\n                                  separated by commas.",
   "\n Mode: k_omega_meshgrid\n  Specifying lists of ω and k, from which all possible pairs are generated.",
   "  -F, --omegafile=STRING        Path to a file containing a list of\n                                  frequenciesseparated by whitespaces.",
-  "  -f, --omega=STRING            Specifies frequency (or multiple frequencies\n                                  separated by semicolons) on the command line.",
+  "  -f, --omega=ω1[,ω2[,...]]   Specifies frequency (or multiple frequencies\n                                  separated by commas) on the command line.",
   "  -K, --kfile=STRING            Path to a file containing a list of k_x, k_y\n                                  pairs.  (default=`-')",
-  "  -k, --k=STRING                Specifies pair(s) of k_x, k_y values",
+  "  -k, --k=k1_x,k1_y[,k2_x,k2_y[,...]]\n                                Specifies pair(s) of k_x, k_y values",
     0
 };
 
@@ -66,26 +68,27 @@ init_help_array(void)
   gengetopt_args_info_help[2] = gengetopt_args_info_detailed_help[2];
   gengetopt_args_info_help[3] = gengetopt_args_info_detailed_help[3];
   gengetopt_args_info_help[4] = gengetopt_args_info_detailed_help[5];
-  gengetopt_args_info_help[5] = gengetopt_args_info_detailed_help[6];
-  gengetopt_args_info_help[6] = gengetopt_args_info_detailed_help[7];
-  gengetopt_args_info_help[7] = gengetopt_args_info_detailed_help[8];
-  gengetopt_args_info_help[8] = gengetopt_args_info_detailed_help[9];
-  gengetopt_args_info_help[9] = gengetopt_args_info_detailed_help[10];
-  gengetopt_args_info_help[10] = gengetopt_args_info_detailed_help[11];
-  gengetopt_args_info_help[11] = gengetopt_args_info_detailed_help[12];
-  gengetopt_args_info_help[12] = gengetopt_args_info_detailed_help[13];
-  gengetopt_args_info_help[13] = gengetopt_args_info_detailed_help[14];
-  gengetopt_args_info_help[14] = gengetopt_args_info_detailed_help[15];
-  gengetopt_args_info_help[15] = gengetopt_args_info_detailed_help[16];
-  gengetopt_args_info_help[16] = gengetopt_args_info_detailed_help[17];
-  gengetopt_args_info_help[17] = gengetopt_args_info_detailed_help[18];
-  gengetopt_args_info_help[18] = gengetopt_args_info_detailed_help[19];
-  gengetopt_args_info_help[19] = gengetopt_args_info_detailed_help[20];
-  gengetopt_args_info_help[20] = 0; 
+  gengetopt_args_info_help[5] = gengetopt_args_info_detailed_help[7];
+  gengetopt_args_info_help[6] = gengetopt_args_info_detailed_help[8];
+  gengetopt_args_info_help[7] = gengetopt_args_info_detailed_help[9];
+  gengetopt_args_info_help[8] = gengetopt_args_info_detailed_help[10];
+  gengetopt_args_info_help[9] = gengetopt_args_info_detailed_help[11];
+  gengetopt_args_info_help[10] = gengetopt_args_info_detailed_help[12];
+  gengetopt_args_info_help[11] = gengetopt_args_info_detailed_help[13];
+  gengetopt_args_info_help[12] = gengetopt_args_info_detailed_help[14];
+  gengetopt_args_info_help[13] = gengetopt_args_info_detailed_help[15];
+  gengetopt_args_info_help[14] = gengetopt_args_info_detailed_help[16];
+  gengetopt_args_info_help[15] = gengetopt_args_info_detailed_help[17];
+  gengetopt_args_info_help[16] = gengetopt_args_info_detailed_help[18];
+  gengetopt_args_info_help[17] = gengetopt_args_info_detailed_help[19];
+  gengetopt_args_info_help[18] = gengetopt_args_info_detailed_help[20];
+  gengetopt_args_info_help[19] = gengetopt_args_info_detailed_help[21];
+  gengetopt_args_info_help[20] = gengetopt_args_info_detailed_help[22];
+  gengetopt_args_info_help[21] = 0; 
   
 }
 
-const char *gengetopt_args_info_help[21];
+const char *gengetopt_args_info_help[22];
 
 typedef enum {ARG_NO
   , ARG_STRING
@@ -120,13 +123,14 @@ void clear_given (struct gengetopt_args_info *args_info)
   args_info->detailed_help_given = 0 ;
   args_info->version_given = 0 ;
   args_info->output_given = 0 ;
+  args_info->base_vector_given = 0 ;
   args_info->error_estimate_output_given = 0 ;
   args_info->normalisation_given = 0 ;
   args_info->csphase_given = 0 ;
   args_info->Ewald_parameter_given = 0 ;
   args_info->frequency_unit_given = 0 ;
   args_info->lMax_given = 0 ;
-  args_info->eta_given = 0 ;
+  args_info->refractive_index_given = 0 ;
   args_info->particle_given = 0 ;
   args_info->pointfile_given = 0 ;
   args_info->point_given = 0 ;
@@ -144,6 +148,8 @@ void clear_args (struct gengetopt_args_info *args_info)
   FIX_UNUSED (args_info);
   args_info->output_arg = gengetopt_strdup ("");
   args_info->output_orig = NULL;
+  args_info->base_vector_arg = NULL;
+  args_info->base_vector_orig = NULL;
   args_info->error_estimate_output_arg = NULL;
   args_info->error_estimate_output_orig = NULL;
   args_info->normalisation_arg = normalisation_arg_Power;
@@ -154,7 +160,7 @@ void clear_args (struct gengetopt_args_info *args_info)
   args_info->frequency_unit_arg = frequency_unit_arg_scuff;
   args_info->frequency_unit_orig = NULL;
   args_info->lMax_orig = NULL;
-  args_info->eta_orig = NULL;
+  args_info->refractive_index_orig = NULL;
   args_info->particle_arg = NULL;
   args_info->particle_orig = NULL;
   args_info->pointfile_arg = NULL;
@@ -181,32 +187,35 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->detailed_help_help = gengetopt_args_info_detailed_help[1] ;
   args_info->version_help = gengetopt_args_info_detailed_help[2] ;
   args_info->output_help = gengetopt_args_info_detailed_help[3] ;
-  args_info->error_estimate_output_help = gengetopt_args_info_detailed_help[5] ;
-  args_info->normalisation_help = gengetopt_args_info_detailed_help[6] ;
-  args_info->csphase_help = gengetopt_args_info_detailed_help[7] ;
-  args_info->Ewald_parameter_help = gengetopt_args_info_detailed_help[8] ;
-  args_info->frequency_unit_help = gengetopt_args_info_detailed_help[9] ;
-  args_info->lMax_help = gengetopt_args_info_detailed_help[10] ;
-  args_info->eta_help = gengetopt_args_info_detailed_help[11] ;
-  args_info->particle_help = gengetopt_args_info_detailed_help[12] ;
+  args_info->base_vector_help = gengetopt_args_info_detailed_help[5] ;
+  args_info->base_vector_min = 0;
+  args_info->base_vector_max = 0;
+  args_info->error_estimate_output_help = gengetopt_args_info_detailed_help[7] ;
+  args_info->normalisation_help = gengetopt_args_info_detailed_help[8] ;
+  args_info->csphase_help = gengetopt_args_info_detailed_help[9] ;
+  args_info->Ewald_parameter_help = gengetopt_args_info_detailed_help[10] ;
+  args_info->frequency_unit_help = gengetopt_args_info_detailed_help[11] ;
+  args_info->lMax_help = gengetopt_args_info_detailed_help[12] ;
+  args_info->refractive_index_help = gengetopt_args_info_detailed_help[13] ;
+  args_info->particle_help = gengetopt_args_info_detailed_help[14] ;
   args_info->particle_min = 0;
   args_info->particle_max = 0;
-  args_info->pointfile_help = gengetopt_args_info_detailed_help[14] ;
+  args_info->pointfile_help = gengetopt_args_info_detailed_help[16] ;
   args_info->pointfile_min = 0;
   args_info->pointfile_max = 0;
-  args_info->point_help = gengetopt_args_info_detailed_help[15] ;
+  args_info->point_help = gengetopt_args_info_detailed_help[17] ;
   args_info->point_min = 0;
   args_info->point_max = 0;
-  args_info->omegafile_help = gengetopt_args_info_detailed_help[17] ;
+  args_info->omegafile_help = gengetopt_args_info_detailed_help[19] ;
   args_info->omegafile_min = 0;
   args_info->omegafile_max = 0;
-  args_info->omega_help = gengetopt_args_info_detailed_help[18] ;
+  args_info->omega_help = gengetopt_args_info_detailed_help[20] ;
   args_info->omega_min = 0;
   args_info->omega_max = 0;
-  args_info->kfile_help = gengetopt_args_info_detailed_help[19] ;
+  args_info->kfile_help = gengetopt_args_info_detailed_help[21] ;
   args_info->kfile_min = 0;
   args_info->kfile_max = 0;
-  args_info->k_help = gengetopt_args_info_detailed_help[20] ;
+  args_info->k_help = gengetopt_args_info_detailed_help[22] ;
   args_info->k_min = 0;
   args_info->k_max = 0;
   
@@ -349,6 +358,7 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
 
   free_string_field (&(args_info->output_arg));
   free_string_field (&(args_info->output_orig));
+  free_multiple_string_field (args_info->base_vector_given, &(args_info->base_vector_arg), &(args_info->base_vector_orig));
   free_string_field (&(args_info->error_estimate_output_arg));
   free_string_field (&(args_info->error_estimate_output_orig));
   free_string_field (&(args_info->normalisation_orig));
@@ -356,7 +366,7 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
   free_string_field (&(args_info->Ewald_parameter_orig));
   free_string_field (&(args_info->frequency_unit_orig));
   free_string_field (&(args_info->lMax_orig));
-  free_string_field (&(args_info->eta_orig));
+  free_string_field (&(args_info->refractive_index_orig));
   free_multiple_string_field (args_info->particle_given, &(args_info->particle_arg), &(args_info->particle_orig));
   free_multiple_string_field (args_info->pointfile_given, &(args_info->pointfile_arg), &(args_info->pointfile_orig));
   free_multiple_string_field (args_info->point_given, &(args_info->point_arg), &(args_info->point_orig));
@@ -451,6 +461,7 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "version", 0, 0 );
   if (args_info->output_given)
     write_into_file(outfile, "output", args_info->output_orig, 0);
+  write_multiple_into_file(outfile, args_info->base_vector_given, "base-vector", args_info->base_vector_orig, 0);
   if (args_info->error_estimate_output_given)
     write_into_file(outfile, "error-estimate-output", args_info->error_estimate_output_orig, 0);
   if (args_info->normalisation_given)
@@ -463,8 +474,8 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "frequency-unit", args_info->frequency_unit_orig, cmdline_parser_frequency_unit_values);
   if (args_info->lMax_given)
     write_into_file(outfile, "lMax", args_info->lMax_orig, 0);
-  if (args_info->eta_given)
-    write_into_file(outfile, "eta", args_info->eta_orig, 0);
+  if (args_info->refractive_index_given)
+    write_into_file(outfile, "refractive-index", args_info->refractive_index_orig, 0);
   write_multiple_into_file(outfile, args_info->particle_given, "particle", args_info->particle_orig, 0);
   write_multiple_into_file(outfile, args_info->pointfile_given, "pointfile", args_info->pointfile_orig, 0);
   write_multiple_into_file(outfile, args_info->point_given, "point", args_info->point_orig, 0);
@@ -723,6 +734,15 @@ cmdline_parser_required2 (struct gengetopt_args_info *args_info, const char *pro
   FIX_UNUSED (additional_error);
 
   /* checks for required options */
+  if (! args_info->base_vector_given)
+    {
+      fprintf (stderr, "%s: '--base-vector' ('-b') option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      error_occurred = 1;
+    }
+  
+  if (check_multiple_option_occurrences(prog_name, args_info->base_vector_given, args_info->base_vector_min, args_info->base_vector_max, "'--base-vector' ('-b')"))
+     error_occurred = 1;
+  
   if (! args_info->normalisation_given)
     {
       fprintf (stderr, "%s: '--normalisation' ('-N') option required%s\n", prog_name, (additional_error ? additional_error : ""));
@@ -747,9 +767,9 @@ cmdline_parser_required2 (struct gengetopt_args_info *args_info, const char *pro
       error_occurred = 1;
     }
   
-  if (! args_info->eta_given)
+  if (! args_info->refractive_index_given)
     {
-      fprintf (stderr, "%s: '--eta' ('-n') option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      fprintf (stderr, "%s: '--refractive-index' ('-n') option required%s\n", prog_name, (additional_error ? additional_error : ""));
       error_occurred = 1;
     }
   
@@ -1093,6 +1113,7 @@ cmdline_parser_internal (
   int c;	/* Character of the parsed option.  */
   union generic_value multiple_default_value;
 
+  struct generic_list * base_vector_list = NULL;
   struct generic_list * particle_list = NULL;
   struct generic_list * pointfile_list = NULL;
   struct generic_list * point_list = NULL;
@@ -1134,13 +1155,14 @@ cmdline_parser_internal (
         { "detailed-help",	0, NULL, 0 },
         { "version",	0, NULL, 'V' },
         { "output",	1, NULL, 'o' },
+        { "base-vector",	1, NULL, 'b' },
         { "error-estimate-output",	1, NULL, 'E' },
         { "normalisation",	1, NULL, 'N' },
         { "csphase",	1, NULL, 'c' },
         { "Ewald-parameter",	1, NULL, 'e' },
         { "frequency-unit",	1, NULL, 'u' },
         { "lMax",	1, NULL, 'L' },
-        { "eta",	1, NULL, 'n' },
+        { "refractive-index",	1, NULL, 'n' },
         { "particle",	1, NULL, 'p' },
         { "pointfile",	1, NULL, 'T' },
         { "point",	1, NULL, 't' },
@@ -1151,7 +1173,7 @@ cmdline_parser_internal (
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVo:E:N:c:e:u:L:n:p:T:t:F:f:K:k:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVo:b:E:N:c:e:u:L:n:p:T:t:F:f:K:k:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -1175,6 +1197,15 @@ cmdline_parser_internal (
               &(local_args_info.output_given), optarg, 0, "", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "output", 'o',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'b':	/* Base vector.  */
+        
+          if (update_multiple_arg_temp(&base_vector_list, 
+              &(local_args_info.base_vector_given), optarg, 0, 0, ARG_STRING,
+              "base-vector", 'b',
               additional_error))
             goto failure;
         
@@ -1254,11 +1285,11 @@ cmdline_parser_internal (
         case 'n':	/* Medium refractive index.  */
         
         
-          if (update_arg( (void *)&(args_info->eta_arg), 
-               &(args_info->eta_orig), &(args_info->eta_given),
-              &(local_args_info.eta_given), optarg, 0, 0, ARG_DOUBLE,
+          if (update_arg( (void *)&(args_info->refractive_index_arg), 
+               &(args_info->refractive_index_orig), &(args_info->refractive_index_given),
+              &(local_args_info.refractive_index_given), optarg, 0, 0, ARG_DOUBLE,
               check_ambiguity, override, 0, 0,
-              "eta", 'n',
+              "refractive-index", 'n',
               additional_error))
             goto failure;
         
@@ -1302,7 +1333,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'f':	/* Specifies frequency (or multiple frequencies separated by semicolons) on the command line..  */
+        case 'f':	/* Specifies frequency (or multiple frequencies separated by commas) on the command line..  */
           args_info->k_omega_meshgrid_mode_counter += 1;
         
           if (update_multiple_arg_temp(&omega_list, 
@@ -1351,6 +1382,10 @@ cmdline_parser_internal (
     } /* while */
 
 
+  update_multiple_arg((void *)&(args_info->base_vector_arg),
+    &(args_info->base_vector_orig), args_info->base_vector_given,
+    local_args_info.base_vector_given, 0,
+    ARG_STRING, base_vector_list);
   update_multiple_arg((void *)&(args_info->particle_arg),
     &(args_info->particle_orig), args_info->particle_given,
     local_args_info.particle_given, 0,
@@ -1382,6 +1417,8 @@ cmdline_parser_internal (
     local_args_info.k_given, 0,
     ARG_STRING, k_list);
 
+  args_info->base_vector_given += local_args_info.base_vector_given;
+  local_args_info.base_vector_given = 0;
   args_info->particle_given += local_args_info.particle_given;
   local_args_info.particle_given = 0;
   args_info->pointfile_given += local_args_info.pointfile_given;
@@ -1418,6 +1455,7 @@ cmdline_parser_internal (
   return 0;
 
 failure:
+  free_list (base_vector_list, 1 );
   free_list (particle_list, 1 );
   free_list (pointfile_list, 1 );
   free_list (point_list, 1 );
