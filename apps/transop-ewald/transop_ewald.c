@@ -56,9 +56,8 @@ size_t qpms_parse_ndoubles(
     if (endptr > beg) {
       if (i >= n) {
         errno = EOVERFLOW;
-        QPMS_WARN("Supplied string contains additional numbers"
+        if (i == n) QPMS_WARN("Supplied string contains additional numbers"
            " (expected only %zd numbers): %s\n", n, beg);
-        goto qpms_parse_ndoubles_cleanup;
       }
       else
         target[i] = parsed;
@@ -165,20 +164,40 @@ int main (int argc, char **argv) {
   int retval = cmdline_parser(argc, argv, *args_info);
   if (retval) return retval;
 
-  cart2_t b1 = {strtod(argv[2], NULL), strtod(argv[3], NULL)},
-          b2 = {strtod(argv[4], NULL), strtod(argv[5], NULL)};
-  const qpms_l_t lMax = strtol(argv[6], NULL, 10); assert(lMax>0);
-  const double scuffomega = strtod(argv[7], NULL);
-  const double refindex = strtod(argv[8], NULL);
-  const int npart = strtol(argv[9], NULL, 10);  assert(npart>0);
-  assert(argc >= 2*npart + 10);
-  assert(npart > 0);
-  cart2_t part_positions[npart];
-  for(int p = 0; p < npart; ++p) {
-    part_positions[p].x = strtod(argv[10+2*p], NULL);
-    part_positions[p].y = strtod(argv[10+2*p+1], NULL);
+  const int latdim = args_info.base_vector_given;
+  QPMS_ENSURE(latdim == 2,
+      "Sorry, only 2d lattices supported, but %d basis vectors were given\n",
+      latdim);
+  cart2_t b[latdim];
+  for (int i = 0; i < latdim; ++i) {
+    const int gotnumbers = qpms_parse_ndoubles(
+          (*double) &(b[i].x), latdim,
+          args_info.base_vector_arg[i]);
+    QPMS_ENSURE(latdim == gotnumbers,
+        "%d. base vector contained %d numbers, expected %d\n",
+        i, gotnumbers, latdim);
   }
 
+  const qpms_l_t lMax = args_info.lMax_arg;
+  QPMS_ENSURE(lMax > 0, "invalid value of lMax: %d", (int)lMax);
+
+  const double refindex = args_info.refractive_index_arg;
+
+  const int npart = args_info.particle_given;
+  if(!npart) ++npart;
+  cart2_t part_positions[npart];
+  if(!args_info.particle_given)
+    part_positions[0].x = part_positions[0].y = 0;
+  else for (int i = 0; i < npart; ++i) {
+    const int gotnumbers = qpms_parse_ndoubles(
+        (*double) &(part_positions[i].x), latdim,
+        args_info.particle_arg[i]);
+    QPMS_ENSURE(latdim == gotnumbers,
+        "%d. particle position contained %d coordinates, expected %d\n",
+        i, gotnumbers, latdim);
+  }
+
+  const double scuffomega = strtod(argv[7], NULL);
 //#ifdef KSTDIN
   size_t kcount = 0;
   size_t klist_capacity = MAXKCOUNT;

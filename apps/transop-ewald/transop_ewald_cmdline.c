@@ -188,8 +188,8 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->version_help = gengetopt_args_info_detailed_help[2] ;
   args_info->output_help = gengetopt_args_info_detailed_help[3] ;
   args_info->base_vector_help = gengetopt_args_info_detailed_help[5] ;
-  args_info->base_vector_min = 0;
-  args_info->base_vector_max = 0;
+  args_info->base_vector_min = 2;
+  args_info->base_vector_max = 2;
   args_info->error_estimate_output_help = gengetopt_args_info_detailed_help[7] ;
   args_info->normalisation_help = gengetopt_args_info_detailed_help[8] ;
   args_info->csphase_help = gengetopt_args_info_detailed_help[9] ;

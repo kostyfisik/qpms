@@ -18,7 +18,7 @@ option "base-vector" b "Base vector"
 	details="Single base vector (two numbers separated by comma)"
 	string
 	typestr="X,Y"
-	multiple required
+	multiple(2) required # will be multiple(-3) when implemented 1d, 3d
 
 option "error-estimate-output" E "Path to the output with error estimates"
 	string
