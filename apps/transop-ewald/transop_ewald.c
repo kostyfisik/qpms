@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <errno.h>
 #define LATTICESUMS32
 #include <qpms/translations.h>
 #include <qpms/lattices.h>
@@ -23,6 +24,66 @@
 // Output data format (line):
 //
 
+
+// TODO move to qpmslib later.
+/** Parse doubles from a string.
+ *
+ * The doubles can be separated by whitespaces, comma or semicolon.
+ * The parsed numbers are saved into an array specified by *target
+ * that has been preallocated with malloc() to contain at least start_index
+ * members. If start_index is nonzero, the newly parsed numbers are 
+ * saved to the positions starting from start_index.
+ *
+ * If *target is NULL, the function allocates the necessary space.
+ *
+ * \return Number of newly parsed doubles + start_index.
+ */
+size_t qpms_parse_doubles(
+  double **target,
+  size_t start_index,
+  const char *orig
+) {
+  QPMS_ENSURE(target, "The target parameter must not be NULL");
+  char * const dup = strdup(orig);
+  QPMS_ENSURE(dup, "Memory error in a strdup() call.");
+
+  size_t capacity = start_index * 2;
+  if (capacity < 128) capacity = 128;
+
+  // Replace commas and semicolons with whitespaces
+  for (char *c = dup; *c; ++c) 
+    if (*c == ',' || *c == ';')
+      *c = ' ';
+
+  size_t i = start_index;
+
+  const char *beg = dup;
+  do {
+    char *endptr;
+    errno = 0;
+    double parsed = strtod(beg, endptr);
+    if (endptr > beg) {
+      (*target)[i] = parsed;
+      ++i;
+      if (i >= capacity) {
+        capacity *= 2;
+        QPMS_CRASHING_REALLOC(*target, capacity * sizeof(double));
+      }
+    } else {
+      while (*beg) {
+        if (!isspace(*beg)) {
+          QPMS_WARN("Invalid character (expected a double), leaving the rest of the string unprocessed: %s\n", beg);
+          errno = EILSEQ;
+          goto qpms_parse_doubles_cleanup;
+        }
+        ++beg;
+      }
+    }
+
+qpms_parse_doubles_cleanup:
+  free(dup);
+  return i;
+}
 
 #define MAXKCOUNT 200 // 200 // serves as klist default buffer size 
 //#define KMINCOEFF 0.783 //0.9783 // 0.783 // not used if KSTDIN defined
@@ -91,13 +152,13 @@ int main (int argc, char **argv) {
 
   qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_POWER_CS); // vai POWER_CS?
 
-  FILE *out, *err = NULL;
+  FILE *out, *ferr = NULL;
   if (args_info.error_estimate_output_given) {
     if (!strcmp(args_info.error_estimate_output_arg, "-"))
-      err = stdout;
+      ferr = stdout;
     else 
-      err = fopen(args_info.error_estimate_output_arg, "w");
-    QPMS_ENSURE(err, "Could not open error output file %s", 
+      ferr = fopen(args_info.error_estimate_output_arg, "w");
+    QPMS_ENSURE(ferr, "Could not open error output file %s", 
         args_info.error_estimate_output_arg);
   if (args_info.output_given && !strcmp(args_info.output_arg, "-")
       && args_info.output_arg[0]) {
@@ -120,7 +181,7 @@ int main (int argc, char **argv) {
     for (size_t ki = 0; ki < kcount; ++ki) {
       cart2_t beta = klist[ki];
       memset(W, 0, sizeof(W));
-      if(err)
+      if(ferr)
         memset(Werr, 0, sizeof(Werr));
 
       const ptrdiff_t deststride = &(W[0][0][0][1][0]) - &(W[0][0][0][0][0]);
@@ -130,8 +191,8 @@ int main (int argc, char **argv) {
       for (size_t ps = 0; ps < npart; ++ps) for (size_t pd = 0; pd < npart; ++pd) 
         // TODO optimize (calculate only once for each particle shift; especially if pd == ps)
         qpms_trans_calculator_get_AB_arrays_e32(c,
-            &(W[pd][ps][0][0][0]), err ? &(Werr[pd][ps][0][0][0]) : NULL, // Adest, Aerr,
-            &(W[pd][ps][1][0][0]), err ? &(Werr[pd][ps][1][0][0]) : NULL, // Bdest, Berr,
+            &(W[pd][ps][0][0][0]), ferr ? &(Werr[pd][ps][0][0][0]) : NULL, // Adest, Aerr,
+            &(W[pd][ps][1][0][0]), ferr ? &(Werr[pd][ps][1][0][0]) : NULL, // Bdest, Berr,
             deststride, srcstride,
             eta, k0_eff, b1, b2,
             beta,
@@ -142,22 +203,22 @@ int main (int argc, char **argv) {
 
       fprintf(out, "%.16g\t%.16g\t%.16g\t%.16g\t%.16g\t",
           scuffomega, EeV, k0_eff, beta.x, beta.y);
-      if(err) fprintf(err, "%.16g\t%.16g\t%16g\t%.16g\t%.16g\t",
+      if(ferr) fprintf(ferr, "%.16g\t%.16g\t%16g\t%.16g\t%.16g\t",
           scuffomega, EeV, k0_eff, beta.x, beta.y);
       size_t totalelems = sizeof(W) / sizeof(complex double);
       for (size_t i = 0; i < totalelems; ++i) {
         complex double w = ((complex double *)W)[i];
         fprintf(out, "%.16g\t%.16g\t", creal(w), cimag(w));
-        if (err) 
-          fprintf(err, "%.3g\t", ((double *)Werr)[i]);
+        if (ferr) 
+          fprintf(ferr, "%.3g\t", ((double *)Werr)[i]);
       }
       fputc('\n', out);
-      if(err) fputc('\n', err);
+      if(ferr) fputc('\n', ferr);
     }
   }
 
   fclose(out);
-  if(err) fclose(err);
+  if(ferr) fclose(ferr);
 
 //#ifdef KSTDIN
   free(klist);
