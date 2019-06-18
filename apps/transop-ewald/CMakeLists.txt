@@ -25,4 +25,4 @@ use_c99()
 #	)
 #target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(EwaldTransOps transop-ewald.c transop_ewald_cmdline.c)
+add_executable(EwaldTransOps transop_ewald.c transop_ewald_cmdline.c)

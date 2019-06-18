@@ -14,7 +14,11 @@ option "output" o "Output file"
 	default=""
 	optional
 
-option "normalisation" n "VSWF normalisation convention"
+option "error-estimate-output" E "Path to the output with error estimates"
+	string
+	optional
+
+option "normalisation" N "VSWF normalisation convention"
 	values="Power","None","SH" enum
 	default="Power"
 
@@ -27,11 +31,46 @@ option "Ewald-parameter" e "The value of Ewald parameter η"
 	double
 	optional
 
+option "frequency-unit" u "Specifies the frequency unit is used for inputs."
+	values="eV","scuff"
+	default="scuff"
 
+option "lMax" L "Maximum spherical multipole order to which the translation operator elements are calculated"
+	int
+	required
 
+option "eta" n "Medium refractive index"
+	double
+	required
+
+option "particle" p "Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed."
+	optional
+	multiple
 
 defmode "k_omega_points" modedesc="Specifying each (ω, k) pair separately."
 defmode "k_omega_meshgrid" modedesc="Specifying lists of ω and k, from which all possible pairs are generated."
+
+modeoption "pointfile" T "Path to a file containing frequency, k_x, k_y triples\
+(separated by white spaces). If not specified, read them from stdin." 
+	mode="k_omega_points" multiple default="-"
+
+modeoption "point" t "Specifies a frequency, k_x, k_y triple, separated by commas."
+	mode="k_omega_points" multiple optional
+
+modeoption "omegafile" F "Path to a file containing a list of frequencies\
+separated by whitespaces."
+	mode="k_omega_meshgrid" multiple optional
+
+modeoption "omega" f "Specifies frequency (or multiple frequencies separated by semicolons) on the command line."
+	mode="k_omega_meshgrid" multiple optional
+
+modeoption "kfile" K "Path to a file containing a list of k_x, k_y pairs."
+	mode="k_omega_meshgrid" multiple optional
+	default="-"
+
+modeoption "k" k "Specifies pair(s) of k_x, k_y values"
+	mode="k_omega_meshgrid" multiple optional
+
 
 #option <long> <short> "<desc>"
 #	{details="<detailed description>"}
