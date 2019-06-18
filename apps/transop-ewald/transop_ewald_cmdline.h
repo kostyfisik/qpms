@@ -35,6 +35,7 @@ extern "C" {
 #endif
 
 enum enum_normalisation { normalisation__NULL = -1, normalisation_arg_Power = 0, normalisation_arg_None, normalisation_arg_SH };
+enum enum_frequency_unit { frequency_unit__NULL = -1, frequency_unit_arg_eV = 0, frequency_unit_arg_scuff };
 
 /** @brief Where the command line options are stored */
 struct gengetopt_args_info
@@ -57,7 +58,7 @@ struct gengetopt_args_info
   double Ewald_parameter_arg;	/**< @brief The value of Ewald parameter η.  */
   char * Ewald_parameter_orig;	/**< @brief The value of Ewald parameter η original value given at command line.  */
   const char *Ewald_parameter_help; /**< @brief The value of Ewald parameter η help description.  */
-  char * frequency_unit_arg;	/**< @brief Specifies the frequency unit is used for inputs. (default='scuff').  */
+  enum enum_frequency_unit frequency_unit_arg;	/**< @brief Specifies the frequency unit is used for inputs. (default='scuff').  */
   char * frequency_unit_orig;	/**< @brief Specifies the frequency unit is used for inputs. original value given at command line.  */
   const char *frequency_unit_help; /**< @brief Specifies the frequency unit is used for inputs. help description.  */
   int lMax_arg;	/**< @brief Maximum spherical multipole order to which the translation operator elements are calculated.  */
@@ -66,24 +67,38 @@ struct gengetopt_args_info
   double eta_arg;	/**< @brief Medium refractive index.  */
   char * eta_orig;	/**< @brief Medium refractive index original value given at command line.  */
   const char *eta_help; /**< @brief Medium refractive index help description.  */
+  char ** particle_arg;	/**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed..  */
+  char ** particle_orig;	/**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed. original value given at command line.  */
   unsigned int particle_min; /**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed.'s minimum occurreces */
   unsigned int particle_max; /**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed.'s maximum occurreces */
   const char *particle_help; /**< @brief Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed. help description.  */
+  char ** pointfile_arg;	/**< @brief Path to a file containing frequency, k_x, k_y triples(separated by white spaces). If not specified, read them from stdin. (default='-').  */
+  char ** pointfile_orig;	/**< @brief Path to a file containing frequency, k_x, k_y triples(separated by white spaces). If not specified, read them from stdin. original value given at command line.  */
   unsigned int pointfile_min; /**< @brief Path to a file containing frequency, k_x, k_y triples(separated by white spaces). If not specified, read them from stdin.'s minimum occurreces */
   unsigned int pointfile_max; /**< @brief Path to a file containing frequency, k_x, k_y triples(separated by white spaces). If not specified, read them from stdin.'s maximum occurreces */
   const char *pointfile_help; /**< @brief Path to a file containing frequency, k_x, k_y triples(separated by white spaces). If not specified, read them from stdin. help description.  */
+  char ** point_arg;	/**< @brief Specifies a frequency, k_x, k_y triple, separated by commas..  */
+  char ** point_orig;	/**< @brief Specifies a frequency, k_x, k_y triple, separated by commas. original value given at command line.  */
   unsigned int point_min; /**< @brief Specifies a frequency, k_x, k_y triple, separated by commas.'s minimum occurreces */
   unsigned int point_max; /**< @brief Specifies a frequency, k_x, k_y triple, separated by commas.'s maximum occurreces */
   const char *point_help; /**< @brief Specifies a frequency, k_x, k_y triple, separated by commas. help description.  */
+  char ** omegafile_arg;	/**< @brief Path to a file containing a list of frequenciesseparated by whitespaces..  */
+  char ** omegafile_orig;	/**< @brief Path to a file containing a list of frequenciesseparated by whitespaces. original value given at command line.  */
   unsigned int omegafile_min; /**< @brief Path to a file containing a list of frequenciesseparated by whitespaces.'s minimum occurreces */
   unsigned int omegafile_max; /**< @brief Path to a file containing a list of frequenciesseparated by whitespaces.'s maximum occurreces */
   const char *omegafile_help; /**< @brief Path to a file containing a list of frequenciesseparated by whitespaces. help description.  */
+  char ** omega_arg;	/**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line..  */
+  char ** omega_orig;	/**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line. original value given at command line.  */
   unsigned int omega_min; /**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line.'s minimum occurreces */
   unsigned int omega_max; /**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line.'s maximum occurreces */
   const char *omega_help; /**< @brief Specifies frequency (or multiple frequencies separated by semicolons) on the command line. help description.  */
+  char ** kfile_arg;	/**< @brief Path to a file containing a list of k_x, k_y pairs. (default='-').  */
+  char ** kfile_orig;	/**< @brief Path to a file containing a list of k_x, k_y pairs. original value given at command line.  */
   unsigned int kfile_min; /**< @brief Path to a file containing a list of k_x, k_y pairs.'s minimum occurreces */
   unsigned int kfile_max; /**< @brief Path to a file containing a list of k_x, k_y pairs.'s maximum occurreces */
   const char *kfile_help; /**< @brief Path to a file containing a list of k_x, k_y pairs. help description.  */
+  char ** k_arg;	/**< @brief Specifies pair(s) of k_x, k_y values.  */
+  char ** k_orig;	/**< @brief Specifies pair(s) of k_x, k_y values original value given at command line.  */
   unsigned int k_min; /**< @brief Specifies pair(s) of k_x, k_y values's minimum occurreces */
   unsigned int k_max; /**< @brief Specifies pair(s) of k_x, k_y values's maximum occurreces */
   const char *k_help; /**< @brief Specifies pair(s) of k_x, k_y values help description.  */

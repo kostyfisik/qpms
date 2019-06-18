@@ -43,18 +43,18 @@ const char *gengetopt_args_info_detailed_help[] = {
   "  -N, --normalisation=ENUM      VSWF normalisation convention  (possible\n                                  values=\"Power\", \"None\", \"SH\"\n                                  default=`Power')",
   "  -c, --csphase=INT             Whether the Condon-Shortley phase is included\n                                  in VSWF definition (-1) or not (+1)\n                                  (possible values=\"+1\", \"-1\" default=`-1')",
   "  -e, --Ewald-parameter=DOUBLE  The value of Ewald parameter η",
-  "  -u, --frequency-unit=STRING   Specifies the frequency unit is used for\n                                  inputs.  (possible values=\"eV\", \"scuff\"\n                                  default=`scuff')",
+  "  -u, --frequency-unit=ENUM     Specifies the frequency unit is used for\n                                  inputs.  (possible values=\"eV\", \"scuff\"\n                                  default=`scuff')",
   "  -L, --lMax=INT                Maximum spherical multipole order to which the\n                                  translation operator elements are calculated",
   "  -n, --eta=DOUBLE              Medium refractive index",
-  "  -p, --particle                Specify the x and y coordinates of a single\n                                  particle; If not specified, one particle per\n                                  unit cell is assumed.",
+  "  -p, --particle=STRING         Specify the x and y coordinates of a single\n                                  particle; If not specified, one particle per\n                                  unit cell is assumed.",
   "\n Mode: k_omega_points\n  Specifying each (ω, k) pair separately.",
-  "  -T, --pointfile               Path to a file containing frequency, k_x, k_y\n                                  triples(separated by white spaces). If not\n                                  specified, read them from stdin.",
-  "  -t, --point                   Specifies a frequency, k_x, k_y triple,\n                                  separated by commas.",
+  "  -T, --pointfile=STRING        Path to a file containing frequency, k_x, k_y\n                                  triples(separated by white spaces). If not\n                                  specified, read them from stdin.\n                                  (default=`-')",
+  "  -t, --point=STRING            Specifies a frequency, k_x, k_y triple,\n                                  separated by commas.",
   "\n Mode: k_omega_meshgrid\n  Specifying lists of ω and k, from which all possible pairs are generated.",
-  "  -F, --omegafile               Path to a file containing a list of\n                                  frequenciesseparated by whitespaces.",
-  "  -f, --omega                   Specifies frequency (or multiple frequencies\n                                  separated by semicolons) on the command line.",
-  "  -K, --kfile                   Path to a file containing a list of k_x, k_y\n                                  pairs.",
-  "  -k, --k                       Specifies pair(s) of k_x, k_y values",
+  "  -F, --omegafile=STRING        Path to a file containing a list of\n                                  frequenciesseparated by whitespaces.",
+  "  -f, --omega=STRING            Specifies frequency (or multiple frequencies\n                                  separated by semicolons) on the command line.",
+  "  -K, --kfile=STRING            Path to a file containing a list of k_x, k_y\n                                  pairs.  (default=`-')",
+  "  -k, --k=STRING                Specifies pair(s) of k_x, k_y values",
     0
 };
 
@@ -151,10 +151,24 @@ void clear_args (struct gengetopt_args_info *args_info)
   args_info->csphase_arg = -1;
   args_info->csphase_orig = NULL;
   args_info->Ewald_parameter_orig = NULL;
-  args_info->frequency_unit_arg = gengetopt_strdup ("scuff");
+  args_info->frequency_unit_arg = frequency_unit_arg_scuff;
   args_info->frequency_unit_orig = NULL;
   args_info->lMax_orig = NULL;
   args_info->eta_orig = NULL;
+  args_info->particle_arg = NULL;
+  args_info->particle_orig = NULL;
+  args_info->pointfile_arg = NULL;
+  args_info->pointfile_orig = NULL;
+  args_info->point_arg = NULL;
+  args_info->point_orig = NULL;
+  args_info->omegafile_arg = NULL;
+  args_info->omegafile_orig = NULL;
+  args_info->omega_arg = NULL;
+  args_info->omega_orig = NULL;
+  args_info->kfile_arg = NULL;
+  args_info->kfile_orig = NULL;
+  args_info->k_arg = NULL;
+  args_info->k_orig = NULL;
   
 }
 
@@ -282,6 +296,52 @@ free_string_field (char **s)
     }
 }
 
+/** @brief generic value variable */
+union generic_value {
+    int int_arg;
+    double double_arg;
+    char *string_arg;
+    const char *default_string_arg;
+};
+
+/** @brief holds temporary values for multiple options */
+struct generic_list
+{
+  union generic_value arg;
+  char *orig;
+  struct generic_list *next;
+};
+
+/**
+ * @brief add a node at the head of the list 
+ */
+static void add_node(struct generic_list **list) {
+  struct generic_list *new_node = (struct generic_list *) malloc (sizeof (struct generic_list));
+  new_node->next = *list;
+  *list = new_node;
+  new_node->arg.string_arg = 0;
+  new_node->orig = 0;
+}
+
+
+static void
+free_multiple_string_field(unsigned int len, char ***arg, char ***orig)
+{
+  unsigned int i;
+  if (*arg) {
+    for (i = 0; i < len; ++i)
+      {
+        free_string_field(&((*arg)[i]));
+        free_string_field(&((*orig)[i]));
+      }
+    free_string_field(&((*arg)[0])); /* free default string */
+
+    free (*arg);
+    *arg = 0;
+    free (*orig);
+    *orig = 0;
+  }
+}
 
 static void
 cmdline_parser_release (struct gengetopt_args_info *args_info)
@@ -294,10 +354,16 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
   free_string_field (&(args_info->normalisation_orig));
   free_string_field (&(args_info->csphase_orig));
   free_string_field (&(args_info->Ewald_parameter_orig));
-  free_string_field (&(args_info->frequency_unit_arg));
   free_string_field (&(args_info->frequency_unit_orig));
   free_string_field (&(args_info->lMax_orig));
   free_string_field (&(args_info->eta_orig));
+  free_multiple_string_field (args_info->particle_given, &(args_info->particle_arg), &(args_info->particle_orig));
+  free_multiple_string_field (args_info->pointfile_given, &(args_info->pointfile_arg), &(args_info->pointfile_orig));
+  free_multiple_string_field (args_info->point_given, &(args_info->point_arg), &(args_info->point_orig));
+  free_multiple_string_field (args_info->omegafile_given, &(args_info->omegafile_arg), &(args_info->omegafile_orig));
+  free_multiple_string_field (args_info->omega_given, &(args_info->omega_arg), &(args_info->omega_orig));
+  free_multiple_string_field (args_info->kfile_given, &(args_info->kfile_arg), &(args_info->kfile_orig));
+  free_multiple_string_field (args_info->k_given, &(args_info->k_arg), &(args_info->k_orig));
   
   
 
@@ -399,13 +465,13 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "lMax", args_info->lMax_orig, 0);
   if (args_info->eta_given)
     write_into_file(outfile, "eta", args_info->eta_orig, 0);
-  write_multiple_into_file(outfile, args_info->particle_given, "particle", 0, 0);
-  write_multiple_into_file(outfile, args_info->pointfile_given, "pointfile", 0, 0);
-  write_multiple_into_file(outfile, args_info->point_given, "point", 0, 0);
-  write_multiple_into_file(outfile, args_info->omegafile_given, "omegafile", 0, 0);
-  write_multiple_into_file(outfile, args_info->omega_given, "omega", 0, 0);
-  write_multiple_into_file(outfile, args_info->kfile_given, "kfile", 0, 0);
-  write_multiple_into_file(outfile, args_info->k_given, "k", 0, 0);
+  write_multiple_into_file(outfile, args_info->particle_given, "particle", args_info->particle_orig, 0);
+  write_multiple_into_file(outfile, args_info->pointfile_given, "pointfile", args_info->pointfile_orig, 0);
+  write_multiple_into_file(outfile, args_info->point_given, "point", args_info->point_orig, 0);
+  write_multiple_into_file(outfile, args_info->omegafile_given, "omegafile", args_info->omegafile_orig, 0);
+  write_multiple_into_file(outfile, args_info->omega_given, "omega", args_info->omega_orig, 0);
+  write_multiple_into_file(outfile, args_info->kfile_given, "kfile", args_info->kfile_orig, 0);
+  write_multiple_into_file(outfile, args_info->k_given, "k", args_info->k_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -451,6 +517,86 @@ gengetopt_strdup (const char *s)
     return (char*)0;
   strcpy(result, s);
   return result;
+}
+
+static char *
+get_multiple_arg_token(const char *arg)
+{
+  const char *tok;
+  char *ret;
+  size_t len, num_of_escape, i, j;
+
+  if (!arg)
+    return 0;
+
+  tok = strchr (arg, ',');
+  num_of_escape = 0;
+
+  /* make sure it is not escaped */
+  while (tok)
+    {
+      if (*(tok-1) == '\\')
+        {
+          /* find the next one */
+          tok = strchr (tok+1, ',');
+          ++num_of_escape;
+        }
+      else
+        break;
+    }
+
+  if (tok)
+    len = (size_t)(tok - arg + 1);
+  else
+    len = strlen (arg) + 1;
+
+  len -= num_of_escape;
+
+  ret = (char *) malloc (len);
+
+  i = 0;
+  j = 0;
+  while (arg[i] && (j < len-1))
+    {
+      if (arg[i] == '\\' && 
+	  arg[ i + 1 ] && 
+	  arg[ i + 1 ] == ',')
+        ++i;
+
+      ret[j++] = arg[i++];
+    }
+
+  ret[len-1] = '\0';
+
+  return ret;
+}
+
+static const char *
+get_multiple_arg_token_next(const char *arg)
+{
+  const char *tok;
+
+  if (!arg)
+    return 0;
+
+  tok = strchr (arg, ',');
+
+  /* make sure it is not escaped */
+  while (tok)
+    {
+      if (*(tok-1) == '\\')
+        {
+          /* find the next one */
+          tok = strchr (tok+1, ',');
+        }
+      else
+        break;
+    }
+
+  if (! tok || strlen(tok) == 1)
+    return 0;
+
+  return tok+1;
 }
 
 static int
@@ -770,6 +916,151 @@ int update_arg(void *field, char **orig_field,
   return 0; /* OK */
 }
 
+/**
+ * @brief store information about a multiple option in a temporary list
+ * @param list where to (temporarily) store multiple options
+ */
+static
+int update_multiple_arg_temp(struct generic_list **list,
+               unsigned int *prev_given, const char *val,
+               const char *possible_values[], const char *default_value,
+               cmdline_parser_arg_type arg_type,
+               const char *long_opt, char short_opt,
+               const char *additional_error)
+{
+  /* store single arguments */
+  char *multi_token;
+  const char *multi_next;
+
+  if (arg_type == ARG_NO) {
+    (*prev_given)++;
+    return 0; /* OK */
+  }
+
+  multi_token = get_multiple_arg_token(val);
+  multi_next = get_multiple_arg_token_next (val);
+
+  while (1)
+    {
+      add_node (list);
+      if (update_arg((void *)&((*list)->arg), &((*list)->orig), 0,
+          prev_given, multi_token, possible_values, default_value, 
+          arg_type, 0, 1, 1, 1, long_opt, short_opt, additional_error)) {
+        if (multi_token) free(multi_token);
+        return 1; /* failure */
+      }
+
+      if (multi_next)
+        {
+          multi_token = get_multiple_arg_token(multi_next);
+          multi_next = get_multiple_arg_token_next (multi_next);
+        }
+      else
+        break;
+    }
+
+  return 0; /* OK */
+}
+
+/**
+ * @brief free the passed list (including possible string argument)
+ */
+static
+void free_list(struct generic_list *list, short string_arg)
+{
+  if (list) {
+    struct generic_list *tmp;
+    while (list)
+      {
+        tmp = list;
+        if (string_arg && list->arg.string_arg)
+          free (list->arg.string_arg);
+        if (list->orig)
+          free (list->orig);
+        list = list->next;
+        free (tmp);
+      }
+  }
+}
+
+/**
+ * @brief updates a multiple option starting from the passed list
+ */
+static
+void update_multiple_arg(void *field, char ***orig_field,
+               unsigned int field_given, unsigned int prev_given, union generic_value *default_value,
+               cmdline_parser_arg_type arg_type,
+               struct generic_list *list)
+{
+  int i;
+  struct generic_list *tmp;
+
+  if (prev_given && list) {
+    *orig_field = (char **) realloc (*orig_field, (field_given + prev_given) * sizeof (char *));
+
+    switch(arg_type) {
+    case ARG_INT:
+    case ARG_ENUM:
+      *((int **)field) = (int *)realloc (*((int **)field), (field_given + prev_given) * sizeof (int)); break;
+    case ARG_DOUBLE:
+      *((double **)field) = (double *)realloc (*((double **)field), (field_given + prev_given) * sizeof (double)); break;
+    case ARG_STRING:
+      *((char ***)field) = (char **)realloc (*((char ***)field), (field_given + prev_given) * sizeof (char *)); break;
+    default:
+      break;
+    };
+    
+    for (i = (prev_given - 1); i >= 0; --i)
+      {
+        tmp = list;
+        
+        switch(arg_type) {
+        case ARG_INT:
+          (*((int **)field))[i + field_given] = tmp->arg.int_arg; break;
+        case ARG_DOUBLE:
+          (*((double **)field))[i + field_given] = tmp->arg.double_arg; break;
+        case ARG_ENUM:
+          (*((int **)field))[i + field_given] = tmp->arg.int_arg; break;
+        case ARG_STRING:
+          (*((char ***)field))[i + field_given] = tmp->arg.string_arg; break;
+        default:
+          break;
+        }        
+        (*orig_field) [i + field_given] = list->orig;
+        list = list->next;
+        free (tmp);
+      }
+  } else { /* set the default value */
+    if (default_value && ! field_given) {
+      switch(arg_type) {
+      case ARG_INT:
+      case ARG_ENUM:
+        if (! *((int **)field)) {
+          *((int **)field) = (int *)malloc (sizeof (int));
+          (*((int **)field))[0] = default_value->int_arg; 
+        }
+        break;
+      case ARG_DOUBLE:
+        if (! *((double **)field)) {
+          *((double **)field) = (double *)malloc (sizeof (double));
+          (*((double **)field))[0] = default_value->double_arg;
+        }
+        break;
+      case ARG_STRING:
+        if (! *((char ***)field)) {
+          *((char ***)field) = (char **)malloc (sizeof (char *));
+          (*((char ***)field))[0] = gengetopt_strdup(default_value->string_arg);
+        }
+        break;
+      default: break;
+      }
+      if (!(*orig_field)) {
+        *orig_field = (char **) malloc (sizeof (char *));
+        (*orig_field)[0] = 0;
+      }
+    }
+  }
+}
 
 static int check_modes(
   int given1[], const char *options1[],
@@ -802,6 +1093,13 @@ cmdline_parser_internal (
   int c;	/* Character of the parsed option.  */
   union generic_value multiple_default_value;
 
+  struct generic_list * particle_list = NULL;
+  struct generic_list * pointfile_list = NULL;
+  struct generic_list * point_list = NULL;
+  struct generic_list * omegafile_list = NULL;
+  struct generic_list * omega_list = NULL;
+  struct generic_list * kfile_list = NULL;
+  struct generic_list * k_list = NULL;
   int error_occurred = 0;
   struct gengetopt_args_info local_args_info;
   
@@ -843,17 +1141,17 @@ cmdline_parser_internal (
         { "frequency-unit",	1, NULL, 'u' },
         { "lMax",	1, NULL, 'L' },
         { "eta",	1, NULL, 'n' },
-        { "particle",	0, NULL, 'p' },
-        { "pointfile",	0, NULL, 'T' },
-        { "point",	0, NULL, 't' },
-        { "omegafile",	0, NULL, 'F' },
-        { "omega",	0, NULL, 'f' },
-        { "kfile",	0, NULL, 'K' },
-        { "k",	0, NULL, 'k' },
+        { "particle",	1, NULL, 'p' },
+        { "pointfile",	1, NULL, 'T' },
+        { "point",	1, NULL, 't' },
+        { "omegafile",	1, NULL, 'F' },
+        { "omega",	1, NULL, 'f' },
+        { "kfile",	1, NULL, 'K' },
+        { "k",	1, NULL, 'k' },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVo:E:N:c:e:u:L:n:pTtFfKk", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVo:E:N:c:e:u:L:n:p:T:t:F:f:K:k:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -934,7 +1232,7 @@ cmdline_parser_internal (
         
           if (update_arg( (void *)&(args_info->frequency_unit_arg), 
                &(args_info->frequency_unit_orig), &(args_info->frequency_unit_given),
-              &(local_args_info.frequency_unit_given), optarg, cmdline_parser_frequency_unit_values, "scuff", ARG_STRING,
+              &(local_args_info.frequency_unit_given), optarg, cmdline_parser_frequency_unit_values, "scuff", ARG_ENUM,
               check_ambiguity, override, 0, 0,
               "frequency-unit", 'u',
               additional_error))
@@ -967,43 +1265,71 @@ cmdline_parser_internal (
           break;
         case 'p':	/* Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed..  */
         
-          local_args_info.particle_given++;
+          if (update_multiple_arg_temp(&particle_list, 
+              &(local_args_info.particle_given), optarg, 0, 0, ARG_STRING,
+              "particle", 'p',
+              additional_error))
+            goto failure;
         
           break;
         case 'T':	/* Path to a file containing frequency, k_x, k_y triples(separated by white spaces). If not specified, read them from stdin..  */
           args_info->k_omega_points_mode_counter += 1;
         
-          local_args_info.pointfile_given++;
+          if (update_multiple_arg_temp(&pointfile_list, 
+              &(local_args_info.pointfile_given), optarg, 0, "-", ARG_STRING,
+              "pointfile", 'T',
+              additional_error))
+            goto failure;
         
           break;
         case 't':	/* Specifies a frequency, k_x, k_y triple, separated by commas..  */
           args_info->k_omega_points_mode_counter += 1;
         
-          local_args_info.point_given++;
+          if (update_multiple_arg_temp(&point_list, 
+              &(local_args_info.point_given), optarg, 0, 0, ARG_STRING,
+              "point", 't',
+              additional_error))
+            goto failure;
         
           break;
         case 'F':	/* Path to a file containing a list of frequenciesseparated by whitespaces..  */
           args_info->k_omega_meshgrid_mode_counter += 1;
         
-          local_args_info.omegafile_given++;
+          if (update_multiple_arg_temp(&omegafile_list, 
+              &(local_args_info.omegafile_given), optarg, 0, 0, ARG_STRING,
+              "omegafile", 'F',
+              additional_error))
+            goto failure;
         
           break;
         case 'f':	/* Specifies frequency (or multiple frequencies separated by semicolons) on the command line..  */
           args_info->k_omega_meshgrid_mode_counter += 1;
         
-          local_args_info.omega_given++;
+          if (update_multiple_arg_temp(&omega_list, 
+              &(local_args_info.omega_given), optarg, 0, 0, ARG_STRING,
+              "omega", 'f',
+              additional_error))
+            goto failure;
         
           break;
         case 'K':	/* Path to a file containing a list of k_x, k_y pairs..  */
           args_info->k_omega_meshgrid_mode_counter += 1;
         
-          local_args_info.kfile_given++;
+          if (update_multiple_arg_temp(&kfile_list, 
+              &(local_args_info.kfile_given), optarg, 0, "-", ARG_STRING,
+              "kfile", 'K',
+              additional_error))
+            goto failure;
         
           break;
         case 'k':	/* Specifies pair(s) of k_x, k_y values.  */
           args_info->k_omega_meshgrid_mode_counter += 1;
         
-          local_args_info.k_given++;
+          if (update_multiple_arg_temp(&k_list, 
+              &(local_args_info.k_given), optarg, 0, 0, ARG_STRING,
+              "k", 'k',
+              additional_error))
+            goto failure;
         
           break;
 
@@ -1025,6 +1351,36 @@ cmdline_parser_internal (
     } /* while */
 
 
+  update_multiple_arg((void *)&(args_info->particle_arg),
+    &(args_info->particle_orig), args_info->particle_given,
+    local_args_info.particle_given, 0,
+    ARG_STRING, particle_list);
+  multiple_default_value.default_string_arg = "-";
+  update_multiple_arg((void *)&(args_info->pointfile_arg),
+    &(args_info->pointfile_orig), args_info->pointfile_given,
+    local_args_info.pointfile_given, &multiple_default_value,
+    ARG_STRING, pointfile_list);
+  update_multiple_arg((void *)&(args_info->point_arg),
+    &(args_info->point_orig), args_info->point_given,
+    local_args_info.point_given, 0,
+    ARG_STRING, point_list);
+  update_multiple_arg((void *)&(args_info->omegafile_arg),
+    &(args_info->omegafile_orig), args_info->omegafile_given,
+    local_args_info.omegafile_given, 0,
+    ARG_STRING, omegafile_list);
+  update_multiple_arg((void *)&(args_info->omega_arg),
+    &(args_info->omega_orig), args_info->omega_given,
+    local_args_info.omega_given, 0,
+    ARG_STRING, omega_list);
+  multiple_default_value.default_string_arg = "-";
+  update_multiple_arg((void *)&(args_info->kfile_arg),
+    &(args_info->kfile_orig), args_info->kfile_given,
+    local_args_info.kfile_given, &multiple_default_value,
+    ARG_STRING, kfile_list);
+  update_multiple_arg((void *)&(args_info->k_arg),
+    &(args_info->k_orig), args_info->k_given,
+    local_args_info.k_given, 0,
+    ARG_STRING, k_list);
 
   args_info->particle_given += local_args_info.particle_given;
   local_args_info.particle_given = 0;
@@ -1062,6 +1418,13 @@ cmdline_parser_internal (
   return 0;
 
 failure:
+  free_list (particle_list, 1 );
+  free_list (pointfile_list, 1 );
+  free_list (point_list, 1 );
+  free_list (omegafile_list, 1 );
+  free_list (omega_list, 1 );
+  free_list (kfile_list, 1 );
+  free_list (k_list, 1 );
   
   cmdline_parser_release (&local_args_info);
   return (EXIT_FAILURE);

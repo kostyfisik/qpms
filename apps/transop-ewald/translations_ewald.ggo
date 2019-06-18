@@ -32,7 +32,7 @@ option "Ewald-parameter" e "The value of Ewald parameter η"
 	optional
 
 option "frequency-unit" u "Specifies the frequency unit is used for inputs."
-	values="eV","scuff"
+	values="eV","scuff" enum
 	default="scuff"
 
 option "lMax" L "Maximum spherical multipole order to which the translation operator elements are calculated"
@@ -44,32 +44,44 @@ option "eta" n "Medium refractive index"
 	required
 
 option "particle" p "Specify the x and y coordinates of a single particle; If not specified, one particle per unit cell is assumed."
-	optional
-	multiple
+	string
+	multiple optional
 
 defmode "k_omega_points" modedesc="Specifying each (ω, k) pair separately."
 defmode "k_omega_meshgrid" modedesc="Specifying lists of ω and k, from which all possible pairs are generated."
 
 modeoption "pointfile" T "Path to a file containing frequency, k_x, k_y triples\
 (separated by white spaces). If not specified, read them from stdin." 
-	mode="k_omega_points" multiple default="-"
+	mode="k_omega_points" 
+	string 
+	multiple default="-"
 
 modeoption "point" t "Specifies a frequency, k_x, k_y triple, separated by commas."
-	mode="k_omega_points" multiple optional
+	mode="k_omega_points"
+	string
+	multiple optional
 
 modeoption "omegafile" F "Path to a file containing a list of frequencies\
 separated by whitespaces."
-	mode="k_omega_meshgrid" multiple optional
+	mode="k_omega_meshgrid" 
+	string
+	multiple optional
 
 modeoption "omega" f "Specifies frequency (or multiple frequencies separated by semicolons) on the command line."
-	mode="k_omega_meshgrid" multiple optional
+	mode="k_omega_meshgrid"
+	string
+	multiple optional
 
 modeoption "kfile" K "Path to a file containing a list of k_x, k_y pairs."
-	mode="k_omega_meshgrid" multiple optional
+	mode="k_omega_meshgrid"
+	string
+	multiple optional
 	default="-"
 
 modeoption "k" k "Specifies pair(s) of k_x, k_y values"
-	mode="k_omega_meshgrid" multiple optional
+	mode="k_omega_meshgrid"
+	string
+	multiple optional
 
 
 #option <long> <short> "<desc>"
