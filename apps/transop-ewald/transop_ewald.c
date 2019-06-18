@@ -42,11 +42,9 @@ static const double c0 = GSL_CONST_MKSA_SPEED_OF_LIGHT;
 int main (int argc, char **argv) {
   struct gengetopt_args_info args_info;
 
-  int retval = cmdline_parser(argc, argv, *argc_info);
+  int retval = cmdline_parser(argc, argv, *args_info);
   if (retval) return retval;
 
-  char *outfile = argv[1];
-  char *errfile = NULL; // Filename for the error estimate output; NOT USED
   cart2_t b1 = {strtod(argv[2], NULL), strtod(argv[3], NULL)},
           b2 = {strtod(argv[4], NULL), strtod(argv[5], NULL)};
   const qpms_l_t lMax = strtol(argv[6], NULL, 10); assert(lMax>0);
@@ -93,10 +91,20 @@ int main (int argc, char **argv) {
 
   qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, QPMS_NORMALISATION_POWER_CS); // vai POWER_CS?
 
-  FILE *out = fopen(outfile, "w");
-  FILE *err = NULL;
-  if (errfile)
-    err = fopen(errfile, "w");
+  FILE *out, *err = NULL;
+  if (args_info.error_estimate_output_given) {
+    if (!strcmp(args_info.error_estimate_output_arg, "-"))
+      err = stdout;
+    else 
+      err = fopen(args_info.error_estimate_output_arg, "w");
+    QPMS_ENSURE(err, "Could not open error output file %s", 
+        args_info.error_estimate_output_arg);
+  if (args_info.output_given && !strcmp(args_info.output_arg, "-")
+      && args_info.output_arg[0]) {
+    out = fopen(args_info.output_arg, "w");
+    QPMS_ENSURE(out, "Could not open output file %s", args_info.output_arg);
+  } else
+    out = stdout;
 
   {
     const double omega = scuffomega * SCUFF_OMEGAUNIT;
