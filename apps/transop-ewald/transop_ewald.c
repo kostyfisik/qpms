@@ -13,6 +13,7 @@
 #define LATTICESUMS32
 #include <qpms/translations.h>
 #include <qpms/lattices.h>
+#include <qpms/qpms_error.h>
 #include <gsl/gsl_const_mksa.h>
 
 // Command line order:
@@ -24,6 +25,61 @@
 // Output data format (line):
 //
 
+/** Parse a given number of doubles from a string.
+ *
+ * The doubles can be separated by whitespaces, comma or semicolon.
+ *
+ * \return If the string included up to n doubles, number of parsed doubles.
+ * If more, n+1.
+ */
+size_t qpms_parse_ndoubles(
+  double *target,
+  size_t n,
+  const char *orig
+) {
+  QPMS_ENSURE(target, "The target parameter must not be NULL");
+  char * const dup = strdup(orig);
+  QPMS_ENSURE(dup, "Memory error in a strdup() call.");
+
+  // Replace commas and semicolons with whitespaces
+  for (char *c = dup; *c; ++c) 
+    if (*c == ',' || *c == ';')
+      *c = ' ';
+
+  errno = 0;
+  size_t i = 0;
+
+  const char *beg = dup;
+  while(*beg) {
+    char *endptr;
+    double parsed = strtod(beg, endptr);
+    if (endptr > beg) {
+      if (i >= n) {
+        errno = EOVERFLOW;
+        QPMS_WARN("Supplied string contains additional numbers"
+           " (expected only %zd numbers): %s\n", n, beg);
+        goto qpms_parse_ndoubles_cleanup;
+      }
+      else
+        target[i] = parsed;
+      ++i;
+      beg = endptr;
+    } else {
+      while (*beg) {
+        if (!isspace(*beg)) {
+          QPMS_WARN("Invalid character (expected a double), leaving the rest of the string unprocessed: %s\n", beg);
+          errno = EILSEQ;
+          goto qpms_parse_ndoubles_cleanup;
+        }
+        ++beg;
+      }
+    }
+  }
+
+qpms_parse_ndoubles_cleanup:
+  free(dup);
+  return i;
+}
 
 // TODO move to qpmslib later.
 /** Parse doubles from a string.
@@ -56,9 +112,10 @@ size_t qpms_parse_doubles(
       *c = ' ';
 
   size_t i = start_index;
+  errno = 0;
 
   const char *beg = dup;
-  do {
+  while(*beg) {
     char *endptr;
     errno = 0;
     double parsed = strtod(beg, endptr);
@@ -69,6 +126,7 @@ size_t qpms_parse_doubles(
         capacity *= 2;
         QPMS_CRASHING_REALLOC(*target, capacity * sizeof(double));
       }
+      beg = endptr;
     } else {
       while (*beg) {
         if (!isspace(*beg)) {
@@ -79,6 +137,7 @@ size_t qpms_parse_doubles(
         ++beg;
       }
     }
+  }
 
 qpms_parse_doubles_cleanup:
   free(dup);
