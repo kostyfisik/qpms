@@ -48,7 +48,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_CRASHING_MALLOC(pointer, size) {(pointer) = malloc(size); if(!pointer && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Allocation of %zd bytes for " #pointer " failed.", (size_t) (size));}
 
-#define QPMS_CRASHING_REALLOC(pointer, size) {(pointer) = realloc(pointer, size); if(!pointer && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Rellocation of %zd bytes for " #pointer " failed.", (size_t) (size));}
+#define QPMS_CRASHING_REALLOC(pointer, size) {(pointer) = realloc((pointer), size); if(!(pointer) && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Rellocation of %zd bytes for " #pointer " failed.", (size_t) (size));}
 
 #define QPMS_WTF qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error.")
 
