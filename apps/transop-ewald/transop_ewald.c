@@ -164,6 +164,7 @@ int main (int argc, char **argv) {
   int retval = cmdline_parser(argc, argv, *args_info);
   if (retval) return retval;
 
+  // Parse lattice vectors
   const int latdim = args_info.base_vector_given;
   QPMS_ENSURE(latdim == 2,
       "Sorry, only 2d lattices supported, but %d basis vectors were given\n",
@@ -183,6 +184,7 @@ int main (int argc, char **argv) {
 
   const double refindex = args_info.refractive_index_arg;
 
+  // Parse all particle positions
   const int npart = args_info.particle_given;
   if(!npart) ++npart;
   cart2_t part_positions[npart];
@@ -196,6 +198,15 @@ int main (int argc, char **argv) {
         "%d. particle position contained %d coordinates, expected %d\n",
         i, gotnumbers, latdim);
   }
+
+  QPMS_ENSURE(!args_info.k_omega_meshgrid_mode_counter != !args_info.k_omega_points_mode_counter,
+      "THIS IS A BUG. Only one mode ((k, ω) tuples, or k, ω lists) allowed.");
+  if (args_info.k_omega_meshgrid_mode_counter) { // grid mode
+    TODO;
+  } else if (args_info.k_omega_points_mode_counter) { // explic. point mode
+    TODO;
+  }
+
 
   const double scuffomega = strtod(argv[7], NULL);
 //#ifdef KSTDIN
