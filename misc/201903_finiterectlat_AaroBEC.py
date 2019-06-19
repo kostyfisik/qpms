@@ -38,7 +38,7 @@ orig_y = (np.arange(Ny/2) + (0 if (Ny % 2) else .5)) * py
 orig_xy = np.stack(np.meshgrid(orig_x, orig_y), axis = -1)
 
 tmatrix = interp(omega)
-print(tmatrix.m)
+#print(tmatrix.m)
 
 particles = [Particle(orig_xy[i], tmatrix) for i in np.ndindex(orig_xy.shape[:-1])]
 
@@ -53,7 +53,7 @@ for iri in range(ss.nirreps):
       print(destpath, 'already exists, skipping')
       continue
     mm_iri = ss.modeproblem_matrix_packed(k, iri)
-    print(mm_iri)
+    #print(mm_iri)
     U, S, Vh = np.linalg.svd(mm_iri)
     del U
     print(iri, ss.irrep_names[iri], S[-1])
