@@ -454,6 +454,14 @@ qpms_errno_t qpms_load_scuff_tmatrix(
         "Could not open T-matrix file %s", path); 
   qpms_errno_t retval = 
     qpms_read_scuff_tmatrix(f, bs, n, freqs, freqs_su, tmatrices_array, tmdata);
+
+  for (size_t i = 0; i < *n * bs->n * bs->n; ++i) 
+    if(isnan(creal((*tmdata)[i])) || isnan(cimag((*tmdata)[i]))) {
+      QPMS_WARN("Encountered NAN in a loaded T-matrix");
+      retval |= QPMS_NAN_ENCOUNTERED;
+      break;
+    }
+
   if(fclose(f)) qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
         "Could not close the T-matrix file %s (well, that's weird, "
         "since it's read only).", path); 

@@ -79,7 +79,9 @@ typedef unsigned long long qpms_uvswfi_t;
 typedef enum {
 	QPMS_SUCCESS = 0, ///< Success.
 	QPMS_ERROR = 1, ///< Unspecified error.
-	QPMS_ENOMEM = 8 ///< Out of memory.
+	QPMS_ENOMEM = 8, ///< Out of memory.
+	QPMS_NAN_ENCOUNTERED = 1024 ///< NaN value encountered in data processing.
+
 } qpms_errno_t;
 
 
