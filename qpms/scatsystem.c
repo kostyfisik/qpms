@@ -1459,3 +1459,16 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
   QPMS_ENSURE_SUCCESS(pthread_mutex_destroy(&opistartR_mutex));
   return target_packed;
 }
+
+
+#if 0
+ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss, const complex double *cvf, cart3_t where) {
+  TODO;
+}
+
+
+ccart3_t qpms_scatsys_eval_field_irrep(const qpms_scatsys_t *ss,
+   qpms_iri_t iri, const complex double *cvr, cart3_t where) {
+  TODO;
+}
+#endif

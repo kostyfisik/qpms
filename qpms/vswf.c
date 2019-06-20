@@ -405,3 +405,13 @@ csphvec_t qpms_eval_vswf(sph_t kr,
   return esum;
 }
 
+
+#if 0
+csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
+    const complex double *coeffs, sph_t evalpoint,
+    qpms_bessel_t btyp) {
+  const qpms_l_t lMax = b->lMax;
+  double *M, *N, *L;
+
+}
+#endif 
