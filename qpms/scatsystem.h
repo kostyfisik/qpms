@@ -319,4 +319,25 @@ complex double *qpms_orbit_irrep_basis(
 		/// The index of the irreducible representation of sym.
 		const qpms_iri_t iri);
 
+/** Evaluates scattered fields (corresponding to a given excitation vector)
+ * at a given point.
+ *
+ * \return Complex electric field at the point defined by \a where.
+ */
+ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss,
+		const complex double *coeff_vector, //< A full-length excitation vector.
+		cart3_t where //< Evaluation point.
+		);
+
+
+/** Evaluates partial scattered fields (corresponding to a given irrep-reduced excitation vector)
+ * at a given point.
+ *
+ * \return Complex electric field at the point defined by \a where.
+ */
+ccart3_t qpms_scatsys_eval_field_irrep(const qpms_scatsys_t *ss,
+		qpms_iri_t iri, //< Irreducible representation
+		const complex double *coeff_vector, //< A reduced excitation vector, corresponding to \a iri.
+		cart3_t where //< Evaluation point.
+		);
 #endif //QPMS_SCATSYSTEM_H
