@@ -143,6 +143,50 @@ qpms_parse_doubles_cleanup:
   return i;
 }
 
+/** Parse doubles from a file.
+ *
+ * The doubles can be separated by whitespaces, comma or semicolon.
+ * The parsed numbers are saved into an array specified by *target
+ * that has been preallocated with malloc() to contain at least start_index
+ * members. If start_index is nonzero, the newly parsed numbers are 
+ * saved to the positions starting from start_index.
+ *
+ * If *target is NULL, the function allocates the necessary space.
+ *
+ * If filepath is NULL, "" or "-", read from stdin.
+ *
+ * \return Number of newly parsed doubles + start_index.
+ */
+size_t qpms_parse_doubles_fromfile(
+  double **target,
+  size_t start_index, //< Starting index for writing the parsed values.
+  const char *filepath //< File to read from, or NULL, "", "-" to read from stdin.
+) {
+  QPMS_ENSURE(target, "The target parameter must not be NULL");
+
+  FILE *src;
+
+  if (!filepath || !strcmp(filepath, "-") || filepath[0]=='\0')
+    src = stdin;
+  else 
+    QPMS_ENSURE(src = fopen(filepath, "f"),
+        "Could not open file %s: %s", filepath, strerror(errno));
+
+  char buf[1024];
+  int scanresult;
+  while (1 == (scanresult = fscanf(src, "%1023s", buf)))
+    start_index = qpms_parse_doubles(target, start_index, buf);
+
+  if (errno) QPMS_WARN("Problem reading %s: %s", 
+     (src==stdin) ? "stdin" : filepath, strerror(errno));
+
+qpms_parse_doubles_files_cleanup:
+  if (src != stdin)
+    QPMS_ENSURE(!fclose(src),
+        "Could not close file %s: %s", filepath, strerror(errno));
+
+  return start_index;
+}
 #define MAXKCOUNT 200 // 200 // serves as klist default buffer size 
 //#define KMINCOEFF 0.783 //0.9783 // 0.783 // not used if KSTDIN defined
 //#define KMAXCOEFF 1.217 //1.0217 // 1.217 // not used if KSTDIN defined
@@ -179,6 +223,10 @@ int main (int argc, char **argv) {
         i, gotnumbers, latdim);
   }
 
+  // N.B. this is 2D specific, TODO generalize when Nd sum supported
+  const double unitcell_area = l2d_unitcell_area(b[0], b[1]);
+  l2d_reduceBasis(b[0], b[1], b, b+1);
+  
   const qpms_l_t lMax = args_info.lMax_arg;
   QPMS_ENSURE(lMax > 0, "invalid value of lMax: %d", (int)lMax);
 
@@ -202,7 +250,18 @@ int main (int argc, char **argv) {
   QPMS_ENSURE(!args_info.k_omega_meshgrid_mode_counter != !args_info.k_omega_points_mode_counter,
       "THIS IS A BUG. Only one mode ((k, ω) tuples, or k, ω lists) allowed.");
   if (args_info.k_omega_meshgrid_mode_counter) { // grid mode
-    TODO;
+    size_t omegacount = 0;
+    double *omegalist = NULL;
+    for (int i = 0; i < args_info.omega_given; ++i) 
+      omegacount = qpms_parse_doubles(&omegalist, omegacount,
+          args_info.omega_arg[i]);
+
+    for (int i = 0; i < args_info.omegafile_given; ++i) {
+      FILE *f omegaf = fopen(args_info.omegafile_arg[i], "r");
+
+
+
+
   } else if (args_info.k_omega_points_mode_counter) { // explic. point mode
     TODO;
   }
@@ -231,8 +290,6 @@ int main (int argc, char **argv) {
   }
 #endif
 
-  const double unitcell_area = l2d_unitcell_area(b1, b2);
-  l2d_reduceBasis(b1, b2, &b1, &b2);
   
   // TODO more clever way of determining the cutoff
   const double a = sqrt(unitcell_area); // N.B. different meaning than before
