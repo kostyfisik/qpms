@@ -17,14 +17,24 @@
 #include <gsl/gsl_const_mksa.h>
 #include <qpms/parsing.h>
 
-// Command line order:
-// outfile b1.x b1.y b2.x b2.y lMax scuffomega refindex npart part0.x part0.y [part1.x part1.y [...]]
-//
-// Standard input (per line):
-// k.x k.y
-//
-// Output data format (line):
-//
+
+// Command line args parsing progress:
+// output
+// base-vector DONE 2D
+// error-estimate-output
+// normalisation
+// csphase
+// Ewald-parameter
+// frequency-unit
+// lMax DONE
+// refractive-index DONE
+// particle DONE
+// pointfile
+// point
+// omegafile DONE, TODO unit conversion
+// omega DONE, TODO unit conversion
+// kfile DONE 2D
+// k DONE 2D
 
 #define MAXKCOUNT 200 // 200 // serves as klist default buffer size 
 //#define KMINCOEFF 0.783 //0.9783 // 0.783 // not used if KSTDIN defined
@@ -86,20 +96,43 @@ int main (int argc, char **argv) {
         i, gotnumbers, latdim);
   }
 
-  QPMS_ENSURE(!args_info.k_omega_meshgrid_mode_counter != !args_info.k_omega_points_mode_counter,
+  QPMS_ENSURE(!args_info.k_omega_meshgrid_mode_counter != 
+      !args_info.k_omega_points_mode_counter,
       "THIS IS A BUG. Only one mode ((k, ω) tuples, or k, ω lists) allowed.");
-  if (args_info.k_omega_meshgrid_mode_counter) { // grid mode
+  // ===================== k, ω grid mode =====================
+  if (args_info.k_omega_meshgrid_mode_counter) {
     size_t omegacount = 0;
     double *omegalist = NULL;
-    for (int i = 0; i < args_info.omega_given; ++i) 
+    for (int i = 0; i < args_info.omega_given; ++i) // freqs from command line
       omegacount = qpms_parse_doubles(&omegalist, omegacount,
           args_info.omega_arg[i]);
+    for (int i = 0; i < args_info.omegafile_given; ++i) // freqs from file
+      omegacount = qpms_parse_doubles_fromfile(&omegalist, omegacount,
+          args_info.omegafile_arg[i]);
 
-    for (int i = 0; i < args_info.omegafile_given; ++i) {
-      FILE *f omegaf = fopen(args_info.omegafile_arg[i], "r");
+    size_t kc_count = 0;
+    double *kclist = NULL;
+    for (int i = 0; i < args_info.k_given; ++i) {// ks from command line
+      kc_count = qpms_parse_doubles(&kclist, kc_count, args_info.k_arg[i]);
+      QPMS_ENSURE(0 == kc_count % latdim, 
+          "Provided number of k components (cum. %zd) not compatible with the "
+          "lattice dimension (%d): %s", kc_count, latdim, args_info.k_arg[i]);
+    }
+    for (int i = 0; i < args_info.kfile_given; ++i) {//ks from file
+      kc_count = qpms_parse_doubles_fromfile(&kclist, kc_count,
+          args_info.kfile_arg[i]);
+      QPMS_ENSURE(0 == kc_count % latdim, 
+          "Provided number of k components (cum. %zd) not compatible with the "
+          "lattice dimension (%d) in file %s", kc_count, latdim, 
+          args_info.kfile_arg[i]);
+    }
+    // 2D specific, TODO generalize when Nd supported
+    cart2_t klist[kc_count/2];
+    for (size_t i = 0; i < kc_count/2; ++i) 
+      klist[i] = {kclist[2*i], kclist[2*i+1]};
+    free(kclist);
 
-
-
+    TODO;
 
   } else if (args_info.k_omega_points_mode_counter) { // explic. point mode
     TODO;
