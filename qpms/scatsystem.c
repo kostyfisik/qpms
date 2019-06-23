@@ -1460,10 +1460,19 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
   return target_packed;
 }
 
-
 #if 0
-ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss, const complex double *cvf, cart3_t where) {
-  TODO;
+ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss, 
+    const complex double *cvf, const cart3_t where,
+    complex double omega, complex double refindex) {
+  QPMS_UNTESTED;
+  ccart3_t result = {0,0,0};
+  ccart3_t result_kahanc = {0,0,0};
+
+  for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    const cart3_t particle_pos = ss->p[pi];
+    const csph_t kr = sph_cscale(...);
+    ...;
+  }
 }
 
 

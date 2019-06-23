@@ -326,7 +326,9 @@ complex double *qpms_orbit_irrep_basis(
  */
 ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss,
 		const complex double *coeff_vector, //< A full-length excitation vector.
-		cart3_t where //< Evaluation point.
+		cart3_t where, //< Evaluation point.
+		complex double omega, //< Angular frequency
+		complex double refindex //< Background medium refractive index
 		);
 
 
@@ -338,6 +340,8 @@ ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss,
 ccart3_t qpms_scatsys_eval_field_irrep(const qpms_scatsys_t *ss,
 		qpms_iri_t iri, //< Irreducible representation
 		const complex double *coeff_vector, //< A reduced excitation vector, corresponding to \a iri.
-		cart3_t where //< Evaluation point.
+		cart3_t where, //< Evaluation point.
+		complex double omega, //< Angular frequency
+		complex double refindex //< Background medium refractive index
 		);
 #endif //QPMS_SCATSYSTEM_H

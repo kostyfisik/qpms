@@ -169,6 +169,13 @@ static inline double cart3_dot(const cart3_t a, const cart3_t b) {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+static inline csph_t sph_cscale(complex double c, const sph_t s) {
+	return {c * s.r, s.theta, s.phi};
+}
+
+static inline sph_t sph_scale(double c, const sph_t s) {
+	return {c * s.r, s.theta, s.phi};
+}
 
 // equivalent to sph_loccart2cart in qpms_p.py
 static inline ccart3_t csphvec2ccart(const csphvec_t sphvec, const sph_t at) {
