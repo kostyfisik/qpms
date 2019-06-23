@@ -150,9 +150,18 @@ void qpms_vswfset_sph_pfree(qpms_vswfset_sph_t *w) {
   free(w);
 }
 
-qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget, csphvec_t * const mgtarget, csphvec_t * const eltarget,
-    qpms_l_t lMax, sph_t kr,
-    qpms_bessel_t btyp, qpms_normalisation_t norm) {
+csphvec_t qpms_vswf_L00(sph_t kdrj, qpms_bessel_t btyp,
+    qpms_normalisation_t norm) { 
+  QPMS_UNTESTED;
+  // CHECKME Is it OK to ignore norm?? (Is L_0^0 the same for all conventions?)
+  complex double bessel0;
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(btyp, 0, kr.r, &bessel0));
+  return {0.25 * M_2_SQRTPI * bessel0, 0, 0};
+}
+
+qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget, 
+    csphvec_t * const mgtarget, csphvec_t * const eltarget, qpms_l_t lMax,
+    sph_t kr, qpms_bessel_t btyp, qpms_normalisation_t norm) {
   assert(lMax >= 1);
   complex double *bessel = malloc((lMax+1)*sizeof(complex double));
   if(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel)) abort();
@@ -173,7 +182,7 @@ qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget, csphvec_t * const mgtar
     besderfac = *(pbes-1) - l * besfac;
     for(qpms_m_t m = -l; m <= l; ++m) {
       complex double eimf = cexp(m * kr.phi * I);
-      if (longtarget) {
+      if (longtarget) { QPMS_UNTESTED;
         complex double longfac = sqrt(l*(l+1)) * eimf;
         plong->rc = // FATAL FIXME: I get wrong result here for plane wave re-expansion 
           // whenever kr.r > 0 (for waves with longitudinal component, ofcoz)
@@ -406,12 +415,47 @@ csphvec_t qpms_eval_vswf(sph_t kr,
 }
 
 
-#if 0
 csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
-    const complex double *coeffs, sph_t evalpoint,
-    qpms_bessel_t btyp) {
+    const complex double *coeffs, const sph_t kr,
+    const qpms_bessel_t btyp) {
+  QPMS_UNTESTED;
   const qpms_l_t lMax = b->lMax;
-  double *M, *N, *L;
-
+  complex double *cM = NULL, *cN = NULL, *cL = NULL, cL00 = 0;
+  if (b->lMax_L > 0)
+    QPMS_CRASHING_CALLOC(cL, lMax, sizeof(complex double));
+  if (b->lMax_M > 0)
+    QPMS_CRASHING_CALLOC(cM, lMax, sizeof(complex double));
+  if (b->lMax_N > 0)
+    QPMS_CRASHING_CALLOC(cN, lMax, sizeof(complex double));
+  for (size_t i = 0; i < bspec->n; ++i) {
+    if (bspec->ilist[i] == 0) // L00, needs special care
+      cL00 = coeffs[i];
+    else {
+      qpms_vswf_type_t t;
+      qpms_y_t y;
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2ty_l(bspec->ilist[i], &t, &y));
+      switch(t) {
+        case QPMS_VSWF_LONGITUDINAL:
+          QPMS_ASSERT(cL);
+          cL[y] = coeffs[i];
+          break;
+        case QPMS_VSWF_MAGNETIC:
+          QPMS_ASSERT(cM);
+          cM[y] = coeffs[i];
+          break;
+        case QPMS_VSWF_ELECTRIC:
+          QPMS_ASSERT(cN);
+          cN[y] = coeffs[i];
+          break;
+        default:
+          QPMS_WTF;
+      }
+    }
+  }
+  csphvec_t result = qpms_eval_vswf(kr, cL, cM, cN, lMax, btyp, norm);
+  if(cL00)
+    result = csphvec_add(result,
+       scphvec_scale(cL00, qpms_vswf_L00(kr, btyp, norm)));
+  return result;
 }
-#endif 
+

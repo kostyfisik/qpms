@@ -51,8 +51,8 @@ qpms_errno_t qpms_uvswf_fill(
 		const qpms_vswf_set_spec_t *setspec,
 		sph_t evaluation_point, qpms_bessel_t btyp);
 
-/// NOT IMPLEMENTED Evaluates field specified by SVWF coefficients at a given point.
-/** SVWF coefficients in \a coeffs must be ordered according to \a setspec->ilist
+/// Evaluates field specified by SVWF coefficients at a given point.
+/** SVWF coefficients in \a coeffs must be ordered according to \a setspec->ilist.
  */
 csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
 		const complex double *coeffs, sph_t evaluation_point,
@@ -83,9 +83,29 @@ qpms_errno_t qpms_legendre_deriv_y_get(double **result, double **result_deriv, d
 qpms_errno_t qpms_legendre_deriv_y_fill(double *where, double *where_deriv, double x, 
 		qpms_l_t lMax, gsl_sf_legendre_t lnorm, double csphase); 
 
-/* some of the result targets may be NULL */
-qpms_errno_t qpms_vswf_fill(csphvec_t *resultL, csphvec_t *resultM, csphvec_t *resultN, qpms_l_t lMax, sph_t kdrj,
-		qpms_bessel_t btyp, qpms_normalisation_t norm);
+
+/// Evaluate the zeroth-degree longitudinal VSWF \f$ \mathbf{L}_0^0 \f$.
+csphvec_t qpms_vswf_L00(
+		sph_t kdrj, //< VSWF evaluation point.
+		qpms_bessel_t btyp,
+		qpms_normalisation_t norm);
+
+/// Evaluate VSWFs at a given point from \a l = 1 up to a given degree \a lMax.
+/**
+ * The target arrays \a resultL, \a resultM, \a resultN have to be large enough to contain
+ * \a lMax * (\a lMax + 2) elements. If NULL is passed instead, the corresponding SVWF type
+ * is not evaluated.
+ * 
+ * Does not evaluate the zeroth-order wave \f$ \mathbf{L}_0^0 \f$. 
+ * If you need that, use qpms_vswf_L00().
+ */
+qpms_errno_t qpms_vswf_fill(
+	csphvec_t *resultL, //< Target array for longitudinal VSWFs.
+       	csphvec_t *resultM, //< Target array for magnetic VSWFs.
+       	csphvec_t *resultN, //< Target array for electric VSWFs.
+	qpms_l_t lMax, //< Maximum multipole degree to be calculated.
+	sph_t kdrj, //< VSWF evaluation point.
+	qpms_bessel_t btyp, qpms_normalisation_t norm);
 // Should give the same results: for consistency checks
 qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *resultL, csphvec_t *resultM, csphvec_t *resultN, qpms_l_t lMax, sph_t kdrj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
