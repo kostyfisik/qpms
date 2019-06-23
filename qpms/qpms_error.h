@@ -41,7 +41,6 @@ qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types);
 qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 
-
 #define QPMS_WARN(msg, ...) qpms_warn_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__)
 
 #define QPMS_DEBUG(type, msg, ...) qpms_debug_at_flf(__FILE__,__LINE__,__func__,type,msg, ##__VA_ARGS__)
@@ -51,6 +50,14 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 #define QPMS_CRASHING_REALLOC(pointer, size) {(pointer) = realloc((pointer), size); if(!(pointer) && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Rellocation of %zd bytes for " #pointer " failed.", (size_t) (size));}
 
 #define QPMS_WTF qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error.")
+
+#define QPMS_UNTESTED {\
+	static bool already_bitched = false; \
+	if (!already_bitched) {\
+		qpms_warn_at_flf(__FILE__,__LINE__,__func__,"Warning: untested function/feature!")\
+		already_bitched = true;\
+	}\
+}
 
 #define QPMS_PR_ERROR(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__)
 
