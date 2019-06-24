@@ -170,13 +170,16 @@ static inline double cart3_dot(const cart3_t a, const cart3_t b) {
 }
 
 static inline csph_t sph_cscale(complex double c, const sph_t s) {
-	return {c * s.r, s.theta, s.phi};
+	csph_t res = {c * s.r, s.theta, s.phi};
+	return res;
 }
 
 static inline sph_t sph_scale(double c, const sph_t s) {
-	return {c * s.r, s.theta, s.phi};
+	sph_t res = {c * s.r, s.theta, s.phi};
+	return res;
 }
 
+/// Coordinate transform of a vector in local geographic to global cartesian system.
 // equivalent to sph_loccart2cart in qpms_p.py
 static inline ccart3_t csphvec2ccart(const csphvec_t sphvec, const sph_t at) {
 	const double st = sin(at.theta);
@@ -199,6 +202,19 @@ static inline ccart3_t csphvec2ccart(const csphvec_t sphvec, const sph_t at) {
 	return res;
 }
 
+/// Coordinate transform of a vector in local geographic to global cartesian system.
+/**
+ *  Same as csphvec2ccart, but with csph_t as second argument.
+ *  (The radial part (which is the only complex part of csph_t) 
+ *  of the second argument does not play role in the
+ *  transformation, so this is completely legit
+ */
+static inline ccart3_t csphvec2ccart_csph(const csphvec_t sphvec, const csph_t at) {
+	const sph_t atreal = {0 /*not used*/, at.theta, at.phi};
+	return csphvec2ccart(sphvec, atreal);
+}
+
+/// Coordinate transform of a vector in global cartesian to local geographic system.
 static inline csphvec_t ccart2csphvec(const ccart3_t cartvec, const sph_t at) {
 	// this chunk is copy-pasted from csphvec2cart, so there should be a better way...
 	const double st = sin(at.theta);

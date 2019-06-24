@@ -220,6 +220,11 @@ typedef struct ccart3_t {
 	complex double x, y, z;
 } ccart3_t;
 
+/// 3D complex vector pair (represents the E, H fields).
+typedef struct ccart3_pair {
+	ccart3_t E, H;
+} ccart3_pair;
+
 /// 2D cartesian coordinates. See also vectors.h.
 /** See also vectors.h */
 typedef struct cart2_t {
