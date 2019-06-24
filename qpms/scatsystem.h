@@ -232,28 +232,28 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss,
-		double k ///< Wave number to use in the translation matrix.
+		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
 		);
 /// Creates the mode problem matrix directly in the irrep-packed form.
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		double k ///< Wave number to use in the translation matrix.
+		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
 		);
 /// Alternative implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		double k ///< Wave number to use in the translation matrix.
+		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
 		);
 /// Alternative implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorder_parallelR(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		double k ///< Wave number to use in the translation matrix.
+		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
 		);
 
 /// NOT IMPLEMENTED Dumps a qpms_scatsys_t structure to a file.
@@ -325,10 +325,9 @@ complex double *qpms_orbit_irrep_basis(
  * \return Complex electric field at the point defined by \a where.
  */
 ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss,
-		const complex double *coeff_vector, //< A full-length excitation vector.
-		cart3_t where, //< Evaluation point.
-		complex double omega, //< Angular frequency
-		complex double refindex //< Background medium refractive index
+		const complex double *coeff_vector, ///< A full-length excitation vector.
+		cart3_t where, ///< Evaluation point.
+		complex double k ///< Wave number.
 		);
 
 
@@ -338,10 +337,9 @@ ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss,
  * \return Complex electric field at the point defined by \a where.
  */
 ccart3_t qpms_scatsys_eval_field_irrep(const qpms_scatsys_t *ss,
-		qpms_iri_t iri, //< Irreducible representation
-		const complex double *coeff_vector, //< A reduced excitation vector, corresponding to \a iri.
-		cart3_t where, //< Evaluation point.
-		complex double omega, //< Angular frequency
-		complex double refindex //< Background medium refractive index
+		qpms_iri_t iri, ///< Irreducible representation
+		const complex double *coeff_vector, ///< A reduced excitation vector, corresponding to \a iri.
+		cart3_t where, ///< Evaluation point.
+		complex double k ///< Wave number.
 		);
 #endif //QPMS_SCATSYSTEM_H
