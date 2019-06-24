@@ -55,7 +55,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 #define QPMS_UNTESTED {\
 	static bool already_bitched = false; \
 	if (!already_bitched) {\
-		qpms_warn_at_flf(__FILE__,__LINE__,__func__,"Warning: untested function/feature!")\
+		qpms_warn_at_flf(__FILE__,__LINE__,__func__,"Warning: untested function/feature!");\
 		already_bitched = true;\
 	}\
 }

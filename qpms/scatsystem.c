@@ -15,6 +15,7 @@
 #include "translations.h"
 #include "tmatrices.h"
 #include <pthread.h>
+#include "kahansum.h"
 
 #ifdef QPMS_SCATSYSTEM_USE_OWN_BLAS
 #include "qpmsblas.h"
@@ -1460,23 +1461,34 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
   return target_packed;
 }
 
-#if 0
-ccart3_t qpms_scatsys_eval_field(const qpms_scatsys_t *ss, 
+#if 0 // must allow for complex kr in qpms_eval_uvswf
+ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss, 
     const complex double *cvf, const cart3_t where,
-    complex double omega, complex double refindex) {
+    const complex double k) {
   QPMS_UNTESTED;
-  ccart3_t result = {0,0,0};
-  ccart3_t result_kahanc = {0,0,0};
+  ccart3_t res = {0,0,0};
+  ccart3_t res_kc = {0,0,0}; // kahan sum compensation
 
   for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
-    const cart3_t particle_pos = ss->p[pi];
-    const csph_t kr = sph_cscale(...);
-    ...;
+    const qpms_vswf_set_spec_t *bspec = ss->tm[ss->p[pi].tmatrix_id]->spec;
+    const cart3_t particle_pos = ss->p[pi].pos;
+    const complex double *particle_cv = cvf + ss->fecv_pstarts[pi];
+
+    const csph_t kr = sph_cscale(k, cart2sph(
+          cart3_substract(where, particle_pos)));
+    const csphvec_t E_sph = qpms_eval_uvswf(bspec, particle_cv, kr, 
+        QPMS_HANKEL_PLUS);
+    const ccart3_t E_cart = csphvec2ccart_csph(E_sph, kr);
+    ckahanadd(&(res.x), &(res_kc.x), E_cart.x);
+    ckahanadd(&(res.y), &(res_kc.y), E_cart.y);
+    ckahanadd(&(res.z), &(res_kc.z), E_cart.z);
   }
+  return res;
 }
+#endif
 
-
-ccart3_t qpms_scatsys_eval_field_irrep(const qpms_scatsys_t *ss,
+#if 0
+ccart3_t qpms_scatsys_eval_E_irrep(const qpms_scatsys_t *ss,
    qpms_iri_t iri, const complex double *cvr, cart3_t where) {
   TODO;
 }
