@@ -66,7 +66,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_ENSURE(x, msg, ...) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
 
-#define QPMS_ASSERT(x) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, "Unexpected error. This is most certainly a bug.")
+#define QPMS_ASSERT(x) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, "Unexpected error. This is most certainly a bug.");}
 
 #define QPMS_NOT_IMPLEMENTED(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, \
 		"Not implemented:" msg, ##__VA_ARGS__)

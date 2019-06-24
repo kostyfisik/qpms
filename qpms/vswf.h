@@ -42,20 +42,22 @@ static inline ssize_t qpms_vswf_set_spec_find_uvswfi(const qpms_vswf_set_spec_t 
 	return -1;
 }
 
-/// NOT IMPLEMENTED Evaluates a set of VSWF basis functions at a given point.
+/// Evaluates a set of VSWF basis functions at a given point.
 /** The list of basis wave indices is specified in \a setspec; 
  *  \a setspec->norm must be set as well.
  */
 qpms_errno_t qpms_uvswf_fill(
-		csphvec_t *const target,
+		csphvec_t *const target, ///< Target array of size at least setspec->n.
 		const qpms_vswf_set_spec_t *setspec,
-		sph_t evaluation_point, qpms_bessel_t btyp);
+		csph_t kr, ///< Evaluation point.
+	       	qpms_bessel_t btyp);
 
 /// Evaluates field specified by SVWF coefficients at a given point.
 /** SVWF coefficients in \a coeffs must be ordered according to \a setspec->ilist.
  */
 csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
-		const complex double *coeffs, sph_t evaluation_point,
+		const complex double *coeffs, ///< SVWF coefficient vector of size setspec->n.
+		csph_t kr, ///< Evaluation point.
 		qpms_bessel_t btyp);
 
 /// Electric wave N.
@@ -86,7 +88,7 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *where, double *where_deriv, doub
 
 /// Evaluate the zeroth-degree longitudinal VSWF \f$ \mathbf{L}_0^0 \f$.
 csphvec_t qpms_vswf_L00(
-		sph_t kdrj, //< VSWF evaluation point.
+		csph_t kdrj, //< VSWF evaluation point.
 		qpms_bessel_t btyp,
 		qpms_normalisation_t norm);
 
@@ -106,9 +108,27 @@ qpms_errno_t qpms_vswf_fill(
 	qpms_l_t lMax, //< Maximum multipole degree to be calculated.
 	sph_t kdrj, //< VSWF evaluation point.
 	qpms_bessel_t btyp, qpms_normalisation_t norm);
+
 // Should give the same results: for consistency checks
 qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *resultL, csphvec_t *resultM, csphvec_t *resultN, qpms_l_t lMax, sph_t kdrj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
+
+/// Evaluate VSWFs at a given point from \a l = 1 up to a given degree \a lMax (complex \a kr version).
+/**
+ * The target arrays \a resultL, \a resultM, \a resultN have to be large enough to contain
+ * \a lMax * (\a lMax + 2) elements. If NULL is passed instead, the corresponding SVWF type
+ * is not evaluated.
+ * 
+ * Does not evaluate the zeroth-order wave \f$ \mathbf{L}_0^0 \f$. 
+ * If you need that, use qpms_vswf_L00().
+ */
+qpms_errno_t qpms_vswf_fill_csph(
+	csphvec_t *resultL, //< Target array for longitudinal VSWFs.
+       	csphvec_t *resultM, //< Target array for magnetic VSWFs.
+       	csphvec_t *resultN, //< Target array for electric VSWFs.
+	qpms_l_t lMax, //< Maximum multipole degree to be calculated.
+	csph_t kdrj, //< VSWF evaluation point.
+	qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
 		qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
@@ -127,6 +147,9 @@ csphvec_t qpms_eval_vswf(sph_t where,
 		complex double *longcoeffs, complex double *mgcoeffs, complex double *elcoeffs,
 		qpms_l_t lMax, qpms_bessel_t btyp, qpms_normalisation_t norm);
 
+csphvec_t qpms_eval_vswf_csph(csph_t where,
+		complex double *longcoeffs, complex double *mgcoeffs, complex double *elcoeffs,
+		qpms_l_t lMax, qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);//NI

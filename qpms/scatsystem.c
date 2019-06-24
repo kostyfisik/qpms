@@ -1461,7 +1461,6 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
   return target_packed;
 }
 
-#if 0 // must allow for complex kr in qpms_eval_uvswf
 ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss, 
     const complex double *cvf, const cart3_t where,
     const complex double k) {
@@ -1485,7 +1484,6 @@ ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss,
   }
   return res;
 }
-#endif
 
 #if 0
 ccart3_t qpms_scatsys_eval_E_irrep(const qpms_scatsys_t *ss,

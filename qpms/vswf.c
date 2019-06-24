@@ -7,6 +7,7 @@
 #include "qpms_specfunc.h"
 #include <stdlib.h>
 #include <string.h>
+#include "qpms_error.h"
 
 
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_init() {
@@ -150,18 +151,19 @@ void qpms_vswfset_sph_pfree(qpms_vswfset_sph_t *w) {
   free(w);
 }
 
-csphvec_t qpms_vswf_L00(sph_t kdrj, qpms_bessel_t btyp,
+csphvec_t qpms_vswf_L00(csph_t kr, qpms_bessel_t btyp,
     qpms_normalisation_t norm) { 
   QPMS_UNTESTED;
   // CHECKME Is it OK to ignore norm?? (Is L_0^0 the same for all conventions?)
   complex double bessel0;
   QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(btyp, 0, kr.r, &bessel0));
-  return {0.25 * M_2_SQRTPI * bessel0, 0, 0};
+  csphvec_t result = {0.25 * M_2_SQRTPI * bessel0, 0, 0};
+  return result;
 }
 
-qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget, 
+qpms_errno_t qpms_vswf_fill_csph(csphvec_t *const longtarget, 
     csphvec_t * const mgtarget, csphvec_t * const eltarget, qpms_l_t lMax,
-    sph_t kr, qpms_bessel_t btyp, qpms_normalisation_t norm) {
+    csph_t kr, qpms_bessel_t btyp, qpms_normalisation_t norm) {
   assert(lMax >= 1);
   complex double *bessel = malloc((lMax+1)*sizeof(complex double));
   if(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel)) abort();
@@ -212,6 +214,14 @@ qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget,
   free(bessel);
   qpms_pitau_free(pt);
   return QPMS_SUCCESS;
+}
+
+qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget, 
+    csphvec_t * const mgtarget, csphvec_t * const eltarget, qpms_l_t lMax,
+    sph_t kr, qpms_bessel_t btyp, qpms_normalisation_t norm) {
+  csph_t krc = {kr.r, kr.theta, kr.phi};
+  return qpms_vswf_fill_csph(longtarget, mgtarget, eltarget, lMax,
+      krc, btyp, norm);
 }
 
 // consistency check: this should give the same results as the above function (up to rounding errors)
@@ -385,7 +395,7 @@ qpms_errno_t qpms_planewave2vswf_fill_cart(cart3_t wavedir_cart /*allow complex 
       longcoeff, mgcoeff, elcoeff, lMax, norm);
 }
 
-csphvec_t qpms_eval_vswf(sph_t kr,
+csphvec_t qpms_eval_vswf_csph(csph_t kr,
     complex double * const lc, complex double *const mc, complex double *const ec,
     qpms_l_t lMax, qpms_bessel_t btyp, qpms_normalisation_t norm)
 {
@@ -398,7 +408,7 @@ csphvec_t qpms_eval_vswf(sph_t kr,
   if(lc) lset = malloc(nelem * sizeof(csphvec_t));
   if(mc) mset = malloc(nelem * sizeof(csphvec_t));
   if(ec) eset = malloc(nelem * sizeof(csphvec_t));
-  qpms_vswf_fill(lset, mset, eset, lMax, kr, btyp, norm);
+  qpms_vswf_fill_csph(lset, mset, eset, lMax, kr, btyp, norm);
   if(lc) for(qpms_y_t y = 0; y < nelem; ++y)
     csphvec_kahanadd(&lsum, &lcomp, csphvec_scale(lc[y], lset[y]));
   if(mc) for(qpms_y_t y = 0; y < nelem; ++y)
@@ -414,18 +424,24 @@ csphvec_t qpms_eval_vswf(sph_t kr,
   return esum;
 }
 
+csphvec_t qpms_eval_vswf(sph_t kr,
+    complex double * const lc, complex double *const mc, complex double *const ec,
+    qpms_l_t lMax, qpms_bessel_t btyp, qpms_normalisation_t norm) {
+  csph_t krc = {kr.r, kr.theta, kr.phi};
+  return qpms_eval_vswf_csph(krc, lc, mc, ec, lMax, btyp, norm);
+}
 
-csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
-    const complex double *coeffs, const sph_t kr,
+csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *bspec,
+    const complex double *coeffs, const csph_t kr,
     const qpms_bessel_t btyp) {
   QPMS_UNTESTED;
-  const qpms_l_t lMax = b->lMax;
+  const qpms_l_t lMax = bspec->lMax;
   complex double *cM = NULL, *cN = NULL, *cL = NULL, cL00 = 0;
-  if (b->lMax_L > 0)
+  if (bspec->lMax_L > 0)
     QPMS_CRASHING_CALLOC(cL, lMax, sizeof(complex double));
-  if (b->lMax_M > 0)
+  if (bspec->lMax_M > 0)
     QPMS_CRASHING_CALLOC(cM, lMax, sizeof(complex double));
-  if (b->lMax_N > 0)
+  if (bspec->lMax_N > 0)
     QPMS_CRASHING_CALLOC(cN, lMax, sizeof(complex double));
   for (size_t i = 0; i < bspec->n; ++i) {
     if (bspec->ilist[i] == 0) // L00, needs special care
@@ -452,10 +468,10 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
       }
     }
   }
-  csphvec_t result = qpms_eval_vswf(kr, cL, cM, cN, lMax, btyp, norm);
+  csphvec_t result = qpms_eval_vswf_csph(kr, cL, cM, cN, lMax, btyp, bspec->norm);
+  free(cM); free(cN); free(cL);
   if(cL00)
     result = csphvec_add(result,
-       scphvec_scale(cL00, qpms_vswf_L00(kr, btyp, norm)));
+       csphvec_scale(cL00, qpms_vswf_L00(kr, btyp, bspec->norm)));
   return result;
 }
-
