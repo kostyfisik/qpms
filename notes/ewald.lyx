@@ -76,7 +76,7 @@ theorems-starred
 \pdf_pdfusetitle true
 \papersize a5paper
 \use_geometry true
-\use_package amsmath 1
+\use_package amsmath 2
 \use_package amssymb 1
 \use_package cancel 1
 \use_package esint 1
