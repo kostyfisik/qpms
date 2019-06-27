@@ -253,6 +253,7 @@ typedef struct pol_t {
 } pol_t;
 
 /// Union type capable to contain various 1D, 2D and 3D coordinates.
+/** Usually combined with qpms_coord_system_t. */
 typedef union anycoord_point_t {
 	double z; ///< 1D cartesian coordinate.
 	cart3_t cart3;
@@ -270,6 +271,12 @@ typedef enum {
 	QPMS_COORDS_SPH = 256, ///< 3D spherical.
 	QPMS_COORDS_CART2 = 512, ///< 2D cartesian.
 	QPMS_COORDS_CART3 = 1024, ///< 3D cartesian.
+	/// Convenience bitmask (not a valid flag!).
+	QPMS_COORDS_BITRANGE = QPMS_COORDS_CART1
+		| QPMS_COORDS_POL
+		| QPMS_COORDS_SPH
+		| QPMS_COORDS_CART2
+		| QPMS_COORDS_CART3,
 } qpms_coord_system_t;
 
 /// Quaternion type.

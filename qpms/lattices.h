@@ -122,14 +122,14 @@ typedef enum PGenPointFlags {
 	PGEN_RCHANGED = 16,
 	PGEN_AT_Z = 4, ///< Set if the point(s) lie(s) at the z-axis (theta is either 0 or M_PI).
 	PGEN_AT_XY = 8, ///< Set if the point(s) lie(s) in the xy-plane (theta is M_PI2).
+	PGEN_METHOD_UNAVAILABLE = 2048, ///< Set if no suitable method exists (no point generated).
 	PGEN_DONE = 0, ///< Convenience identifier, not an actual flag.
 	PGEN_COORDS_CART1 = QPMS_COORDS_CART1,
 	PGEN_COORDS_CART2 = QPMS_COORDS_CART2,
 	PGEN_COORDS_CART3 = QPMS_COORDS_CART3,
 	PGEN_COORDS_POL = QPMS_COORDS_POL,
 	PGEN_COORDS_SPH = QPMS_COORDS_SPH,
-	PGEN_COORDS_BITRANGE = PGEN_COORDS_CART1 |
-		PGEN_COORDS_CART2 | PGEN_COORDS_CART3 | PGEN_COORDS_POL | PGEN_COORDS_SPH
+	PGEN_COORDS_BITRANGE = QPMS_COORDS_BITRANGE,
 } PGenPointFlags;
 
 
@@ -193,6 +193,9 @@ static const PGenCart3ReturnData PGenCart3DoneVal = {PGEN_DONE, {0,0,0}};
  * For generating up to N points in a single call, use the 
  * fetch() method. 
  *
+ * It is strongly recommended that at least the native-coordinate
+ * fetch method and the native-coordinate next method are implemented.
+ *
  * Usually, each generator uses internally one "native" coordinate
  * system (in lattice generators, this will typically be nD 
  * cartesian coordinates) in which the next() method gives its result.
@@ -218,7 +221,6 @@ typedef struct PGenClassInfo { // static PGenSph info
 	PGenCart2ReturnData (*next_cart2)(struct PGen *);
 	/// Generate a single 3D point in cartesian coordinates.
 	PGenCart3ReturnData (*next_cart3)(struct PGen *);
-#if 0 // must be implemented first.
 	/// Generate up to \a n points in the native coordinates.
 	PGenReturnDataBulk (*fetch)(struct PGen *, size_t, anycoord_point_t *);
 	/// Generate up to \a n 1D points.
@@ -228,14 +230,215 @@ typedef struct PGenClassInfo { // static PGenSph info
 	/// Generate up to \a n 3D points in spherical coordinates.
 	PGenReturnDataBulk (*fetch_sph)(struct PGen *, size_t, sph_t *);
 	/// Generate up to \a n 2D points in cartesian coordinates.
-	PGenReturnDataBulk (*fetch_cart2)(struct PGen *, size_t, cart2_t);
+	PGenReturnDataBulk (*fetch_cart2)(struct PGen *, size_t, cart2_t *);
 	/// Generate up to \a n 3D points in cartesian coordinates.
-	PGenReturnDataBulk (*fetch_cart3)(struct PGen *, size_t, cart3_t);
-#endif
+	PGenReturnDataBulk (*fetch_cart3)(struct PGen *, size_t, cart3_t *);
 	void (*destructor)(struct PGen *); // Destructor to be called by next() at iteration end, or by the caller if ending the generation prematurely
 } PGenClassInfo;
 
+/// Generate a point with any of the next-methods.
+static inline PGenReturnData PGen_next_nf(struct PGen *g) {
+	if (g->c->next)
+		return g->c->next(g);
+	else {
+		PGenReturnData r;
+		if (g->c->next_z) {
+			PGenZReturnData res = g->c->next_z(g);
+			r.flags = res.flags;
+			r.point.z = res.point_z;
+		} else if (g->c->next_pol) {
+			PGenPolReturnData res = g->c->next_pol(g);
+			r.flags = res.flags;
+			r.point.pol = res.point_pol;
+		} else if (g->c->next_cart2) {
+			PGenCart2ReturnData res = g->c->next_cart2(g);
+			r.flags = res.flags;
+			r.point.cart2 = res.point_cart2;
+		} else if (g->c->next_sph) {
+		        PGenSphReturnData res = g->c->next_sph(g);
+			r.flags = res.flags;
+			r.point.sph = res.point_sph;
+		} else if (g->c->next_cart3) {
+			PGenCart3ReturnData res = g->c->next_cart3(g);
+			r.flags = res.flags;
+			r.point.cart3 = res.point_cart3;
+		} else 
+			r.flags = PGEN_METHOD_UNAVAILABLE;
+		return r;
+	}
+}
 
+/// Generate multiple points with PGen in any coordinate system.
+// Ultimate ugliness
+static inline PGenReturnDataBulk PGen_fetch_any(struct PGen *g, size_t nmemb,
+	       	anycoord_point_t *target) {
+	if (g->c->fetch)
+		return g->c->fetch(g, nmemb, target);
+	else if (g->c->fetch_cart3) {
+		cart3_t *t2 = (cart3_t*) ((char *) target 
+			+ nmemb * (sizeof(anycoord_point_t)-sizeof(cart3_t)));
+		PGenReturnDataBulk res = g->c->fetch_cart3(g, nmemb, t2);
+		for (size_t i = 0; i < nmemb; ++i) 
+			target[i].cart3 = t2[i];
+		return res;
+	} else if (g->c->fetch_sph) {
+		sph_t *t2 = (sph_t*) ((char *) target 
+			+ nmemb * (sizeof(anycoord_point_t)-sizeof(sph_t)));
+		PGenReturnDataBulk res = g->c->fetch_sph(g, nmemb, t2);
+		for (size_t i = 0; i < nmemb; ++i) 
+			target[i].sph = t2[i];
+		return res;
+	} else if (g->c->fetch_cart2) {
+		cart2_t *t2 = (cart2_t*) ((char *) target 
+			+ nmemb * (sizeof(anycoord_point_t)-sizeof(cart2_t)));
+		PGenReturnDataBulk res = g->c->fetch_cart2(g, nmemb, t2);
+		for (size_t i = 0; i < nmemb; ++i) 
+			target[i].cart2 = t2[i];
+		return res;
+	} else if (g->c->fetch_pol) {
+		pol_t *t2 = (pol_t*) ((char *) target 
+			+ nmemb * (sizeof(anycoord_point_t)-sizeof(pol_t)));
+		PGenReturnDataBulk res = g->c->fetch_pol(g, nmemb, t2);
+		for (size_t i = 0; i < nmemb; ++i) 
+			target[i].pol = t2[i];
+		return res;
+	} else if (g->c->fetch_z) {
+		double *t2 = (double*) ((char *) target 
+			+ nmemb * (sizeof(anycoord_point_t)-sizeof(double)));
+		PGenReturnDataBulk res = g->c->fetch_z(g, nmemb, t2);
+		for (size_t i = 0; i < nmemb; ++i) 
+			target[i].z = t2[i];
+		return res;
+	} else {
+		// This is ridiculously inefficient
+		PGenReturnDataBulk res = {PGEN_NOTDONE, 0};
+		for (res.generated = 0; res.generated < nmemb;
+			       	++res.generated) {
+			PGenReturnData res1 = PGen_next_nf(g);
+			QPMS_ENSURE(!(res1.flags & PGEN_METHOD_UNAVAILABLE),
+				"No method found to generate points. The PGenClassInfo"
+				" %s is apparently broken.", g->c->name);
+			if (res1.flags & PGEN_NOTDONE) {
+				target[res.generated] = res1.point;
+				// The coordinate system generated by next() must be consistent:
+				assert(!res.generated || (res1.flags & PGEN_COORDS_BITRANGE == res.flags & PGEN_COORDS_BITRANGE));
+				res.flags |= res1.flags & PGEN_COORDS_BITRANGE;
+			} else {
+				res.flags &= ~PGEN_NOTDONE;
+				break;
+			}
+		}
+		// Do not guarantee anything for; low priority TODO
+		res.flags |= PGEN_NEWR & PGEN_RCHANGED;
+		return res;
+	}
+}
+
+/// Generate a point with any of the next-methods or fetch-methods.
+static inline PGenReturnData PGen_next(struct PGen *g) {
+	PGenReturnData res = PGen_next_nf(g);
+	if (!(res.flags & PGEN_METHOD_UNAVAILABLE))
+		return res;
+	else { // Slow if implementation is stupid, but short!
+		PGenReturnDataBulk resb = PGen_fetch_any(g, 1, &res.point);
+		if (resb.generated) 
+			// the | PGEN_NOTDONE may not be needed, but my brain melted
+			res.flags = resb.flags | PGEN_NOTDONE;
+		else
+			res.flags = PGEN_DONE;
+		return res;
+	}
+}
+
+/// Generate multiple points in spherical coordinates.
+static inline PGenReturnDataBulk PGen_fetch_sph(struct PGen *g, 
+		size_t nmemb, sph_t *target) {
+	if (g->c->fetch_sph)
+		return g->c->fetch_sph(g, nmemb, target);
+	else {
+		anycoord_point_t *tmp;
+		QPMS_CRASHING_MALLOC(tmp, sizeof(anycoord_point_t) * nmemb);
+		PGenReturnDataBulk res = PGen_fetch_any(g, nmemb, tmp);
+		anycoord_arr2something(target, QPMS_COORDS_SPH,
+				tmp, res.flags, res.generated);
+		free(tmp);
+		res.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+			| QPMS_COORDS_SPH;
+		return res;
+	}
+}
+
+/// Generate multiple points in 3D cartesian coordinates.
+static inline PGenReturnDataBulk PGen_fetch_cart3(struct PGen *g, 
+		size_t nmemb, cart3_t *target) {
+	if (g->c->fetch_cart3)
+		return g->c->fetch_cart3(g, nmemb, target);
+	else {
+		anycoord_point_t *tmp;
+		QPMS_CRASHING_MALLOC(tmp, sizeof(anycoord_point_t) * nmemb);
+		PGenReturnDataBulk res = PGen_fetch_any(g, nmemb, tmp);
+		anycoord_arr2something(target, QPMS_COORDS_CART3,
+				tmp, res.flags, res.generated);
+		free(tmp);
+		res.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+			| QPMS_COORDS_CART3;
+		return res;
+	}
+}
+
+/// Generate multiple points in polar coordinates.
+static inline PGenReturnDataBulk PGen_fetch_pol(struct PGen *g, 
+		size_t nmemb, pol_t *target) {
+	if (g->c->fetch_pol)
+		return g->c->fetch_pol(g, nmemb, target);
+	else {
+		anycoord_point_t *tmp;
+		QPMS_CRASHING_MALLOC(tmp, sizeof(anycoord_point_t) * nmemb);
+		PGenReturnDataBulk res = PGen_fetch_any(g, nmemb, tmp);
+		anycoord_arr2something(target, QPMS_COORDS_POL,
+				tmp, res.flags, res.generated);
+		free(tmp);
+		res.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+			| QPMS_COORDS_POL;
+		return res;
+	}
+}
+
+/// Generate multiple points in 2D cartesian coordinates.
+static inline PGenReturnDataBulk PGen_fetch_cart2(struct PGen *g, 
+		size_t nmemb, cart2_t *target) {
+	if (g->c->fetch_cart2)
+		return g->c->fetch_cart2(g, nmemb, target);
+	else {
+		anycoord_point_t *tmp;
+		QPMS_CRASHING_MALLOC(tmp, sizeof(anycoord_point_t) * nmemb);
+		PGenReturnDataBulk res = PGen_fetch_any(g, nmemb, tmp);
+		anycoord_arr2something(target, QPMS_COORDS_CART2,
+				tmp, res.flags, res.generated);
+		free(tmp);
+		res.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+			| QPMS_COORDS_CART2;
+		return res;
+	}
+}
+
+/// Generate multiple points in 1D cartesian coordinates.
+static inline PGenReturnDataBulk PGen_fetch_z(struct PGen *g, 
+		size_t nmemb, double *target) {
+	if (g->c->fetch_z)
+		return g->c->fetch_z(g, nmemb, target);
+	else {
+		anycoord_point_t *tmp;
+		QPMS_CRASHING_MALLOC(tmp, sizeof(anycoord_point_t) * nmemb);
+		PGenReturnDataBulk res = PGen_fetch_any(g, nmemb, tmp);
+		anycoord_arr2something(target, QPMS_COORDS_CART1,
+				tmp, res.flags, res.generated);
+		free(tmp);
+		res.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+			| QPMS_COORDS_CART1;
+		return res;
+	}
+}
 
 /// Deallocate and invalidate a PGen point generator.
 static inline void PGen_destroy(PGen *g) {

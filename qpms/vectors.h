@@ -480,6 +480,303 @@ static inline double anycoord2cart1(anycoord_point_t p, qpms_coord_system_t t) {
 				" to 1D not allowed.");
 }
 
+
+/// Coordinate conversion of point arrays (something to something).
+/** The dest and src arrays must not overlap */
+static inline void qpms_array_coord_transform(void *dest, qpms_coord_system_t tdest,
+		const void *src, qpms_coord_system_t tsrc, size_t nmemb) {
+	switch(tdest & QPMS_COORDS_BITRANGE) {
+		case QPMS_COORDS_SPH: 
+			{
+				sph_t *d = (sph_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH: {
+						const sph_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = s[i];
+						return; 
+					} break;
+					case QPMS_COORDS_CART3: {
+						const cart3_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart2sph(s[i]);
+						return; 
+					} break;
+					case QPMS_COORDS_POL: {
+						const pol_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = pol2sph_equator(s[i]);
+						return;
+					} break;
+					case QPMS_COORDS_CART2: {
+						const cart2_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart22sph(s[i]);
+						return;
+					} break;
+					case QPMS_COORDS_CART1: {
+						const double *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart12sph_zaxis(s[i]);
+						return; 
+					} break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_CART3:
+			{
+				cart3_t *d = (cart3_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH: {
+						const sph_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = sph2cart(s[i]);
+						return;
+					} break;
+					case QPMS_COORDS_CART3: {
+						const cart3_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = s[i];
+						return;
+					} break;
+					case QPMS_COORDS_POL: {
+						const pol_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = pol2cart3_equator(s[i]);
+						return; 
+					} break;
+					case QPMS_COORDS_CART2: {
+						const cart2_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart22cart3xy(s[i]);
+						return;
+					} break;
+					case QPMS_COORDS_CART1: {
+						const double *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart12cart3z(s[i]);
+						return; 
+					} break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_POL:
+			{
+				pol_t *d = (pol_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+					case QPMS_COORDS_CART3:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 2D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_POL: {
+						const pol_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = s[i];
+						return;
+					} break;
+					case QPMS_COORDS_CART2: {
+						const cart2_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart2pol(s[i]);
+						return;
+					} break;
+					case QPMS_COORDS_CART1:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 1D coordinates not allowed");
+						break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_CART2:
+			{
+				cart2_t *d = (cart2_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+					case QPMS_COORDS_CART3:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 2D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_POL: {
+						const pol_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = pol2cart(s[i]);
+						return; 
+					} break;
+					case QPMS_COORDS_CART2: {
+						const cart2_t *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = s[i];
+						return;
+					} break;
+					case QPMS_COORDS_CART1:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 1D coordinates not allowed");
+						break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_CART1:
+			{
+				double *d = (double *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+					case QPMS_COORDS_CART3:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 2D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_POL:
+					case QPMS_COORDS_CART2:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 1D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_CART1: {
+						const double *s = src;
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = s[i];
+						return; 
+					} break;
+				}
+				QPMS_WTF;
+			}
+			break;
+	}
+	QPMS_WTF;
+}
+
+
+/// Coordinate conversion of point arrays (anycoord_point_t to something).
+/** The dest and src arrays must not overlap */
+static inline void anycoord_arr2something(void *dest, qpms_coord_system_t tdest,
+		const anycoord_point_t *src, qpms_coord_system_t tsrc, size_t nmemb) {
+	switch(tdest & QPMS_COORDS_BITRANGE) {
+		case QPMS_COORDS_SPH: 
+			{
+				sph_t *d = (sph_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = src[i].sph;
+						return; break;
+					case QPMS_COORDS_CART3:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart2sph(src[i].cart3);
+						return; break;
+					case QPMS_COORDS_POL:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = pol2sph_equator(src[i].pol);
+						return; break;
+					case QPMS_COORDS_CART2:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart22sph(src[i].cart2);
+						return; break;
+					case QPMS_COORDS_CART1:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart12sph_zaxis(src[i].z);
+						return; break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_CART3:
+			{
+				cart3_t *d = (cart3_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = sph2cart(src[i].sph);
+						return; break;
+					case QPMS_COORDS_CART3:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = src[i].cart3;
+						return; break;
+					case QPMS_COORDS_POL:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = pol2cart3_equator(src[i].pol);
+						return; break;
+					case QPMS_COORDS_CART2:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart22cart3xy(src[i].cart2);
+						return; break;
+					case QPMS_COORDS_CART1:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart12cart3z(src[i].z);
+						return; break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_POL:
+			{
+				pol_t *d = (pol_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+					case QPMS_COORDS_CART3:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 2D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_POL:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = src[i].pol;
+						return; break;
+					case QPMS_COORDS_CART2:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = cart2pol(src[i].cart2);
+						return; break;
+					case QPMS_COORDS_CART1:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 1D coordinates not allowed");
+						break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_CART2:
+			{
+				cart2_t *d = (cart2_t *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+					case QPMS_COORDS_CART3:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 2D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_POL:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = pol2cart(src[i].pol);
+						return; break;
+					case QPMS_COORDS_CART2:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = src[i].cart2;
+						return; break;
+					case QPMS_COORDS_CART1:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 1D coordinates not allowed");
+						break;
+				}
+				QPMS_WTF;
+			}
+			break;
+		case QPMS_COORDS_CART1:
+			{
+				double *d = (double *) dest;
+				switch (tsrc & QPMS_COORDS_BITRANGE) {
+					case QPMS_COORDS_SPH:
+					case QPMS_COORDS_CART3:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 2D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_POL:
+					case QPMS_COORDS_CART2:
+						QPMS_PR_ERROR("Implicit conversion from 3D to 1D coordinates not allowed"); 
+						break;
+					case QPMS_COORDS_CART1:
+						for(size_t i = 0; i < nmemb; ++i)
+							d[i] = src[i].z;
+						return; break;
+				}
+				QPMS_WTF;
+			}
+			break;
+	}
+	QPMS_WTF;
+}
+
+
+
+
 typedef double matrix3d[3][3];
 typedef double matrix2d[2][2];
 typedef complex double cmatrix3d[3][3];

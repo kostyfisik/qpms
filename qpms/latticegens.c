@@ -155,6 +155,12 @@ const PGenClassInfo PGen_NAME = {
   PGen_NAME_next_sph,
   PGen_NAME_next_cart2,
   PGen_NAME_next_cart3,
+  PGen_NAME_fetch,
+  PGen_NAME_fetch_z,
+  PGen_NAME_fetch_pol,
+  PGen_NAME_fetch_sph,
+  PGen_NAME_fetch_cart2,
+  PGen_NAME_fetch_cart3,
   PGen_NAME_destructor
 };
 
@@ -232,6 +238,12 @@ const PGenClassInfo PGen_FromPoint2DArray = {
   PGen_FromPoint2DArray_next_sph,
   PGen_FromPoint2DArray_next_cart2,
   NULL,//PGen_FromPoint2DArray_next_cart3,
+  NULL,//PGen_FromPoint2DArray_fetch,
+  NULL,//PGen_FromPoint2DArray_fetch_z,
+  NULL,//PGen_FromPoint2DArray_fetch_pol,
+  NULL,//PGen_FromPoint2DArray_fetch_sph,
+  NULL,//PGen_FromPoint2DArray_fetch_cart2,
+  NULL,//PGen_FromPoint2DArray_fetch_cart3,
   PGen_FromPoint2DArray_destructor,
 };
 
@@ -400,6 +412,12 @@ const PGenClassInfo PGen_1D = {
   PGen_1D_next_sph,
   NULL,//PGen_1D_next_cart2,
   NULL,//PGen_1D_next_cart3,
+  NULL,//PGen_1D_fetch,
+  NULL,//PGen_1D_fetch_z,
+  NULL,//PGen_1D_fetch_pol,
+  NULL,//PGen_1D_fetch_sph,
+  NULL,//PGen_1D_fetch_cart2,
+  NULL,//PGen_1D_fetch_cart3,
   PGen_1D_destructor
 };
 
@@ -558,6 +576,12 @@ const PGenClassInfo PGen_xyWeb = {
   PGen_next_sph_from_cart2, //NULL,//PGen_xyWeb_next_sph,
   PGen_xyWeb_next_cart2, // native
   PGen_next_cart3_from_cart2xy, //NULL,//PGen_xyWeb_next_cart3,
+  NULL,//PGen_xyWeb_fetch,
+  NULL,//PGen_xyWeb_fetch_z,
+  NULL,//PGen_xyWeb_fetch_pol,
+  NULL,//PGen_xyWeb_fetch_sph,
+  NULL,//PGen_xyWeb_fetch_cart2,
+  NULL,//PGen_xyWeb_fetch_cart3,
   PGen_xyWeb_destructor
 };
 
