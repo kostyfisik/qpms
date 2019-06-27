@@ -48,7 +48,7 @@ static inline double factorial(const int n) {
 static inline complex double csq(complex double x) { return x * x; }
 static inline double sq(double x) { return x * x; }
 
-
+/// Metadata describing the normalisation conventions used in ewald32_constants_t.
 typedef enum {
   EWALD32_CONSTANTS_ORIG, // As in [1, (4,5)], NOT USED right now.
   EWALD32_CONSTANTS_AGNOSTIC /* Not depending on the spherical harmonic sign/normalisation

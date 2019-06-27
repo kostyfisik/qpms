@@ -1,3 +1,29 @@
+/*! \file ewald.h
+ * \brief Lattice sums of spherical waves.
+ *
+ * Implementation of two-dimensional lattice sum in three dimensions
+ * according to:
+ * - [1] C.M. Linton, I. Thompson
+ *     Journal of Computational Physics 228 (2009) 1815–1829
+ * - [2] C.M.Linton
+ *     SIAM Review Vol 52, No. 4, pp. 630–674
+ *
+ * N.B.!!! currently, the long-range parts are calculated 
+ * not according to [1,(4.5)], but rather
+ * according to the spherical-harmonic-normalisation-independent 
+ * formulation in my notes notes/ewald.lyx.
+ * Both parts of lattice sums are then calculated with 
+ * the \f$ P_n^{|m|} e^{im\phi} \f$
+ * (N.B. or \f$ P_n^{|m|} e^{imf} (-1)^m \f$ for negative m) 
+ * substituted in place  of  \f$ Y_n^m \f$ 
+ * (this is quite a weird normalisation especially 
+ * for negative \f$ |m| \f$, but it is consistent
+ * with the current implementation of the translation coefficients in
+ * @ref translations.c;
+ * in the long run, it might make more sense to replace it everywhere with normalised
+ * Legendre polynomials).
+ */
+
 #ifndef EWALD_H
 #define EWALD_H
 #include <gsl/gsl_sf_result.h>
@@ -8,28 +34,6 @@
 #include <complex.h>
 #include "qpms_types.h"
 #include "lattices.h"
-
-/* 
- * Implementation of two-dimensional lattice sum in three dimensions
- * according to:
- * [1] C.M. Linton, I. Thompson
- *     Journal of Computational Physics 228 (2009) 1815–1829
- * [2] C.M.Linton
- *     SIAM Review Vol 52, No. 4, pp. 630–674
- */
-
-/*
- * N.B.!!! currently, the long-range parts are calculated not according to [1,(4.5)], but rather
- * according to the spherical-harmonic-normalisation-independent formulation in my notes
- * notes/ewald.lyx.
- * Both parts of lattice sums are then calculated with the P_n^|m| e^imf substituted in place
- *                                             // (N.B. or P_n^|m| e^imf (-1)^m for negative m) 
- * of Y_n^m (this is quite a weird normalisation especially for negative |m|, but it is consistent
- * with the current implementation of the translation coefficients in translations.c;
- * in the long run, it might make more sense to replace it everywhere with normalised
- * Legendre polynomials).
- */
-
 
 // Use this handler to ignore underflows of incomplete gamma.
 gsl_error_handler_t IgnoreUnderflowsGSLErrorHandler;
@@ -117,20 +121,20 @@ static inline complex double clilgamma(complex double z) {
  
 
 
-// Incomplete Gamma function as series
-// DLMF 8.7.3 (latter expression) for complex second argument
+/// Incomplete Gamma function as series.
+/** DLMF 8.7.3 (latter expression) for complex second argument */
 int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
 
-// Incomplete gamma for complex second argument
-// if x is (almost) real, it just uses gsl_sf_gamma_inc_e
+/// Incomplete gamma for complex second argument.
+/** if x is (almost) real, it just uses gsl_sf_gamma_inc_e(). */
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result);
 
-// Exponential integral for complex second argument
-// If x is (almost) positive real, it just uses gsl_sf_expint_En_e
+/// Exponential integral for complex second argument.
+/** If x is (almost) positive real, it just uses gsl_sf_expint_En_e(). */
 int complex_expint_n_e(int n, complex double x, qpms_csf_result *result);
 
 
-// hypergeometric 2F2, used to calculate some errors
+/// Hypergeometric 2F2, used to calculate some errors.
 int hyperg_2F2_series(const double a, const double b, const double c, const double d,
     const double x, gsl_sf_result *result);
 
