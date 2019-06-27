@@ -450,39 +450,85 @@ static inline void PGen_destroy(PGen *g) {
 static inline PGenZReturnData PGen_next_z(PGen *g) {
 	if (g->c->next_z)
 		return g->c->next_z(g);
-	else abort();
+	else { // Super-slow generic fallback.
+		PGenReturnData res = PGen_next(g);
+		if (res.flags & PGEN_NOTDONE) {
+			PGenZReturnData r;
+			r.point_z = anycoord2cart1(res.point, res.flags);
+			r.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+				| QPMS_COORDS_CART1;
+			return r;
+		} else 
+			return PGenZDoneVal;
+	}
 }
 
 /// Generate a point in a 3D real space (spherical coordinates).
 static inline PGenSphReturnData PGen_next_sph(PGen *g) {
-	// TODO maybe some asserts around here
 	if (g->c->next_sph) 
 		return g->c->next_sph(g);
-	else abort(); // the current point generator does not support this type of output
+	else { // Super-slow generic fallback.
+		PGenReturnData res = PGen_next(g);
+		if (res.flags & PGEN_NOTDONE) {
+			PGenSphReturnData r;
+			r.point_sph = anycoord2sph(res.point, res.flags);
+			r.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+				| QPMS_COORDS_SPH;
+			return r;
+		} else 
+			return PGenSphDoneVal;
+	}
 }
 
 /// Generate a point in a 2D real space (polar coordinates).
 static inline PGenPolReturnData PGen_next_pol(PGen *g) {
-	// TODO maybe some asserts around here
 	if (g->c->next_pol) 
 		return g->c->next_pol(g);
-	else abort(); // the current point generator does not support this type of output
+	else { // Super-slow generic fallback.
+		PGenReturnData res = PGen_next(g);
+		if (res.flags & PGEN_NOTDONE) {
+			PGenPolReturnData r;
+			r.point_pol = anycoord2pol(res.point, res.flags);
+			r.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+				| QPMS_COORDS_POL;
+			return r;
+		} else 
+			return PGenPolDoneVal;
+	}
 }
 
 /// Generate a point in a 3D real space (cartesian coordinates).
 static inline PGenCart3ReturnData PGen_next_cart3(PGen *g) {
-	// TODO maybe some asserts around here
 	if (g->c->next_cart3) 
 		return g->c->next_cart3(g);
-	else abort(); // the current point generator does not support this type of output
+	else { // Super-slow generic fallback.
+		PGenReturnData res = PGen_next(g);
+		if (res.flags & PGEN_NOTDONE) {
+			PGenCart3ReturnData r;
+			r.point_cart3 = anycoord2cart3(res.point, res.flags);
+			r.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+				| QPMS_COORDS_CART3;
+			return r;
+		} else 
+			return PGenCart3DoneVal;
+	}
 }
 
 /// Ǧenerate a point in a 2D real space (cartesian coordinates).
 static inline PGenCart2ReturnData PGen_next_cart2(PGen *g) {
-	// TODO maybe some asserts around here
 	if (g->c->next_cart2) 
 		return g->c->next_cart2(g);
-	else abort(); // the current point generator does not support this type of output
+	else { // Super-slow generic fallback.
+		PGenReturnData res = PGen_next(g);
+		if (res.flags & PGEN_NOTDONE) {
+			PGenCart2ReturnData r;
+			r.point_cart2 = anycoord2cart2(res.point, res.flags);
+			r.flags = (res.flags & ~QPMS_COORDS_BITRANGE)
+				| QPMS_COORDS_CART2;
+			return r;
+		} else 
+			return PGenCart2DoneVal;
+	}
 }
 
 #if 0
