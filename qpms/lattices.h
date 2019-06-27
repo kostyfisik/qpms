@@ -241,7 +241,11 @@ typedef struct PGenClassInfo { // static PGenSph info
 	PGenReturnDataBulk (*fetch_cart2)(struct PGen *, size_t, cart2_t *);
 	/// Generate up to \a n 3D points in cartesian coordinates.
 	PGenReturnDataBulk (*fetch_cart3)(struct PGen *, size_t, cart3_t *);
-	void (*destructor)(struct PGen *); // Destructor to be called by next() at iteration end, or by the caller if ending the generation prematurely
+	/// Destructor.
+	/** To be called by next() at iteration end, or by the caller 
+	 * if ending the generation prematurely
+	 */
+	void (*destructor)(struct PGen *); 
 } PGenClassInfo;
 
 /// Generate a point with any of the next-methods.
