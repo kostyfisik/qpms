@@ -10,9 +10,15 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdlib.h>
+#ifndef M_SQRT3
 #define M_SQRT3 1.7320508075688772935274463415058724
+#endif
+#ifndef M_SQRT3_2
 #define M_SQRT3_2 (M_SQRT3/2)
+#endif
+#ifndef M_1_SQRT3
 #define M_1_SQRT3 0.57735026918962576450914878050195746
+#endif
 
 
 
@@ -109,17 +115,19 @@ typedef enum PGenPointFlags {
 	 *  should have de-allocated all internal memory.
 	 */
 	PGEN_NOTDONE = 2, 
-        /** Set if the r-coordinate is different than in the 
+        /** Set if the r-coordinate is not different than in the 
 	 *  previous generated point (so radial parts of the
 	 *  calculation have to be redone).
+	 *  Optional.
 	 */
-	PGEN_NEWR = 1, 
-	/** Set if the r-coordinate has changed between the
+	PGEN_OLD_R = 1, 
+	/** Set if the r-coordinate has not changed between the
 	 *  first and the last point generated in the current
 	 *  call.
 	 *  Only for the bulk generator methods.
+	 *  Optional.
 	 */
-	PGEN_RCHANGED = 16,
+	PGEN_SINGLE_R = 16,
 	PGEN_AT_Z = 4, ///< Set if the point(s) lie(s) at the z-axis (theta is either 0 or M_PI).
 	PGEN_AT_XY = 8, ///< Set if the point(s) lie(s) in the xy-plane (theta is M_PI2).
 	PGEN_METHOD_UNAVAILABLE = 2048, ///< Set if no suitable method exists (no point generated).
@@ -329,7 +337,7 @@ static inline PGenReturnDataBulk PGen_fetch_any(struct PGen *g, size_t nmemb,
 			}
 		}
 		// Do not guarantee anything for; low priority TODO
-		res.flags |= PGEN_NEWR & PGEN_RCHANGED;
+		res.flags &= ~(PGEN_OLD_R & PGEN_SINGLE_R);
 		return res;
 	}
 }

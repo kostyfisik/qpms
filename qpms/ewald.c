@@ -260,7 +260,7 @@ int ewald3_21_xy_sigma_long (
 
     const complex double phasefac = cexp(I*cart3_dot(K_pq_cart,particle_shift)); // POINT-DEPENDENT (PFC) // !!!CHECKSIGN!!!
 
-    const bool new_rbeta_pq = (!pgen_generates_shifted_points) || (pgen_retdata.flags & PGEN_NEWR);
+    const bool new_rbeta_pq = (!pgen_generates_shifted_points) || (pgen_retdata.flags & !PGEN_OLD_R);
     if (!new_rbeta_pq) assert(rbeta_pq == rbeta_pq_prev);
 
 
@@ -628,7 +628,7 @@ int ewald3_sigma_short(
     const double r_pq_shifted = Rpq_shifted_sph.r;
 
     // if the radius is the same as in previous cycle, most of the calculations can be recycled
-    const bool new_r_pq_shifted = (!pgen_generates_shifted_points) || (pgen_retdata.flags & PGEN_NEWR);
+    const bool new_r_pq_shifted = (!pgen_generates_shifted_points) || (pgen_retdata.flags & !PGEN_OLD_R);
     if (!new_r_pq_shifted) assert(r_pq_shifted_prev == r_pq_shifted);
 
     const complex double e_beta_Rpq = cexp(I*cart3_dot(beta, Rpq_shifted_cart)); // POINT-DEPENDENT

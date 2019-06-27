@@ -201,7 +201,7 @@ PGenCart2ReturnData PGen_FromPoint2DArray_next_cart2(PGen *g) {
     if (s->currentIndex < s->len) {
       cart2_t thePoint = s->base[s->currentIndex];
       ++(s->currentIndex);
-      PGenCart2ReturnData retval = {(PGEN_NOTDONE | PGEN_AT_XY | PGEN_NEWR | PGEN_COORDS_CART2), thePoint};
+      PGenCart2ReturnData retval = {(PGEN_NOTDONE | PGEN_AT_XY | PGEN_COORDS_CART2), thePoint};
       return retval;
     } else {
       PGen_destroy(g);
@@ -219,7 +219,7 @@ PGenSphReturnData PGen_FromPoint2DArray_next_sph(PGen *g) {
     if (s->currentIndex < s->len) {
       sph_t thePoint = cart22sph(s->base[s->currentIndex]);
       ++(s->currentIndex);
-      PGenSphReturnData retval = {(PGEN_AT_XY | PGEN_NEWR | PGEN_COORDS_SPH), thePoint};
+      PGenSphReturnData retval = {(PGEN_AT_XY | PGEN_COORDS_SPH), thePoint};
       return retval;
     } else {
       PGen_destroy(g);
@@ -357,8 +357,7 @@ PGenZReturnData PGen_1D_next_z(PGen *g) {
         abort(); // invalid value
   }
   if (!theEnd) {
-      const PGenZReturnData retval = {PGEN_NOTDONE | PGEN_NEWR | PGEN_AT_Z,
-        zval};
+      const PGenZReturnData retval = {PGEN_NOTDONE | PGEN_AT_Z, zval};
       return retval;
   } else {
       PGen_destroy(g);
@@ -392,7 +391,7 @@ PGenSphReturnData PGen_1D_next_sph(PGen *g) {
         abort(); // invalid value
   }
   if (!theEnd) {
-      const PGenSphReturnData retval = {PGEN_NOTDONE | PGEN_NEWR | PGEN_AT_Z | PGEN_COORDS_SPH,
+      const PGenSphReturnData retval = {PGEN_NOTDONE | PGEN_AT_Z | PGEN_COORDS_SPH,
         {r, zval >= 0 ? 0 : M_PI, 0}};
       return retval;
   } else {
@@ -556,7 +555,7 @@ PGenCart2ReturnData PGen_xyWeb_next_cart2(PGen *g) {
           s->j = 0;
         }
       }
-      PGenCart2ReturnData retval = {(PGEN_NOTDONE | PGEN_AT_XY | PGEN_NEWR | PGEN_COORDS_CART2), thePoint};
+      PGenCart2ReturnData retval = {(PGEN_NOTDONE | PGEN_AT_XY | PGEN_COORDS_CART2), thePoint};
       return retval;
     } else {
       PGen_destroy(g);
