@@ -27,7 +27,7 @@
 \paperfontsize default
 \spacing single
 \use_hyperref true
-\pdf_title "Sähköpajan päiväkirja"
+\pdf_title "Multiple-scattering T-matrix approach in nanophotonics"
 \pdf_author "Marek Nečada"
 \pdf_bookmarks true
 \pdf_bookmarksnumbered false
@@ -40,7 +40,7 @@
 \pdf_pdfusetitle true
 \papersize default
 \use_geometry false
-\use_package amsmath 1
+\use_package amsmath 2
 \use_package amssymb 1
 \use_package cancel 1
 \use_package esint 1
@@ -79,6 +79,135 @@
 \end_header
 
 \begin_body
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\uoft}[1]{\mathfrak{F}#1}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\uaft}[1]{\mathfrak{\mathbb{F}}#1}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\usht}[2]{\mathbb{S}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\bsht}[2]{\mathrm{S}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\sgn}{\operatorname{sgn}}
+{\mathrm{sgn}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\pht}[2]{\mathfrak{\mathbb{H}}_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\basis}[1]{\mathfrak{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\dc}[1]{Ш_{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rec}[1]{#1^{-1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\recb}[1]{#1^{\widehat{-1}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ints}{\mathbb{Z}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\nats}{\mathbb{N}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\reals}{\mathbb{R}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ush}[2]{Y_{#1,#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\hgfr}{\mathbf{F}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\hgf}{F}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ghgf}[2]{\mbox{}_{#1}F_{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ghgfr}[2]{\mbox{}_{#1}\mathbf{F}_{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ph}{\mathrm{ph}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\kor}[1]{\underline{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\koru}[1]{\utilde{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\swv}{\mathscr{H}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\expint}{\mathrm{E}}
+\end_inset
+
+
+\end_layout
 
 \begin_layout Title
 Some nice title about multiple scattering approach to photonic nanoparticle
@@ -276,6 +405,46 @@ My implementation.
 
 \begin_layout Itemize
 Maybe put the numerical results separately in the end.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "intro.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "finite.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "infinite.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "examples.lyx"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
