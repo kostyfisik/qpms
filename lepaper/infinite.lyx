@@ -83,5 +83,409 @@
 Infinite periodic systems
 \end_layout
 
+\begin_layout Subsection
+
+\lang english
+Formulation of the problem
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Assume a system of compact EM scatterers in otherwise homogeneous and isotropic
+ medium, and assume that the system, i.e.
+ both the medium and the scatterers, have linear response.
+ A scattering problem in such system can be written as
+\begin_inset Formula 
+\[
+A_{α}=T_{α}P_{α}=T_{α}(\sum_{β}S_{α\leftarrowβ}A_{β}+P_{0α})
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $T_{α}$
+\end_inset
+
+ is the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix for scatterer α, 
+\begin_inset Formula $A_{α}$
+\end_inset
+
+ is its vector of the scattered wave expansion coefficient (the multipole
+ indices are not explicitely indicated here) and 
+\begin_inset Formula $P_{α}$
+\end_inset
+
+ is the local expansion of the incoming sources.
+ 
+\begin_inset Formula $S_{α\leftarrowβ}$
+\end_inset
+
+ is ...
+ and ...
+ is ...
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+...
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\[
+\sum_{β}(\delta_{αβ}-T_{α}S_{α\leftarrowβ})A_{β}=T_{α}P_{0α}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Now suppose that the scatterers constitute an infinite lattice
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\[
+\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{\vect aα}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=T_{\vect aα}P_{0\vect aα}.
+\]
+
+\end_inset
+
+Due to the periodicity, we can write 
+\begin_inset Formula $S_{\vect aα\leftarrow\vect bβ}=S_{α\leftarrowβ}(\vect b-\vect a)$
+\end_inset
+
+ and 
+\begin_inset Formula $T_{\vect aα}=T_{\alpha}$
+\end_inset
+
+.
+ In order to find lattice modes, we search for solutions with zero RHS
+\begin_inset Formula 
+\[
+\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=0
+\]
+
+\end_inset
+
+and we assume periodic solution 
+\begin_inset Formula $A_{\vect b\beta}(\vect k)=A_{\vect a\beta}e^{i\vect k\cdot\vect r_{\vect b-\vect a}}$
+\end_inset
+
+, yielding
+\begin_inset Formula 
+\begin{eqnarray*}
+\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect a\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b-\vect a}} & = & 0,\\
+\sum_{\vect bβ}(\delta_{\vect{0b}}\delta_{αβ}-T_{α}S_{\vect 0α\leftarrow\vect bβ})A_{\vect 0\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b}} & = & 0,\\
+\sum_{β}(\delta_{αβ}-T_{α}\underbrace{\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}}_{W_{\alpha\beta}(\vect k)})A_{\vect 0\beta}\left(\vect k\right) & = & 0,\\
+A_{\vect 0\alpha}\left(\vect k\right)-T_{α}\sum_{\beta}W_{\alpha\beta}\left(\vect k\right)A_{\vect 0\beta}\left(\vect k\right) & = & 0.
+\end{eqnarray*}
+
+\end_inset
+
+Therefore, in order to solve the modes, we need to compute the 
+\begin_inset Quotes eld
+\end_inset
+
+lattice Fourier transform
+\begin_inset Quotes erd
+\end_inset
+
+ of the translation operator,
+\begin_inset Formula 
+\begin{equation}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}.\label{eq:W definition}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+
+\lang english
+Computing the Fourier sum of the translation operator
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+The problem evaluating 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+
+\end_inset
+
+ is the asymptotic behaviour of the translation operator, 
+\begin_inset Formula $S_{\vect 0α\leftarrow\vect bβ}\sim\left|\vect r_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect r_{\vect b}\right|}$
+\end_inset
+
+ that makes the convergence of the sum quite problematic for any 
+\begin_inset Formula $d>1$
+\end_inset
+
+-dimensional lattice.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+Note that 
+\begin_inset Formula $d$
+\end_inset
+
+ here is dimensionality of the lattice, not the space it lies in, which
+ I for certain reasons assume to be three.
+ (TODO few notes on integration and reciprocal lattices in some appendix)
+\end_layout
+
+\end_inset
+
+ In electrostatics, one can solve this problem with Ewald summation.
+ Its basic idea is that if what asymptoticaly decays poorly in the direct
+ space, will perhaps decay fast in the Fourier space.
+ I use the same idea here, but everything will be somehow harder than in
+ electrostatics.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Let us re-express the sum in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+
+\end_inset
+
+ in terms of integral with a delta comb
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\begin{equation}
+W_{\alpha\beta}(\vect k)=\int\ud^{d}\vect r\dc{\basis u}(\vect r)S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})e^{i\vect k\cdot\vect r}.\label{eq:W integral}
+\end{equation}
+
+\end_inset
+
+The translation operator 
+\begin_inset Formula $S$
+\end_inset
+
+ is now a function defined in the whole 3d space; 
+\begin_inset Formula $\vect r_{\alpha},\vect r_{\beta}$
+\end_inset
+
+ are the displacements of scatterers 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta$
+\end_inset
+
+ in a unit cell.
+ The arrow notation 
+\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})$
+\end_inset
+
+ means 
+\begin_inset Quotes eld
+\end_inset
+
+translation operator for spherical waves originating in 
+\begin_inset Formula $\vect r+\vect r_{\beta}$
+\end_inset
+
+ evaluated in 
+\begin_inset Formula $\vect r_{\alpha}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ and obviously 
+\begin_inset Formula $S$
+\end_inset
+
+ is in fact a function of a single 3d argument, 
+\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})=S(\vect 0\leftarrow\vect r+\vect r_{\beta}-\vect r_{\alpha})=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha})$
+\end_inset
+
+.
+ Expression 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W integral"
+
+\end_inset
+
+ can be rewritten as
+\begin_inset Formula 
+\[
+W_{\alpha\beta}(\vect k)=\left(2\pi\right)^{\frac{d}{2}}\uaft{(\dc{\basis u}S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0))\left(\vect k\right)}
+\]
+
+\end_inset
+
+where changed the sign of 
+\begin_inset Formula $\vect r/\vect{\bullet}$
+\end_inset
+
+ has been swapped under integration, utilising evenness of 
+\begin_inset Formula $\dc{\basis u}$
+\end_inset
+
+.
+ Fourier transform of product is convolution of Fourier transforms, so (using
+ formula 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Dirac comb uaFt"
+
+\end_inset
+
+ for the Fourier transform of Dirac comb)
+\begin_inset Formula 
+\begin{eqnarray}
+W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\nonumber \\
+ & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\recb{\basis u}}^{(d)}\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)\left(\vect k\right)\nonumber \\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W sum in reciprocal space}\\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}e^{i\left(\vect k-\vect K\right)\cdot\left(-\vect r_{\beta}+\vect r_{\alpha}\right)}\left(\uaft{S(\vect{\bullet}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+Factor 
+\begin_inset Formula $\left(2\pi\right)^{\frac{d}{2}}$
+\end_inset
+
+ cancels out with the 
+\begin_inset Formula $\left(2\pi\right)^{-\frac{d}{2}}$
+\end_inset
+
+ factor appearing in the convolution/product formula in the unitary angular
+ momentum convention.
+ 
+\end_layout
+
+\end_inset
+
+As such, this is not extremely helpful because the the 
+\emph on
+whole
+\emph default
+ translation operator 
+\begin_inset Formula $S$
+\end_inset
+
+ has singularities in origin, hence its Fourier transform 
+\begin_inset Formula $\uaft S$
+\end_inset
+
+ will decay poorly.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+However, Fourier transform is linear, so we can in principle separate 
+\begin_inset Formula $S$
+\end_inset
+
+ in two parts, 
+\begin_inset Formula $S=S^{\textup{L}}+S^{\textup{S}}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $S^{\textup{S}}$
+\end_inset
+
+ is a short-range part that decays sufficiently fast with distance so that
+ its direct-space lattice sum converges well; 
+\begin_inset Formula $S^{\textup{S}}$
+\end_inset
+
+ must as well contain all the singularities of 
+\begin_inset Formula $S$
+\end_inset
+
+ in the origin.
+ The other part, 
+\begin_inset Formula $S^{\textup{L}}$
+\end_inset
+
+, will retain all the slowly decaying terms of 
+\begin_inset Formula $S$
+\end_inset
+
+ but it also has to be smooth enough in the origin, so that its Fourier
+ transform 
+\begin_inset Formula $\uaft{S^{\textup{L}}}$
+\end_inset
+
+ decays fast enough.
+ (The same idea lies behind the Ewald summation in electrostatics.) Using
+ the linearity of Fourier transform and formulae 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+
+\end_inset
+
+ and legendre
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W sum in reciprocal space"
+
+\end_inset
+
+, the operator 
+\begin_inset Formula $W_{\alpha\beta}$
+\end_inset
+
+ can then be re-expressed as
+\begin_inset Formula 
+\begin{eqnarray}
+W_{\alpha\beta}\left(\vect k\right) & = & W_{\alpha\beta}^{\textup{S}}\left(\vect k\right)+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right)\nonumber \\
+W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect 0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
+\end{eqnarray}
+
+\end_inset
+
+where both sums should converge nicely.
+\end_layout
+
 \end_body
 \end_document

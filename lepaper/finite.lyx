@@ -83,5 +83,189 @@
 Finite systems
 \end_layout
 
+\begin_layout Itemize
+
+\lang english
+motivation (classes of problems that this can solve: response to external
+ radiation, resonances, ...)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\lang english
+theory
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\lang english
+T-matrix definition, basics
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\lang english
+How to get it?
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\lang english
+translation operators (TODO think about how explicit this should be, but
+ I guess it might be useful to write them to write them explicitly (but
+ in the shortest possible form) in the normalisation used in my program)
+\end_layout
+
+\begin_layout Itemize
+
+\lang english
+employing point group symmetries and decomposing the problem to decrease
+ the computational complexity (maybe separately)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Subsection
+
+\lang english
+Motivation
+\end_layout
+
+\begin_layout Subsection
+
+\lang english
+Single-particle scattering
+\end_layout
+
+\begin_layout Standard
+In order to define the basic concepts, let us first consider the case of
+ EM radiation scattered by a single particle.
+ We assume that the scatterer lies inside a closed sphere 
+\begin_inset Formula $\particle$
+\end_inset
+
+, the space outside this volume 
+\begin_inset Formula $\medium$
+\end_inset
+
+ is filled with an homogeneous isotropic medium with relative electric permittiv
+ity 
+\begin_inset Formula $\epsilon(\vect r,\omega)=\epsbg(\omega)$
+\end_inset
+
+ and magnetic permeability 
+\begin_inset Formula $\mu(\vect r,\omega)=\mubg(\omega)$
+\end_inset
+
+, and that the whole system is linear, i.e.
+ the material properties of neither the medium nor the scatterer depend
+ on field intensities.
+ Under these assumptions, the EM fields in 
+\begin_inset Formula $\medium$
+\end_inset
+
+ must satisfy the homogeneous vector Helmholtz equation 
+\begin_inset Formula $\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+todo define 
+\begin_inset Formula $\Psi$
+\end_inset
+
+, mention transversality
+\end_layout
+
+\end_inset
+
+ with 
+\begin_inset Formula $k=TODO$
+\end_inset
+
+ [TODO REF Jackson?].
+ Its solutions (TODO under which conditions? What vector space do the SVWFs
+ actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Throughout this text, we will use the same normalisation conventions as
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kristensson_scattering_2016"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+
+\lang english
+Spherical waves
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+TODO small note about cartesian multipoles, anapoles etc.
+ (There should be some comparing paper that the Russians at META 2018 mentioned.)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+
+\lang english
+T-matrix definition
+\end_layout
+
+\begin_layout Subsubsection
+Absorbed power
+\end_layout
+
+\begin_layout Subsubsection
+
+\lang english
+T-matrix compactness, cutoff validity
+\end_layout
+
+\begin_layout Subsection
+
+\lang english
+Multiple scattering
+\end_layout
+
+\begin_layout Subsubsection
+
+\lang english
+Translation operator
+\end_layout
+
+\begin_layout Subsubsection
+
+\lang english
+Numerical complexity, comparison to other methods
+\end_layout
+
 \end_body
 \end_document

@@ -207,6 +207,31 @@
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\thespace}{\reals^{3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\particle}{\mathrm{\Omega}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\medium}{\thespace\backslash\particle}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\epsbg}{\mathrm{\epsilon_{b}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\mubg}{\mathrm{\mu_{b}}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
@@ -441,6 +466,17 @@ filename "infinite.lyx"
 \begin_inset CommandInset include
 LatexCommand include
 filename "examples.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "T-matrix paper"
+options "plain"
 
 \end_inset
 
