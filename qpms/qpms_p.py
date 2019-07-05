@@ -805,9 +805,7 @@ def processWfiles_sameKs(freqfilenames, destfilename, nparticles = 2, lMax = Non
     
     #Check the first file to get the "constants" set
     filename = freqfilenames[0]
-    data = np.loadtxt(filename)
-    if len(data.shape) == 1:
-        data = np.reshape(data, (1,) + data.shape)
+    data = np.loadtxt(filename, ndmin = 2)
     nk_muster = data.shape[0]
     Wdata = data[...,5:]
  
@@ -835,9 +833,7 @@ def processWfiles_sameKs(freqfilenames, destfilename, nparticles = 2, lMax = Non
     succread = 0
     
     for filename in freqfilenames:
-        data = np.loadtxt(filename)
-        if len(data.shape) == 1:
-            data = np.reshape(data, (1,) + data.shape)
+        data = np.loadtxt(filename, ndmin=2)
         if data.shape[0] != nk_muster:
             raise ValueError("%s contains different number of lines than %s"%(filename, freqfilenames[0]))
         ks_current = np.array(data[:,3:5])
