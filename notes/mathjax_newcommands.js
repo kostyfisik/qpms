@@ -31,6 +31,7 @@ MathJax.Hub.Config({
 	    wcetout: "{a}", // outgoing electric wave coeff
 
 	    // Reid's VSWFs
+	    wfr: "\\mathbf{\\mathcal{W}}",
             wfrreg: "\\mathbf{\\mathcal{W}}^{\\mathrm{reg}}", // regular wave
             wfrout: "\\mathbf{\\mathcal{W}}^{\\mathrm{out}}", // outgoing wave
             wcrreg: "C^\\mathrm{inc}", // regular wave coeff
