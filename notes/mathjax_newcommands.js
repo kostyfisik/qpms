@@ -5,6 +5,7 @@ MathJax.Hub.Config({
             abs: ["{\\left|{#1}\\right|}",1],
             ud: "{\\mathrm{d}}",
 	    pr: ["{\\left({#1}\\right)}", 1], // parentheses to save typing
+	    uvec: ["{\\mathbf{\\hat{#1}}}", 1],
             // Kristensson's VSWFs, complex version (2014 notes)
             wfkcreg: "{\\vect{v}}", // regular wave
             wfkcout: "{\\vect{u}}", // outgoing wave
@@ -18,6 +19,8 @@ MathJax.Hub.Config({
             wckrout: "{f}", // outgoing wave coeff
 
 	    // Taylor's VSWFs
+	    wfmt: "{\\widetilde{\\vect{M}}}",
+	    wfet: "{\\widetilde{\\vect{N}}}",
 	    wfmtreg: "{\\widetilde{\\vect{M}}^{(1)}}", // regular magnetic wave
 	    wfetreg: "{\\widetilde{\\vect{N}}^{(1)}}", // regular electric wave
 	    wfmtout: "{\\widetilde{\\vect{M}}^{(3)}}", // outgoing magnetic wave
