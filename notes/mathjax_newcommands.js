@@ -28,7 +28,13 @@ MathJax.Hub.Config({
 	    wcmtreg: "{q}", // regular magnetic wave coeff
 	    wcetreg: "{p}", // regular electric wave coeff
 	    wcmtout: "{b}", // outgoing magnetic wave coeff
-	    wcetout: "{a}" // outgoing electric wave coeff
+	    wcetout: "{a}", // outgoing electric wave coeff
+
+	    // Reid's VSWFs
+            wfrreg: "\\mathbf{\\mathcal{W}}^{\\mathrm{reg}}", // regular wave
+            wfrout: "\\mathbf{\\mathcal{W}}^{\\mathrm{out}}", // outgoing wave
+            wcrreg: "C^\\mathrm{inc}", // regular wave coeff
+            wcrout: "C^\\mathrm{scat}", // outgoing wave coeff
         }
     }
 });
