@@ -1,6 +1,44 @@
 VSWF conventions
 ================
 
+In general, the (transversal) VSWFs can be defined using (some) vector spherical harmonics
+as follows: \f[
+	\wfm\pr{k\vect r}_{lm} = \sphbes_l(kr) \vshrot_{lm} (\uvec r),\\
+	\wfe\pr{k\vect r}_{lm} = \frac{\frac{\ud}{\ud(kr)}\pr{kr\sphbes_l(kr)}}{kr} \vshgrad_{lm}(\uvec r)
+				+ \sqrt{l(l+1)} \frac{\sphbes_l(kr)}{kr} \vshrad_{lm}(\uvec r),
+\f]
+where at this point, we don't have much expectations regarding the
+normalisations and phases of the
+"rotational", "gradiental" and "radial" vector spherical harmonics
+\f$  \vshrot, \vshgrad, \vshrad \f$, and the waves can be of whatever "direction"
+(regular, outgoing, etc.) depending on the kind of the spherical Bessel function
+\f$ \sphbes \f$. 
+We only require that the spherical harmonic degree \f$ l \f$
+is what it is supposed to be. The meaning of the order $m$ may vary depending
+on convention. Moreover, in order to \f$ \wfe \f$ be a valid "electric" multipole wave,
+there is a fixed relation between radial and gradiental vector spherical harmonics
+(more on that later).
+
+Let us define the "dual" vector spherical harmonics \f$ \vshD_{\tau lm} \f$ as follows:
+\f[
+	\int_\Omega \vsh_{\tau lm} (\uvec r) \cdot \vshD_{\tau' l'm} (\uvec r) \, \ud \Omega 
+		= \delta_{\tau', \tau}\delta_{l',l} \delta_{m',m}
+\f]
+where the \f$ \cdot \f$ symbol here means the bilinear form of the vector components
+without complex conjugation (which is included in the "duality" mapping).
+
+For the sake of non-ambiguity, let us define the "canonical" associated Legendre polynomials
+as in \cite DLMF TODO exact refs:
+\f[
+	\rawLeg{l}{0}(x) = \frac{1}{2^n n!} \frac{\ud^n}{\ud x^n} \pr{x^2-1}^n , \\
+	\rawLeg{l}{m}(x) = \pr{1-x^2}^{m/2} \frac{\ud^m}{\ud x^m} \rawLeg{l}{0},\quad\abs{x}\le 1, m \ge 0, \\
+	\rawLeg{l}{m}(x) = (-1)^\abs{m} \frac{(l-\abs{m})!}{(l+\abs{m})!} \rawLeg{l}{\abs{m}}, 
+		\quad \abs{x} \le 1, m < 0.
+\f]
+
+
+Literature convention table
+---------------------------
 
 | Source	| VSWF definition  	| E/M interrelations | VSWF norm  	| CS Phase  	|  Field expansion 	|  Radiated power | Notes |
 |---	|---	|---	|---	|---	|---	|--- 	|--- |

@@ -1,11 +1,28 @@
 MathJax.Hub.Config({
     TeX: {
         Macros: {
+
+		//    Abs: ['\\left\\lvert #2 \\right\\rvert_{\\text{#1}}', 2, ""] // optional arg. example
+		//    from https://stackoverflow.com/questions/24628668/how-to-define-custom-macros-in-mathjax
             vect: ["{\\mathbf{#1}}",1],
             abs: ["{\\left|{#1}\\right|}",1],
             ud: "{\\mathrm{d}}",
 	    pr: ["{\\left({#1}\\right)}", 1], // parentheses to save typing
 	    uvec: ["{\\mathbf{\\hat{#1}}}", 1],
+
+	    vsh: "{\\mathbf{A}}", // vector spherical harmonic, general
+	    vshD: "\\mathbf{A}^\\dagger", // dual vector spherical harmonic, general
+	    vshrad: "{\\mathbf{A}_3}", // vector spherical harmonic radial, general
+	    vshrot: "{\\mathbf{A}_1}", // vector spherical harmonic "rotational", general
+	    vshgrad: "{\\mathbf{A}_2}", // vector spherical harmonic "gradiental", general
+	    vshradD: "{\\mathbf{A}_3}^\\dagger}", // dual vector spherical harmonic radial, general
+	    vshrotD: "{\\mathbf{A}_1^\\dagger}", // dual vector spherical harmonic "rotational", general
+	    vshgradD: "{\\mathbf{A}_2^\\dagger}", // dual vector spherical harmonic "gradiental", general
+	    wfe: "{\\mathbf{N}}", // Electric wave general
+	    wfm: "{\\mathbf{M}}", // Magnetic wave general
+	    sphbes: "{z}", // General spherical Bessel fun
+	    rawLeg: ["{P_{#1}^{#2}}", 2], // "Canonical" associated Legendre polynomial
+
             // Kristensson's VSWFs, complex version (2014 notes)
             wfkcreg: "{\\vect{v}}", // regular wave
             wfkcout: "{\\vect{u}}", // outgoing wave
