@@ -91,7 +91,7 @@ Literature convention tables
 	N= \sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}} \f$. |	
 | Kristensson I \cite kristensson_spherical_2014 	| \f$ \rawFer{l}{m} \f$ | As in \f$ \rawFer{l}{m} \f$. | \f[
 	\spharm[Kc]{l}{m} = (-1)^m \sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}} \rawFer{l}{m}(\cos\theta) e^{im\phi},
-                                                                                        \f] cf. Sec. D.2. |
+                \f] (cf. Sec. D.2), therefore it corresponds to the DLMF sph. harms.: \f[ \spharm[Kc]{l}{m} = \dlmfYc{l}{m}. \f]  |
 | Kristensson II \cite kristensson_scattering_2016	| \f$ \rawFer{l}{m} \f$ | As in \f$ \rawFer{l}{m} \f$. | \f[
 	\spharm[Kr]{\begin{Bmatrix}e \\ o\end{Bmatrix}}{l}{m} = 
 		\sqrt{2-\delta_{m0}}\sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}}
