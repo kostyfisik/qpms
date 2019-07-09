@@ -21,7 +21,16 @@ MathJax.Hub.Config({
 	    wfe: "{\\mathbf{N}}", // Electric wave general
 	    wfm: "{\\mathbf{M}}", // Magnetic wave general
 	    sphbes: "{z}", // General spherical Bessel fun
-	    rawLeg: ["{P_{#1}^{#2}}", 2], // "Canonical" associated Legendre polynomial
+	    rawLeg: ["{\\mathfrak{P}_{#1}^{#2}}", 2], // "Canonical" associated Legendre polynomial without C.S. phase
+	    rawFer: ["\\rawLeg{#1}{#2}", 2], // "Canonical" associated Legendre polynomial without C.S. phase
+	    dlmfLeg: ["{P_{#1}^{#2}}", 2], // Associated Legendre function as in DLMF (14.3.6)
+	    dlmfFer: ["{\\mathsf{P}_{#1}^{#2}}", 2], // Ferrers Function as in DLMF (14.3.1)
+	    dlmfYc: ["{Y_{{#1},{#2}}}", 2], // Complex spherical harmonics as in DLMF (14.30.1)
+	    dlmfYrUnnorm: ["{Y_{#1}^{#2}}", 2], // Real spherical harmonics as in DLMF (14.30.2)
+	    Fer: ["{{P_{\\mathrm{#1}}}_{#2}^{#3}}", 3, ""], // Legendre / Ferrers function
+	    spharm: ["{{Y_{\\mathrm{#1}}}_{#2}^{#3}}", 3, ""], // Spherical harmonics
+	    spharmR: ["{{Y_{\\mathrm{#1}}}_{\\mathrm{#1}{#2}{#3}}", 4, ""], // Spherical harmonics
+	    csphase: "\\mathsf{C_{CS}}", // Condon-Shortley phase
 
             // Kristensson's VSWFs, complex version (2014 notes)
             wfkcreg: "{\\vect{v}}", // regular wave

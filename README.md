@@ -36,7 +36,9 @@ Infinite systems (lattices)
 
 Installation
 ============
-The package depends on several python modules and GSL (>= 2.0).
+The package depends on several python modules, a BLAS/LAPACK library with 
+the respective C bindings (incl. the `lapacke.h` and `cblas.h` headers;
+[OpenBLAS][OpenBLAS] does have it all and is recommended) and GSL (>= 2.0).
 The python module dependencies should be installed automatically when running
 the installation script. If you have a recent enough OS,
 you can get GSL easily from the repositories; on Debian and derivatives,
@@ -84,6 +86,7 @@ Tutorials
   * [Finite system tutorial][tutorial-finite]
 
 [SCUFF-EM]: https://homerreid.github.io/scuff-em-documentation/
+[OpenBLAS]: https://www.openblas.net/
 [GSL]: https://www.gnu.org/software/gsl/
 [cmake]: https://cmake.org
 [TRITON-README]: README.Triton.md

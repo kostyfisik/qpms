@@ -27,18 +27,89 @@ Let us define the "dual" vector spherical harmonics \f$ \vshD_{\tau lm} \f$ as f
 where the \f$ \cdot \f$ symbol here means the bilinear form of the vector components
 without complex conjugation (which is included in the "duality" mapping).
 
-For the sake of non-ambiguity, let us define the "canonical" associated Legendre polynomials
-as in \cite DLMF TODO exact refs:
+The problem with conventions starts with the very definition of associated Legendre / Ferrers functions.
+
+For the sake of non-ambiguity, let us first define the "canonical" associated Legendre/Ferrers polynomials
+*without* the Condon-Shortley phase.
 \f[
 	\rawLeg{l}{0}(x) = \frac{1}{2^n n!} \frac{\ud^n}{\ud x^n} \pr{x^2-1}^n , \\
 	\rawLeg{l}{m}(x) = \pr{1-x^2}^{m/2} \frac{\ud^m}{\ud x^m} \rawLeg{l}{0},\quad\abs{x}\le 1, m \ge 0, \\
 	\rawLeg{l}{m}(x) = (-1)^\abs{m} \frac{(l-\abs{m})!}{(l+\abs{m})!} \rawLeg{l}{\abs{m}}, 
 		\quad \abs{x} \le 1, m < 0.
 \f]
+DLMF \cite NIST:DLMF has for non-negative integer \f$m\f$ (18.5.5), (14.6.1), (14.9.3):
+\f[
+	\dlmfFer{\nu}{} = \dlmfLeg{\nu}{} = \frac{1}{2^n n!} \frac{\ud^n}{\ud x^n} \pr{x^2-1}^n , \\
+	\dlmfFer{\nu}{m}\left(x\right)=(-1)^{m}\left(1-x^2\right)^{m/2}\frac{{
+	\ud}^{m}\dlmfFer{\nu}{}\left(x\right)}{{\ud x}^{m}},\\
+	%\dlmfLeg{\nu}{m}\left(x\right)=\left(-1+x^2\right)^{m/2}\frac{{
+	%\ud}^{m}\dlmfLeg{\nu}{}\left(x\right)}{{\ud x}^{m}},\\
+\f]
+where the connection to negative orders is
+\f[
+	\dlmfFer{\nu}{m}(x) = (-1)^m \frac{\Gamma\pr{\nu-m+1}}{\Gamma\pr{\nu+m+1}}\dlmfFer{\nu}{m}(x),\\
+	%\dlmfLeg{\nu}{m}(x) =        \frac{\Gamma\pr{\nu-m+1}}{\Gamma\pr{\nu+m+1}}\dlmfLeg{\nu}{m}(x).\\
+\f]
+Note that there are called "Ferrers" functions in DLMF, while the "Legendre" functions have slightly
+different meaning / conventions (Ferrers functions being defined for \f$ \abs{x} \le 1 \f$, whereas
+Legendre for \f$ \abs{x} \ge 1 \f$. We will not use the DLMF "Legendre" functions here.
+
+One sees that \f$ \dlmfFer{l}{m} = (-1)^m \rawFer{l}{m} \f$, i.e. the Condon-Shortley phase is
+already included in the DLMF definitions of Ferrers functions.
+
+GSL computes \f$ \rawFer{l}{m} \f$ unless the corresponding `csphase` argument is set to 
+\f$-1\f$ (then it computes \f$ \dlmfFer{l}{m} \f$). This is not explicitly obvious from the docs 
+\cite GSL,
+but can be tested by running `gsl_sf_legendre_array_e` for some specific arguments and comparing signs.
 
 
-Literature convention table
----------------------------
+Literature convention tables
+----------------------------
+
+### Legendre functions and spherical harmonics
+
+| Source                 | Ferrers function      | Negative \f$m\f$   | Spherical harmonics |
+|------------------------|-----------------------|--------------------|---------------------|
+| DLMF \cite NIST:DLMF   | \f[
+	\dlmfFer{\nu}{m}\left(x\right)=(-1)^{m}\left(1-x^2\right)^{m/2}\frac{{
+	\ud}^{m}\dlmfFer{\nu}{}\left(x\right)}{{\ud x}^{m}}
+                                             \f] | \f[
+	\dlmfFer{\nu}{m}(x) = (-1)^m \frac{\Gamma\pr{\nu-m+1}}{\Gamma\pr{\nu+m+1}}\dlmfFer{\nu}{m}(x)
+                                                                  \f] |  Complex (14.30.1): \f[
+		\dlmfYc{l}{m} = \sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}} e^{im\phi} \dlmfFer{l}{m}(\cos\theta).
+	\f] Real, unnormalized (14.30.2): \f$ 
+		\dlmfYrUnnorm{l}{m}\pr{\theta,\phi} = \cos\pr{m\phi} \dlmfFer{l}{m}\pr{\cos\theta} 
+	\f$ or \f$
+		\dlmfYrUnnorm{l}{m}\pr{\theta,\phi} = \sin\pr{m\phi} \dlmfFer{l}{m}\pr{\cos\theta} 
+                                                                                     \f$. |
+| GSL \cite GSL         |  \f[
+	\Fer[GSL]{l}{m} = \csphase^m N \rawFer{l}{m}
+                                  \f]  for non-negative \f$m\f$. \f$
+	\csphase\f$ is one by default and can be set to \f$
+	-1\f$ using the functions ending with \_e with argument `csphase = -1`. \f$
+	N\f$ is a positive normalisation factor from from `gsl_sf_legendre_t`. | N/A. Must be calculated manually. | The asimuthal part must be calculated manually. Use `norm = GSL_SF_LEGENDRE_SPHARM` to get the usual normalisation factor \f$
+	N= \sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}} \f$. |	
+| Kristensson I \cite kristensson_spherical_2014 	| \f$ \rawFer{l}{m} \f$ | As in \f$ \rawFer{l}{m} \f$. | \f[
+	\spharm[Kc]{l}{m} = (-1)^m \sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}} \rawFer{l}{m}(\cos\theta) e^{im\phi},
+                                                                                        \f] cf. Sec. D.2. |
+| Kristensson II \cite kristensson_scattering_2016	| \f$ \rawFer{l}{m} \f$ | As in \f$ \rawFer{l}{m} \f$. | \f[
+	\spharm[Kr]{\begin{Bmatrix}e \\ o\end{Bmatrix}}{l}{m} = 
+		\sqrt{2-\delta_{m0}}\sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}}
+		\rawFer{l}{m}(\cos\theta) 
+		\begin{Bmatrix}\cos\phi \\ \sin\phi\end{Bmatrix},
+                                                                                            \f] \f$ m \ge 0 \f$. Cf. Appendix C.3.  |
+| Reid \cite reid_electromagnetism_2016	|  Not described in the memos. Superficial look into the code suggests that the `GetPlm` function *does* include the Condon-Shortley phase and spherical harmonic normalisation, so \f[
+	\Fer[GetPlm]{l}{m} = (-1)^m \sqrt{\frac{(l-m)!(2l+1)}{4\pi(l+m)!}} \rawFer{l}{m}
+\f] for non-negative \f$ m \f$.    |  N/A. Must be calculated manually.         |   \f[
+	\spharm[GetYlm]{l}{m}(\theta,\phi) = \Fer[GetPlm]{l}{m}(\cos\theta) e^{im\phi},\quad m\le 0, \\
+	\spharm[GetYlm]{l}{m}(\theta,\phi) = (-1)^m\Fer[GetPlm]{l}{\abs{m}}(\cos\theta) e^{-im\phi},\quad m<0, 
+                                                   \f] and the negative sign in the second line's exponent is quite concerning, because that would mean the asimuthal part is actually \f$ e^{i\abs{m}\phi} \f$. _Is this a bug in scuff-em_? Without it, it would be probably equivalent to DLMF's \f$ \dlmfYc{l}{m} \f$s for both positive and negative \f$ m\f$s. However, it seems that `GetYlmDerivArray` has it consistent, with \f[
+	\spharm[GetYlmDerivArray]{l}{m} = \dlmfYc{l}{m}   
+		\f] for all \f$m\f$, and this is what is actually used in `GetMNlmArray` (used by  both `SphericalWave` in `libIncField` (via `GetMNlm`) and `GetSphericalMoments` in `libscuff` (via `GetWaveMatrix`)) and `GetAngularFunctionArray` (not used).      |
+
+
+
+### VSWF conventions
 
 | Source	| VSWF definition  	| E/M interrelations | VSWF norm  	| CS Phase  	|  Field expansion 	|  Radiated power | Notes |
 |---	|---	|---	|---	|---	|---	|--- 	|--- |

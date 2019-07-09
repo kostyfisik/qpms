@@ -25,5 +25,8 @@ TODO list before public release
 - Prefix all identifiers. Maybe think about a different prefix than qpms?
 - Consistent indentation and style overall.
 
+Nice but less important features
+--------------------------------
 
+- Static, thread-safe caches of constant coefficients + API without the current "calculators".
 
