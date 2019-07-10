@@ -33,14 +33,16 @@ MathJax.Hub.Config({
 	    csphase: "\\mathsf{C_{CS}}", // Condon-Shortley phase
 
             // Kristensson's VSWFs, complex version (2014 notes)
+	    wfkc: "{\\vect{y}}", // any wave
             wfkcreg: "{\\vect{v}}", // regular wave
             wfkcout: "{\\vect{u}}", // outgoing wave
             wckcreg: "{a}", // regular wave coeff
             wckcout: "{f}", // outgoing wave coeff
             
 	    // Kristensson's VSWFs, real version (2014 book)
-            wfkrreg: "{\\vect{v}}", // regular wave
-            wfkrout: "{\\vect{u}}", // outgoing wave
+	    wfkr: "{\\vect{y}_{\\mathrm{r}}}", // any wave
+            wfkrreg: "{\\vect{v}_{\\mathrm{r}}}", // regular wave
+            wfkrout: "{\\vect{u}_{\\mathrm{r}}}", // outgoing wave
             wckrreg: "{a}", // regular wave coeff
             wckrout: "{f}", // outgoing wave coeff
 

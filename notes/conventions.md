@@ -113,7 +113,7 @@ Literature convention tables
 
 | Source	| VSWF definition  	| E/M interrelations | VSWF norm  	| CS Phase  	|  Field expansion 	|  Radiated power | Notes |
 |---	|---	|---	|---	|---	|---	|--- 	|--- |
-| Kristensson I \cite kristensson_spherical_2014 	|  \f[ \wfkcreg, \wfkcout= \dots \f] 	| \f[
+| Kristensson I \cite kristensson_spherical_2014 	|  \f[ \wfkc = \dots \f] where \f$\wfkc\f$ is either of \f$ \wfkcreg, \wfkcout, \dots \f$ based on the radial (spherical Bessel) function type.	| \f[
 	\wfkcreg_{1lm} = \frac{1}{k}\nabla\times\wfkcreg_{2lm}, \\
 	\wfkcreg_{2lm} = \frac{1}{k}\nabla\times\wfkcreg_{1lm},
 \f] and analogously for outgoing waves \f$ \wfkcout \f$, eq. (2.8) onwards. 	|  	| Yes, in the spherical harmonics definition, cf. sect. D.2.  	| \f[ 
@@ -123,7 +123,7 @@ Literature convention tables
 \f] but for plane wave expansion \cite kristensson_spherical_2014 sect. 2.5 K. uses a different definition (same as in Kristensson II).  	| \f[
 	 P = \frac{1}{2} \sum_n \left( \abs{\wckcout_n}^2 +\Re \left(\wckcout_n\wckcreg_n^{*}\right)\right)
  \f]	| The \f$ \wckcreg, \wckcout \f$	coefficients have dimension \f$ \sqrt{\mathrm{W}} \f$. |
-| Kristensson II \cite kristensson_scattering_2016	| \f[ \wfkrreg, \wfkrout= \dots \f] 	|  \f[
+| Kristensson II \cite kristensson_scattering_2016	| \f[ \wfkr = \dots \f] where \f$\wfkr\f$ is either of \f$ \wfkrreg, \wfkrout, \dots \f$ based on the radial (spherical Bessel) function type. 	|  \f[
 	\nabla\times\wfkrreg_{\tau n} = k\wfkrreg_{\overline{\tau} n},
 \f] eq. (7.7) and analogously for outgoing waves \f$ \wfkrout \f$. 	| 	|   	| \f[ 
 	\vect E = \sum_n \left( \wckrreg_n  \wfkrreg_n + \wckrout_n \wfkrout_n  \right), 
@@ -132,7 +132,10 @@ Literature convention tables
 \f] 	| \f[
 	 P = \frac{1}{2k^2\eta_0\eta} \sum_n \left( \abs{\wckrout_n}^2 +\Re \left(\wckrout_n\wckrreg_n^{*}\right)\right)
  \f]	| The \f$ \wckrreg, \wckrout \f$ coefficients have dimension \f$ \mathrm{V/m} \f$. |
-| Reid \cite reid_electromagnetism_2016	|   | \f[
+| Reid \cite reid_electromagnetism_2016	| By examining the code, it appears that both `GetMNlmArray()` and `GetWaveMatrix()` with argument `MaxwellWaves = true` (with `MaxwellWaves = false` it seems to calculate nonsense) return the following w.r.t. Kristensson's "complex VSWFs": \f[
+	\wfr_{lmM} = i\wfkc_{1lm}, \\
+	\wfr_{lmN} = -\wfkc_{2lm}.
+	\f] | \f[
 	\nabla\times\wfr_{lmM} = -ik\wfr_{lmN}, \\ \nabla\times\wfr_{lmN} = +ik\wfr_{lmM}. 
 \f] 	|	|  |  \f[
 	\vect E = \sum_\alpha \pr{ \wcrreg_\alpha \wfrreg_\alpha + \wcrout_\alpha \wfrout_\alpha }, \\
@@ -140,10 +143,12 @@ Literature convention tables
 		 \wcrout_\alpha \sigma_\alpha\wfrout_\overline{\alpha}},
 \f] where \f$ \sigma_{lmM} = +1, \sigma_{lmN}=-1, \overline{lmM}=lmM, \overline{lmN}=lmM, \f$  cf. eq. (6). The notation is not extremely consistent throughout Reid's memo.	| 	| 	|
 | Taylor \cite taylor_optical_2011	| \f[
-	\wfet_{mn}^{(j)}	=	\frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}P_{n}^{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\uvec{r} \\
+	\wfet_{mn}^{(j)}	=	\frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}\Fer[Taylor]{n}{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\uvec{r} \\
 		+\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\uvec{\theta}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\uvec{\phi}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\,z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}, \\ 
-	\wfmt_{mn}^{(j)}	=	\left[i\tilde{\pi}_{mn}\left(\cos\theta\right)\uvec{\theta}-\tilde{\tau}_{mn}\left(\cos\theta\right)\uvec{\phi}\right]e^{im\phi}z_{n}^{j}\left(kr\right)
-\f]  	|	|	\f[
+	\wfmt_{mn}^{(j)}	=	\left[i\tilde{\pi}_{mn}\left(\cos\theta\right)\uvec{\theta}-\tilde{\tau}_{mn}\left(\cos\theta\right)\uvec{\phi}\right]e^{im\phi}z_{n}^{j}\left(kr\right).
+\f] Assuming the Legendre functions \f$ \Fer[Taylor]{n}{m} \f$ here do contain the Condon-Shortley phase (AFAIK not explicitly stated in the book), i.e. \f$\Fer[Taylor]{l}{m} = \dlmfFer{l}{m} \f$, then the relation to Kristensson's waves is \f[
+	\wfmt_{mn} = \sqrt{n(n+1)} \wfkc_{1nm}, \\ \wfet_{mn} = \sqrt{n(n+1)} \wfkc_{2nm}. 
+		\f]	|	|	\f[
 	\int_{S(kr)} \wfmt_{mn}^{(j)} \wfmt_{m'n'}^{(j)}\,\ud S = n(n+1) \abs{z_n^{(j)}}^2 \delta_{m,m'}\delta_{n,n'} ,\\
 	\int_{S(kr)} \wfet_{mn}^{(j)} \wfet_{m'n'}^{(j)}\,\ud S =
            \pr{\pr{n(n+1)}^2 \abs{\frac{z_n^{(j)}}{kr}}^2 + n(n+1)\abs{\frac{1}{kr}\frac{\ud}{\ud(kr)}\pr{kr z_n^{(j)}}} } \delta_{m,m'}\delta_{n,n'} ,
