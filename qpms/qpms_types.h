@@ -86,48 +86,86 @@ typedef enum {
 
 
 
-/// Vector spherical wavefuction normalisation (and sign) convention codes.
-/** Throughout the literature, various conventions for VSWF bases are used.
- *  The meaningful ones are the "power" and "spherical harmonic" normalisation
- *  conventions, as the (\a l, \a m) and (\a l, \a −m) waves of the same type have the same
- *  intensities.
- *  One might also encounter a very inconvenient and messy "antinormalisation"
- *  used in Xu (TODO reference).
+/// Vector spherical wavefuction normalisation and phase convention codes.
+/**
+ *  Throughout the literature, various conventions for VSWF bases are used.
+ *  These bit flags are used by the functions declared in normalisation.h
+ *  that return the appropriate convention-dependent factors.
  *
- *  Moreover, VSWFs might use various sign convention. Usually they either
- *  carry the Condon-Shortley phase \f$ (-1)^m \f$ or not, which is also saved here.
- *
- *  TODO references and exact definitions.
+ *  See @ref vswf_conventions for comparison of the various conventions used.
  */
 typedef enum {
+	QPMS_NORMALISATION_UNDEF = 0, ///< Convention undefined. This should not happen.
+       	/// Flag indicating that qpms_normalisition_factor_* should actually return values inverse to the default.
+	QPMS_NORMALISATION_INVERSE = 1, 
+	/** Flag indicating inversion of the asimuthal phase for complex spherical harmonics (i.e. \f$ e^{-im\phi} \f$
+	 * instead of \f$ e^{im\phi} \f$.
+	 */
+	QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE = 2,
+	/// Flag indicating use of the real spherical harmonics.
+	/** If QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE is unset, negative \a m
+	 * correspond to sine in the asimuthal factor; if set, undefined behaviour.
+	 */
+	QPMS_NORMALISATION_SPHARM_REAL = 4,
+	/// Flag indicating usage of Condon-Shortley phase.
+	/** If set, the Ferrers functions and everything derived from them 
+	 * (spherical harmonics, VSWFs) will include a \f$ (-1)^m \f$ factor.
+	 *
+	 * On implementation level, this means that the relevant `gsl_sf_legendre_*_e()`
+	 * functions will be called with argument `csphase = -1.` instead of `+1.`.
+	 */
+	QPMS_NORMALISATION_CSPHASE = 8,
+	QPMS_NORMALISATION_M_I = 16, ///< Include an additional \a i -factor into the magnetic waves.
+	QPMS_NORMALISATION_M_MINUS = 32, ///< Include an additional \f$-1\f$ -factor into the magnetic waves.
+	QPMS_NORMALISATION_N_I = 64, ///< Include an additional \a i -factor into the electric waves.
+	QPMS_NORMALISATION_N_MINUS = 128, ///< Include an additional \f$-1\f$ -factor into the magnetic waves.
+#if 0
+	QPMS_NORMALISATION_L_I = 256, ///< Include an additional \a i -factor into the longitudinal waves.
+	QPMS_NORMALISATION_L_MINUS = 512, ///< Include an additional \f$-1\f$ -factor into the longitudinal waves.
+#endif 
+	QPMS_NORMALISATION_NORM_BITSTART = 65536, 
+	/// The VSWFs shall be power-normalised. This is the "default".
+	/**
+	 * Power normalisation is used e.g. in \cite kristensson_spherical_2014 (complex spherical
+	 * harmonics with Condon-Shortley phase) or \cite kristensson_scattering_2016 (real
+	 * spherical harmonics). This is also the reference for all the other normalisation conventions,
+	 * meaning that qpms_normalisation_factor_M() and qpms_normalisation_factor_N() shall
+	 * always return `1. + 0.*I` if `norm == QPMS_NORMALISATION_NORM_POWER`.
+	 */
+	QPMS_NORMALISATION_NORM_POWER = QPMS_NORMALISATION_NORM_BITSTART * 1,
+	/// The VSWFs shall be normalised as in \cite taylor_optical_2011 .
+	/** This includes a \f$ \sqrt{l(l+1)} \f$ factor compared to the power normalisation. */
+	QPMS_NORMALISATION_NORM_SPHARM = QPMS_NORMALISATION_NORM_BITSTART * 3,
+	/// The VSWFs shall be created using spherical harmonics without any normalisation. Do not use.
+	/** This includes a \f[ 
+	 * 	\sqrt{l(l+1)} \left(\frac{(2l+1)}{4\pi}\frac{(l-m)!}{(l+m)!}\right)^{-\frac{1}{2}}
+	 * \f] factor compared to the power normalisation.
+	 *
+	 * Note that this has no sense whatsoever for real spherical harmonics.
+	 * Again, do not use this.
+	 */
+	QPMS_NORMALISATION_NORM_NONE = QPMS_NORMALISATION_NORM_BITSTART * 2,
+	QPMS_NORMALISATION_NORM_BITS = QPMS_NORMALISATION_NORM_POWER 
+		| QPMS_NORMALISATION_NORM_NONE | QPMS_NORMALISATION_NORM_SPHARM,
 
-#define QPMS_NORMALISATION_T_CSBIT 128 ///< A flag used in qpms_normalisation_t indicating the Condon-Shortley phase.
-
-#ifdef USE_XU_ANTINORMALISATION
-	// As in TODO
-	QPMS_NORMALISATION_XU = 4, ///< such that the numerical values in Xu's tables match, not recommended to use otherwise
-	QPMS_NORMALISATION_XU_CS = QPMS_NORMALISATION_XU | QPMS_NORMALISATION_T_CSBIT, 
-#endif
-	QPMS_NORMALISATION_NONE = 3, ///< genuine unnormalised waves (with unnormalised Legendre polynomials)
-	QPMS_NORMALISATION_KRISTENSSON = 2, ///< As in http://www.eit.lth.se/fileadmin/eit/courses/eit080f/Literature/book.pdf, power-normalised
-	QPMS_NORMALISATION_POWER = QPMS_NORMALISATION_KRISTENSSON, 
-	// as in TODO
-	QPMS_NORMALISATION_TAYLOR = 1,
-	QPMS_NORMALISATION_SPHARM = QPMS_NORMALISATION_TAYLOR,
-	// Variants with Condon-Shortley phase
-	QPMS_NORMALISATION_NONE_CS = QPMS_NORMALISATION_NONE | QPMS_NORMALISATION_T_CSBIT,
-	QPMS_NORMALISATION_KRISTENSSON_CS = QPMS_NORMALISATION_KRISTENSSON | QPMS_NORMALISATION_T_CSBIT, 
-	QPMS_NORMALISATION_POWER_CS = QPMS_NORMALISATION_KRISTENSSON_CS,
-	QPMS_NORMALISATION_TAYLOR_CS = QPMS_NORMALISATION_TAYLOR | QPMS_NORMALISATION_T_CSBIT,
-	QPMS_NORMALISATION_SPHARM_CS = QPMS_NORMALISATION_TAYLOR_CS,
-	QPMS_NORMALISATION_UNDEF = 0
+	/// VSWF convention used in \cite kristensson_scattering_2016
+	QPMS_NORMALISATION_CONVENTION_KRISTENSSON_REAL = QPMS_NORMALISATION_NORM_POWER
+		| QPMS_NORMALISATION_SPHARM_REAL,
+	/// VSWF convention used in \cite kristensson_spherical_2014
+	QPMS_NORMALISATION_CONVENTION_KRISTENSSON = QPMS_NORMALISATION_NORM_POWER
+		| QPMS_NORMALISATION_CSPHASE,
+	/// VSWF convention used in SCUFF-EM \cite reid_electromagnetism_2016
+	QPMS_NORMALISATION_CONVENTION_SCUFF = QPMS_NORMALISATION_NORM_POWER
+		| QPMS_NORMALISATION_CSPHASE | QPMS_NORMALISATION_M_I
+		| QPMS_NORMALISATION_N_MINUS
 } qpms_normalisation_t;
 
 /// Determine whether the convention includes Condon-Shortley phase (-1) or not (+1).
 static inline int qpms_normalisation_t_csphase(qpms_normalisation_t norm) {
-	return (norm & QPMS_NORMALISATION_T_CSBIT)? -1 : 1;
+	return (norm & QPMS_NORMALISATION_CSPHASE)? -1 : 1;
 }
 
+#if 0
 /// Returns the normalisation convention code without the Condon-Shortley phase.
 static inline int qpms_normalisation_t_normonly(qpms_normalisation_t norm) {
 	return norm & (~QPMS_NORMALISATION_T_CSBIT);
@@ -198,6 +236,7 @@ static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t 
 			return NAN;
 	}
 }
+#endif
 
 
 /// Bessel function kinds.

@@ -1,5 +1,5 @@
-VSWF conventions
-================
+VSWF conventions {#vswf_conventions}
+====================================
 
 In general, the (transversal) VSWFs can be defined using (some) vector spherical harmonics
 as follows: \f[
@@ -141,7 +141,7 @@ Literature convention tables
 	\vect E = \sum_\alpha \pr{ \wcrreg_\alpha \wfrreg_\alpha + \wcrout_\alpha \wfrout_\alpha }, \\
 	\vect H = \frac{1}{Z_0Z^r} \sum_\alpha \pr{ \wcrreg_\alpha \sigma_\alpha\wfrreg_\overline{\alpha} +
 		 \wcrout_\alpha \sigma_\alpha\wfrout_\overline{\alpha}},
-\f] where \f$ \sigma_{lmM} = +1, \sigma_{lmN}=-1, \overline{lmM}=lmM, \overline{lmN}=lmM, \f$  cf. eq. (6). The notation is not extremely consistent throughout Reid's memo.	| 	| 	|
+\f] where \f$ \sigma_{lmM} = +1, \sigma_{lmN}=-1, \overline{lmM}=lmN, \overline{lmN}=lmM, \f$  cf. eq. (6). The notation is not extremely consistent throughout Reid's memo.	| 	| 	|
 | Taylor \cite taylor_optical_2011	| \f[
 	\wfet_{mn}^{(j)}	=	\frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}\Fer[Taylor]{n}{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\uvec{r} \\
 		+\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\uvec{\theta}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\uvec{\phi}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\,z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}, \\ 
