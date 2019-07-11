@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "qpms_error.h"
+#include "normalisation.h"
 
 
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_init() {
@@ -98,34 +99,44 @@ csphvec_t qpms_vswf_single_el(qpms_m_t m, qpms_l_t l, sph_t kdlj,
     qpms_bessel_t btyp, qpms_normalisation_t norm) {
   lmcheck(l,m);
   csphvec_t N;
-  complex double *bessel = malloc((l+1)*sizeof(complex double));
-  if(qpms_sph_bessel_fill(btyp, l, kdlj.r, bessel)) abort();
-  qpms_pitau_t pt = qpms_pitau_get(kdlj.theta, l, norm);
-  complex double eimf = cexp(m * kdlj.phi * I);
+  complex double *bessel;
+  QPMS_CRASHING_MALLOC(bessel,(l+1)*sizeof(complex double));
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(btyp, l, kdlj.r, bessel));
+  qpms_pitau_t pt = qpms_pitau_get(kdlj.theta, l, qpms_normalisation_t_csphase(norm));
+
+  complex double eimf = qpms_spharm_azimuthal_part(norm, m, kdlj.phi);
+  complex double d_eimf_dmf = qpms_spharm_azimuthal_part_derivative_div_m(norm, m, kdlj.phi);
   qpms_y_t y = qpms_mn2y(m,l);
 
   N.rc = l*(l+1) * pt.leg[y] * bessel[l] / kdlj.r * eimf;
   complex double besselfac = bessel[l-1] - l * bessel[l] / kdlj.r;
   N.thetac = pt.tau[y] * besselfac * eimf;
-  N.phic = pt.pi[y] * besselfac * I * eimf;
+  N.phic = pt.pi[y] * besselfac * d_eimf_dmf;
+
+  N = csphvec_scale(qpms_normalisation_factor_N_noCS(norm, l, m), N);
 
   qpms_pitau_free(pt);
   free(bessel);
   return N;
 }
+
 csphvec_t qpms_vswf_single_mg(qpms_m_t m, qpms_l_t l, sph_t kdlj,
     qpms_bessel_t btyp, qpms_normalisation_t norm) {
   lmcheck(l,m);
   csphvec_t M;
-  complex double *bessel = malloc((l+1)*sizeof(complex double));
-  if(qpms_sph_bessel_fill(btyp, l, kdlj.r, bessel)) abort();
-  qpms_pitau_t pt = qpms_pitau_get(kdlj.theta, l, norm);
-  complex double eimf = cexp(m * kdlj.phi * I);
+  complex double *bessel;
+  QPMS_CRASHING_MALLOC(bessel,(l+1)*sizeof(complex double));
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(btyp, l, kdlj.r, bessel));
+  qpms_pitau_t pt = qpms_pitau_get(kdlj.theta, l, qpms_normalisation_t_csphase(norm));
+  complex double eimf = qpms_spharm_azimuthal_part(norm, m, kdlj.phi);
+  complex double d_eimf_dmf = qpms_spharm_azimuthal_part_derivative_div_m(norm, m, kdlj.phi);
   qpms_y_t y = qpms_mn2y(m,l);
 
   M.rc = 0.;
-  M.thetac = pt.pi[y] * bessel[l] * I * eimf;
+  M.thetac = pt.pi[y] * bessel[l] * d_eimf_dmf;
   M.phic = -pt.tau[y] * bessel[l] * eimf;
+
+  M = csphvec_scale(qpms_normalisation_factor_M_noCS(norm, l, m), M);
 
   qpms_pitau_free(pt);
   free(bessel);
@@ -137,10 +148,9 @@ qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj,
   qpms_vswfset_sph_t *res = malloc(sizeof(qpms_vswfset_sph_t));
   res->lMax = lMax;
   qpms_y_t nelem = qpms_lMax2nelem(lMax);
-  res->el = malloc(sizeof(csphvec_t)*nelem);
-  res->mg = malloc(sizeof(csphvec_t)*nelem);
-  if(QPMS_SUCCESS != qpms_vswf_fill(NULL, res->mg, res->el, lMax, kdlj, btyp, norm))
-    abort(); // or return NULL? or rather assert?
+  QPMS_CRASHING_MALLOC(res->el, sizeof(csphvec_t)*nelem);
+  QPMS_CRASHING_MALLOC(res->mg, sizeof(csphvec_t)*nelem);
+  QPMS_ENSURE_SUCCESS(qpms_vswf_fill(NULL, res->mg, res->el, lMax, kdlj, btyp, norm));
   return res;
 }
 
@@ -163,11 +173,11 @@ csphvec_t qpms_vswf_L00(csph_t kr, qpms_bessel_t btyp,
 
 qpms_errno_t qpms_vswf_fill_csph(csphvec_t *const longtarget, 
     csphvec_t * const mgtarget, csphvec_t * const eltarget, qpms_l_t lMax,
-    csph_t kr, qpms_bessel_t btyp, qpms_normalisation_t norm) {
+    csph_t kr, qpms_bessel_t btyp, const qpms_normalisation_t norm) {
   assert(lMax >= 1);
   complex double *bessel = malloc((lMax+1)*sizeof(complex double));
   if(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel)) abort();
-  qpms_pitau_t pt = qpms_pitau_get(kr.theta, lMax, norm);
+  qpms_pitau_t pt = qpms_pitau_get(kr.theta, lMax, qpms_normalisation_t_csphase(norm));
   complex double const *pbes = bessel + 1; // starting from l = 1
   double const *pleg = pt.leg;
   double const *ppi = pt.pi;
@@ -183,28 +193,32 @@ qpms_errno_t qpms_vswf_fill_csph(csphvec_t *const longtarget,
     }
     besderfac = *(pbes-1) - l * besfac;
     for(qpms_m_t m = -l; m <= l; ++m) {
-      complex double eimf = cexp(m * kr.phi * I);
+      complex double eimf = qpms_spharm_azimuthal_part(norm, m, kr.phi);
+      complex double d_eimf_dmf = qpms_spharm_azimuthal_part_derivative_div_m(norm, m, kr.phi);
       if (longtarget) { QPMS_UNTESTED;
-        complex double longfac = sqrt(l*(l+1)) * eimf;
+        double longfac = sqrt(l*(l+1));
         plong->rc = // FATAL FIXME: I get wrong result here for plane wave re-expansion 
           // whenever kr.r > 0 (for waves with longitudinal component, ofcoz)
           /*(*(pbes-1) - (l+1)/kr.r* *pbes)*/
           (besderfac-besfac) 
-          * (*pleg) * longfac;
-        plong->thetac = *ptau * besfac * longfac;
-        plong->phic = *ppi * I * besfac * longfac;
+          * (*pleg) * longfac * eimf;
+        plong->thetac = *ptau * besfac * longfac * eimf;
+        plong->phic = *ppi * besfac * longfac * d_eimf_dmf;
+        *plong = csphvec_scale(qpms_normalisation_factor_L_noCS(norm, l, m), *plong);
         ++plong;
       }
       if (eltarget) {
         pel->rc = l*(l+1) * (*pleg) * besfac * eimf;
         pel->thetac = *ptau * besderfac * eimf;
-        pel->phic = *ppi * besderfac * I * eimf;
+        pel->phic = *ppi * besderfac * d_eimf_dmf;
+        *pel = csphvec_scale(qpms_normalisation_factor_N_noCS(norm, l, m), *pel);
         ++pel;
       }
       if (mgtarget) {
         pmg->rc = 0.;
-        pmg->thetac = *ppi * (*pbes) * I * eimf;
+        pmg->thetac = *ppi * (*pbes) * d_eimf_dmf;
         pmg->phic = - *ptau * (*pbes) * eimf;
+        *pmg = csphvec_scale(qpms_normalisation_factor_M_noCS(norm, l, m), *pmg);
         ++pmg;
       }
       ++pleg; ++ppi; ++ptau;
@@ -234,7 +248,9 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *const longtarget, csphvec_t *
   complex double const *pbes = bessel + 1; // starting from l = 1
 
   qpms_y_t nelem = qpms_lMax2nelem(lMax);
-  csphvec_t * const a1 = malloc(3*nelem*sizeof(csphvec_t)), * const a2 = a1 + nelem, * const a3 = a2 + nelem;
+  csphvec_t *a;
+  QPMS_CRASHING_MALLOC(a, 3*nelem*sizeof(csphvec_t))
+  csphvec_t * const a1 = a, * const a2 = a1 + nelem, * const a3 = a2 + 2 * nelem;
   if(qpms_vecspharm_fill(a1, a2, a3, lMax, kr, norm)) abort();
   const csphvec_t *p1 = a1; 
   const csphvec_t *p2 = a2;
@@ -246,10 +262,12 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *const longtarget, csphvec_t *
     complex double besderfac = *(pbes-1) - l * besfac;
     double sqrtlfac = sqrt(l*(l+1));
     for(qpms_m_t m = -l; m <= l; ++m) {
-      complex double eimf = cexp(m * kr.phi * I); // FIXME unused variable?!!!
       if (longtarget) {
+        complex double L2Nfac = qpms_normalisation_factor_L_noCS(norm, l, m)
+          / qpms_normalisation_factor_N_noCS(norm, l, m);
         *plong = csphvec_add(csphvec_scale(besderfac-besfac, *p3),
             csphvec_scale(sqrtlfac * besfac, *p2));
+        *plong = csphvec_scale(L2Nfac, *plong);
         ++plong;
       }
       if (eltarget) {
@@ -265,7 +283,7 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *const longtarget, csphvec_t *
     }
     ++pbes;
   }
-  free(a1);
+  free(a);
   free(bessel);
   return QPMS_SUCCESS;
 }
@@ -273,28 +291,31 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *const longtarget, csphvec_t *
 qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
     qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm) {
   assert(lMax >= 1);
-  qpms_pitau_t pt = qpms_pitau_get(dir.theta, lMax, norm);
+  qpms_pitau_t pt = qpms_pitau_get(dir.theta, lMax, qpms_normalisation_t_csphase(norm));
   double const *pleg = pt.leg;
   double const *ppi = pt.pi;
   double const *ptau = pt.tau;
   csphvec_t *p1 = a1target, *p2 = a2target, *p3 = a3target;
   for (qpms_l_t l = 1; l <= lMax; ++l) {
     for(qpms_m_t m = -l; m <= l; ++m) {
-      complex double eimf = cexp(m * dir.phi * I);
+      const complex double Mfac = qpms_normalisation_factor_M_noCS(norm, l, m);
+      const complex double Nfac = qpms_normalisation_factor_N_noCS(norm, l, m);
+      const complex double eimf = qpms_spharm_azimuthal_part(norm, m, dir.phi);
+      const complex double deimf_dmf = qpms_spharm_azimuthal_part_derivative_div_m(norm, m, dir.phi);
       if (a1target) {
         p1->rc = 0;
-        p1->thetac = *ppi * I * eimf;
-        p1->phic = -*ptau * eimf;
+        p1->thetac = *ppi * deimf_dmf * Mfac;
+        p1->phic = -*ptau * eimf * Mfac;
         ++p1;
       }
       if (a2target) {
         p2->rc = 0;
-        p2->thetac = *ptau * eimf;
-        p2->phic = *ppi * I * eimf;
+        p2->thetac = *ptau * eimf * Nfac;
+        p2->phic = *ppi * deimf_dmf * Nfac;
         ++p2;
       }
       if (a3target) {
-        p3->rc = sqrt(l*(l+1)) * (*pleg) * eimf;
+        p3->rc = sqrt(l*(l+1)) * (*pleg) * eimf * Nfac;
         p3->thetac = 0;
         p3->phic = 0;
         ++p3;
@@ -308,6 +329,10 @@ qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2t
 
 qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
     qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm) {
+#if 1
+  return qpms_vecspharm_fill(a1target, a2target, a3target, lMax, dir, 
+      qpms_normalisation_dual(norm));
+#else
   assert(lMax >= 1);
   qpms_pitau_t pt = qpms_pitau_get(dir.theta, lMax, norm);
   double const *pleg = pt.leg;
@@ -341,6 +366,7 @@ qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *cons
   }
   qpms_pitau_free(pt);
   return QPMS_SUCCESS;
+#endif
 }
 
 

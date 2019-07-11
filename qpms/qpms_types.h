@@ -119,10 +119,8 @@ typedef enum {
 	QPMS_NORMALISATION_M_MINUS = 32, ///< Include an additional \f$-1\f$ -factor into the magnetic waves.
 	QPMS_NORMALISATION_N_I = 64, ///< Include an additional \a i -factor into the electric waves.
 	QPMS_NORMALISATION_N_MINUS = 128, ///< Include an additional \f$-1\f$ -factor into the magnetic waves.
-#if 0
 	QPMS_NORMALISATION_L_I = 256, ///< Include an additional \a i -factor into the longitudinal waves.
 	QPMS_NORMALISATION_L_MINUS = 512, ///< Include an additional \f$-1\f$ -factor into the longitudinal waves.
-#endif 
 	QPMS_NORMALISATION_NORM_BITSTART = 65536, 
 	/// The VSWFs shall be power-normalised. This is the "default".
 	/**

@@ -1,3 +1,6 @@
+/*! \file qpms_specfunc.h
+ * \brief Various special and auxillary functions.
+ */
 #ifndef QPMS_SPECFUNC_H
 #define QPMS_SPECFUNC_H
 #include "qpms_types.h"

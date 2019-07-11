@@ -7,6 +7,7 @@
 #define NORMALISATION_H
 
 #include "qpms_types.h"
+#include "qpms_error.h"
 #include <math.h>
 #include <complex.h>
 
@@ -49,7 +50,7 @@ static inline complex double qpms_normalisation_factor_M_noCS(qpms_normalisation
  * a `gsl_sf_legendre_*_e()` call.
  */
 static inline complex double qpms_normalisation_factor_M(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
-	complex double fac = qn;
+	complex double fac = qpms_normalisation_factor_M_noCS(norm, l, m);
 	return ((norm & QPMS_NORMALISATION_CSPHASE) && (m % 2)) ? -fac : fac;
 }
 
@@ -75,12 +76,11 @@ static inline complex double qpms_normalisation_factor_N_noCS(qpms_normalisation
  * a `gsl_sf_legendre_*_e()` call.
  */
 static inline complex double qpms_normalisation_factor_N(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
-	complex double fac = qn;
+	complex double fac = qpms_normalisation_factor_N_noCS(norm, l, m);
 	return ((norm & QPMS_NORMALISATION_CSPHASE) && (m % 2)) ? -fac : fac;
 }
 
 
-#if 0
 /// Returns the factors of a longitudinal VSWF of a given convention compared to the reference convention.
 /**
  * This version ignores the Condon-Shortley phase bit (perhaps because the Condon-Shortley
@@ -101,10 +101,9 @@ static inline complex double qpms_normalisation_factor_L_noCS(qpms_normalisation
  * a `gsl_sf_legendre_*_e()` call.
  */
 static inline complex double qpms_normalisation_factor_L(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
-	complex double fac = qn;
+	complex double fac = qpms_normalisation_factor_L_noCS(norm, l, m);
 	return ((norm & QPMS_NORMALISATION_CSPHASE) && (m % 2)) ? -fac : fac;
 }
-#endif
 
 /// Returns normalisation flags corresponding to the dual spherical harmonics / waves.
 /**
@@ -122,20 +121,20 @@ static inline qpms_normalisation_t qpms_normalisation_dual(qpms_normalisation_t 
 /// Returns the asimuthal part of a spherical harmonic.
 /** Returns \f[ e^{im\phi} \f] for standard complex spherical harmonics,
  * \f[ e^{-im\phi \f] for complex spherical harmonics 
- * and QPMS_NORMALISATION_REVERSE_ASIMUTHAL_PHASE set.
+ * and QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE set.
  *
  * For real spherical harmonics, this gives
  * \f[ 
  * 	\sqrt{2}\cos{m \phi} \quad \mbox{if } m>0, \\
  * 	\sqrt{2}\sin{m \phi} \quad \mbox{if } m<0, \\
- * 	1 \quad \mbox{if } m>0. \\
+ * 	0 \quad \mbox{if } m>0. \\
  * \f]
  */
 static inline complex double qpms_spharm_azimuthal_part(qpms_normalisation_t norm, qpms_m_t m, double phi) {
-	switch(norm & (QPMS_NORMALISATION_REVERSE_ASIMUTHAL_PHASE | QPMS_NORMALISATION_SPHARM_REAL)) {
+	switch(norm & (QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE | QPMS_NORMALISATION_SPHARM_REAL)) {
 		case 0:
 			return cexp(I*m*phi);
-		case QPMS_NORMALISATION_REVERSE_ASIMUTHAL_PHASE:
+		case QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE:
 			return cexp(-I*m*phi);
 		case QPMS_NORMALISATION_SPHARM_REAL:
 			if (m > 0) return M_SQRT2 * cos(m*phi);
@@ -146,4 +145,41 @@ static inline complex double qpms_spharm_azimuthal_part(qpms_normalisation_t nor
 	}
 }
 
+/// Returns derivative of the asimuthal part of a spherical harmonic divided by \a m.
+/**
+ *
+ * This is used to evaluate the VSWFs together with the \a pi member array of the
+ * qpms_pitau_t structure.
+ *
+ * Returns \f[ i e^{im\phi} \f] for standard complex spherical harmonics,
+ * \f[-i e^{-i\phi \f] for complex spherical harmonics 
+ * and QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE set.
+ *
+ * For real spherical harmonics, this gives
+ * \f[ 
+ * 	-\sqrt{2}\sin{m \phi} \quad \mbox{if } m>0, \\
+ * 	\sqrt{2}\cos{m \phi} \quad \mbox{if } m<0, \\
+ * 	-1 \quad \mbox{if } \mbox{if }m=0. \\
+ * \f]
+ *
+ * (The value returned for \f$ m = 0 \f$ should not actually be used for
+ * anything except for multiplying by zero.)
+ *
+ *
+ */
+static inline complex double qpms_spharm_azimuthal_part_derivative_div_m(qpms_normalisation_t norm, qpms_m_t m, double phi) {
+	if(m==0) return 0;
+	switch(norm & (QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE | QPMS_NORMALISATION_SPHARM_REAL)) {
+		case 0:
+			return I*cexp(I*m*phi);
+		case QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE:
+			return -I*cexp(-I*m*phi);
+		case QPMS_NORMALISATION_SPHARM_REAL:
+			if (m > 0) return -M_SQRT2 * sin(m*phi);
+			else if (m < 0) return M_SQRT2 * cos(m*phi);
+			else return -1;
+		default:
+			QPMS_WTF;
+	}
+}
 #endif //NORMALISATION_H
