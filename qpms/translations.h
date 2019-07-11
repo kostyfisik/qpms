@@ -1,3 +1,29 @@
+/*! \file translations.h
+ *  \brief VSWF translation operator.
+ *
+ * ### Argument conventions
+ *
+ * A single wave with indices mu, nu is re-expanded at kdlj into waves with indices m, n,
+ * i.e. in the following functions, the first arguments over which one sums (multiplied
+ * by the waves with new origin).
+ *
+ * HOWEVER, this means that if a field has an expansion with coeffs a(mu, nu)
+ * at the original origin, with the basis at the new origin, the coeffs will be
+ * a(m, n) = \sum_{mu,nu} A(m, n, mu, nu) a(mu, nu).
+ *
+ * With qpms_trans_calculator_get_AB_arrays_buf (and other functions from *AB_arrays*
+ * family), one can choose the stride. And it seems that the former stride argument (now called
+ * destride) and the latter (now called srcstride) are connected to (m,n) and (mu,nu) indices,
+ * respectively. Seems consistent.
+ *
+ *
+ * #### r_ge_d argument:
+ *
+ * If r_ge_d == true, the translation coefficients are calculated using regular bessel functions, 
+ * regardless of what J argument is.
+ *
+ *
+ */
 #ifndef QPMS_TRANSLATIONS_H
 #define QPMS_TRANSLATIONS_H
 #include "vectors.h"
@@ -13,33 +39,6 @@
 #if defined LATTICESUMS32 || defined LATTICESUMS31
 #include "ewald.h"
 #endif
-
-/*
- * Argument conventions:
- *
- * A single wave with indices mu, nu is re-expanded at kdlj into waves with indices m, n,
- * i.e. in the following functions, the first arguments over which one sums (multiplied
- * by the waves with new origin).
- *
- * HOWEVER, this means that if a field has an expansion with coeffs a(mu, nu)
- * at the original origin, with the basis at the new origin, the coeffs will be
- * a(m, n) = \sum_{mu,nu} A(m, n, mu, nu) a(mu, nu).
- *
- * With qpms_trans_calculator_get_AB_arrays_buf (and other functions from *AB_arrays*
- * family), one can choose the stride. And it seems that the former stride argument (now called
- * destride) and the latter (now called srcstride) are connected to (m,n) and (mu,nu) indices,
- * respectively. Seems consistent.
- *
- */
-
-/*
- * r_ge_d argument:
- *
- * If r_ge_d == true, the translation coefficients are calculated using regular bessel functions, 
- * regardless of what J argument is.
- *
- */
-
 
 // TODO replace the xplicit "Taylor" functions with general,
 // taking qpms_normalisation_t argument.
@@ -61,6 +60,24 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm, qpms_m_t m, qpms_l
 complex double qpms_trans_single_B(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
 
+/// Structure holding the constant factors in normalisation operators.
+/**
+ * The VSWF translation operator elements are rather complicated linear
+ * combinations of Bessel functions and spherical harmonics.
+ * The preceding factors are rather complicated but need to be calculated
+ * (for a single normalisation convention)
+ * only once and then recycled during the operator evaluation for different
+ * translations.
+ *
+ * This structure is initialised with qpms_trans_calculator_t() and
+ * holds all the constant factors up to a truncation
+ * degree \a lMax.
+ *
+ * The destructor function is qpms_trans_calculator_free().
+ *
+ * If Ewald sums are enabled at build, it also holds the constant
+ * factors useful for lattice sums of translation operator.
+ */
 typedef struct qpms_trans_calculator {
 	qpms_normalisation_t normalisation;
 	qpms_l_t lMax;
@@ -86,8 +103,11 @@ typedef struct qpms_trans_calculator {
 	double *legendre0; // Zero-argument Legendre functions – this might go outside #ifdef in the end...
 } qpms_trans_calculator;
 
-
-qpms_trans_calculator *qpms_trans_calculator_init(qpms_l_t lMax, qpms_normalisation_t nt);
+/// Initialise a qpms_trans_calculator_t instance for a given convention and truncation degree.
+qpms_trans_calculator *qpms_trans_calculator_init(qpms_l_t lMax, ///< Truncation degree.
+	       	qpms_normalisation_t nt
+		);
+/// Destructor for qpms_trans_calculator_t.
 void qpms_trans_calculator_free(qpms_trans_calculator *);
 
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
