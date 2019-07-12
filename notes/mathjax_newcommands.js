@@ -31,6 +31,8 @@ MathJax.Hub.Config({
 	    spharm: ["{{Y_{\\mathrm{#1}}}_{#2}^{#3}}", 3, ""], // Spherical harmonics
 	    spharmR: ["{{Y_{\\mathrm{#1}}}_{\\mathrm{#1}{#2}{#3}}", 4, ""], // Spherical harmonics
 	    csphase: "\\mathsf{C_{CS}}", // Condon-Shortley phase
+	    tropSrr: ["{{S^\\mathrm{#1}}\\pr{{#2} \\leftarrow {#3}}}", 3, ""], // Translation operator singular
+	    tropRrr: ["{{R^\\mathrm{#1}}\\pr{{#2} \\leftarrow {#3}}}", 3, ""], // Translation operator regular
 
             // Kristensson's VSWFs, complex version (2014 notes)
 	    wfkc: "{\\vect{y}}", // any wave

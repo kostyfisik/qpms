@@ -63,6 +63,65 @@ GSL computes \f$ \rawFer{l}{m} \f$ unless the corresponding `csphase` argument i
 but can be tested by running `gsl_sf_legendre_array_e` for some specific arguments and comparing signs.
 
 
+Convention effect on translation operators
+------------------------------------------
+
+Let us declare VSWFs in Kristensson's conventions below, 
+\f$ \wfkc \f$ \cite kristensson_spherical_2014, 
+\f$ \wfkr \f$ \cite kristensson_scattering_2016, as the "canonical"
+spherical waves based on complex and real spherical harmonics, respectively.
+They both have the property that the translation operators \f$ \tropRrr{}{},\tropSrr{}{} \f$ 
+that transform
+the VSWF field expansion coefficients between different origins, e.g.
+\f[
+	\wfkcreg(\vect{r}) = \tropRrr{\vect r}{\vect r'} \wfkcreg(\vect{r'}),
+\f]
+actually consist of two different submatrices $A,B$ for the same-type and different-type
+(in the sense of "electric" versus "magnetic" waves) that repeat themselves once:
+\f[
+	\begin{bmatrix} \wfkcreg_1(\vect{r}) \\ \wfkcreg_2(\vect{r}) \end{bmatrix} 
+	= \begin{bmatrix} A & B \\ B & A \end{bmatrix}(\vect{r} \leftarrow \vect{r'})
+	\begin{bmatrix} \wfkcreg_1(\vect{r'}) \\ \wfkcreg_2(\vect{r'}) \end{bmatrix}.
+\f]
+(This symmetry holds also for singular translation operators \f$ \tropSrr{}{} \f$
+and real spherical harmonics based VSWFs \f$ \wfkr \f$.)
+
+However, the symmetry above will not hold like this in some stupider convention.
+Let's suppose that one uses a different convention with some additional coefficients
+compared to the canonical one,
+\f[ 
+	\wfm_{lm} = \alpha_{\wfm lm} \wfkc_{1lm},\\
+	\wfe_{lm} = \alpha_{\wfe lm} \wfkc_{2lm}.\\
+\f]
+and with field expansion (WLOG assume regular fields only)
+\f[ \vect E = c_{\wfe l m} \wfe_{lm} + c_{\wfm l m } \wfm_{lm}. \f]
+Under translations, the coefficients then transform like
+\f[
+	\begin{bmatrix} \alpha_\wfe(\vect{r}) \\ \alpha_\wfm(\vect{r}) \end{bmatrix} 
+	= \begin{bmatrix} R_{\wfe\wfe} & R_{\wfe\wfm} \\ 
+	 	          R_{\wfm\wfe} & R_{\wfm\wfm} 
+	  \end{bmatrix}(\vect{r} \leftarrow \vect{r'})
+	\begin{bmatrix} \alpha_\wfe(\vect{r'}) \\ \alpha_\wfm(\vect{r'}) \end{bmatrix},
+\f]
+and by substituting and comparing the expressions for canonical waves above, one gets
+\f[
+	R_{\wfe,lm;\wfe,l'm'} = \alpha_{\wfe lm}^{-1} A \alpha_{\wfe l'm'},\\
+	R_{\wfe,lm;\wfm,l'm'} = \alpha_{\wfe lm}^{-1} B \alpha_{\wfm l'm'},\\
+	R_{\wfm,lm;\wfe,l'm'} = \alpha_{\wfm lm}^{-1} B \alpha_{\wfe l'm'},\\
+	R_{\wfm,lm;\wfm,l'm'} = \alpha_{\wfm lm}^{-1} A \alpha_{\wfm l'm'}.
+\f]
+	
+If the coefficients for magnetic and electric waves are the same,
+\f$ \alpha_{\wfm lm} = \alpha_{\wfe lm} \f$, the translation operator 
+can be written in the same symmetric form as with the canonical convention,
+just the matrices \f$ A, B\f$ will be different inside. 
+
+If the coefficients differ (as in SCUFF-EM convention, where there
+is a relative \a i -factor between electric and magnetic waves),
+the functions such as qpms_trans_calculator_get_AB_arrays() will 
+compute \f$ R_{\wfe\wfe}, R_{\wfe\wfm} \f$ for A, B arrays.
+
+
 Literature convention tables
 ----------------------------
 
