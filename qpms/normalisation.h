@@ -10,7 +10,7 @@
 #include "qpms_error.h"
 #include <math.h>
 #include <complex.h>
-
+#include "indexing.h"
 
 /// Returns the (real positive) common norm factor of a given normalisation compared to the reference convention.
 /** Does NOT perform the inversion if QPMS_NORMALISATION_INVERSE is set. */
@@ -29,7 +29,8 @@ static inline double qpms_normalisation_normfactor(qpms_normalisation_t norm, qp
 }
 
 
-/// Returns the factors of a magnetic VSWF of a given convention compared to the reference convention.
+
+/// Returns the factors of a magnetic basis VSWF of a given convention compared to the reference convention.
 /**
  * This version ignores the Condon-Shortley phase bit (perhaps because the Condon-Shortley
  * phase is already taken into account in a `gsl_sf_legendre_*_e()` call.)
@@ -43,7 +44,7 @@ static inline complex double qpms_normalisation_factor_M_noCS(qpms_normalisation
 }
 
 
-/// Returns the factors of a magnetic VSWF of a given convention compared to the reference convention.
+/// Returns the factors of a magnetic basis VSWF of a given convention compared to the reference convention.
 /**
  * This version takes into account the Condon-Shortley phase bit. 
  * Do not use if the C.-S. has already been taken into account e.g. in
@@ -55,7 +56,7 @@ static inline complex double qpms_normalisation_factor_M(qpms_normalisation_t no
 }
 
 
-/// Returns the factors of a electric VSWF of a given convention compared to the reference convention.
+/// Returns the factors of a electric basis VSWF of a given convention compared to the reference convention.
 /**
  * This version ignores the Condon-Shortley phase bit (perhaps because the Condon-Shortley
  * phase is already taken into account in a `gsl_sf_legendre_*_e()` call.)
@@ -69,7 +70,7 @@ static inline complex double qpms_normalisation_factor_N_noCS(qpms_normalisation
 }
 
 
-/// Returns the factors of a electric VSWF of a given convention compared to the reference convention.
+/// Returns the factors of a electric basis VSWF of a given convention compared to the reference convention.
 /**
  * This version takes into account the Condon-Shortley phase bit. 
  * Do not use if the C.-S. has already been taken into account e.g. in
@@ -81,14 +82,14 @@ static inline complex double qpms_normalisation_factor_N(qpms_normalisation_t no
 }
 
 
-/// Returns the factors of a electric VSWF divided by the factor of a magnetic VWFS of a given convention, compared to the reference one.
+/// Returns the factors of a electric basis VSWF divided by the factor of a magnetic VWFS of a given convention, compared to the reference one.
 static inline complex double qpms_normalisation_factor_N_M(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
 	return qpms_normalisation_factor_N_noCS(norm, l, m) 
 		/ qpms_normalisation_factor_M_noCS(norm, l, m);
 }
 
 
-/// Returns the factors of a longitudinal VSWF of a given convention compared to the reference convention.
+/// Returns the factors of a longitudinal basis VSWF of a given convention compared to the reference convention.
 /**
  * This version ignores the Condon-Shortley phase bit (perhaps because the Condon-Shortley
  * phase is already taken into account in a `gsl_sf_legendre_*_e()` call.)
@@ -101,7 +102,7 @@ static inline complex double qpms_normalisation_factor_L_noCS(qpms_normalisation
 	return fac;
 }
 
-/// Returns the factors of a longitudinal VSWF of a given convention compared to the reference convention.
+/// Returns the factors of a longitudinal basis VSWF of a given convention compared to the reference convention.
 /**
  * This version takes into account the Condon-Shortley phase bit. 
  * Do not use if the C.-S. has already been taken into account e.g. in
@@ -111,6 +112,23 @@ static inline complex double qpms_normalisation_factor_L(qpms_normalisation_t no
 	complex double fac = qpms_normalisation_factor_L_noCS(norm, l, m);
 	return ((norm & QPMS_NORMALISATION_CSPHASE) && (m % 2)) ? -fac : fac;
 }
+
+/// Returns the factors of a basis VSWF of a given convention compared to the reference convention.
+static inline complex double qpms_normalisation_factor_uvswfi(const qpms_normalisation_t norm, qpms_uvswfi_t ui) {
+	qpms_vswf_type_t t; qpms_m_t m; qpms_l_t l;
+	qpms_uvswfi2tmn(ui, &t, &m, &l);
+	switch(t) {
+		case QPMS_VSWF_MAGNETIC:
+			return qpms_normalisation_factor_M(norm, l, m);
+		case QPMS_VSWF_ELECTRIC:
+			return qpms_normalisation_factor_N(norm, l, m);
+		case QPMS_VSWF_LONGITUDINAL:
+			return qpms_normalisation_factor_L(norm, l, m);
+		default:
+			QPMS_WTF;
+	}
+}
+
 
 /// Returns normalisation flags corresponding to the dual spherical harmonics / waves.
 /**
