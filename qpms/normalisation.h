@@ -81,6 +81,13 @@ static inline complex double qpms_normalisation_factor_N(qpms_normalisation_t no
 }
 
 
+/// Returns the factors of a electric VSWF divided by the factor of a magnetic VWFS of a given convention, compared to the reference one.
+static inline complex double qpms_normalisation_factor_N_M(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
+	return qpms_normalisation_factor_N_noCS(norm, l, m) 
+		/ qpms_normalisation_factor_M_noCS(norm, l, m);
+}
+
+
 /// Returns the factors of a longitudinal VSWF of a given convention compared to the reference convention.
 /**
  * This version ignores the Condon-Shortley phase bit (perhaps because the Condon-Shortley

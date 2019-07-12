@@ -105,10 +105,10 @@ Under translations, the coefficients then transform like
 \f]
 and by substituting and comparing the expressions for canonical waves above, one gets
 \f[
-	R_{\wfe,lm;\wfe,l'm'} = \alpha_{\wfe lm}^{-1} A \alpha_{\wfe l'm'},\\
-	R_{\wfe,lm;\wfm,l'm'} = \alpha_{\wfe lm}^{-1} B \alpha_{\wfm l'm'},\\
-	R_{\wfm,lm;\wfe,l'm'} = \alpha_{\wfm lm}^{-1} B \alpha_{\wfe l'm'},\\
-	R_{\wfm,lm;\wfm,l'm'} = \alpha_{\wfm lm}^{-1} A \alpha_{\wfm l'm'}.
+	R_{\wfe,lm;\wfe,l'm'} = \alpha_{\wfe lm}^{-1} A_{lm,l'm'} \alpha_{\wfe l'm'},\\
+	R_{\wfe,lm;\wfm,l'm'} = \alpha_{\wfe lm}^{-1} B_{lm,l'm'} \alpha_{\wfm l'm'},\\
+	R_{\wfm,lm;\wfe,l'm'} = \alpha_{\wfm lm}^{-1} B_{lm,l'm'} \alpha_{\wfe l'm'},\\
+	R_{\wfm,lm;\wfm,l'm'} = \alpha_{\wfm lm}^{-1} A_{lm,l'm'} \alpha_{\wfm l'm'}.
 \f]
 	
 If the coefficients for magnetic and electric waves are the same,
@@ -119,7 +119,18 @@ just the matrices \f$ A, B\f$ will be different inside.
 If the coefficients differ (as in SCUFF-EM convention, where there
 is a relative \a i -factor between electric and magnetic waves),
 the functions such as qpms_trans_calculator_get_AB_arrays() will 
-compute \f$ R_{\wfe\wfe}, R_{\wfe\wfm} \f$ for A, B arrays.
+compute \f$ R_{\wfe\wfe}, R_{\wfe\wfm} \f$ for \f$ A, B \f$ arrays.
+The remaining matrices' elements must then be obtained as
+\f[
+	R_{\wfm,lm;\wfe,l'm'} = \alpha_{\wfm lm}^{-1} \alpha_{\wfe lm} 
+		R_{\wfe,lm;\wfm,l'm'} \alpha_{\wfm l'm'}^{-1} \alpha_{\wfe l'm'}
+		= g_{lm}R_{\wfe,lm;\wfm,l'm'}g_{l'm'}, \\
+	R_{\wfm,lm;\wfm,l'm'} = \alpha_{\wfm lm}^{-1} \alpha_{\wfe lm} 
+		R_{\wfe,lm;\wfe,l'm'} \alpha_{\wfe l'm'}^{-1} \alpha_{\wfm l'm'}
+		= g_{lm}R_{\wfe,lm;\wfe,l'm'}g_{l'm'}^{-1},
+\f]
+where the coefficients \f$ g_{lm} \f$ can be obtained by
+qpms_normalisation_factor_N_M().
 
 
 Literature convention tables

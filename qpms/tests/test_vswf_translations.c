@@ -1,4 +1,4 @@
-//c99 -o test_vswf_translations -ggdb -I .. test_vswf_translations.c ../translations.c ../gaunt.c -lgsl -lm -lblas ../vecprint.c ../vswf.c ../legendre.c
+// c99 -o test_vswf_translations -ggdb -I .. -I ../../amos test_vswf_translations.c ../translations.c ../gaunt.c -lgsl -lm -lblas ../vecprint.c ../vswf.c ../legendre.c ../error.c ../bessel.c ../../amos/libamos.a  -lgfortran
 #include "translations.h"
 #include "vswf.h"
 #include <stdio.h>
@@ -12,18 +12,14 @@
 
 char *normstr(qpms_normalisation_t norm) {
 	//int csphase = qpms_normalisation_t_csphase(norm);
-	norm = qpms_normalisation_t_normonly(norm);
+	norm = norm & QPMS_NORMALISATION_NORM_BITS;
 	switch (norm) {
-		case QPMS_NORMALISATION_NONE:
+		case QPMS_NORMALISATION_NORM_NONE:
 			return "none";
-		case QPMS_NORMALISATION_SPHARM:
+		case QPMS_NORMALISATION_NORM_SPHARM:
 			return "spharm";
-		case QPMS_NORMALISATION_POWER:
+		case QPMS_NORMALISATION_NORM_POWER:
 			return "power";
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:
-      return "xu";
-#endif
 		default:
 			return "!!!undef!!!";
 	}
@@ -62,14 +58,13 @@ int main() {
 	}
 	
 	for(int use_csbit = 0; use_csbit <= 1; ++use_csbit) {
-		for(int i = 1; 
-#ifdef USE_XU_ANTINORMALISATION
-        i <= 4; 
-#else
-        i <= 3; 
-#endif
-        ++i){
-			qpms_normalisation_t norm = i | (use_csbit ? QPMS_NORMALISATION_T_CSBIT : 0);
+		for(int i = 0; i < 3; ++i){
+			qpms_normalisation_t norm = ((qpms_normalisation_t[]) 
+          { QPMS_NORMALISATION_NORM_SPHARM,
+            QPMS_NORMALISATION_NORM_POWER,
+            QPMS_NORMALISATION_NORM_NONE
+            })[i]
+        | (use_csbit ? QPMS_NORMALISATION_CSPHASE : 0);
 			qpms_trans_calculator *c = qpms_trans_calculator_init(lMax, norm);
 			for(int J = 1; J <= 4; ++J)
 				test_sphwave_translation(c, J, o2minuso1, npoints, points);

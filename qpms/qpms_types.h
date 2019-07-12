@@ -14,6 +14,9 @@
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
 #endif
+#ifndef M_SQRT2
+#define M_SQRT2 (1.4142135623730950488)
+#endif
 
 // integer index types
 typedef int qpms_lm_t;
