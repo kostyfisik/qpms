@@ -63,6 +63,66 @@ GSL computes \f$ \rawFer{l}{m} \f$ unless the corresponding `csphase` argument i
 but can be tested by running `gsl_sf_legendre_array_e` for some specific arguments and comparing signs.
 
 
+Convention effects on symmetry operators
+----------------------------------------
+
+### Spherical harmonics
+
+Let' have two different (complex) spherical harmonic conventions connected by constant factors:
+\f[
+	\spharm[a]{l}{m} = c^\mathrm{a}_{lm}\spharm{l}{m}.
+\f]
+
+Both sets can be used to describe an angular function \f$ f \f$
+\f[
+	f = \sum_{lm} f^\mathrm{a}_{lm} \spharm[a]{l}{m} 
+	  = \sum_{lm} f^\mathrm{a}_{lm} c^\mathrm{a}_{lm}\spharm{l}{m}
+	  = \sum_{lm} f_{lm} \spharm{l}{m}.
+\f]
+
+If we perform a (symmetry) transformation \f$ g \f$ acting on the \f$ \spharm{l}{m} \f$
+basis via matrix \f$ D(g)_{l,m;l',m'} \f$, i.e.
+\f[
+	g\pr{\spharm{l}{m}} = \sum_{l'm'} D(g)_{l,m;l'm'} \spharm{l'}{m'},
+\f]
+we see
+\f[
+	g(f) = \sum_{lm} f_{lm}\sum_{l'm'} D(g)_{l,m;l'm'} \spharm{l'}{m'} 
+	     = \sum_{lm} f^\mathrm{a}_{lm} c^\mathrm{a}_{lm}\sum_{l'm'} D(g)_{l,m;l'm'} \spharm{l'}{m'}.
+\f]
+Rewriting the transformation action in the second basis
+\f[
+	g\pr{\spharm[a]{l}{m}} = \sum_{l'm'} D(g)^\mathrm{a}_{l,m;l'm'} \spharm[a]{l'}{m'},\\
+	g(f) = \sum_{lm} f^\mathrm{a}_{lm}\sum_{l'm'} D(g)^\mathrm{a}_{l,m;l'm'} \spharm[a]{l'}{m'},
+\f]
+and performing some substitutions,
+\f[ 
+	g(f) = \sum_{lm} \frac{f_{lm}}{c^\mathrm{a}_{lm}}
+		\sum_{l'm'} D(g)^\mathrm{a}_{l,m;l'm'} c^\mathrm{a}_{l'm'}\spharm{l'}{m'},
+\f]
+and comparing, we get
+\f[
+	D(g)^\mathrm{a}_{l,m;l'm'} = \frac{c^\mathrm{a}_{lm}}{c^\mathrm{a}_{l'm'}}D(g)_{l,m;l'm'}.
+\f]
+
+If the  difference between conventions is in particular Condon-Shortley phase, 
+this means a \f$ (-1)^{m-m'} \f$ factor between the transformation matrices.
+This does not affect the matrices for the inversion and
+mirror symmetry operations with
+respect to the \a xy, \a yz and \a xz planes, because they are all diagonal
+or anti-diagonal with respect to \a m (hence \f$ m-m \f$ is either zero
+or anyways even integer).
+It does, however, affect rotations, flipping the sign of the rotations
+along the \a z axis.
+
+Apparently, a constant complex factor independent of \f$ l,m \f$
+does nothing to the form of the tranformation matrix.
+
+These conclusions about transformations of spherical harmonics
+hold also for the VSWFs built on top of them.
+
+
+
 Convention effect on translation operators
 ------------------------------------------
 
@@ -131,7 +191,6 @@ The remaining matrices' elements must then be obtained as
 \f]
 where the coefficients \f$ g_{lm} \f$ can be obtained by
 qpms_normalisation_factor_N_M().
-
 
 Literature convention tables
 ----------------------------
