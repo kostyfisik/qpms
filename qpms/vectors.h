@@ -287,6 +287,44 @@ static inline csphvec_t ccart2csphvec(const ccart3_t cartvec, const sph_t at) {
 	return res;
 }
 
+/// Convert sph_t to csph_t.
+static inline csph_t sph2csph(sph_t s) {
+	csph_t cs = {s.r, s.theta, s.phi};
+	return cs;
+}
+
+/// Lossy coordinate transform of ccart3_t to csph_t.
+/** The angle and real part of the radial coordinate are determined
+ *  from the real components of \a \cart. The imaginary part of the radial
+ *  coordinate is then determined as the length of the imaginary 
+ *  part of \a cart *projected onto* the real part of \a cart.
+ *
+ *  N.B. this obviously makes not much sense for purely imaginary vectors
+ *  (and will cause NANs). TODO handle this better.
+ */
+static inline csph_t ccart2csph(const ccart3_t cart) {
+	cart3_t rcart = {creal(cart.x), creal(cart.y), creal(cart.z)};
+	cart3_t icart = {cimag(cart.x), cimag(cart.y), cimag(cart.z)};
+	csph_t sph = sph2csph(cart2sph(rcart));
+	sph.r += I * cart3_dot(icart,rcart) / cart3norm(rcart);
+	return sph;
+}
+
+/// Coordinate transform of csph_t to ccart3_t
+static inline ccart3_t csph2ccart(const csph_t sph) {
+	ccart3_t cart;
+	double sin_th = 
+#ifdef QPMS_VECTORS_NICE_TRANSFORMATIONS
+	   (sph.theta == M_PI) ? 0 :
+#endif
+		sin(sph.theta);
+	cart.x = sph.r * sin_th * cos(sph.phi);
+	cart.y = sph.r * sin_th * sin(sph.phi);
+	cart.z = sph.r * cos(sph.theta);
+	return cart;
+}
+
+
 void print_csphvec(csphvec_t);
 void print_ccart3(ccart3_t);
 void print_cart3(cart3_t);
