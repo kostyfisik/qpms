@@ -722,7 +722,7 @@ cdef class BaseSpec:
         if 'norm' in kwargs.keys():
             self.s.norm = kwargs['norm']
         else:
-            self.s.norm = QPMS_NORMALISATION_NORM_POWER | QPMS_NORMALISATION_CSPHASE
+            self.s.norm = <qpms_normalisation_t>(QPMS_NORMALISATION_NORM_POWER | QPMS_NORMALISATION_CSPHASE)
         # set the other metadata
         cdef qpms_l_t l
         self.s.lMax_L = -1
