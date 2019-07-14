@@ -207,4 +207,77 @@ static inline complex double qpms_spharm_azimuthal_part_derivative_div_m(qpms_no
 			QPMS_WTF;
 	}
 }
+
+#if 0 // legacy code moved from qpms_types.h. TODO cleanup
+/// Returns the normalisation convention code without the Condon-Shortley phase.
+static inline int qpms_normalisation_t_normonly(qpms_normalisation_t norm) {
+	return norm & (~QPMS_NORMALISATION_T_CSBIT);
+}
+
+/* Normalisation of the spherical waves is now scattered in at least three different files:
+ * here, we have the norm in terms of radiated power of outgoing wave.
+ * In file legendre.c, function qpms_pitau_get determines the norm used in the vswf.c
+ * spherical vector wave norms. The "dual" waves in vswf.c use the ..._abssquare function below.
+ * In file translations.c, the normalisations are again set by hand using the normfac and lognormfac
+ * functions.
+ */
+#include <math.h>
+#include <assert.h>
+// relative to QPMS_NORMALISATION_KRISTENSSON_CS, i.e.
+// P_l^m[normtype] = P_l^m[Kristensson]
+static inline double qpms_normalisation_t_factor(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
+	int csphase = qpms_normalisation_t_csphase(norm);
+	norm = qpms_normalisation_t_normonly(norm);
+	double factor;
+	switch (norm) {
+		case QPMS_NORMALISATION_KRISTENSSON:
+			factor = 1.;
+			break;
+		case QPMS_NORMALISATION_TAYLOR:
+			factor = sqrt(l*(l+1));
+			break;
+		case QPMS_NORMALISATION_NONE:
+			factor = sqrt(l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1)));
+			break;
+#ifdef USE_XU_ANTINORMALISATION // broken probably in legendre.c
+		case QPMS_NORMALISATION_XU:
+			factor = sqrt(4 * M_PI) / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
+			break;
+#endif
+		default:
+			assert(0);
+	}
+	factor *= (m%2)?(-csphase):1;
+	return factor;
+}
+
+
+// TODO move elsewhere
+static inline double qpms_normalisation_t_factor_abssquare(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
+	norm = qpms_normalisation_t_normonly(norm);
+	switch (norm) {
+		case QPMS_NORMALISATION_KRISTENSSON:
+			return 1.;
+			break;
+		case QPMS_NORMALISATION_TAYLOR:
+			return l*(l+1);
+			break;
+		case QPMS_NORMALISATION_NONE:
+			return l*(l+1) * 4 * M_PI / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
+			break;
+#ifdef USE_XU_ANTINORMALISATION // broken probably in legendre.c
+		case QPMS_NORMALISATION_XU:
+			{
+			  double fac = sqrt(4 * M_PI) / (2*l+1) * exp(lgamma(l+m+1)-lgamma(l-m+1));
+			  return fac * fac;
+			}
+			break;
+#endif 
+		default:
+			assert(0);
+			return NAN;
+	}
+}
+#endif
+
 #endif //NORMALISATION_H
