@@ -2,20 +2,29 @@
 #include "tiny_inlines.h"
 #include "indexing.h"
 #include "wigner.h"
+#include "qpms_error.h"
 
 // TODO at some point, maybe support also other norms.
 // (perhaps just use qpms_normalisation_t_factor() at the right places)
 static inline void check_norm_compat(const qpms_vswf_set_spec_t *s)
 {
-  switch (qpms_normalisation_t_normonly(s->norm)) {
-    case QPMS_NORMALISATION_POWER:
+  switch (s->norm & QPMS_NORMALISATION_NORM_BITS) {
+    case QPMS_NORMALISATION_NORM_POWER:
       break;
-    case QPMS_NORMALISATION_SPHARM:
+    case QPMS_NORMALISATION_NORM_SPHARM:
       break;
     default:
-      abort(); // Only SPHARM and POWER norms are supported right now.
+      QPMS_NOT_IMPLEMENTED("At the moment, only spherical harmonics of spherical harmonics or power normalisations implemented.");
   }
 }
+
+
+static inline void ONLY_EIMF_IMPLEMENTED(const qpms_normalisation_t norm)
+{
+	if (norm & QPMS_NORMALISATION_SPHARM_REAL)
+		QPMS_NOT_IMPLEMENTED("Support for real spherical harmonics not implemented yet.");
+}
+
 
 // Used in the functions below to ensure memory allocation and checks for bspec validity
 static inline complex double *ensure_alloc(complex double *target,
@@ -23,17 +32,16 @@ static inline complex double *ensure_alloc(complex double *target,
   check_norm_compat(bspec);
   const size_t n = bspec->n;
   if (target == NULL)
-    target = malloc(n * n * sizeof(complex double));
-  if (target == NULL) abort();
+    QPMS_CRASHING_MALLOC(target, n * n * sizeof(complex double));
   return target;
 }
-
 
 
 complex double *qpms_zflip_uvswi_dense(
     complex double *target,
     const qpms_vswf_set_spec_t *bspec) 
 {
+  check_norm_compat(bspec);
   target = ensure_alloc(target, bspec);
   const size_t n = bspec->n;
 
@@ -69,6 +77,8 @@ complex double *qpms_yflip_uvswi_dense(
     complex double *target,
     const qpms_vswf_set_spec_t *bspec) 
 {
+  check_norm_compat(bspec);
+  ONLY_EIMF_IMPLEMENTED(bspec->norm);
   target = ensure_alloc(target, bspec);
   const size_t n = bspec->n;
 
@@ -104,6 +114,8 @@ complex double *qpms_xflip_uvswi_dense(
     complex double *target,
     const qpms_vswf_set_spec_t *bspec) 
 {
+  check_norm_compat(bspec);
+  ONLY_EIMF_IMPLEMENTED(bspec->norm);
   target = ensure_alloc(target, bspec);
   const size_t n = bspec->n;
 
@@ -142,6 +154,9 @@ complex double *qpms_zrot_uvswi_dense(
                 double phi ///< Rotation angle
                 )
 {
+  QPMS_UNTESTED; // not sure about the C.-S. phase. Don't forget documenting it as well.
+  check_norm_compat(bspec);
+  ONLY_EIMF_IMPLEMENTED(bspec->norm);
   target = ensure_alloc(target, bspec);
   const size_t n = bspec->n;
 
@@ -182,6 +197,9 @@ complex double *qpms_irot3_uvswfi_dense(
     const qpms_vswf_set_spec_t *bspec,
     const qpms_irot3_t t)
 {
+  QPMS_UNTESTED; // not sure about the C.-S. phase. Don't forget documenting it as well.
+  check_norm_compat(bspec);
+  ONLY_EIMF_IMPLEMENTED(bspec->norm);
   target = ensure_alloc(target, bspec);
   const size_t n = bspec->n;
 
