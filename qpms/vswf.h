@@ -11,7 +11,8 @@
 #include "qpms_types.h"
 #include <gsl/gsl_sf_legendre.h>
 
-// Methods for qpms_vswf_spec_t
+// ---------------Methods for qpms_vswf_spec_t-----------------------
+//
 /// Creates a qpms_vswf_set_spec_t structure with an empty list of wave indices.
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_init(void);
 /// Appends a VSWF index to a \ref qpms_vswf_set_spec_t, also updating metadata.
@@ -60,6 +61,8 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
 		csph_t kr, ///< Evaluation point.
 		qpms_bessel_t btyp);
 
+// -----------------------------------------------------------------------
+
 /// Electric wave N.
 csphvec_t qpms_vswf_single_el(int m, int n, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
@@ -87,10 +90,14 @@ qpms_errno_t qpms_legendre_deriv_y_fill(double *where, double *where_deriv, doub
 
 
 /// Evaluate the zeroth-degree longitudinal VSWF \f$ \mathbf{L}_0^0 \f$.
+/**
+ * Any `norm` is being ignored right now.
+ */
 csphvec_t qpms_vswf_L00(
 		csph_t kdrj, //< VSWF evaluation point.
 		qpms_bessel_t btyp,
-		qpms_normalisation_t norm);
+		qpms_normalisation_t norm //< Ignored!
+		);
 
 /// Evaluate VSWFs at a given point from \a l = 1 up to a given degree \a lMax.
 /**

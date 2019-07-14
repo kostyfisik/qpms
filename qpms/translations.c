@@ -13,7 +13,7 @@
 #include <stdlib.h> //abort()
 #include <gsl/gsl_sf_coupling.h>
 #include "qpms_error.h"
-
+#include "normalisation.h"
 
 /*
  * Define macros with additional factors that "should not be there" according
@@ -52,6 +52,12 @@
 #define BQ_OFFSET 0
 #endif
 
+
+// Translation operators for real sph. harm. based waves are not yet implemented...
+static inline void TROPS_ONLY_EIMF_IMPLEMENTED(qpms_normalisation_t norm) {
+  if (norm & (QPMS_NORMALISATION_SPHARM_REAL | QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE)) 
+    QPMS_NOT_IMPLEMENTED("Translation operators for real or inverse complex spherical harmonics based waves are not implemented.");
+}
 
 /*
  * References:
@@ -127,60 +133,26 @@ int qpms_sph_bessel_fill(qpms_bessel_t typ, int lmax, double x, complex double *
 
 static inline double qpms_trans_normlogfac(qpms_normalisation_t norm,
     int m, int n, int mu, int nu) {
-  //int csphase = qpms_normalisation_t csphase(norm); // probably not needed here
-  norm = qpms_normalisation_t_normonly(norm);
-  switch(norm) {
-    case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_TAYLOR:
       return -0.5*(lgamma(n+m+1)-lgamma(n-m+1)+lgamma(nu-mu+1)-lgamma(nu+mu+1));
-      break;
-    case QPMS_NORMALISATION_NONE:
-      return -(lgamma(n+m+1)-lgamma(n-m+1)+lgamma(nu-mu+1)-lgamma(nu+mu+1));
-      break;
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:
-      return 0;
-      break;
-#endif
-    default:
-      abort();
-  }
 }
 
 static inline double qpms_trans_normfac(qpms_normalisation_t norm,
     int m, int n, int mu, int nu) {
   int csphase = qpms_normalisation_t_csphase(norm);
-  norm = qpms_normalisation_t_normonly(norm);
   /* Account for csphase here. Alternatively, this could be done by
    * using appropriate csphase in the legendre polynomials when calculating
    * the translation operator.
    */
   double normfac = (1 == csphase) ? min1pow(m-mu) : 1.;
-  switch(norm) {
-    case QPMS_NORMALISATION_KRISTENSSON:
-      normfac *= sqrt((n*(n+1.))/(nu*(nu+1.)));
-      normfac *= sqrt((2.*n+1)/(2.*nu+1));
-      break;
-    case QPMS_NORMALISATION_TAYLOR:
-      normfac *= sqrt((2.*n+1)/(2.*nu+1));
-      break;
-    case QPMS_NORMALISATION_NONE:
-      normfac *= (2.*n+1)/(2.*nu+1);
-      break;
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:
-      break;
-#endif
-    default:
-      abort();
-  }
-
+  normfac *= sqrt((n*(n+1.))/(nu*(nu+1.)));
+  normfac *= sqrt((2.*n+1)/(2.*nu+1));
   return normfac;
 }
 
 complex double qpms_trans_single_A(qpms_normalisation_t norm,
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
+  TROPS_ONLY_EIMF_IMPLEMENTED(norm);
   if(r_ge_d) J = QPMS_BESSEL_REGULAR;
 
   double costheta = cos(kdlj.theta);
@@ -221,7 +193,9 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm,
 
   double normlogfac = qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
-
+  /// N<-N type coefficients w.r.t. Kristensson's convention. Csphase has been already taken into acct ^^^.
+  normfac *=  qpms_normalisation_factor_N_noCS(norm, nu, mu)
+              / qpms_normalisation_factor_N_noCS(norm, n, m);
   // ipow(n-nu) is the difference from the Taylor formula!
   presum *= /*ipow(n-nu) * */
     (normfac * exp(normlogfac))
@@ -352,6 +326,7 @@ complex double qpms_trans_single_B_Xu(int m, int n, int mu, int nu, sph_t kdlj,
 complex double qpms_trans_single_B(qpms_normalisation_t norm,
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) { 
+  TROPS_ONLY_EIMF_IMPLEMENTED(norm);
 #ifndef USE_BROKEN_SINGLETC
   assert(0); // FIXME probably gives wrong values, do not use.
 #endif
@@ -408,6 +383,9 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
 
   double normlogfac = qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
+  /// N<-M type coefficients w.r.t. Kristensson's convention. Csphase has been already taken into acct ^^^.
+  normfac *=  qpms_normalisation_factor_M_noCS(norm, nu, mu)
+              / qpms_normalisation_factor_N_noCS(norm, n, m);
 
   // ipow(n-nu) is the difference from the "old Taylor" formula	
   presum *= /*ipow(n-nu) * */(exp(normlogfac) * normfac)
@@ -546,6 +524,9 @@ static void qpms_trans_calculator_multipliers_A_general(
 
   double normlogfac = qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
+  /// N<-N type coefficients w.r.t. Kristensson's convention. Csphase has been already taken into acct ^^^.
+  normfac *=  qpms_normalisation_factor_N_noCS(norm, nu, mu)
+              / qpms_normalisation_factor_N_noCS(norm, n, m);
 
   normfac *= min1pow(m); //different from old Taylor
 
@@ -610,6 +591,9 @@ void qpms_trans_calculator_multipliers_B_general(
 
   double normlogfac= qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
+  /// N<-M type coefficients w.r.t. Kristensson's convention. Csphase has been already taken into acct ^^^.
+  normfac *=  qpms_normalisation_factor_M_noCS(norm, nu, mu)
+              / qpms_normalisation_factor_N_noCS(norm, n, m);
 
   double presum = min1pow(1-m) * (2*nu+1)/(2.*(n*(n+1))) 
     * exp(lgamma(n+m+1) - lgamma(n-m+1) + lgamma(nu-mu+1) - lgamma(nu+mu+1)
@@ -680,9 +664,11 @@ void qpms_trans_calculator_multipliers_B_general(
 
 
   int csphase = qpms_normalisation_t_csphase(norm); //TODO FIXME use this
-  norm = qpms_normalisation_t_normonly(norm);
   double normlogfac= qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
+  /// N<-M type coefficients w.r.t. Kristensson's convention. Csphase has been already taken into acct ^^^.
+  normfac *=  qpms_normalisation_factor_M_noCS(norm, nu, mu)
+              / qpms_normalisation_factor_N_noCS(norm, n, m);
   // TODO use csphase to modify normfac here!!!!
   // normfac = xxx ? -normfac : normfac;
   normfac *= min1pow(m);//different from old taylor
@@ -831,51 +817,18 @@ static void qpms_trans_calculator_multipliers_B_Taylor(
 }
 
 int qpms_trans_calculator_multipliers_A(qpms_normalisation_t norm, complex double *dest, int m, int n, int mu, int nu, int qmax) {
-  switch (qpms_normalisation_t_normonly(norm)) {
-    case QPMS_NORMALISATION_TAYLOR:
-#ifdef USE_SEPARATE_TAYLOR
-      qpms_trans_calculator_multipliers_A_Taylor(dest,m,n,mu,nu,qmax);
-      return 0;
-      break;
-#endif
-    case QPMS_NORMALISATION_NONE:
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:
-#endif   
-    case QPMS_NORMALISATION_KRISTENSSON:
       qpms_trans_calculator_multipliers_A_general(norm, dest, m, n, mu, nu, qmax);
       return 0;
-      break;
-    default:
-      abort();
-  }
-  assert(0);
 }
 
 int qpms_trans_calculator_multipliers_B(qpms_normalisation_t norm, complex double *dest, int m, int n, int mu, int nu, int Qmax) {
-  switch (qpms_normalisation_t_normonly(norm)) {
-    case QPMS_NORMALISATION_TAYLOR:
-#ifdef USE_SEPARATE_TAYLOR
-      qpms_trans_calculator_multipliers_B_Taylor(dest,m,n,mu,nu,Qmax);
-      return 0;
-      break;
-#endif
-    case QPMS_NORMALISATION_NONE:
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:
-#endif   
-    case QPMS_NORMALISATION_KRISTENSSON:
       qpms_trans_calculator_multipliers_B_general(norm, dest, m, n, mu, nu, Qmax);
       return 0;
-      break;
-    default:
-      abort();
-  }
-  assert(0);
 }
 
 qpms_trans_calculator
 *qpms_trans_calculator_init (const int lMax, const qpms_normalisation_t normalisation) {
+  TROPS_ONLY_EIMF_IMPLEMENTED(normalisation);
   assert(lMax > 0);
   qpms_trans_calculator *c = malloc(sizeof(qpms_trans_calculator));
   c->lMax = lMax;
@@ -951,6 +904,7 @@ static inline complex double qpms_trans_calculator_get_A_precalcbuf(const qpms_t
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J,
     const complex double *bessel_buf, const double *legendre_buf) {
+  TROPS_ONLY_EIMF_IMPLEMENTED(c->normalisation);
   size_t i = qpms_trans_calculator_index_mnmunu(c, m, n, mu, nu);
   size_t qmax = c->A_multipliers[i+1] - c->A_multipliers[i] - 1;
   assert(qmax == gaunt_q_max(-m,n,mu,nu));
@@ -977,33 +931,20 @@ complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
     // TODO warn? 
     return NAN+I*NAN;
   int csphase = qpms_normalisation_t_csphase(c->normalisation);
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    // TODO use normalised legendre functions for Taylor and Kristensson
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_NONE:
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:   
-#endif
-      {
-        double costheta = cos(kdlj.theta);
-        if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,
-              costheta,csphase,legendre_buf)) abort();
-        if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
-        return qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
-            kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-      }
-      break;
-    default:
-      abort();
-  }
-  assert(0);
+  
+  double costheta = cos(kdlj.theta);
+  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,
+        costheta,csphase,legendre_buf)) abort();
+  if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
+  return qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
+      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
 }
 
 static inline complex double qpms_trans_calculator_get_B_precalcbuf(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu, sph_t kdlj,
     bool r_ge_d, qpms_bessel_t J,
     const complex double *bessel_buf, const double *legendre_buf) {
+  TROPS_ONLY_EIMF_IMPLEMENTED(c->normalisation);
   size_t i = qpms_trans_calculator_index_mnmunu(c, m, n, mu, nu);
   size_t qmax = c->B_multipliers[i+1] - c->B_multipliers[i] - (1 - BQ_OFFSET);
   assert(qmax == gauntB_Q_max(-m,n,mu,nu));
@@ -1030,26 +971,12 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
     // TODO warn? 
     return NAN+I*NAN;
   int csphase = qpms_normalisation_t_csphase(c->normalisation);
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_NONE:
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:   
-#endif
-      {
-        double costheta = cos(kdlj.theta);
-        if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
-              costheta,csphase,legendre_buf)) abort();
-        if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
-        return qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
-            kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-      }
-      break;
-    default:
-      abort();
-  }
-  assert(0);
+  double costheta = cos(kdlj.theta);
+  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
+        costheta,csphase,legendre_buf)) abort();
+  if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
+  return qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
+      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
 }
 
 int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
@@ -1064,29 +991,15 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
     // TODO warn? different return value?
     return 0;
   }
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_NONE:
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:   
-#endif
-      {
-        double costheta = cos(kdlj.theta);
-        if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
-              costheta,-1,legendre_buf)) abort();
-        if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
-        *Adest = qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
-            kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-        *Bdest = qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
-            kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-        return 0;
-      }
-      break;
-    default:
-      abort();
-  }
-  assert(0);
+  double costheta = cos(kdlj.theta);
+  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
+        costheta,-1,legendre_buf)) abort();
+  if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
+  *Adest = qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
+      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+  *Bdest = qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
+      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+  return 0;
 }
 
 
@@ -1105,40 +1018,31 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
     // TODO warn? different return value?
     return 0;
   }
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_POWER:
-    case QPMS_NORMALISATION_NONE:
-      {
-        double costheta = cos(kdlj.theta);
-        if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
-              costheta,-1,legendre_buf)) abort();
-        if (qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf)) abort();
-        size_t desti = 0, srci = 0;
-        for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
-          for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
+  {
+    double costheta = cos(kdlj.theta);
+    if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
+          costheta,-1,legendre_buf)) abort();
+    if (qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf)) abort();
+    size_t desti = 0, srci = 0;
+    for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
+      for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
 #ifndef NDEBUG
-            size_t assertindex = qpms_trans_calculator_index_mnmunu(c,m,n,mu,nu);
+        size_t assertindex = qpms_trans_calculator_index_mnmunu(c,m,n,mu,nu);
 #endif
-            assert(assertindex == desti*c->nelem + srci);
-            *(Adest + deststride * desti + srcstride * srci) = 
-              qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
-                  kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-            *(Bdest + deststride * desti + srcstride * srci) = 
-              qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
-                  kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-            ++srci;
-          }
-          ++desti;
-          srci = 0;
-        }
-        return 0;
+        assert(assertindex == desti*c->nelem + srci);
+        *(Adest + deststride * desti + srcstride * srci) = 
+          qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
+              kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+        *(Bdest + deststride * desti + srcstride * srci) = 
+          qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
+              kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+        ++srci;
       }
-      break;
-    default:
-      abort();
+      ++desti;
+      srci = 0;
+    }
+    return 0;
   }
-  assert(0);
 }
 
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
@@ -1287,10 +1191,6 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
     if(doerr) serr_total[y] += sigma0_err;
   }
   
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_POWER:
-    case QPMS_NORMALISATION_NONE:
       {
         ptrdiff_t desti = 0, srci = 0;
         for (qpms_l_t n = 1; n <= c->lMax; ++n) for (qpms_m_t m = -n; m <= n; ++m) {
@@ -1335,10 +1235,6 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
           srci = 0;
         }
       }
-      break;
-    default:
-      abort();
-  }
 
   free(sigmas_short);
   free(sigmas_long);
@@ -1563,10 +1459,6 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
     if(doerr) serr_total[y] += sigma0_err;
   }
   
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_POWER:
-    case QPMS_NORMALISATION_NONE:
       {
         ptrdiff_t desti = 0, srci = 0;
         for (qpms_l_t n = 1; n <= c->lMax; ++n) for (qpms_m_t m = -n; m <= n; ++m) {
@@ -1611,10 +1503,6 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
           srci = 0;
         }
       }
-      break;
-    default:
-      abort();
-  }
 
   free(sigmas_short);
   free(sigmas_long);
@@ -1670,10 +1558,6 @@ int qpms_trans_calculator_get_shortrange_AB_arrays_buf(const qpms_trans_calculat
     // TODO warn? different return value?
     return 0;
   }
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_POWER:
-    case QPMS_NORMALISATION_NONE: 
       {
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
@@ -1698,11 +1582,6 @@ int qpms_trans_calculator_get_shortrange_AB_arrays_buf(const qpms_trans_calculat
         }
         return 0;
       }
-      break;
-    default:
-      abort();
-  }
-  assert(0);
 }
 
 int qpms_trans_calculator_get_shortrange_AB_buf_p(const qpms_trans_calculator *c,
@@ -1718,10 +1597,6 @@ int qpms_trans_calculator_get_shortrange_AB_buf_p(const qpms_trans_calculator *c
     // TODO warn? different return value?
     return 0;
   }
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_NONE:
       {
         double costheta = cos(kdlj.theta);
         if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
@@ -1735,11 +1610,6 @@ int qpms_trans_calculator_get_shortrange_AB_buf_p(const qpms_trans_calculator *c
             kdlj,false,J,bessel_buf,legendre_buf);
         return 0;
       }
-      break;
-    default:
-      abort();
-  }
-  assert(0);
 }
 
 // Short-range parts of the translation coefficients
@@ -1826,13 +1696,6 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_buf_p(const qpms_trans_calculato
   assert (J == QPMS_HANKEL_PLUS);
   assert(k_sph.theta == M_PI_2);
   
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_KRISTENSSON:
-    case QPMS_NORMALISATION_NONE:
-#ifdef USE_XU_ANTINORMALISATION
-    case QPMS_NORMALISATION_XU:   
-#endif
       {
         //double costheta = cos(kdlj.theta);
         //if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
@@ -1846,11 +1709,6 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_buf_p(const qpms_trans_calculato
             k_sph,J,lrhankel_recparts_buf);
         return 0;
       }
-      break;
-    default:
-      abort();
-  }
-  assert(0);
 }
 
 // Fourier transforms of the long-range parts of the translation coefficients
@@ -1884,10 +1742,6 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_arrays_buf(const qpms_trans_calc
     return 0;
   }
 #endif 
-  switch(qpms_normalisation_t_normonly(c->normalisation)) {
-    case QPMS_NORMALISATION_TAYLOR:
-    case QPMS_NORMALISATION_POWER:
-    case QPMS_NORMALISATION_NONE:
       {
         lrhankel_recpart_fill(lrhankel_recparts_buf, 2*c->lMax+1,
             lrk_cutoff, c->hct, kappa, cv, k0, k_sph.r);
@@ -1910,11 +1764,6 @@ int qpms_trans_calculator_get_2DFT_longrange_AB_arrays_buf(const qpms_trans_calc
         }
         return 0;
       }
-      break;
-    default:
-      abort();
-  }
-  assert(0);
 }
 
 // FIXME i get stack smashing error inside the following function if compiled with optimizations

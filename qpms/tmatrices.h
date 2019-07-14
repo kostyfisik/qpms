@@ -142,6 +142,13 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 /// Loads a scuff-tmatrix generated file.
 /** A simple wrapper over qpms_read_scuff_tmatrix() that needs a 
  * path instead of open FILE.
+ *
+ * The T-matrix is transformed from the VSWF basis defined by
+ * QPMS_NORMALISATION_CONVENTION_SCUFF into the basis defined
+ * by convention bspec->norm.
+ * 
+ * Right now, bspec->norm with real or "reversed complex" spherical
+ * harmonics are not supported.
  */
 qpms_errno_t qpms_read_scuff_tmatrix(
 		FILE *f, ///< An open stream with the T-matrix data.

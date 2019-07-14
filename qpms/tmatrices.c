@@ -17,6 +17,7 @@
 #include "qpms_error.h"
 #include "tmatrices.h"
 #include "qpms_specfunc.h"
+#include "normalisation.h"
 
 #define HBAR (1.05457162825e-34)
 #define ELECTRONVOLT (1.602176487e-19)
@@ -352,10 +353,9 @@ qpms_errno_t qpms_read_scuff_tmatrix(
   if (!(freqs && n && tmdata)) 
     qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
       "freqs, n, and tmdata are mandatory arguments and must not be NULL.");
-  if (bs->norm != QPMS_NORMALISATION_POWER_CS) // CHECKME CORRECT?
-    qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
-        "Not implemented; only QPMS_NORMALISATION_POWER_CS (CHECKME)"
-        " norm supported right now.");
+  if(bs->norm & (QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE 
+        | QPMS_NORMALISATION_SPHARM_REAL))
+    QPMS_NOT_IMPLEMENTED("Sorry, only standard complex-spherical harmonic based waves are supported right now");
   int n_alloc = 128; // First chunk to allocate
   *n = 0;
   *freqs = malloc(n_alloc * sizeof(double));
@@ -413,7 +413,11 @@ qpms_errno_t qpms_read_scuff_tmatrix(
       /* This element has not been requested in bs->ilist. */
       continue;
     else
-      (*tmdata)[(*n-1)*bs->n*bs->n + desti*bs->n + srci] = tr + I*ti;
+      (*tmdata)[(*n-1)*bs->n*bs->n + desti*bs->n + srci] = (tr + I*ti)
+        * qpms_normalisation_factor_uvswfi(bs->norm, srcui)
+        / qpms_normalisation_factor_uvswfi(bs->norm, destui)
+        * qpms_normalisation_factor_uvswfi(QPMS_NORMALISATION_CONVENTION_SCUFF, destui)
+        / qpms_normalisation_factor_uvswfi(QPMS_NORMALISATION_CONVENTION_SCUFF, srcui);
   }
   free(linebuf);
   // free some more memory

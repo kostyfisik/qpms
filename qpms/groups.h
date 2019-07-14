@@ -25,6 +25,7 @@
 #define QPMS_GROUPS_H
 
 #include "qpms_types.h"
+#include <assert.h>
 
 /// To be used only in qpms_finite_group_t
 struct qpms_finite_group_irrep_t {

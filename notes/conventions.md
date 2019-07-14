@@ -1,5 +1,5 @@
-VSWF conventions
-================
+VSWF conventions {#vswf_conventions}
+====================================
 
 In general, the (transversal) VSWFs can be defined using (some) vector spherical harmonics
 as follows: \f[
@@ -62,6 +62,135 @@ GSL computes \f$ \rawFer{l}{m} \f$ unless the corresponding `csphase` argument i
 \cite GSL,
 but can be tested by running `gsl_sf_legendre_array_e` for some specific arguments and comparing signs.
 
+
+Convention effects on symmetry operators
+----------------------------------------
+
+### Spherical harmonics
+
+Let' have two different (complex) spherical harmonic conventions connected by constant factors:
+\f[
+	\spharm[a]{l}{m} = c^\mathrm{a}_{lm}\spharm{l}{m}.
+\f]
+
+Both sets can be used to describe an angular function \f$ f \f$
+\f[
+	f = \sum_{lm} f^\mathrm{a}_{lm} \spharm[a]{l}{m} 
+	  = \sum_{lm} f^\mathrm{a}_{lm} c^\mathrm{a}_{lm}\spharm{l}{m}
+	  = \sum_{lm} f_{lm} \spharm{l}{m}.
+\f]
+
+If we perform a (symmetry) transformation \f$ g \f$ acting on the \f$ \spharm{l}{m} \f$
+basis via matrix \f$ D(g)_{l,m;l',m'} \f$, i.e.
+\f[
+	g\pr{\spharm{l}{m}} = \sum_{l'm'} D(g)_{l,m;l'm'} \spharm{l'}{m'},
+\f]
+we see
+\f[
+	g(f) = \sum_{lm} f_{lm}\sum_{l'm'} D(g)_{l,m;l'm'} \spharm{l'}{m'} 
+	     = \sum_{lm} f^\mathrm{a}_{lm} c^\mathrm{a}_{lm}\sum_{l'm'} D(g)_{l,m;l'm'} \spharm{l'}{m'}.
+\f]
+Rewriting the transformation action in the second basis
+\f[
+	g\pr{\spharm[a]{l}{m}} = \sum_{l'm'} D(g)^\mathrm{a}_{l,m;l'm'} \spharm[a]{l'}{m'},\\
+	g(f) = \sum_{lm} f^\mathrm{a}_{lm}\sum_{l'm'} D(g)^\mathrm{a}_{l,m;l'm'} \spharm[a]{l'}{m'},
+\f]
+and performing some substitutions,
+\f[ 
+	g(f) = \sum_{lm} \frac{f_{lm}}{c^\mathrm{a}_{lm}}
+		\sum_{l'm'} D(g)^\mathrm{a}_{l,m;l'm'} c^\mathrm{a}_{l'm'}\spharm{l'}{m'},
+\f]
+and comparing, we get
+\f[
+	D(g)^\mathrm{a}_{l,m;l'm'} = \frac{c^\mathrm{a}_{lm}}{c^\mathrm{a}_{l'm'}}D(g)_{l,m;l'm'}.
+\f]
+
+If the  difference between conventions is in particular Condon-Shortley phase, 
+this means a \f$ (-1)^{m-m'} \f$ factor between the transformation matrices.
+This does not affect the matrices for the inversion and
+mirror symmetry operations with
+respect to the \a xy, \a yz and \a xz planes, because they are all diagonal
+or anti-diagonal with respect to \a m (hence \f$ m-m \f$ is either zero
+or anyways even integer).
+It does, however, affect rotations, flipping the sign of the rotations
+along the \a z axis.
+
+Apparently, a constant complex factor independent of \f$ l,m \f$
+does nothing to the form of the tranformation matrix.
+
+These conclusions about transformations of spherical harmonics
+hold also for the VSWFs built on top of them.
+
+
+
+Convention effect on translation operators
+------------------------------------------
+
+Let us declare VSWFs in Kristensson's conventions below, 
+\f$ \wfkc \f$ \cite kristensson_spherical_2014, 
+\f$ \wfkr \f$ \cite kristensson_scattering_2016, as the "canonical"
+spherical waves based on complex and real spherical harmonics, respectively.
+They both have the property that the translation operators \f$ \tropRrr{}{},\tropSrr{}{} \f$ 
+that transform
+the VSWF field expansion coefficients between different origins, e.g.
+\f[
+	\wfkcreg(\vect{r}) = \tropRrr{\vect r}{\vect r'} \wfkcreg(\vect{r'}),
+\f]
+actually consist of two different submatrices $A,B$ for the same-type and different-type
+(in the sense of "electric" versus "magnetic" waves) that repeat themselves once:
+\f[
+	\begin{bmatrix} \wfkcreg_1(\vect{r}) \\ \wfkcreg_2(\vect{r}) \end{bmatrix} 
+	= \begin{bmatrix} A & B \\ B & A \end{bmatrix}(\vect{r} \leftarrow \vect{r'})
+	\begin{bmatrix} \wfkcreg_1(\vect{r'}) \\ \wfkcreg_2(\vect{r'}) \end{bmatrix}.
+\f]
+(This symmetry holds also for singular translation operators \f$ \tropSrr{}{} \f$
+and real spherical harmonics based VSWFs \f$ \wfkr \f$.)
+
+However, the symmetry above will not hold like this in some stupider convention.
+Let's suppose that one uses a different convention with some additional coefficients
+compared to the canonical one,
+\f[ 
+	\wfm_{lm} = \alpha_{\wfm lm} \wfkc_{1lm},\\
+	\wfe_{lm} = \alpha_{\wfe lm} \wfkc_{2lm}.\\
+\f]
+and with field expansion (WLOG assume regular fields only)
+\f[ \vect E = c_{\wfe l m} \wfe_{lm} + c_{\wfm l m } \wfm_{lm}. \f]
+Under translations, the coefficients then transform like
+\f[
+	\begin{bmatrix} \alpha_\wfe(\vect{r}) \\ \alpha_\wfm(\vect{r}) \end{bmatrix} 
+	= \begin{bmatrix} R_{\wfe\wfe} & R_{\wfe\wfm} \\ 
+	 	          R_{\wfm\wfe} & R_{\wfm\wfm} 
+	  \end{bmatrix}(\vect{r} \leftarrow \vect{r'})
+	\begin{bmatrix} \alpha_\wfe(\vect{r'}) \\ \alpha_\wfm(\vect{r'}) \end{bmatrix},
+\f]
+and by substituting and comparing the expressions for canonical waves above, one gets
+\f[
+	R_{\wfe,lm;\wfe,l'm'} = \alpha_{\wfe lm}^{-1} A_{lm,l'm'} \alpha_{\wfe l'm'},\\
+	R_{\wfe,lm;\wfm,l'm'} = \alpha_{\wfe lm}^{-1} B_{lm,l'm'} \alpha_{\wfm l'm'},\\
+	R_{\wfm,lm;\wfe,l'm'} = \alpha_{\wfm lm}^{-1} B_{lm,l'm'} \alpha_{\wfe l'm'},\\
+	R_{\wfm,lm;\wfm,l'm'} = \alpha_{\wfm lm}^{-1} A_{lm,l'm'} \alpha_{\wfm l'm'}.
+\f]
+	
+If the coefficients for magnetic and electric waves are the same,
+\f$ \alpha_{\wfm lm} = \alpha_{\wfe lm} \f$, the translation operator 
+can be written in the same symmetric form as with the canonical convention,
+just the matrices \f$ A, B\f$ will be different inside. 
+
+If the coefficients differ (as in SCUFF-EM convention, where there
+is a relative \a i -factor between electric and magnetic waves),
+the functions such as qpms_trans_calculator_get_AB_arrays() will 
+compute \f$ R_{\wfe\wfe}, R_{\wfe\wfm} \f$ for \f$ A, B \f$ arrays.
+The remaining matrices' elements must then be obtained as
+\f[
+	R_{\wfm,lm;\wfe,l'm'} = \alpha_{\wfm lm}^{-1} \alpha_{\wfe lm} 
+		R_{\wfe,lm;\wfm,l'm'} \alpha_{\wfm l'm'}^{-1} \alpha_{\wfe l'm'}
+		= g_{lm}R_{\wfe,lm;\wfm,l'm'}g_{l'm'}, \\
+	R_{\wfm,lm;\wfm,l'm'} = \alpha_{\wfm lm}^{-1} \alpha_{\wfe lm} 
+		R_{\wfe,lm;\wfe,l'm'} \alpha_{\wfe l'm'}^{-1} \alpha_{\wfm l'm'}
+		= g_{lm}R_{\wfe,lm;\wfe,l'm'}g_{l'm'}^{-1},
+\f]
+where the coefficients \f$ g_{lm} \f$ can be obtained by
+qpms_normalisation_factor_N_M().
 
 Literature convention tables
 ----------------------------
@@ -141,7 +270,7 @@ Literature convention tables
 	\vect E = \sum_\alpha \pr{ \wcrreg_\alpha \wfrreg_\alpha + \wcrout_\alpha \wfrout_\alpha }, \\
 	\vect H = \frac{1}{Z_0Z^r} \sum_\alpha \pr{ \wcrreg_\alpha \sigma_\alpha\wfrreg_\overline{\alpha} +
 		 \wcrout_\alpha \sigma_\alpha\wfrout_\overline{\alpha}},
-\f] where \f$ \sigma_{lmM} = +1, \sigma_{lmN}=-1, \overline{lmM}=lmM, \overline{lmN}=lmM, \f$  cf. eq. (6). The notation is not extremely consistent throughout Reid's memo.	| 	| 	|
+\f] where \f$ \sigma_{lmM} = +1, \sigma_{lmN}=-1, \overline{lmM}=lmN, \overline{lmN}=lmM, \f$  cf. eq. (6). The notation is not extremely consistent throughout Reid's memo.	| 	| 	|
 | Taylor \cite taylor_optical_2011	| \f[
 	\wfet_{mn}^{(j)}	=	\frac{n(n+1)}{kr}\sqrt{\frac{2n+1}{4\pi}\frac{\left(n-m\right)!}{\left(n+m\right)!}}\Fer[Taylor]{n}{m}\left(\cos\theta\right)e^{im\phi}z_{n}^{j}\left(kr\right)\uvec{r} \\
 		+\left[\tilde{\tau}_{mn}\left(\cos\theta\right)\uvec{\theta}+i\tilde{\pi}_{mn}\left(\cos\theta\right)\uvec{\phi}\right]e^{im\phi}\frac{1}{kr}\frac{\ud\left(kr\,z_{n}^{j}\left(kr\right)\right)}{\ud(kr)}, \\ 

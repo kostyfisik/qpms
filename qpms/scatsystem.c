@@ -431,10 +431,10 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
 // (perhaps just use qpms_normalisation_t_factor() at the right places)
 static inline void check_norm_compat(const qpms_vswf_set_spec_t *s)
 {
-  switch (qpms_normalisation_t_normonly(s->norm)) {
-    case QPMS_NORMALISATION_POWER:
+  switch (s->norm & QPMS_NORMALISATION_NORM_BITS) {
+    case QPMS_NORMALISATION_NORM_POWER:
       break;
-    case QPMS_NORMALISATION_SPHARM:
+    case QPMS_NORMALISATION_NORM_SPHARM:
       break;
     default:
       abort(); // Only SPHARM and POWER norms are supported right now.
@@ -447,7 +447,7 @@ complex double *qpms_orbit_action_matrix(complex double *target,
   assert(sym); assert(g < sym->order);
   assert(sym->rep3d);
   assert(ot); assert(ot->size > 0);
-  check_norm_compat(bspec);
+  // check_norm_compat(bspec); not needed here, the qpms_irot3_uvswfi_dense should complain if necessary
   const size_t n = bspec->n;
   const qpms_gmi_t N = ot->size;
   if (target == NULL)
@@ -491,7 +491,7 @@ complex double *qpms_orbit_irrep_projector_matrix(complex double *target,
   assert(sym->rep3d);
   assert(ot); assert(ot->size > 0);
   assert(iri < sym->nirreps); assert(sym->irreps);
-  check_norm_compat(bspec);
+  // check_norm_compat(bspec); // probably not needed here, let the called functions complain if necessary, but CHEKME
   const size_t n = bspec->n;
   const qpms_gmi_t N = ot->size;
   if (target == NULL)
@@ -545,7 +545,7 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   assert(sym->rep3d);
   assert(ot); assert(ot->size > 0);
   assert(iri < sym->nirreps); assert(sym->irreps);
-  check_norm_compat(bspec);
+  check_norm_compat(bspec); // Here I'm not sure; CHECKME
   const size_t n = bspec->n;
   const qpms_gmi_t N = ot->size;
   const bool newtarget = (target == NULL);
@@ -1451,7 +1451,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
   for(long thi = 0; thi < nthreads; ++thi)
     QPMS_ENSURE_SUCCESS(pthread_create(thread_ids + thi, NULL,
       qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread,
-      &arg));
+      (void *) &arg));
   for(long thi = 0; thi < nthreads; ++thi) {
     void *retval;
     QPMS_ENSURE_SUCCESS(pthread_join(thread_ids[thi], &retval));

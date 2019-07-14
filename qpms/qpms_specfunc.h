@@ -1,3 +1,6 @@
+/*! \file qpms_specfunc.h
+ * \brief Various special and auxillary functions.
+ */
 #ifndef QPMS_SPECFUNC_H
 #define QPMS_SPECFUNC_H
 #include "qpms_types.h"
@@ -52,17 +55,40 @@ double *qpms_legendre_minus1d_y_get(qpms_l_t lMax, qpms_normalisation_t norm); /
 
 
 
-// array of Legendre and pi, tau auxillary functions (see [1,(37)])
-// This should handle correct evaluation for theta -> 0 and theta -> pi
+/// Array of Legendre and and auxillary \f$\pi_{lm}, \tau_{lm} \f$ functions.
+/**
+ * The leg, pi, tau arrays are indexed using the standard qpms_mn2y() VSWF indexing.
+ */
 typedef struct {
 	//qpms_normalisation_t norm;
 	qpms_l_t lMax;
 	//qpms_y_t nelem;
 	double *leg, *pi, *tau;
 } qpms_pitau_t;
-qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, qpms_normalisation_t norm);
-void qpms_pitau_free(qpms_pitau_t);//NI
-void qpms_pitau_pfree(qpms_pitau_t*);//NI
+
+/// Returns an array of normalised Legendre and and auxillary \f$\pi_{lm}, \tau_{lm} \f$ functions.
+/**
+ * The normalised Legendre function here is defined as
+ * \f[ 
+ * 	\Fer[norm.]{l}{m} = \csphase^{-1} 
+ * 		\sqrt{\frac{1}{l(l+1)}\frac{(l-m)!(2l+1)}{4\pi(l+m)!}},
+ * \f] i.e. obtained using `gsl_sf_legendre_array_e()` with 
+ * `norm = GSL_SF_LEGENDRE_SPHARM` and multiplied by \f$ \sqrt{l(l+1)} \f$.
+ *
+ * The auxillary functions are defined as
+ * \f[
+ * 	\pi_{lm}(\cos \theta) = \frac{m}{\sin \theta} \Fer[norm.]{l}{m}(\cos\theta),\\
+ * 	\tau_{lm}(\cos \theta) = \frac{\ud}{\ud \theta} \Fer[norm.]{l}{m}(\cos\theta)
+ * \f]
+ * with appropriate limit expression used if \f$ \abs{\cos\theta} = 1 \f$.
+ *
+ * When done, don't forget to deallocate the memory using qpms_pitau_free().
+ *
+ */
+qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, double csphase);
+/// Frees the dynamically allocated arrays from qpms_pitau_t.
+void qpms_pitau_free(qpms_pitau_t);
+//void qpms_pitau_pfree(qpms_pitau_t*);//NI
 
 // Associated Legendre polynomial at zero argument (DLMF 14.5.1) DEPRECATED?
 double qpms_legendre0(int m, int n);
