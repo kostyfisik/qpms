@@ -1,3 +1,8 @@
+"""@package qpms_c
+Cythonized parts of QPMS; mostly wrappers over the C data structures
+to make them available in Python.
+"""
+
 # Cythonized parts of QPMS here
 # -----------------------------
 
