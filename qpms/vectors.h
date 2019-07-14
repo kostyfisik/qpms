@@ -293,6 +293,12 @@ static inline csph_t sph2csph(sph_t s) {
 	return cs;
 }
 
+/// Convert csph_t to sph_t, discarding the imaginary part of radial component.
+static inline sph_t csph2sph(csph_t s) {
+	sph_t rs = {creal(s.r), s.theta, s.phi};
+	return rs;
+}
+
 /// Lossy coordinate transform of ccart3_t to csph_t.
 /** The angle and real part of the radial coordinate are determined
  *  from the real components of \a \cart. The imaginary part of the radial
@@ -300,7 +306,8 @@ static inline csph_t sph2csph(sph_t s) {
  *  part of \a cart *projected onto* the real part of \a cart.
  *
  *  N.B. this obviously makes not much sense for purely imaginary vectors
- *  (and will cause NANs). TODO handle this better.
+ *  (and will cause NANs). TODO handle this better, as purely imaginary
+ *  vectors could make sense e.g. for evanescent waves.
  */
 static inline csph_t ccart2csph(const ccart3_t cart) {
 	cart3_t rcart = {creal(cart.x), creal(cart.y), creal(cart.z)};
