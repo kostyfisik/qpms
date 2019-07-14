@@ -11,6 +11,18 @@
 #include "qpms_types.h"
 #include <gsl/gsl_sf_legendre.h>
 
+// -------------- Typedefs (function prototypes) for qpms_vswf_spec_t ----------------------
+
+/// Calculates the (regular VSWF) expansion coefficients of an external incident field.
+typedef qpms_errno_t (*qpms_incfield_t)(
+        /// Target non-NULL array of the regular VSWF expansion coefficients of length bspec->n.
+        complex double *target,
+        const qpms_vswf_set_spec_t *bspec,
+        const cart3_t evalpoint, ///< Point at which the VSWF expansion is made.
+        const void *args, ///< Pointer to additional function-specific arguments.
+        bool add ///< If true, add to target; rewrite target if false.
+);
+
 // ---------------Methods for qpms_vswf_spec_t-----------------------
 //
 /// Creates a qpms_vswf_set_spec_t structure with an empty list of wave indices.
@@ -60,6 +72,33 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
 		const complex double *coeffs, ///< SVWF coefficient vector of size setspec->n.
 		csph_t kr, ///< Evaluation point.
 		qpms_bessel_t btyp);
+
+
+// --- qpms_incfield_t instances and their arguments
+
+typedef struct qpms_incfield_planewane_params_t {
+	bool use_cartesian; ///< If true, wave direction k and amplitude E are specified in cartesian coordinates (via k.cart, E.cart). If false, k is specified in spherical coordinates and E are specified in the corresponding geographical coordinates (via k.sph, E.sph).
+	bool allow_longitudinal; ///< Whether to include longitudinal part or not (if k and E are not orthogonal). Usually false makes sense.
+	union {
+		ccart3_t cart;
+		csph_t sph;
+	} k; ///< Wave vector.
+	union {
+		ccart3_t cart;
+		csphvec_t sph;
+	} E; ///< Electric field amplitude at origin.
+} qpms_incfield_planewave_params_t;
+	
+
+/// Calculates the (regular VSWF) expansion coefficients of a plane wave.
+qpms_errno_t qpms_incfield_planewave(
+        /// Target non-NULL array of the regular VSWF expansion coefficients of length bspec->n.
+        complex double *target,
+        const qpms_vswf_set_spec_t *bspec,
+        const cart3_t evalpoint, ///< Point at which the VSWF expansion is made.
+        const void *args, ///< Pointer to additional function-specific arguments.
+        bool add ///< If true, add to target; rewrite target if false.
+);
 
 // -----------------------------------------------------------------------
 

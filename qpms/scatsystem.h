@@ -11,6 +11,7 @@
 #ifndef QPMS_SCATSYSTEM_H
 #define QPMS_SCATSYSTEM_H
 #include "qpms_types.h"
+#include "vswf.h"
 #include <stdbool.h>
 
 
@@ -319,6 +320,33 @@ complex double *qpms_orbit_irrep_basis(
 		/// The index of the irreducible representation of sym.
 		const qpms_iri_t iri);
 
+
+/// Creates an incident field vector in the full basis, given a function that evaluates the field expansions at points.
+/** TODO detailed doc!
+ * \returns target_full if target_full was not NULL, otherwise the newly allocated array. */
+complex double *qpms_scatsys_incident_field_vector_full(
+		/// Target array. If NULL, a new one is allocated.
+		/** The length of the array is ss->fecv_size. */
+		complex double *target_full,
+		const qpms_scatsys_t *ss,
+		qpms_incfield_t field_at_point,
+		const void *args, ///< Pointer passed as the last argument to (*field_at_point)()
+		bool add ///< If true, add to target_full; rewrite target_full if false.
+		);
+
+/// Creates a (partial) incident field vector in the symmetry-adapted basis, given a function that evaluates the field expansions at points.
+/** TODO detailed doc! */
+complex double *qpms_scatsys_incident_field_vector_irrep_packed(
+		/// Target array. If NULL, a new one is allocated.
+		/** The length of the array is ss->fecv_size. */
+		complex double *target_full,
+		const qpms_scatsys_t *ss,
+		const qpms_iri_t iri, ///< The index of given irreducible representation of ss->sym.
+		qpms_incfield_t field_at_point,
+		const void *args, ///< Pointer passed as the last argument to (*field_at_point)()
+		bool add ///< If true, add to target_full; rewrite target_full if false.
+		);
+
 /// Evaluates scattered fields (corresponding to a given excitation vector) at a given point.
 /**
  * By scattered field, one assumes a linear combination of positive-Hankel-type
@@ -327,7 +355,7 @@ complex double *qpms_orbit_irrep_basis(
  * \return Complex electric field at the point defined by \a where.
  */
 ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss,
-		const complex double *coeff_vector, ///< A full-length excitation vector.
+		const complex double *coeff_vector, ///< A full-length excitation vector (outgoing wave coefficients).
 		cart3_t where, ///< Evaluation point.
 		complex double k ///< Wave number.
 		);
