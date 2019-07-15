@@ -20,6 +20,14 @@ cdef extern from "qpms_types.h":
         double r
         double theta
         double phi
+    cdef struct csph_t:
+        cdouble r
+        double theta
+        double phi
+    cdef struct csphvec_t:
+        cdouble rc
+        cdouble thetac
+        cdouble phic
     cdef struct pol_t:
         double r
         double phi
@@ -104,17 +112,22 @@ cdef extern from "qpms_error.h":
     qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types)
     qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types)
 
+
+# This is due to the fact that cython apparently cannot nest the unnamed struct/unions in an obvious way
+ctypedef union qpms_incfield_planewave_params_k:
+    ccart3_t cart
+    csph_t sph
+ctypedef union qpms_incfield_planewave_params_E:
+    ccart3_t cart
+    csphvec_t sph
+
 cdef extern from "vswf.h":
     ctypedef qpms_errno_t (*qpms_incfield_t)(cdouble target, const qpms_vswf_set_spec_t *bspec,
             const cart3_t evalpoint, const void *args, bint add)
     ctypedef struct qpms_incfield_planewave_params_t:
         bint use_cartesian
-        union k:
-            ccart3_t cart
-            csph_t sph
-        union E:
-            ccart3_t cart
-            csph sph
+        qpms_incfield_planewave_params_k k
+        qpms_incfield_planewave_params_E E
     qpms_errno_t qpms_incfield_planewave(cdouble target, const qpms_vswf_set_spec_t *bspec,
             const cart3_t evalpoint, const void *args, bint add)
 
