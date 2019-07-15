@@ -1,4 +1,5 @@
 """@package qpms_c
+            self.s.norm = <qpms_normalisation_t>(QPMS_NORMALISATION_NORM_POWER | QPMS_NORMALISATION_CSPHASE)
 Cythonized parts of QPMS; mostly wrappers over the C data structures
 to make them available in Python.
 """
@@ -1184,7 +1185,7 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
     def __cinit__(CTMatrix self, BaseSpec spec, matrix):
         self.spec = spec
         self.t.spec = self.spec.rawpointer();
-        if matrix is None or matrix == 0:
+        if (matrix is None) or not np.any(matrix):
             self.m = np.zeros((len(spec),len(spec)), dtype=complex, order='C')
         else:
             # The following will raise an exception if shape is wrong
