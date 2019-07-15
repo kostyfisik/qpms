@@ -167,6 +167,11 @@ typedef struct qpms_scatsys_t {
 	struct qpms_trans_calculator *c;
 } qpms_scatsys_t;
 
+/// Convenience function to access pi'th particle's bspec.
+static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi) {
+	return ss->tm[ss->p[pi].tmatrix_id]->spec;
+}
+
 /// Creates a new scatsys by applying a symmetry group, copying particles if needed.
 /** In fact, it copies everything except the vswf set specs, so keep them alive until scatsys is destroyed.
  * The following fields must be filled:
@@ -334,6 +339,7 @@ complex double *qpms_scatsys_incident_field_vector_full(
 		bool add ///< If true, add to target_full; rewrite target_full if false.
 		);
 
+#if 0
 /// Creates a (partial) incident field vector in the symmetry-adapted basis, given a function that evaluates the field expansions at points.
 /** TODO detailed doc! */
 complex double *qpms_scatsys_incident_field_vector_irrep_packed(
@@ -346,6 +352,7 @@ complex double *qpms_scatsys_incident_field_vector_irrep_packed(
 		const void *args, ///< Pointer passed as the last argument to (*field_at_point)()
 		bool add ///< If true, add to target_full; rewrite target_full if false.
 		);
+#endif
 
 /// Evaluates scattered fields (corresponding to a given excitation vector) at a given point.
 /**

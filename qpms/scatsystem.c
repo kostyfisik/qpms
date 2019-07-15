@@ -1461,6 +1461,33 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
   return target_packed;
 }
 
+
+complex double *qpms_scatsys_incident_field_vector_full(
+    complex double *target_full, const qpms_scatsys_t *ss,
+    qpms_incfield_t f,	const void *args, bool add ) {
+  QPMS_UNTESTED;
+  if (!target_full) QPMS_CRASHING_CALLOC(target_full, ss->fecv_size,
+      sizeof(complex double));
+  for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    complex double *ptarget = target_full + ss->fecv_pstarts[pi];
+    const qpms_vswf_set_spec_t *bspec = qpms_ss_bspec_pi(ss, pi);
+    const cart3_t pos = ss->p[pi].pos;
+    QPMS_ENSURE_SUCCESS(f(ptarget, bspec, pos, args, add));
+  }
+  return target_full;
+}
+
+
+#if 0
+complex double *qpms_scatsys_incident_field_vector_irrep_packed(
+    complex double *target_full, const qpms_scatsys_t *ss,
+    const qpms_iri_t iri, qpms_incfield_t f,
+    const void *args, bool add) {
+  TODO;
+}
+#endif
+
+
 ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss, 
     const complex double *cvf, const cart3_t where,
     const complex double k) {
@@ -1469,7 +1496,7 @@ ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss,
   ccart3_t res_kc = {0,0,0}; // kahan sum compensation
 
   for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
-    const qpms_vswf_set_spec_t *bspec = ss->tm[ss->p[pi].tmatrix_id]->spec;
+    const qpms_vswf_set_spec_t *bspec = qpms_ss_bspec_pi(ss, pi);
     const cart3_t particle_pos = ss->p[pi].pos;
     const complex double *particle_cv = cvf + ss->fecv_pstarts[pi];
 
@@ -1491,3 +1518,4 @@ ccart3_t qpms_scatsys_eval_E_irrep(const qpms_scatsys_t *ss,
   TODO;
 }
 #endif
+
