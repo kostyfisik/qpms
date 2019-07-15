@@ -7,6 +7,8 @@
 #include "qpms_types.h"
 #include <math.h>
 
+
+
 static inline qpms_y_t qpms_mn2y(qpms_m_t m, qpms_l_t n) {
         return n * (n + 1) + m - 1;
 }
@@ -59,6 +61,9 @@ static inline qpms_uvswfi_t qpms_tmn2uvswfi(
 	return t + 4 * qpms_mn2y_sc(m, n);
 }
 
+/// Constant denoting the l=0, m=0 longitudinal spherical vector wave.
+static const qpms_uvswfi_t QPMS_UI_L00 = 0;
+
 /// Conversion from universal VSWF index u to type, order and degree.
 /** Returns a non-zero value if the u value is invalid. */
 static inline qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u,
@@ -73,7 +78,7 @@ static inline qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u,
 }
 
 /// Conversion from universal VSWF index u to type and the traditional layout index (\a l > 0).
-/** Does *not* allow longitudinal waves. */
+/** Does *not* allow for longitudinal waves. */
 static inline qpms_errno_t qpms_uvswfi2ty(qpms_uvswfi_t u,
 		qpms_vswf_type_t *t, qpms_y_t *y) {
 	*t = u & 3;

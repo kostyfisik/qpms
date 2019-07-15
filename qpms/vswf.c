@@ -399,9 +399,9 @@ qpms_errno_t qpms_planewave2vswf_fill_sph(sph_t wavedir, csphvec_t amplitude,
     complex double prefac1 = 4 * M_PI * ipowl(l);
     complex double prefac23 = - 4 * M_PI * ipowl(l+1);
     for (qpms_m_t m = -l; m <= l; ++m) {
-      *plong = prefac23 * csphvec_dotnc(*pA3, amplitude);
-      *pmg = prefac1 * csphvec_dotnc(*pA1, amplitude);
-      *pel = prefac23 * csphvec_dotnc(*pA2, amplitude);
+      if(target_longcoeff) *plong = prefac23 * csphvec_dotnc(*pA3, amplitude);
+      if(target_mgcoeff) *pmg = prefac1 * csphvec_dotnc(*pA1, amplitude);
+      if(target_elcoeff) *pel = prefac23 * csphvec_dotnc(*pA2, amplitude);
       ++pA1; ++pA2; ++pA3; ++plong; ++pmg; ++pel;
     }
 
@@ -420,6 +420,59 @@ qpms_errno_t qpms_planewave2vswf_fill_cart(cart3_t wavedir_cart /*allow complex 
   return qpms_planewave2vswf_fill_sph(wavedir_sph, amplitude_sphvec,
       longcoeff, mgcoeff, elcoeff, lMax, norm);
 }
+
+qpms_errno_t qpms_incfield_planewave(complex double *target, const qpms_vswf_set_spec_t *bspec,
+    const cart3_t evalpoint, const void *args, bool add) {
+  QPMS_UNTESTED;
+  const qpms_incfield_planewave_params_t *p = args;
+
+  const ccart3_t k_cart = p->use_cartesian ? p->k.cart : csph2ccart(p->k.sph);
+  const complex double phase = ccart3_dotnc(k_cart, cart32ccart3(evalpoint));
+  if(cimag(phase))
+    QPMS_INCOMPLETE_IMPLEMENTATION("Complex-valued wave vector not implemented correctly; cf. docs.");
+  const complex double phasefac = cexp(I*phase);
+
+  // Throw away the imaginary component; TODO handle it correctly
+  const sph_t k_sph = csph2sph(p->use_cartesian ? ccart2csph(p->k.cart) : p->k.sph);
+  const csphvec_t E_sph = csphvec_scale(phasefac, 
+      p->use_cartesian ? ccart2csphvec(p->E.cart, k_sph) : p->E.sph);
+
+  complex double *lc = NULL, *mc = NULL, *nc = NULL;
+  const qpms_y_t nelem = qpms_lMax2nelem(bspec->lMax);
+  if (bspec->lMax_L > 0)  QPMS_CRASHING_MALLOC(lc, nelem * sizeof(complex double));
+  if (bspec->lMax_M > 0)  QPMS_CRASHING_MALLOC(mc, nelem * sizeof(complex double));
+  if (bspec->lMax_N > 0)  QPMS_CRASHING_MALLOC(nc, nelem * sizeof(complex double));
+
+  qpms_errno_t retval = qpms_planewave2vswf_fill_sph(k_sph, E_sph, lc, mc, nc,
+      bspec->lMax, bspec->norm);
+
+  if (!add) memset(target, 0, bspec->n * sizeof(complex double));
+  for (size_t i = 0; i < bspec->n; ++i) {
+    const qpms_uvswfi_t ui = bspec->ilist[i];
+    if (ui == QPMS_UI_L00) // for l = 0 the coefficient is zero due to symmetry (for real wave vector)
+      target[i] = 0;
+    else {
+      qpms_vswf_type_t t; qpms_y_t y;
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2ty_l(ui, &t, &y));
+      switch(t) {
+        case QPMS_VSWF_ELECTRIC:
+          target[i] += nc[y];
+          break;
+        case QPMS_VSWF_MAGNETIC:
+          target[i] += mc[y];
+          break;
+        case QPMS_VSWF_LONGITUDINAL:
+          target[i] += lc[y];
+          break;
+        default:
+          QPMS_WTF;
+      }
+    }
+  }
+  free(lc); free(mc); free(nc);
+  return retval;
+}
+  
 
 csphvec_t qpms_eval_vswf_csph(csph_t kr,
     complex double * const lc, complex double *const mc, complex double *const ec,
@@ -456,6 +509,48 @@ csphvec_t qpms_eval_vswf(sph_t kr,
   csph_t krc = {kr.r, kr.theta, kr.phi};
   return qpms_eval_vswf_csph(krc, lc, mc, ec, lMax, btyp, norm);
 }
+
+qpms_errno_t qpms_uvswf_fill(csphvec_t *const target, const qpms_vswf_set_spec_t *bspec,
+    csph_t kr, qpms_bessel_t btyp) {
+  QPMS_UNTESTED;
+  QPMS_ENSURE(target, "Target array pointer must not be NULL."); 
+  csphvec_t *el = NULL, *mg = NULL, *lg = NULL;
+  const qpms_y_t nelem = qpms_lMax2nelem(bspec->lMax);
+  if (bspec->lMax_L > 0)
+    QPMS_CRASHING_MALLOC(lg, nelem * sizeof(csphvec_t));
+  if (bspec->lMax_M > 0)
+    QPMS_CRASHING_MALLOC(mg, nelem * sizeof(csphvec_t));
+  if (bspec->lMax_N > 0)
+    QPMS_CRASHING_MALLOC(el, nelem * sizeof(csphvec_t));
+  qpms_errno_t retval = qpms_vswf_fill_csph(lg, mg, el, bspec->lMax, kr, btyp, bspec->norm);
+  for (size_t i = 0; i < bspec->n; ++i) {
+    const qpms_uvswfi_t ui = bspec->ilist[i];
+    if (ui == QPMS_UI_L00) // l = 0 longitudinal wave must be calculated separately.
+      target[i] = qpms_vswf_L00(kr, btyp, bspec->norm);
+    else {
+      qpms_vswf_type_t t; qpms_y_t y;
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2ty_l(ui, &t, &y));
+      switch(t) {
+        case QPMS_VSWF_ELECTRIC:
+          target[i] = el[y];
+          break;
+        case QPMS_VSWF_MAGNETIC:
+          target[i] = mg[y];
+          break;
+        case QPMS_VSWF_LONGITUDINAL:
+          target[i] = lg[y];
+          break;
+        default:
+          QPMS_WTF;
+      }
+    }
+  }
+  free(lg);
+  free(mg);
+  free(el);
+  return retval;
+}
+  
 
 csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *bspec,
     const complex double *coeffs, const csph_t kr,
@@ -501,3 +596,4 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *bspec,
        csphvec_scale(cL00, qpms_vswf_L00(kr, btyp, bspec->norm)));
   return result;
 }
+

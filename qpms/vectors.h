@@ -143,6 +143,7 @@ static inline cart3_t pol2cart3_equator(const pol_t pol) {
 	return cart3;
 }
 
+
 /// 3D vector addition.
 static inline cart3_t cart3_add(const cart3_t a, const cart3_t b) {
 	cart3_t res = {a.x+b.x, a.y+b.y, a.z+b.z};
@@ -185,6 +186,17 @@ static inline ccart3_t ccart3_add(const ccart3_t a, const ccart3_t b) {
 /// Complex 3D vector substraction.
 static inline ccart3_t ccart3_substract(const ccart3_t a, const ccart3_t b) {
 	ccart3_t res = {a.x-b.x, a.y-b.y, a.z-b.z};
+	return res;
+}
+
+/// Complex 3D cartesian vector "dot product" without conjugation.
+static inline complex double ccart3_dotnc(const ccart3_t a, const ccart3_t b) {
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+/// Convert cart3_t to ccart3_t.
+static inline ccart3_t cart32ccart3(cart3_t c){
+	ccart3_t res = {c.x, c.y, c.z};
 	return res;
 }
 

@@ -76,9 +76,9 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
 
 // --- qpms_incfield_t instances and their arguments
 
+/// Parameter structure for qpms_incfield_planewave()
 typedef struct qpms_incfield_planewane_params_t {
 	bool use_cartesian; ///< If true, wave direction k and amplitude E are specified in cartesian coordinates (via k.cart, E.cart). If false, k is specified in spherical coordinates and E are specified in the corresponding geographical coordinates (via k.sph, E.sph).
-	bool allow_longitudinal; ///< Whether to include longitudinal part or not (if k and E are not orthogonal). Usually false makes sense.
 	union {
 		ccart3_t cart;
 		csph_t sph;
@@ -91,12 +91,24 @@ typedef struct qpms_incfield_planewane_params_t {
 	
 
 /// Calculates the (regular VSWF) expansion coefficients of a plane wave.
+/** The wave amplitude and wave vector is defined by struct qpms_incfield_planewave_params_t.
+ *
+ *  If the wave vector and amplitude are not orthogonal (i.e. the plane wave is not
+ *  fully transversal) and bspec->lMaxL is non-negative, 
+ *  the corresponding longitudinal components are calculated as well.
+ *  
+ *  For complex k vectors, the implementation is not completely correct right now.
+ *  Locally, it corresponds to decomposition of a plane wave with a real \a k
+ *  (using the real part of the \a k supplied), just the whole decomposition
+ *  is modulated by the origin-dependent factor \f$ \vect E e^{i \vect k \cdot \vect r} \f$
+ *  with \f$ \vect k \f$ complex.
+ */
 qpms_errno_t qpms_incfield_planewave(
         /// Target non-NULL array of the regular VSWF expansion coefficients of length bspec->n.
         complex double *target,
         const qpms_vswf_set_spec_t *bspec,
         const cart3_t evalpoint, ///< Point at which the VSWF expansion is made.
-        const void *args, ///< Pointer to additional function-specific arguments.
+        const void *args, ///< Pointer to additional function-specific arguments (converted to (const qpms_incfield_planewave_params_t *)).
         bool add ///< If true, add to target; rewrite target if false.
 );
 
