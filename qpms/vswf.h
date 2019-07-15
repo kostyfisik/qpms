@@ -77,7 +77,7 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *setspec,
 // --- qpms_incfield_t instances and their arguments
 
 /// Parameter structure for qpms_incfield_planewave()
-typedef struct qpms_incfield_planewane_params_t {
+typedef struct qpms_incfield_planewave_params_t {
 	bool use_cartesian; ///< If true, wave direction k and amplitude E are specified in cartesian coordinates (via k.cart, E.cart). If false, k is specified in spherical coordinates and E are specified in the corresponding geographical coordinates (via k.sph, E.sph).
 	union {
 		ccart3_t cart;

@@ -9,6 +9,10 @@ cdef extern from "qpms_types.h":
         double x
         double y
         double z
+    cdef struct ccart3_t:
+        cdouble x
+        cdouble y
+        cdouble z
     cdef struct cart2_t:
         double x
         double y
@@ -100,6 +104,19 @@ cdef extern from "qpms_error.h":
     qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types)
     qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types)
 
+cdef extern from "vswf.h":
+    ctypedef qpms_errno_t (*qpms_incfield_t)(cdouble target, const qpms_vswf_set_spec_t *bspec,
+            const cart3_t evalpoint, const void *args, bint add)
+    ctypedef struct qpms_incfield_planewave_params_t:
+        bint use_cartesian
+        union k:
+            ccart3_t cart
+            csph_t sph
+        union E:
+            ccart3_t cart
+            csph sph
+    qpms_errno_t qpms_incfield_planewave(cdouble target, const qpms_vswf_set_spec_t *bspec,
+            const cart3_t evalpoint, const void *args, bint add)
 
 cdef extern from "indexing.h":
     qpms_uvswfi_t qpms_tmn2uvswfi(qpms_vswf_type_t t, qpms_m_t m, qpms_l_t n)
@@ -342,6 +359,9 @@ cdef extern from "scatsystem.h":
             cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
             cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, double k) nogil
+    cdouble *qpms_scatsys_incident_field_vector_full(cdouble *target_full,
+            const qpms_scatsys_t *ss, qpms_incfield_t field_at_point, 
+            const void *args, bint add)
 
 
 

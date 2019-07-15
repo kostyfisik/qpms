@@ -1582,6 +1582,7 @@ cdef class ScatteringSystem:
             ar_view[pi] = self.s[0].tm[self.s[0].p[pi].tmatrix_id].spec[0].n
         return ar
 
+
     def fullvec_poffsets(self):
         cdef np.ndarray[intptr_t, ndim=1] ar = np.empty((self.s[0].p_count,), dtype=np.intp)
         cdef intptr_t[::1] ar_view = ar
@@ -1599,6 +1600,25 @@ cdef class ScatteringSystem:
             ar_view[pi,1] = self.s[0].p[pi].pos.y
             ar_view[pi,2] = self.s[0].p[pi].pos.z
         return ar
+   
+    def planewave_full(self, k_cart, E_cart):
+        if k_cart.shape != (3,) or E_cart.shape != (3,):
+            raise ValueError("k_cart and E_cart must be ndarrays of shape (3,)")
+        cdef qpms_incfield_planewave_params_t p
+        p.use_cartesian = 1
+        p.k.cart.x = <cdouble>k_cart[0]
+        p.k.cart.y = <cdouble>k_cart[1]
+        p.k.cart.z = <cdouble>k_cart[2]
+        p.E.cart.x = <cdouble>E_cart[0]
+        p.E.cart.y = <cdouble>E_cart[1]
+        p.E.cart.z = <cdouble>E_cart[2]
+        cdef np.ndarray[np.complex_t, ndim=1] target_np = np.empty(
+                (self.fecv_size,), dtype=complex)
+        cdef cdouble[::1] target_view = target_np
+        qpms_scatsys_incident_field_vector_full(&target_view[0],
+                self.s, qpms_incfield_planewave, <void *>&p, 0)
+        return target_np
+
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc
