@@ -45,10 +45,29 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_DEBUG(type, msg, ...) qpms_debug_at_flf(__FILE__,__LINE__,__func__,type,msg, ##__VA_ARGS__)
 
-#define QPMS_CRASHING_MALLOC(pointer, size) {(pointer) = malloc(size); if(!(pointer) && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Allocation of %zd bytes for " #pointer " failed.", (size_t) (size));}
-#define QPMS_CRASHING_CALLOC(pointer, nmemb, size) {(pointer) = calloc((nmemb), (size)); if(!(pointer) && (nmemb) && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Allocation of %zd bytes for " #pointer " failed.", (size_t)((nmemb)*(size)));}
+#define QPMS_CRASHING_MALLOC(pointer, size) {\
+	(pointer) = malloc(size);\
+       	if(!(pointer) && (size))\
+       		qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,\
+			"Allocation of %zd bytes for " #pointer " failed.",\
+			(size_t) (size));\
+}
 
-#define QPMS_CRASHING_REALLOC(pointer, size) {(pointer) = realloc((pointer), size); if(!(pointer) && (size)) qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__, "Rellocation of %zd bytes for " #pointer " failed.", (size_t) (size));}
+#define QPMS_CRASHING_CALLOC(pointer, nmemb, size) {\
+	(pointer) = calloc((nmemb), (size));\
+       	if(!(pointer) && (nmemb) && (size))\
+       		qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,\
+			"Allocation of %zd bytes for " #pointer " failed.",\
+			(size_t)((nmemb)*(size)));\
+}
+
+#define QPMS_CRASHING_REALLOC(pointer, size) {\
+	(pointer) = realloc((pointer), size);\
+       	if(!(pointer) && (size))\
+       		qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,\
+			"Rellocation of %zd bytes for " #pointer " failed.",\
+			(size_t) (size));\
+}
 
 #define QPMS_WTF qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error.")
 
@@ -66,7 +85,11 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_ENSURE(x, msg, ...) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
 
-#define QPMS_ASSERT(x) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, "Unexpected error. This is most certainly a bug.");}
+#define QPMS_ASSERT(x) {\
+	if(!(x))\
+       		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,\
+			"Unexpected error. This is most certainly a bug.");\
+}
 
 #define QPMS_NOT_IMPLEMENTED(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, \
 		"Not implemented:" msg, ##__VA_ARGS__)
