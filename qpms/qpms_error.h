@@ -71,4 +71,12 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 #define QPMS_NOT_IMPLEMENTED(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, \
 		"Not implemented:" msg, ##__VA_ARGS__)
 
+#define QPMS_INCOMPLETE_IMPLEMENTATION(msg, ...) {\
+	static bool already_bitched = false; \
+	if (!already_bitched) {\
+		qpms_warn_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__);\
+		already_bitched = true;\
+	}\
+}
+
 #endif 
