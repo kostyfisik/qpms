@@ -329,5 +329,40 @@ typedef struct qpms_tmatrix_t {
         bool owns_m; ///< Information wheter m shall be deallocated with qpms_tmatrix_free()
 } qpms_tmatrix_t;
 
+
+/// Classification of a 3D point group.
+typedef enum {
+
+	/// Axial groups
+	QPMS_PGS_CN, ///< Rotational symmetry \f$ \mathrm{C_{nv}} \f$.
+	QPMS_PGS_S2N, ///< Rotoreflectional symmetry \f$ \mathrm{S_{2n}} \f$.
+	QPMS_PGS_CNH, ///< Rotational symmetry with horizontal reflection \f$ \mathrm{C_{nh}} \f$.
+	QPMS_PGS_CNV, ///< Pyramidal symmetry \f$ \mathrm{C_{nv}} \f$.
+	QPMS_PGS_DN, ///< Dihedral symmetry \f$ \mathrm{D_{n}} \f$.
+	QPMS_PGS_DND, ///< Antiprismatic symmetry \f$ \mathrm{D_{nd}} \f$.
+	QPMS_PGS_DNH, ///< Prismatic symmetry \f$ \mathrm{D_{nh}} \f$.
+
+	/// Remaining polyhedral groups
+	QPMS_PGS_T, ///< Chiral tetrahedral symmetry \f$ \mathrm{T} \f$.
+	QPMS_PGS_TD, ///< Full tetrahedral symmetry \f$ \mathrm{T_d} \f$.
+	QPMS_PGS_TH, ///< Pyritohedral symmetry \f$ \mathrm{T_h} \f$.
+	QPMS_PGS_O,  ///< Chiral octahedral symmetry \f$ \mathrm{O_h} \f$.
+	QPMS_PGS_OH,  ///< Full octahedral symmetry \f$ \mathrm{O_h} \f$.
+	QPMS_PGS_I,  ///< Chiral icosahedral symmetry \f$ \mathrm{I} \f$.
+	QPMS_PGS_IH,  ///< Full icosahedral symmetry \f$ \mathrm{I_h} \f$.
+
+	/// Continuous axial groups
+	QPMS_PGS_CINF, ///< \f$ \mathrm{C_\infty} \f$
+	QPMS_PGS_CINFH, ///< \f$ \mathrm{C_{\infty h}} \f$
+	QPMS_PGS_CINFV, ///< \f$ \mathrm{C_{\infty v}} \f$
+	QPMS_PGS_DINF, ///< \f$ \mathrm{D_\infty} \f$
+	QPMS_PGS_DINFH, ///< \f$ \mathrm{D_{\infty h}} \f$
+
+	/// Continuous groups
+	QPMS_PGS_SO3, 	///< Special orthogonal group \f$ \mathrm{SO(3)}.
+	QPMS_PGS_O3, 	///< Orthogonal group \f$ \mathrm{O(3)}.
+} qpms_pgs_class;
+
+
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES
