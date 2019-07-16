@@ -334,7 +334,7 @@ typedef struct qpms_tmatrix_t {
 typedef enum {
 
 	// Axial groups
-	QPMS_PGS_CN, ///< Rotational symmetry \f$ \mathrm{C_{nv}} \f$.
+	QPMS_PGS_CN, ///< Rotational symmetry \f$ \mathrm{C_{n}} \f$.
 	QPMS_PGS_S2N, ///< Rotoreflectional symmetry \f$ \mathrm{S_{2n}} \f$.
 	QPMS_PGS_CNH, ///< Rotational symmetry with horizontal reflection \f$ \mathrm{C_{nh}} \f$.
 	QPMS_PGS_CNV, ///< Pyramidal symmetry \f$ \mathrm{C_{nv}} \f$.
@@ -361,7 +361,36 @@ typedef enum {
 	// Remaining continuous groups
 	QPMS_PGS_SO3, 	///< Special orthogonal group \f$ \mathrm{SO(3)}.
 	QPMS_PGS_O3, 	///< Orthogonal group \f$ \mathrm{O(3)}.
-} qpms_pgs_class;
+} qpms_pointgroup_class;
+
+/// Full characterisation of a 3D point group.
+typedef struct qpms_pointgroup_t {
+	qpms_pointgroup_class c; ///< Point group classification.
+	size_t n; ///< Order of the rotational subgroup \f$ \mathrm{C_n} \f$ of finite axial groups.
+	/// Transformation between this point group and the "canonical" point group of the same type.
+	/**
+	 * Each 3D point group of a given type (specified by the \a c 
+	 * and \a n members) has its isomorphous "canonical instance", 
+	 * typically with the main rotation axis identical to the \a z 
+	 * cartesian axis and a mirror plane (if applicable) orthogonal 
+	 * to the \a x cartesian axis.
+	 *
+	 * If \f$ o \f$ is a transformation specified by \a orientation, 
+	 * then an element \f$ g \f$ of this group can be written
+	 * as \f[
+	 * 	g = o g_\mathrm{can.} o^{-1}
+	 * \f] where \f$ g_\mathrm{can.} \f$ is a corresponding element
+	 * from the canonical instance.
+	 *
+	 * CHECKME \f$ o \f$ transforms the cartesian \a z axis to the
+	 * main rotation axis of this group (if applicable).
+	 *
+	 * TODO more detailed specification about the canonical instances
+	 * and in which direction \a orientation goes.
+	 */
+	qpms_irot3_t orientation;
+} qpms_pgs_t;
+
 
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
