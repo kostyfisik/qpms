@@ -276,6 +276,7 @@ cdef extern from "gsl/gsl_interp.h":
     # ^^^ These are probably the only relevant ones.
 
 cdef extern from "tmatrices.h":
+    bint qpms_load_scuff_tmatrix_crash_on_failure
     struct qpms_tmatrix_interpolator_t:
         const qpms_vswf_set_spec_t *bspec
     struct qpms_permittivity_interpolator_t:

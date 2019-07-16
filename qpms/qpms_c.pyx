@@ -1134,6 +1134,8 @@ cdef class TMatrixInterpolator:
 
     def __cinit__(self, filename, BaseSpec bspec,  *args, **kwargs):
         '''Creates a T-matrix interpolator object from a scuff-tmatrix output'''
+        global qpms_load_scuff_tmatrix_crash_on_failure
+        qpms_load_scuff_tmatrix_crash_on_failure = False
         self.spec = bspec
         cdef char * cpath = make_c_string(filename)
         if QPMS_SUCCESS != qpms_load_scuff_tmatrix(cpath, self.spec.rawpointer(),

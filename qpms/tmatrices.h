@@ -139,6 +139,17 @@ qpms_errno_t qpms_load_scuff_tmatrix(
 		complex double **tmdata ///< The T-matrices raw contents
 		);
 
+/// Tells whether qpms_load_scuff_tmatrix should crash if fopen() fails.
+/** If true (default), the function causes the program
+ * die e.g. when the tmatrix file
+ * does not exists.
+ *
+ * If false, it does nothing and returns an appropriate error value instead.
+ * This is desirable e.g. when used in Python (so that proper exception can
+ * be thrown).
+ */
+extern bool qpms_load_scuff_tmatrix_crash_on_failure;
+
 /// Loads a scuff-tmatrix generated file.
 /** A simple wrapper over qpms_read_scuff_tmatrix() that needs a 
  * path instead of open FILE.

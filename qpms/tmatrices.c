@@ -18,6 +18,7 @@
 #include "tmatrices.h"
 #include "qpms_specfunc.h"
 #include "normalisation.h"
+#include <errno.h>
 
 #define HBAR (1.05457162825e-34)
 #define ELECTRONVOLT (1.602176487e-19)
@@ -443,6 +444,8 @@ qpms_errno_t qpms_read_scuff_tmatrix(
   return QPMS_SUCCESS;
 }
 
+bool qpms_load_scuff_tmatrix_crash_on_failure = true;
+
 qpms_errno_t qpms_load_scuff_tmatrix(
     const char *path, ///< file path
     const qpms_vswf_set_spec_t * bs, ///< VSWF set spec
@@ -453,9 +456,11 @@ qpms_errno_t qpms_load_scuff_tmatrix(
     complex double ** const tmdata
     ) {
   FILE *f = fopen(path, "r");
-  if (!f)
-    qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
-        "Could not open T-matrix file %s", path); 
+  if (!f) 
+    if (qpms_load_scuff_tmatrix_crash_on_failure)
+      qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
+          "Could not open T-matrix file %s", path); 
+    else return errno;
   qpms_errno_t retval = 
     qpms_read_scuff_tmatrix(f, bs, n, freqs, freqs_su, tmatrices_array, tmdata);
 
