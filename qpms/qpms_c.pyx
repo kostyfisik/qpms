@@ -14,7 +14,7 @@ cimport cython
 from cython.parallel cimport parallel, prange
 import enum
 import warnings
-
+import os
 
 # Here will be enum and dtype definitions; maybe move these to a separate file
 class VSWFType(enum.IntEnum):
@@ -1138,10 +1138,11 @@ cdef class TMatrixInterpolator:
         qpms_load_scuff_tmatrix_crash_on_failure = False
         self.spec = bspec
         cdef char * cpath = make_c_string(filename)
-        if QPMS_SUCCESS != qpms_load_scuff_tmatrix(cpath, self.spec.rawpointer(),
+        retval = qpms_load_scuff_tmatrix(cpath, self.spec.rawpointer(),
                 &(self.nfreqs), &(self.freqs), &(self.freqs_su),
-                &(self.tmatrices_array), &(self.tmdata)):
-            raise IOError("Could not read T-matrix from %s" % filename)
+                &(self.tmatrices_array), &(self.tmdata))
+        if (retval != QPMS_SUCCESS):
+            raise IOError("Could not read T-matrix from %s: %s" % (filename, os.strerror(retval)))
         if 'symmetrise' in kwargs:
             sym = kwargs['symmetrise']
             if isinstance(sym, FinitePointGroup):
