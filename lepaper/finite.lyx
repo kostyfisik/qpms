@@ -81,6 +81,13 @@
 
 \begin_layout Section
 Finite systems
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Finite"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
