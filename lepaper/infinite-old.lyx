@@ -1,0 +1,476 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 0
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Periodic systems and mode analysis
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Periodic-systems"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In an infinite periodic array of nanoparticles, the excitations of the nanoparti
+cles take the quasiperiodic Bloch-wave form 
+\begin_inset Formula 
+\[
+\coeffs_{i\nu}=e^{i\vect k\cdot\vect R_{i}}\coeffs_{\nu}
+\]
+
+\end_inset
+
+(assuming the incident external field has the same periodicity, 
+\begin_inset Formula $\coeffr_{\mathrm{ext}(i\nu)}=e^{i\vect k\cdot\vect R_{i}}p_{\mathrm{ext}\left(\nu\right)}$
+\end_inset
+
+) where 
+\begin_inset Formula $\nu$
+\end_inset
+
+ is the index of a particle inside one unit cell and 
+\begin_inset Formula $\vect R_{i},\vect R_{i'}\in\Lambda$
+\end_inset
+
+ are the lattice vectors corresponding to the sites (labeled by multiindices
+ 
+\begin_inset Formula $i,i'$
+\end_inset
+
+) of a Bravais lattice 
+\begin_inset Formula $\Lambda$
+\end_inset
+
+.
+ The multiple-scattering problem (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:multiple scattering per particle a"
+
+\end_inset
+
+) then takes the form
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\coeffs_{i\nu}-T_{\nu}\sum_{(i',\nu')\ne\left(i,\nu\right)}S_{i\nu,i'\nu'}e^{i\vect k\cdot\left(\vect R_{i'}-\vect R_{i}\right)}\coeffs_{i\nu'}=T_{\nu}\coeffr_{\mathrm{ext}(i\nu)}
+\]
+
+\end_inset
+
+or, labeling 
+\begin_inset Formula $W_{\nu\nu'}=\sum_{i';(i',\nu')\ne\left(i,\nu\right)}S_{i\nu,i'\nu'}e^{i\vect k\cdot\left(\vect R_{i'}-\vect R_{i}\right)}=\sum_{i';(i',\nu')\ne\left(0,\nu\right)}S_{0\nu,i'\nu'}e^{i\vect k\cdot\vect R_{i'}}$
+\end_inset
+
+ and using the quasiperiodicity, 
+\begin_inset Formula 
+\begin{equation}
+\sum_{\nu'}\left(\delta_{\nu\nu'}\mathbb{I}-T_{\nu}W_{\nu\nu'}\right)\coeffs_{\nu'}=T_{\nu}\coeffr_{\mathrm{ext}(\nu)},\label{eq:multiple scattering per particle a periodic}
+\end{equation}
+
+\end_inset
+
+which reduces the linear problem (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:multiple scattering per particle a"
+
+\end_inset
+
+) to interactions between particles inside single unit cell.
+ A problematic part is the evaluation of the translation operator lattice
+ sums 
+\begin_inset Formula $W_{\nu\nu'}$
+\end_inset
+
+; this is performed using exponentially convergent Ewald-type representations
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In an infinite periodic system, a nonlossy mode supports itself without
+ external driving, i.e.
+ such mode is described by excitation coefficients 
+\begin_inset Formula $a_{\nu}$
+\end_inset
+
+ that satisfy eq.
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:multiple scattering per particle a periodic"
+
+\end_inset
+
+) with zero right-hand side.
+ That can happen if the block matrix 
+\begin_inset Formula 
+\begin{equation}
+M\left(\omega,\vect k\right)=\left\{ \delta_{\nu\nu'}\mathbb{I}-T_{\nu}\left(\omega\right)W_{\nu\nu'}\left(\omega,\vect k\right)\right\} _{\nu\nu'}\label{eq:M matrix definition}
+\end{equation}
+
+\end_inset
+
+from the left hand side of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:multiple scattering per particle a periodic"
+
+\end_inset
+
+) is singular (here we explicitly note the 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ depence).
+\end_layout
+
+\begin_layout Standard
+For lossy nanoparticles, however, perfect propagating modes will not exist
+ and 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ will never be perfectly singular.
+ Therefore in practice, we get the bands by scanning over 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ to search for 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ which have an 
+\begin_inset Quotes erd
+\end_inset
+
+almost zero
+\begin_inset Quotes erd
+\end_inset
+
+ singular value.
+\end_layout
+
+\begin_layout Section
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Symmetries
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sm:symmetries"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A general overview of utilizing group theory to find lattice modes at high-symme
+try points of the Brillouin zone can be found e.g.
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "chapters 10–11"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+; here we use the same notation.
+\end_layout
+
+\begin_layout Standard
+We analyse the symmetries of the system in the same VSWF representation
+ as used in the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix formalism introduced above.
+ We are interested in the modes at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point of the hexagonal lattice, which has the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ point symmetry.
+ The six irreducible representations (irreps) of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ group are known and are available in the literature in their explicit forms.
+ In order to find and classify the modes, we need to find a decomposition
+ of the lattice mode representation 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}=\Gamma^{\mathrm{equiv.}}\otimes\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ into the irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ The equivalence representation 
+\begin_inset Formula $\Gamma^{\mathrm{equiv.}}$
+\end_inset
+
+ is the 
+\begin_inset Formula $E'$
+\end_inset
+
+ representation as can be deduced from 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (11.19)"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+, eq.
+ (11.19) and the character table for 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ operates on a space spanned by the VSWFs around each nanoparticle in the
+ unit cell (the effects of point group operations on VSWFs are described
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schulz_point-group_1999"
+
+\end_inset
+
+).
+ This space can be then decomposed into invariant subspaces of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ using the projectors 
+\begin_inset Formula $\hat{P}_{ab}^{\left(\Gamma\right)}$
+\end_inset
+
+ defined by 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (4.28)"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+.
+ This way, we obtain a symmetry adapted basis 
+\begin_inset Formula $\left\{ \vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}\right\} $
+\end_inset
+
+ as linear combinations of VSWFs 
+\begin_inset Formula $\vswfs lm{p,t}$
+\end_inset
+
+ around the constituting nanoparticles (labeled 
+\begin_inset Formula $p$
+\end_inset
+
+), 
+\begin_inset Formula 
+\[
+\vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}=\sum_{l,m,p,t}U_{\Gamma,r,i}^{p,t,l,m}\vswfs lm{p,t},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ stands for one of the six different irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+, 
+\begin_inset Formula $r$
+\end_inset
+
+ labels the different realisations of the same irrep, and the last index
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ going from 1 to 
+\begin_inset Formula $d_{\Gamma}$
+\end_inset
+
+ (the dimensionality of 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) labels the different partners of the same given irrep.
+ The number of how many times is each irrep contained in 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}$
+\end_inset
+
+ (i.e.
+ the range of index 
+\begin_inset Formula $r$
+\end_inset
+
+ for given 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) depends on the multipole degree cutoff 
+\begin_inset Formula $l_{\mathrm{max}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Each mode at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point shall lie in the irreducible spaces of only one of the six possible
+ irreps and it can be shown via 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (2.51)"
+key "dresselhaus_group_2008"
+
+\end_inset
+
+ that, at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point, the matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ defined above takes a block-diagonal form in the symmetry-adapted basis,
+ 
+\begin_inset Formula 
+\[
+M\left(\omega,\vect K\right)_{\Gamma,r,i;\Gamma',r',j}^{\mathrm{s.a.b.}}=\frac{\delta_{\Gamma\Gamma'}\delta_{ij}}{d_{\Gamma}}\sum_{q}M\left(\omega,\vect K\right)_{\Gamma,r,q;\Gamma',r',q}^{\mathrm{s.a.b.}}.
+\]
+
+\end_inset
+
+This enables us to decompose the matrix according to the irreps and to solve
+ the singular value problem in each irrep separately, as done in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "smfig:dispersions"
+
+\end_inset
+
+(a).
+\end_layout
+
+\end_body
+\end_document

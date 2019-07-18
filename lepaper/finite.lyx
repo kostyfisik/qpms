@@ -168,6 +168,10 @@ ity
 \begin_inset Formula $\mu(\vect r,\omega)=\mubg(\omega)$
 \end_inset
 
+ depending only on (angular) frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
 , and that the whole system is linear, i.e.
  the material properties of neither the medium nor the scatterer depend
  on field intensities.
@@ -176,7 +180,7 @@ ity
 \end_inset
 
  must satisfy the homogeneous vector Helmholtz equation 
-\begin_inset Formula $\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0$
+\begin_inset Formula $\left(\nabla^{2}+k^{2}\right)\vect{\Psi}\left(\vect r,\vect{\omega}\right)=0$
 \end_inset
 
  
@@ -193,16 +197,44 @@ todo define
 
 \end_inset
 
- with 
-\begin_inset Formula $k=TODO$
+ with wavenumber 
+\begin_inset Formula $k=\omega\sqrt{\mu\epsilon}/c_{0}$
 \end_inset
 
- [TODO REF Jackson?].
- Its solutions (TODO under which conditions? What vector space do the SVWFs
+, and transversality condition 
+\begin_inset Formula $\nabla\cdot\vect{\Psi}\left(\vect r,\omega\right)=0$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "jackson_classical_1998"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ [TODO more specific REF Jackson?]
+\end_layout
+
+\end_inset
+
+.
+ 
+\lang english
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Its solutions (TODO under which conditions? What vector space do the SVWFs
  actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \lang english
 Throughout this text, we will use the same normalisation conventions as
@@ -216,10 +248,118 @@ key "kristensson_scattering_2016"
 .
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 
 \lang english
 Spherical waves
+\end_layout
+
+\begin_layout Standard
+Inside a ball 
+\begin_inset Formula $B_{R}\left(\vect{r'}\right)\subset\medium$
+\end_inset
+
+ with radius 
+\begin_inset Formula $R$
+\end_inset
+
+ centered at 
+\begin_inset Formula $\vect{r'}$
+\end_inset
+
+, the transversal solutions of the vector Helmholtz equation can be expressed
+ in the basis of the regular transversal 
+\emph on
+vector spherical wavefunctions
+\emph default
+ (VSWFs) 
+\begin_inset Formula $\vswfr{\tau}lm\left(k\left(\vect r-\vect{r'}\right)\right)$
+\end_inset
+
+, which are found by separation of variables in spherical coordinates.
+ There is a large variety of VSWF normalisation and phase conventions in
+ the literature (and existing software), which can lead to great confusion
+ using them.
+ Throughout this text, we use the following convention, adopted from [Kristensso
+n 2014]:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+\vswfr 1lm\left(k\vect r\right) & = & j_{l}\left(kr\right)\vspharm 1lm\left(\uvec r\right),\nonumber \\
+\vswfr 2lm\left(k\vect r\right) & = & \frac{1}{kr}\frac{\ud\left(kr\, j_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vspharm 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vspharm 3lm\left(\uvec r\right),\label{eq:regular vswf}\\
+ &  & \qquad l=1,2,\dots;\, m=-l,-l+1,\dots,l;\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+where we separated the position variable into its magnitude 
+\begin_inset Formula $r$
+\end_inset
+
+ and a unit vector 
+\begin_inset Formula $\uvec r$
+\end_inset
+
+, 
+\begin_inset Formula $\vect r=r\uvec r$
+\end_inset
+
+, the 
+\emph on
+vector spherical harmonics
+\emph default
+ 
+\begin_inset Formula $\vspharm{\sigma}lm$
+\end_inset
+
+ are defined as
+\begin_inset Formula 
+\begin{eqnarray}
+\vspharm 1lm\left(\uvec r\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\nabla\spharm lm\left(\uvec r\right)\times\vect r,\nonumber \\
+\vspharm 2lm\left(\uvec r\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\spharm lm\left(\uvec r\right),\label{eq:vspharm}\\
+\vspharm 2lm\left(\uvec r\right) & = & \uvec r\spharm lm\left(\uvec r\right),\nonumber 
+\end{eqnarray}
+
+\end_inset
+
+and for the scalar spherical harmonics 
+\begin_inset Formula $\spharm lm$
+\end_inset
+
+ we use the convention from [REF DLMF 14.30.1],
+\begin_inset Formula 
+\begin{equation}
+\spharm lm\left(\uvec r\right)=\spharm lm\left(\theta,\phi\right)=\left(\frac{(l-m)!(2l+1)}{4\pi(l+m)!}\right)^{1/2}e^{im\phi}\mathsf{P}_{l}^{m}\left(\cos\theta\right),\label{eq:spharm}
+\end{equation}
+
+\end_inset
+
+where the Condon-Shortley phase factor 
+\begin_inset Formula $\left(-1\right)^{m}$
+\end_inset
+
+ is already included in the definition of Ferrers function 
+\begin_inset Formula $\mathsf{P}_{l}^{m}\left(\cos\theta\right)$
+\end_inset
+
+ [as in DLMF 14].
+ The main reason for this choice of VSWF 
+\emph on
+normalisation
+\emph default
+ is that it leads to simple formulae for power transport and scattering
+ cross sections without additional 
+\begin_inset Formula $l,m$
+\end_inset
+
+-dependent factors, see below.
 \end_layout
 
 \begin_layout Standard
