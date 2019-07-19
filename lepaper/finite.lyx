@@ -142,6 +142,15 @@ employing point group symmetries and decomposing the problem to decrease
 Motivation
 \end_layout
 
+\begin_layout Standard
+
+\lang english
+The basic idea of MSTMM consists in expansion of electromagnetic field around
+ the scatterers into vector spherical vector wavefunctions (VSWFs), solving
+ the individual scattering in terms of the VSWF basis, and re-expanding
+ 
+\end_layout
+
 \begin_layout Subsection
 
 \lang english
