@@ -1,0 +1,504 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format pdf4
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language swedish
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Dual vector spherical harmonics
+\end_layout
+
+\begin_layout Standard
+For evaluation of expansion coefficients of incident fields, it is useful
+ to introduce „dual“ vector spherical harmonics 
+\begin_inset Formula $\vshD{\tau}lm$
+\end_inset
+
+ defined by duality relation
+\begin_inset Formula 
+\begin{equation}
+\iint\vshD{\tau'}{l'}{m'}\left(\uvec r\right)\cdot\vsh{\tau}lm\left(\uvec r\right)\,\ud\Omega=\delta_{\tau'\tau}\delta_{l'l}\delta_{m'm}\label{eq:dual vsh}
+\end{equation}
+
+\end_inset
+
+(complex conjugation not implied in the dot product here).
+ In our convention, we have
+\begin_inset Formula 
+\[
+\vshD{\tau}lm\left(\uvec r\right)=\left(\vsh{\tau}lm\left(\uvec r\right)\right)^{*}=\left(-1\right)^{m}\vsh{\tau}{l-}m\left(\uvec r\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Translation operators
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\vect r_{1},\vect r_{2}$
+\end_inset
+
+ be two different origins; a regular VSWF with origin 
+\begin_inset Formula $\vect r_{1}$
+\end_inset
+
+ can be always expanded in terms of regular VSWFs with origin 
+\begin_inset Formula $\vect r_{2}$
+\end_inset
+
+ as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{1}\right)\right)=\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right),\label{eq:regular vswf translation}
+\end{equation}
+
+\end_inset
+
+where an explicit formula for the (regular) 
+\emph on
+translation operator
+\emph default
+ 
+\begin_inset Formula $\tropr$
+\end_inset
+
+ reads in eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator"
+
+\end_inset
+
+ below.
+ For singular (outgoing) waves, the form of the expansion differs inside
+ and outside the ball 
+\begin_inset Formula $\openball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}:$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+\vswfouttlm{\tau}lm\left(k\left(\vect r-\vect r_{1}\right)\right) & = & \begin{cases}
+\sum_{\tau'l'm'}\trops_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfouttlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right), & \vect r\in\openball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}\\
+\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right), & \vect r\notin\closedball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\left|\vect r_{1}\right|}
+\end{cases},\label{eq:singular vswf translation}
+\end{eqnarray}
+
+\end_inset
+
+where the singular translation operator 
+\begin_inset Formula $\trops$
+\end_inset
+
+ has the same form as 
+\begin_inset Formula $\tropr$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator"
+
+\end_inset
+
+ except the regular spherical Bessel functions 
+\begin_inset Formula $j_{l}$
+\end_inset
+
+ are replaced with spherical Hankel functions 
+\begin_inset Formula $h_{l}^{(1)}$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO note about expansion exactly on the sphere.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+As MSTMM deals most of the time with the 
+\emph on
+expansion coefficients
+\emph default
+ of fields 
+\begin_inset Formula $\rcoeffptlm p{\tau}lm,\outcoeffptlm p{\tau}lm$
+\end_inset
+
+ in different origins 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+ rather than with the VSWFs directly, let us write down how 
+\emph on
+they
+\emph default
+ transform under translation.
+ Let us assume the field can be in terms of regular waves everywhere, and
+ expand it in two different origins 
+\begin_inset Formula $\vect r_{p},\vect r_{q}$
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)=\sum_{\tau',l',m'}\rcoeffptlm q{\tau'}{l'}{m'}\vswfrtlm{\tau}{'l'}{m'}\left(k\left(\vect r-\vect r_{q}\right)\right).
+\]
+
+\end_inset
+
+Re-expanding the waves around 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+ in terms of waves around 
+\begin_inset Formula $\vect r_{q}$
+\end_inset
+
+ using 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf translation"
+
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{q}\right)
+\]
+
+\end_inset
+
+and comparing to the original expansion around 
+\begin_inset Formula $\vect r_{q}$
+\end_inset
+
+, we obtain
+\begin_inset Formula 
+\begin{equation}
+\rcoeffptlm q{\tau'}{l'}{m'}=\sum_{\tau,l,m}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\rcoeffptlm p{\tau}lm.\label{eq:regular vswf coefficient translation}
+\end{equation}
+
+\end_inset
+
+For the sake of readability, we introduce a shorthand matrix form for 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf coefficient translation"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\rcoeffp q=\troprp qp\rcoeffp p\label{eq:reqular vswf coefficient vector translation}
+\end{equation}
+
+\end_inset
+
+(note the reversed indices; TODO redefine them in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf translation"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:singular vswf translation"
+
+\end_inset
+
+? Similarly, if we had only outgoing waves in the original expansion around
+ 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+, we would get
+\begin_inset Formula 
+\begin{equation}
+\rcoeffp q=\tropsp qp\outcoeffp p\label{eq:singular to regular vswf coefficient vector translation}
+\end{equation}
+
+\end_inset
+
+for the expansion inside the ball 
+\begin_inset Formula $\openball{\left\Vert \vect r_{q}-\vect r_{p}\right\Vert }{\vect r_{p}}$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CHECKME
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Formula 
+\begin{equation}
+\outcoeffp q=\troprp qp\outcoeffp p\label{eq:singular to singular vswf coefficient vector translation-1}
+\end{equation}
+
+\end_inset
+
+outside.
+\end_layout
+
+\begin_layout Standard
+The translation operator can be expressed explicitly as 
+\begin_inset Formula 
+\begin{equation}
+\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)=\dots.\label{eq:translation operator}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Plane wave expansion coefficients
+\end_layout
+
+\begin_layout Standard
+A transversal (
+\begin_inset Formula $\vect k\cdot\vect E_{0}=0$
+\end_inset
+
+) plane wave propagating in direction 
+\begin_inset Formula $\uvec k$
+\end_inset
+
+ with (complex) amplitude 
+\begin_inset Formula $\vect E_{0}$
+\end_inset
+
+ can be expanded into regular VSWFs [REF KRIS]
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{PW}}\left(\vect r,\omega\right)=\vect E_{0}e^{ik\uvec k\cdot\vect r}=\sum_{\tau,l,m}\rcoeffptlm{}{\tau}lm\left(\vect k,\vect E_{0}\right)\vswfrtlm{\tau}lm\left(k\vect r\right),
+\]
+
+\end_inset
+
+with expansion coefficients
+\begin_inset Formula 
+\begin{eqnarray}
+\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
+\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Cross-sections (single-particle)
+\end_layout
+
+\begin_layout Standard
+Extinction, scattering and absorption cross sections of a single particle
+ irradiated by a plane wave propagating in direction 
+\begin_inset Formula $\uvec k$
+\end_inset
+
+ are 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sect. 7.8.2"
+key "kristensson_scattering_2016"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}+\Tp{}^{\dagger}\right)\rcoeffp{},\label{eq:extincion CS single}\\
+\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left\Vert \outcoeffp{}\right\Vert ^{2}=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}\right)\rcoeffp{},\label{eq:scattering CS single}\\
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & \sigma_{\mathrm{ext}}\left(\uvec k\right)-\sigma_{\mathrm{scat}}\left(\uvec k\right)=-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)\nonumber \\
+ &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{},\label{eq:absorption CS single}
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $\rcoeffp{}=\rcoeffp{}\left(\vect k,\vect E_{0}\right)$
+\end_inset
+
+ is the vector of plane wave expansion coefficients as in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:plane wave expansion"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For a system of many scatterers, Kristensson derives only the scattering
+ cross section formula 
+\begin_inset Formula 
+\[
+\sigma_{\mathrm{scat}}\left(\uvec k\right)=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\left\Vert \outcoeffp p\right\Vert ^{2}.
+\]
+
+\end_inset
+
+Let us derive the many-particle scattering and absorption cross sections.
+ First, let us take a ball circumscribing all the scatterers at once, 
+\begin_inset Formula $\openball R{\vect r_{\square}}\supset\particle$
+\end_inset
+
+.
+ Outside 
+\begin_inset Formula $\openball R{\vect r_{\square}}$
+\end_inset
+
+, we can describe the EM fields as if there was only a single scatterer,
+\begin_inset Formula 
+\[
+\vect E\left(\vect r\right)=\sum_{\tau,l,m}\left(\rcoeffptlm{\square}{\tau}lm\vswfrtlm{\tau}lm\left(\vect r-\vect r_{\square}\right)+\outcoeffptlm{\square}{\tau}lm\vswfouttlm{\tau}lm\left(\vect r-\vect r_{\square}\right)\right),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\rcoeffp{\square},\outcoeffp{\square}$
+\end_inset
+
+ are the vectors of VSWF expansion coefficients of the incident and total
+ scattered fields, respectively, at origin 
+\begin_inset Formula $\vect r_{\square}$
+\end_inset
+
+.
+ In principle, one could evaluate 
+\begin_inset Formula $\outcoeffp{\square}$
+\end_inset
+
+ using the translation operators (REF!!!) and use the single-scatterer formulae
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:extincion CS single"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS single"
+
+\end_inset
+
+ to obtain the cross sections.
+ However, this is not suitable for numerical evaluation with truncation
+ in multipole degree; hence we need to express them in terms of particle-wise
+ expansions 
+\begin_inset Formula $\rcoeffp p,\outcoeffp p$
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document
