@@ -81,13 +81,6 @@
 
 \begin_layout Section
 Infinite periodic systems
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Infinite"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -197,9 +190,9 @@ and we assume periodic solution
 \begin_inset Formula 
 \begin{eqnarray*}
 \sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect a\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b-\vect a}} & = & 0,\\
-\sum_{\vect bβ}(\delta_{\vect{0b}}\delta_{αβ}-T_{α}S_{\vect0α\leftarrow\vect bβ})A_{\vect0\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b}} & = & 0,\\
-\sum_{β}(\delta_{αβ}-T_{α}\underbrace{\sum_{\vect b}S_{\vect0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}}_{W_{\alpha\beta}(\vect k)})A_{\vect0\beta}\left(\vect k\right) & = & 0,\\
-A_{\vect0\alpha}\left(\vect k\right)-T_{α}\sum_{\beta}W_{\alpha\beta}\left(\vect k\right)A_{\vect0\beta}\left(\vect k\right) & = & 0.
+\sum_{\vect bβ}(\delta_{\vect{0b}}\delta_{αβ}-T_{α}S_{\vect 0α\leftarrow\vect bβ})A_{\vect 0\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b}} & = & 0,\\
+\sum_{β}(\delta_{αβ}-T_{α}\underbrace{\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}}_{W_{\alpha\beta}(\vect k)})A_{\vect 0\beta}\left(\vect k\right) & = & 0,\\
+A_{\vect 0\alpha}\left(\vect k\right)-T_{α}\sum_{\beta}W_{\alpha\beta}\left(\vect k\right)A_{\vect 0\beta}\left(\vect k\right) & = & 0.
 \end{eqnarray*}
 
 \end_inset
@@ -215,7 +208,7 @@ lattice Fourier transform
  of the translation operator,
 \begin_inset Formula 
 \begin{equation}
-W_{\alpha\beta}(\vect k)\equiv\sum_{\vect b}S_{\vect0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}.\label{eq:W definition}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}.\label{eq:W definition}
 \end{equation}
 
 \end_inset
@@ -240,7 +233,7 @@ reference "eq:W definition"
 \end_inset
 
  is the asymptotic behaviour of the translation operator, 
-\begin_inset Formula $S_{\vect0α\leftarrow\vect bβ}\sim\left|\vect r_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect r_{\vect b}\right|}$
+\begin_inset Formula $S_{\vect 0α\leftarrow\vect bβ}\sim\left|\vect r_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect r_{\vect b}\right|}$
 \end_inset
 
  that makes the convergence of the sum quite problematic for any 
@@ -337,7 +330,7 @@ translation operator for spherical waves originating in
 \end_inset
 
  is in fact a function of a single 3d argument, 
-\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})=S(\vect0\leftarrow\vect r+\vect r_{\beta}-\vect r_{\alpha})=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha})$
+\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})=S(\vect 0\leftarrow\vect r+\vect r_{\beta}-\vect r_{\alpha})=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha})$
 \end_inset
 
 .
@@ -351,7 +344,7 @@ reference "eq:W integral"
  can be rewritten as
 \begin_inset Formula 
 \[
-W_{\alpha\beta}(\vect k)=\left(2\pi\right)^{\frac{d}{2}}\uaft{(\dc{\basis u}S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0))\left(\vect k\right)}
+W_{\alpha\beta}(\vect k)=\left(2\pi\right)^{\frac{d}{2}}\uaft{(\dc{\basis u}S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0))\left(\vect k\right)}
 \]
 
 \end_inset
@@ -376,10 +369,10 @@ reference "eq:Dirac comb uaFt"
  for the Fourier transform of Dirac comb)
 \begin_inset Formula 
 \begin{eqnarray}
-W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\right)(\vect k)\nonumber \\
- & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\recb{\basis u}}^{(d)}\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\right)\left(\vect k\right)\nonumber \\
- & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\left(\vect k-\vect K\right)\label{eq:W sum in reciprocal space}\\
- & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}e^{i\left(\vect k-\vect K\right)\cdot\left(-\vect r_{\beta}+\vect r_{\alpha}\right)}\left(\uaft{S(\vect{\bullet}\leftarrow\vect0)}\right)\left(\vect k-\vect K\right)\nonumber 
+W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\nonumber \\
+ & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\recb{\basis u}}^{(d)}\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)\left(\vect k\right)\nonumber \\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W sum in reciprocal space}\\
+ & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}e^{i\left(\vect k-\vect K\right)\cdot\left(-\vect r_{\beta}+\vect r_{\alpha}\right)}\left(\uaft{S(\vect{\bullet}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\nonumber 
 \end{eqnarray}
 
 \end_inset
@@ -485,8 +478,8 @@ reference "eq:W sum in reciprocal space"
 \begin_inset Formula 
 \begin{eqnarray}
 W_{\alpha\beta}\left(\vect k\right) & = & W_{\alpha\beta}^{\textup{S}}\left(\vect k\right)+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right)\nonumber \\
-W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
-W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
+W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect 0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
 \end{eqnarray}
 
 \end_inset

@@ -41,11 +41,11 @@
 \papersize default
 \use_geometry false
 \use_package amsmath 2
-\use_package amssymb 2
+\use_package amssymb 1
 \use_package cancel 1
 \use_package esint 1
 \use_package mathdots 1
-\use_package mathtools 2
+\use_package mathtools 1
 \use_package mhchem 1
 \use_package stackrel 1
 \use_package stmaryrd 1
@@ -158,12 +158,7 @@
 
 
 \begin_inset FormulaMacro
-\newcommand{\spharm}[2]{Y_{#1,#2}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\ush}[2]{\spharm{#1}{#2}}
+\newcommand{\ush}[2]{Y_{#1,#2}}
 \end_inset
 
 
@@ -234,66 +229,6 @@
 
 \begin_inset FormulaMacro
 \newcommand{\mubg}{\mathrm{\mu_{b}}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\transop}{S}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\vswfr}[3]{\vect{\vect v}_{#1#2#3}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\vswfs}[3]{\vect{\vect u}_{#1#2#3}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\vspharm}[3]{\vect A_{#1#2#3}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\uvec}[1]{\vect{\hat{#1}}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\coeffs}{f}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\coeffsi}[3]{\coeffs_{#1#2}^{#3}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\coeffsip}[4]{\coeffs_{#1}^{#2,#3,#4}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\coeffr}{a}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\coeffri}[3]{\coeffr_{#1#2}^{#3}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\coeffrip}[4]{\coeffr_{#1}^{#2,#3,#4}}
-\end_inset
-
-
-\begin_inset FormulaMacro
-\newcommand{\coeffripext}[4]{\coeffr_{\mathrm{ext}#1}^{#2,#3,#4}}
 \end_inset
 
 
@@ -510,16 +445,6 @@ filename "intro.lyx"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "finite-old.lyx"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand include
 filename "finite.lyx"
 
 \end_inset
@@ -540,27 +465,7 @@ filename "infinite.lyx"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
-filename "infinite-old.lyx"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand include
 filename "examples.lyx"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand include
-filename "comparison.lyx"
 
 \end_inset
 

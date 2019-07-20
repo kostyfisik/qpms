@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
@@ -9,16 +11,18 @@
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman TeX Gyre Pagella
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "default" "TeX Gyre Pagella"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts true
 \font_sc false
 \font_osf true
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
 \default_output_format pdf4
 \output_sync 0
@@ -58,6 +62,7 @@
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_minted 0
 \index Index
 \shortcut idx
 \color #008000
@@ -66,7 +71,10 @@
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language swedish
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style swedish
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -81,13 +89,6 @@
 
 \begin_layout Section
 Finite systems
-\begin_inset CommandInset label
-LatexCommand label
-name "sec:Finite"
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Itemize
@@ -95,6 +96,10 @@ name "sec:Finite"
 \lang english
 motivation (classes of problems that this can solve: response to external
  radiation, resonances, ...)
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -102,6 +107,10 @@ motivation (classes of problems that this can solve: response to external
 
 \lang english
 theory
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -109,6 +118,10 @@ theory
 
 \lang english
 T-matrix definition, basics
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -143,12 +156,14 @@ Motivation
 \end_layout
 
 \begin_layout Standard
-
-\lang english
-The basic idea of MSTMM consists in expansion of electromagnetic field around
- the scatterers into vector spherical vector wavefunctions (VSWFs), solving
- the individual scattering in terms of the VSWF basis, and re-expanding
- 
+The basic idea of MSTMM is quite simple: the driving electromagnetic field
+ incident onto a scatterer is expanded into a vector spherical wavefunction
+ (VSWF) basis in which the single scattering problem is solved, and the
+ scattered field is then re-expanded into VSWFs centered at the other scatterers.
+ Repeating the same procedure with all (pairs of) scatterers yields a set
+ of linear equations, solution of which gives the coefficients of the scattered
+ field in the VSWF bases.
+ However, 
 \end_layout
 
 \begin_layout Subsection
@@ -177,10 +192,6 @@ ity
 \begin_inset Formula $\mu(\vect r,\omega)=\mubg(\omega)$
 \end_inset
 
- depending only on (angular) frequency 
-\begin_inset Formula $\omega$
-\end_inset
-
 , and that the whole system is linear, i.e.
  the material properties of neither the medium nor the scatterer depend
  on field intensities.
@@ -189,7 +200,7 @@ ity
 \end_inset
 
  must satisfy the homogeneous vector Helmholtz equation 
-\begin_inset Formula $\left(\nabla^{2}+k^{2}\right)\vect{\Psi}\left(\vect r,\vect{\omega}\right)=0$
+\begin_inset Formula $\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0$
 \end_inset
 
  
@@ -206,44 +217,16 @@ todo define
 
 \end_inset
 
- with wavenumber 
-\begin_inset Formula $k=\omega\sqrt{\mu\epsilon}/c_{0}$
+ with 
+\begin_inset Formula $k=TODO$
 \end_inset
 
-, and transversality condition 
-\begin_inset Formula $\nabla\cdot\vect{\Psi}\left(\vect r,\omega\right)=0$
-\end_inset
-
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "jackson_classical_1998"
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
- [TODO more specific REF Jackson?]
-\end_layout
-
-\end_inset
-
-.
- 
-\lang english
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Its solutions (TODO under which conditions? What vector space do the SVWFs
+ [TODO REF Jackson?].
+ Its solutions (TODO under which conditions? What vector space do the SVWFs
  actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 
 \lang english
 Throughout this text, we will use the same normalisation conventions as
@@ -251,124 +234,17 @@ Throughout this text, we will use the same normalisation conventions as
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kristensson_scattering_2016"
+literal "true"
 
 \end_inset
 
 .
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsubsection
 
 \lang english
 Spherical waves
-\end_layout
-
-\begin_layout Standard
-Inside a ball 
-\begin_inset Formula $B_{R}\left(\vect{r'}\right)\subset\medium$
-\end_inset
-
- with radius 
-\begin_inset Formula $R$
-\end_inset
-
- centered at 
-\begin_inset Formula $\vect{r'}$
-\end_inset
-
-, the transversal solutions of the vector Helmholtz equation can be expressed
- in the basis of the regular transversal 
-\emph on
-vector spherical wavefunctions
-\emph default
- (VSWFs) 
-\begin_inset Formula $\vswfr{\tau}lm\left(k\left(\vect r-\vect{r'}\right)\right)$
-\end_inset
-
-, which are found by separation of variables in spherical coordinates.
- There is a large variety of VSWF normalisation and phase conventions in
- the literature (and existing software), which can lead to great confusion
- using them.
- Throughout this text, we use the following convention, adopted from [Kristensso
-n 2014]:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray}
-\vswfr 1lm\left(k\vect r\right) & = & j_{l}\left(kr\right)\vspharm 1lm\left(\uvec r\right),\nonumber \\
-\vswfr 2lm\left(k\vect r\right) & = & \frac{1}{kr}\frac{\ud\left(kr\, j_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vspharm 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vspharm 3lm\left(\uvec r\right),\label{eq:regular vswf}\\
- &  & \qquad l=1,2,\dots;\, m=-l,-l+1,\dots,l;\nonumber 
-\end{eqnarray}
-
-\end_inset
-
-where we separated the position variable into its magnitude 
-\begin_inset Formula $r$
-\end_inset
-
- and a unit vector 
-\begin_inset Formula $\uvec r$
-\end_inset
-
-, 
-\begin_inset Formula $\vect r=r\uvec r$
-\end_inset
-
-, the 
-\emph on
-vector spherical harmonics
-\emph default
- 
-\begin_inset Formula $\vspharm{\sigma}lm$
-\end_inset
-
- are defined as
-\begin_inset Formula 
-\begin{eqnarray}
-\vspharm 1lm\left(\uvec r\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}\nabla\spharm lm\left(\uvec r\right)\times\vect r,\nonumber \\
-\vspharm 2lm\left(\uvec r\right) & = & \frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\spharm lm\left(\uvec r\right),\label{eq:vspharm}\\
-\vspharm 2lm\left(\uvec r\right) & = & \uvec r\spharm lm\left(\uvec r\right),\nonumber 
-\end{eqnarray}
-
-\end_inset
-
-and for the scalar spherical harmonics 
-\begin_inset Formula $\spharm lm$
-\end_inset
-
- we use the convention from [REF DLMF 14.30.1],
-\begin_inset Formula 
-\begin{equation}
-\spharm lm\left(\uvec r\right)=\spharm lm\left(\theta,\phi\right)=\left(\frac{(l-m)!(2l+1)}{4\pi(l+m)!}\right)^{1/2}e^{im\phi}\mathsf{P}_{l}^{m}\left(\cos\theta\right),\label{eq:spharm}
-\end{equation}
-
-\end_inset
-
-where the Condon-Shortley phase factor 
-\begin_inset Formula $\left(-1\right)^{m}$
-\end_inset
-
- is already included in the definition of Ferrers function 
-\begin_inset Formula $\mathsf{P}_{l}^{m}\left(\cos\theta\right)$
-\end_inset
-
- [as in DLMF 14].
- The main reason for this choice of VSWF 
-\emph on
-normalisation
-\emph default
- is that it leads to simple formulae for power transport and scattering
- cross sections without additional 
-\begin_inset Formula $l,m$
-\end_inset
-
--dependent factors, see below.
 \end_layout
 
 \begin_layout Standard
