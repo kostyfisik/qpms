@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
@@ -9,16 +11,18 @@
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman TeX Gyre Pagella
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "default" "TeX Gyre Pagella"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts true
 \font_sc false
 \font_osf true
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
 \default_output_format pdf4
 \output_sync 0
@@ -58,6 +62,7 @@
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_minted 0
 \index Index
 \shortcut idx
 \color #008000
@@ -66,7 +71,10 @@
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language swedish
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style swedish
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -88,6 +96,10 @@ Finite systems
 \lang english
 motivation (classes of problems that this can solve: response to external
  radiation, resonances, ...)
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -95,6 +107,10 @@ motivation (classes of problems that this can solve: response to external
 
 \lang english
 theory
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -102,6 +118,10 @@ theory
 
 \lang english
 T-matrix definition, basics
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -133,6 +153,17 @@ employing point group symmetries and decomposing the problem to decrease
 
 \lang english
 Motivation
+\end_layout
+
+\begin_layout Standard
+The basic idea of MSTMM is quite simple: the driving electromagnetic field
+ incident onto a scatterer is expanded into a vector spherical wavefunction
+ (VSWF) basis in which the single scattering problem is solved, and the
+ scattered field is then re-expanded into VSWFs centered at the other scatterers.
+ Repeating the same procedure with all (pairs of) scatterers yields a set
+ of linear equations, solution of which gives the coefficients of the scattered
+ field in the VSWF bases.
+ However, 
 \end_layout
 
 \begin_layout Subsection
@@ -203,6 +234,7 @@ Throughout this text, we will use the same normalisation conventions as
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kristensson_scattering_2016"
+literal "true"
 
 \end_inset
 
