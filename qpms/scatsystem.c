@@ -965,11 +965,11 @@ complex double *qpms_scatsys_build_translation_matrix_full(
     double k ///< Wave number to use in the translation matrix.
     )
 {
-  return qpms_scatsys_build_translation_matrix_full_e(
+  return qpms_scatsys_build_translation_matrix_e_full(
       target, ss, k, QPMS_HANKEL_PLUS);
 }
 
-complex double *qpms_scatsys_build_translation_matrix_full_e(
+complex double *qpms_scatsys_build_translation_matrix_e_full(
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,
     const qpms_scatsys_t *ss,
@@ -1006,6 +1006,7 @@ complex double *qpms_scatsys_build_translation_matrix_full_e(
   
   return target;
 }
+
 
 
 complex double *qpms_scatsys_build_modeproblem_matrix_full(
@@ -1420,6 +1421,193 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
   free(Sblock);
   free(TSblock);
   return NULL;
+}
+
+// this differs from the ...build_modeproblem_matrix... only by the `J`
+// maybe I should use this one there as well to save lines... TODO
+struct qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thread_arg{
+  const qpms_scatsys_t *ss;
+  qpms_ss_pi_t *opistartR_ptr;
+  pthread_mutex_t *opistartR_mutex;
+  qpms_iri_t iri;
+  complex double *target_packed;
+  double k;
+  qpms_bessel_t J;
+};
+
+static void *qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thread(void *arg)
+{
+  const struct qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thread_arg 
+    *a = arg;
+  const qpms_scatsys_t *ss = a->ss;
+  const qpms_iri_t iri = a->iri;
+  const size_t packedlen = ss->saecv_sizes[iri];
+  const qpms_bessel_t J = a->J;
+
+  // some of the following workspaces are probably redundant; TODO optimize later.
+
+  // workspace for the uncompressed particle<-particle tranlation matrix block
+  complex double *Sblock;
+  QPMS_CRASHING_MALLOC(Sblock, sizeof(complex double)*SQ(ss->max_bspecn));
+
+  // Workspace for the intermediate particle-orbit matrix result
+  complex double *tmp;
+  QPMS_CRASHING_MALLOC(tmp, sizeof(complex double) * SQ(ss->max_bspecn) * ss->sym->order);
+
+  const complex double one = 1, zero = 0;
+
+  while(1) {
+    // In the beginning, pick a target (row) orbit for this thread
+    QPMS_ENSURE_SUCCESS(pthread_mutex_lock(a->opistartR_mutex));
+    if(*(a->opistartR_ptr) >= ss->p_count) {// Everything is already done, end
+      QPMS_ENSURE_SUCCESS(pthread_mutex_unlock(a->opistartR_mutex));
+      break; 
+    }
+    const qpms_ss_pi_t opistartR = *(a->opistartR_ptr);
+    // Now increment it for another thread:
+    *(a->opistartR_ptr) += ss->orbit_types[ss->p_orbitinfo[ss->p_by_orbit[opistartR]].t].size;
+    QPMS_ENSURE_SUCCESS(pthread_mutex_unlock(a->opistartR_mutex));
+    
+    // Orbit picked (defined by opistartR), do the work.
+    const qpms_ss_pi_t orbitstartpiR = ss->p_by_orbit[opistartR];
+    const qpms_ss_oti_t otiR = ss->p_orbitinfo[orbitstartpiR].t;
+    const qpms_ss_osn_t osnR = ss->p_orbitinfo[orbitstartpiR].osn;
+    const qpms_ss_orbit_type_t *const otR = ss->orbit_types + otiR;
+    const qpms_ss_orbit_pi_t orbit_p_countR = otR->size;
+    const size_t orbit_packedsizeR = otR->irbase_sizes[iri];
+
+    if(orbit_packedsizeR) { // avoid zgemm crash on empty irrep
+      const size_t particle_fullsizeR = otR->bspecn; // == bspecR->n
+      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[orbitstartpiR].tmatrix_id]->spec;
+      // This is the orbit-level matrix projecting the whole orbit onto the irrep.
+      const complex double *omR = otR->irbases + otR->irbase_offsets[iri];
+      // Orbit coeff vector's full size:
+      const size_t orbit_fullsizeR = otR->size * otR->bspecn;
+      // This is where the orbit starts in the "packed" vector:
+      const size_t packed_orbit_offsetR =
+        ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiR] 
+        + osnR * otR->irbase_sizes[iri];
+      for(qpms_ss_orbit_pi_t opiR = 0; opiR < orbit_p_countR; ++opiR) {
+        qpms_ss_pi_t piR = ss->p_by_orbit[opistartR + opiR];
+        assert(opiR == ss->p_orbitinfo[piR].p);
+        assert(otiR == ss->p_orbitinfo[piR].t);
+        assert(ss->p_orbitinfo[piR].osn == osnR);
+        const cart3_t posR = ss->p[piR].pos;
+        for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) { //Column loop
+          const qpms_ss_oti_t otiC = ss->p_orbitinfo[piC].t;
+          const qpms_ss_orbit_type_t *const otC = ss->orbit_types + otiC;
+          const qpms_ss_osn_t osnC = ss->p_orbitinfo[piC].osn;
+          const qpms_ss_orbit_pi_t opiC = ss->p_orbitinfo[piC].p;
+          // This is where the particle's orbit starts in the "packed" vector:
+          const size_t packed_orbit_offsetC = 
+            ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiC]
+            + osnC * otC->irbase_sizes[iri];
+          const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+          // Orbit coeff vector's full size:
+          const size_t orbit_fullsizeC = otC->size * otC->bspecn;
+          const size_t particle_fullsizeC = otC->bspecn; // == bspecC->n
+          const size_t orbit_packedsizeC = otC->irbase_sizes[iri];
+          // This is the orbit-level matrix projecting the whole orbit onto the irrep.
+          const complex double *omC = otC->irbases + otC->irbase_offsets[iri];
+
+          if(orbit_packedsizeC) { // avoid zgemm crash on empty irrep
+					// THIS IS THE MAIN PART DIFFERENT FROM ...modeproblem...() TODO unify 
+          // somehow to save lines
+            if(piC != piR) { // non-diagonal, calculate S
+              const cart3_t posC = ss->p[piC].pos;
+              QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
+                    Sblock, // Sblock is S(piR->piC)
+                    bspecR, bspecC->n, bspecC, 1,
+                    a->k, posR, posC, J));
+            } else { // diagonal, fill with zeros; TODO does this make sense?
+              // would unit matrix be better? or unit only for QPMS_BESSEL_REGULAR?
+              for (size_t row = 0; row < bspecR->n; ++row)
+                for (size_t col = 0; col < bspecC->n; ++col)
+                  Sblock[row * bspecC->n + col] = 0; //(row == col)? 1 : 0;
+            }
+
+            // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]
+            SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasConjTrans,
+                particle_fullsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeC /*K*/,
+                &one /*alpha*/, Sblock/*A*/, particle_fullsizeC/*ldA*/, 
+                omC + opiC*particle_fullsizeC /*B*/,
+                orbit_fullsizeC/*ldB*/, &zero /*beta*/,
+                tmp /*C*/, orbit_packedsizeC /*LDC*/);
+
+            // target[oiR|piR,oiC|piC] += U[...] tmp[...]
+            SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                orbit_packedsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeR /*K*/,
+                &one /*alpha*/, omR + opiR*particle_fullsizeR/*A*/, orbit_fullsizeR/*ldA*/,
+                tmp /*B*/, orbit_packedsizeC /*ldB*/, &one /*beta*/,
+                a->target_packed + packedlen*packed_orbit_offsetR + packed_orbit_offsetC /*C*/,
+                packedlen /*ldC*/);
+          }
+        }
+      }
+    }
+
+
+
+  }
+  free(tmp);
+  free(Sblock);
+  return NULL;
+}
+
+// Almost the same as ...build_modeproblem_matrix_...parallelR
+// --> TODO write this in a more generic way to save LoC.
+complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
+		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+		complex double *target_packed,
+		const qpms_scatsys_t *ss,
+		qpms_iri_t iri,
+		double k, ///< Wave number to use in the translation matrix.
+		qpms_bessel_t J
+		)
+{
+  QPMS_UNTESTED;
+  const size_t packedlen = ss->saecv_sizes[iri];
+  if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
+    return target_packed; 
+  if (target_packed == NULL)
+    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
+  if (target_packed == NULL) abort();
+  memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
+
+  qpms_ss_pi_t opistartR = 0;
+  pthread_mutex_t opistartR_mutex;
+  QPMS_ENSURE_SUCCESS(pthread_mutex_init(&opistartR_mutex, NULL));
+  const struct qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thread_arg
+    arg = {ss, &opistartR, &opistartR_mutex, iri, target_packed, k, J};
+
+  // FIXME THIS IS NOT PORTABLE:
+  long nthreads;
+  if (qpms_scatsystem_nthreads_override > 0) {
+    nthreads = qpms_scatsystem_nthreads_override;
+    QPMS_DEBUG(QPMS_DBGMSG_THREADS, "Using overriding value of %ld thread(s).", 
+        nthreads);
+  } else {
+    nthreads = sysconf(_SC_NPROCESSORS_ONLN);
+    if (nthreads < 1) {
+      QPMS_DEBUG(QPMS_DBGMSG_THREADS, "_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
+         nthreads, qpms_scatsystem_nthreads_default);
+      nthreads = qpms_scatsystem_nthreads_default; 
+    } else {
+      QPMS_DEBUG(QPMS_DBGMSG_THREADS, "_SC_NRPOCESSORS_ONLN returned %ld.", nthreads);
+    }
+  }
+  pthread_t thread_ids[nthreads];
+  for(long thi = 0; thi < nthreads; ++thi)
+    QPMS_ENSURE_SUCCESS(pthread_create(thread_ids + thi, NULL,
+      qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thread,
+      (void *) &arg));
+  for(long thi = 0; thi < nthreads; ++thi) {
+    void *retval;
+    QPMS_ENSURE_SUCCESS(pthread_join(thread_ids[thi], &retval));
+  }
+
+  QPMS_ENSURE_SUCCESS(pthread_mutex_destroy(&opistartR_mutex));
+  return target_packed;
 }
 
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(

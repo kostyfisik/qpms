@@ -26,6 +26,8 @@ TODO list before public release
 - Remove legacy code.
 - Prefix all identifiers. Maybe think about a different prefix than qpms?
 - Consistent indentation and style overall.
+- Rewrite the parallelized translation matrix, mode problem matrix generators
+  in a way that reuses as much code as possible without copypasting
 
 Nice but less important features
 --------------------------------

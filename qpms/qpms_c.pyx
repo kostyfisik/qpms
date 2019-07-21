@@ -1588,7 +1588,16 @@ cdef class ScatteringSystem:
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (flen,flen),dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
-        qpms_scatsys_build_translation_matrix_full_e(&target_view[0][0], self.s, k, J)
+        qpms_scatsys_build_translation_matrix_e_full(&target_view[0][0], self.s, k, J)
+        return target
+
+    def translation_matrix_packed(self, double k, qpms_iri_t iri, J = QPMS_HANKEL_PLUS):
+        cdef size_t rlen = self.saecv_sizes[iri]
+        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
+                (rlen,rlen),dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target
+        qpms_scatsys_build_translation_matrix_e_irrep_packed(&target_view[0][0],
+                self.s, iri, k, J)
         return target
     
     def fullvec_psizes(self):

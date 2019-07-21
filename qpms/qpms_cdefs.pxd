@@ -368,10 +368,12 @@ cdef extern from "scatsystem.h":
             const qpms_scatsys_t *ss, double k)
     cdouble *qpms_scatsys_build_translation_matrix_full(cdouble *target,
             const qpms_scatsys_t *ss, double k)
-    cdouble *qpms_scatsys_build_translation_matrix_full_e(cdouble *target,
+    cdouble *qpms_scatsys_build_translation_matrix_e_full(cdouble *target,
             const qpms_scatsys_t *ss, double k, qpms_bessel_t J)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed(cdouble *target,
             const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
+    cdouble *qpms_scatsys_build_translation_matrix_e_irrep_packed(cdouble *target,
+            const qpms_scatsys_t *ss, qpms_iri_t iri, double k, qpms_bessel_t J)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
             cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
