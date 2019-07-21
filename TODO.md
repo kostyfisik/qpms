@@ -7,6 +7,8 @@ TODO list before public release
 - Field calculations.
 - Complex frequencies, n's, k's.
 - Transforming point (meta)generators.
+- Check whether moble's quaternions and my 
+  quaternions give the same results in tmatrices.py
 - Ewald summations of all types of lattices (dimensionality-wise).
 - Split lattices.h into separate point generator and lattice vector manipulation parts.
   * Maybe move something from the .h to .c file.

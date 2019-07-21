@@ -1,9 +1,15 @@
 import numpy as np
-import quaternion, spherical_functions as sf # because of the Wigner matrices. These imports are SLOW.
+use_moble_quaternion = False
+try:
+    import quaternion, spherical_functions as sf # because of the Wigner matrices. These imports are SLOW.
+    use_moble_quaternion = True
+except ImportError:
+    use_moble_quaternion = False
+
 import re
 from scipy import interpolate
 from scipy.constants import hbar, e as eV, pi, c
-from qpms_c import get_mn_y, get_nelem
+from qpms_c import get_mn_y, get_nelem, CQuat
 ň = np.newaxis
 from .types import NormalizationT, TMatrixSpec
 
@@ -17,15 +23,26 @@ def WignerD_mm(l, quat):
     TODO doc
     """
     
-    indices = np.array([ [l,i,j] for i in range(-l,l+1) for j in range(-l,l+1)])
-    Delems = sf.Wigner_D_element(quat, indices).reshape(2*l+1,2*l+1)
-    return Delems
+    if use_moble_quaternion:
+        indices = np.array([ [l,i,j] for i in range(-l,l+1) for j in range(-l,l+1)])
+        Delems = sf.Wigner_D_element(quat, indices).reshape(2*l+1,2*l+1)
+        return Delems
+    else:
+        Delems = np.zeros((2*l+1, 2*l+1), dtype=complex)
+        for i in range(-l,l+1):
+            for j in range(-l,l+1):
+                Delems[i,j] = quat.wignerDelem(l, i, j)
+        return Delems
+
 
 def WignerD_mm_fromvector(l, vect):
     """
     TODO doc
     """
-    return WignerD_mm(l, quaternion.from_rotation_vector(vect))
+    if use_moble_quaternion:
+        return WignerD_mm(l, quaternion.from_rotation_vector(vect))
+    else:
+        return WignerD_mm(l, CQuat.from_rotvector(vect))
 
 
 def WignerD_yy(lmax, quat):
@@ -46,7 +63,10 @@ def WignerD_yy_fromvector(lmax, vect):
     """
     TODO doc
     """
-    return WignerD_yy(lmax, quaternion.from_rotation_vector(vect))
+    if use_moble_quaternion:
+        return WignerD_yy(lmax, quaternion.from_rotation_vector(vect))
+    else:
+        return WignerD_yy(lMax, CQuat.from_rotvector(vect))
 
 def identity_yy(lmax):
     """

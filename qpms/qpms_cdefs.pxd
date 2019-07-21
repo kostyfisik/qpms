@@ -188,6 +188,7 @@ cdef extern from "wigner.h":
                            qpms_m_t mp, qpms_m_t m)
     qpms_irot3_t qpms_irot3_mult(qpms_irot3_t p, qpms_irot3_t q)
     qpms_irot3_t qpms_irot3_pow(qpms_irot3_t p, int n)
+    qpms_quat_t qpms_quat_from_rotvector(cart3_t v)
 
 cdef extern from "groups.h":
     struct qpms_finite_group_irrep_t:

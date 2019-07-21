@@ -919,6 +919,18 @@ cdef class CQuat:
         if (abs(m) > l or abs(mp) > l):
             return 0
         return qpms_wignerD_elem(self.q, l, mp, m)
+    
+    @staticmethod
+    def from_rotvector(vec):
+        if vec.shape != (3,):
+            raise ValueError("Single 3d vector expected")
+        res = CQuat()
+        cdef cart3_t v
+        v.x = vec[0]
+        v.y = vec[1]
+        v.z = vec[2]
+        res.q = qpms_quat_from_rotvector(v)
+        return res
 
 cdef class IRot3:
     '''

@@ -113,6 +113,7 @@ static inline qpms_quat_t qpms_quat_pow(const qpms_quat_t q, const double expone
 	return qpms_quat_exp(qe);
 }
 
+
 /// Quaternion inversion.
 /** \f[ q^{-1} = \frac{q*}{|q|}. \f] */
 static inline qpms_quat_t qpms_quat_inv(const qpms_quat_t q) {
@@ -142,6 +143,12 @@ static inline cart3_t qpms_quat_rot_cart3(qpms_quat_t q, const cart3_t v) {
 	const qpms_quat_t vv = qpms_quat_from_cart3(v);
 	return qpms_quat_to_cart3(qpms_quat_mult(q,
 				qpms_quat_mult(vv, qc)));
+}
+
+/// Versor quaternion from rotation vector (norm of the vector is the rotation angle).
+static inline qpms_quat_t qpms_quat_from_rotvector(cart3_t v) {
+        return qpms_quat_exp(qpms_quat_rscale(0.5,
+				qpms_quat_from_cart3(v)));
 }
 
 /// Wigner D matrix element from a rotator quaternion for integer \a l.
