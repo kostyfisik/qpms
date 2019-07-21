@@ -965,6 +965,18 @@ complex double *qpms_scatsys_build_translation_matrix_full(
     double k ///< Wave number to use in the translation matrix.
     )
 {
+  return qpms_scatsys_build_translation_matrix_full_e(
+      target, ss, k, QPMS_HANKEL_PLUS);
+}
+
+complex double *qpms_scatsys_build_translation_matrix_full_e(
+    /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+    complex double *target,
+    const qpms_scatsys_t *ss,
+    double k, ///< Wave number to use in the translation matrix.
+    qpms_bessel_t J ///< Bessel function type.
+    )
+{
   const size_t full_len = ss->fecv_size;
   if(!target)
     QPMS_CRASHING_MALLOC(target, SQ(full_len) * sizeof(complex double));
@@ -982,7 +994,7 @@ complex double *qpms_scatsys_build_translation_matrix_full(
           QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
                 target + fullvec_offsetR*full_len + fullvec_offsetC,
                 bspecR, full_len, bspecC, 1,
-                k, posR, posC));      
+                k, posR, posC, J));      
         }
         fullvec_offsetC += bspecC->n;
       }
@@ -1025,7 +1037,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
           QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
                 tmp, // tmp is S(piR<-piC)
                 bspecR, bspecC->n, bspecC, 1,
-                k, posR, posC));      
+                k, posR, posC, QPMS_HANKEL_PLUS));      
           cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
               bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/, 
               &one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
@@ -1117,7 +1129,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
             QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
                   Sblock, // Sblock is S(piR->piC)
                   bspecR, bspecC->n, bspecC, 1,
-                  k, posR, posC));
+                  k, posR, posC, QPMS_HANKEL_PLUS));
 
 						cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
 								bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
@@ -1236,7 +1248,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
               QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
                     Sblock, // Sblock is S(piR->piC)
                     bspecR, bspecC->n, bspecC, 1,
-                    k, posR, posC));
+                    k, posR, posC, QPMS_HANKEL_PLUS));
 
               cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                   bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
@@ -1368,7 +1380,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
               QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
                     Sblock, // Sblock is S(piR->piC)
                     bspecR, bspecC->n, bspecC, 1,
-                    a->k, posR, posC));
+                    a->k, posR, posC, QPMS_HANKEL_PLUS));
 
               SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                   bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,

@@ -234,6 +234,18 @@ complex double *qpms_scatsys_build_translation_matrix_full(
 		const qpms_scatsys_t *ss,
 		double k ///< Wave number to use in the translation matrix.
 		);
+
+/// As qpms_scatsys_build_translation_full() but with choice of Bessel function type.
+/** Might be useful for evaluation of cross sections and testing.
+ */
+complex double *qpms_scatsys_build_translation_matrix_full_e(
+		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
+		complex double *target,
+		const qpms_scatsys_t *ss,
+		double k, ///< Wave number to use in the translation matrix.
+		qpms_bessel_t J
+		);
+
 complex double *qpms_scatsys_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,

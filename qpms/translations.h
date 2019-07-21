@@ -155,7 +155,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
 		sph_t kdlj, bool r_ge_d, qpms_bessel_t J);
 
 /// Version with \a k and cartesian particle positions
-/// and with automatic \a kdlj = false and \a J = QPMS_HANKEL_PLUS.
+/// and with automatic \a r_ge_d = `false`.
 qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p(
 		const qpms_trans_calculator *c,
 		complex double *target, 
@@ -163,7 +163,8 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p(
 		const qpms_vswf_set_spec_t *destspec, size_t deststride,
 		/// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm. 
 		const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-		double k, cart3_t destpos, cart3_t srcpos
+		double k, cart3_t destpos, cart3_t srcpos,
+		qpms_bessel_t J
 		/// Workspace has to be at least 2 * c->neleme**2 long
 		);
 

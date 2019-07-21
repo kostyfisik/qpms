@@ -1571,12 +1571,12 @@ cdef class ScatteringSystem:
             qpms_scatsys_build_modeproblem_matrix_irrep_packed(&target_view[0][0], self.s, iri, k)
         return target
 
-    def translation_matrix_full(self, double k):
+    def translation_matrix_full(self, double k, J = QPMS_HANKEL_PLUS):
         cdef size_t flen = self.s[0].fecv_size
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (flen,flen),dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
-        qpms_scatsys_build_translation_matrix_full(&target_view[0][0], self.s, k)
+        qpms_scatsys_build_translation_matrix_full_e(&target_view[0][0], self.s, k, J)
         return target
     
     def fullvec_psizes(self):
