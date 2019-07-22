@@ -265,13 +265,14 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 		qpms_bessel_t J
 		);
 
+/// Creates the full \f$ (-I + TS) \f$ matrix of the scattering system.
 complex double *qpms_scatsys_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss,
 		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
 		);
-/// Creates the mode problem matrix directly in the irrep-packed form.
+/// Creates the mode problem matrix \f$ (-I + TS) \f$ directly in the irrep-packed form.
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
@@ -369,6 +370,14 @@ complex double *qpms_scatsys_incident_field_vector_full(
 		const void *args, ///< Pointer passed as the last argument to (*field_at_point)()
 		bool add ///< If true, add to target_full; rewrite target_full if false.
 		);
+
+/// Applies T-matrices onto an incident field vector in the full basis.
+complex double *qpms_scatsys_apply_Tmatrices_full(
+		complex double *target_full, /// Target vector array. If NULL, a new one is allocated.
+		const complex double *inc_full, /// Incident field coefficient vector. Must not be NULL.
+		const qpms_scatsys_t *ss
+		);
+
 
 #if 0
 /// Creates a (partial) incident field vector in the symmetry-adapted basis, given a function that evaluates the field expansions at points.

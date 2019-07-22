@@ -1698,6 +1698,19 @@ cdef class ScatteringSystem:
                 self.s, qpms_incfield_planewave, <void *>&p, 0)
         return target_np
 
+    def apply_Tmatrices_full(self, a):
+        if len(a) != self.fecv_size: 
+            raise ValueError("Length of a full vector has to be %d, not %d" 
+                    % (self.fecv_size, len(a)))
+        a = np.array(a, dtype=complex, copy=False, order='C')
+        cdef cdouble[::1] a_view = a;
+        cdef np.ndarray[np.complex_t, ndim=1] target_np = np.empty(
+                (self.fecv_size,), dtype=complex, order='C')
+        cdef cdouble[::1] target_view = target_np
+        qpms_scatsys_apply_Tmatrices_full(&target_view[0], &a_view[0], self.s)
+        return target_np
+
+
 
 def tlm2uvswfi(t, l, m):
     ''' TODO doc

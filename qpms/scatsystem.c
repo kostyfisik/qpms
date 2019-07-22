@@ -1688,6 +1688,25 @@ complex double *qpms_scatsys_incident_field_vector_irrep_packed(
 #endif
 
 
+complex double *qpms_scatsys_apply_Tmatrices_full(
+		complex double *target_full, const complex double *inc_full, 
+		const qpms_scatsys_t *ss) {
+  QPMS_UNTESTED;
+  if (!target_full) QPMS_CRASHING_CALLOC(target_full, ss->fecv_size,
+      sizeof(complex double));
+  for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    complex double *ptarget = target_full + ss->fecv_pstarts[pi];
+    const complex double *psrc = inc_full + ss->fecv_pstarts[pi];
+    const qpms_vswf_set_spec_t *bspec = qpms_ss_bspec_pi(ss, pi);
+    // TODO check whether T-matrix is non-virtual after virtual t-matrices are implemented.
+    const qpms_tmatrix_t *T = ss->tm[ss->p[pi].tmatrix_id];
+    qpms_apply_tmatrix(ptarget, psrc, T);
+  }
+  return target_full;
+}
+
+
+
 ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss, 
     const complex double *cvf, const cart3_t where,
     const complex double k) {

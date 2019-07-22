@@ -396,6 +396,8 @@ cdef extern from "scatsystem.h":
     cdouble *qpms_scatsys_incident_field_vector_full(cdouble *target_full,
             const qpms_scatsys_t *ss, qpms_incfield_t field_at_point, 
             const void *args, bint add)
+    cdouble *qpms_scatsys_apply_Tmatrices_full(cdouble *target_full, const cdouble *inc_full,
+            const qpms_scatsys_t *ss)
 
 
 

@@ -228,6 +228,14 @@ qpms_tmatrix_t *qpms_tmatrix_symmetrise_finite_group_inplace(
 		const qpms_finite_group_t *pointgroup
 		);
 
+/// Application of T-matrix on a vector of incident field coefficients, \f$ f = Ta \f$.
+complex double *qpms_apply_tmatrix(
+		complex double *f_target, ///< Scattered field coefficient array of size T->spec->n; if NULL, a new one is allocated.
+		const complex double *a, ///< Incident field coefficient array of size T->spec->n.
+		const qpms_tmatrix_t *T
+		);
+
+
 /* Fuck this, include the whole <gsl/gsl_spline.h>
 typedef struct gsl_spline gsl_spline; // Forward declaration for the interpolator struct
 typedef struct gsl_interp_type gsl_interp_type;

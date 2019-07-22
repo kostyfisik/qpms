@@ -704,3 +704,16 @@ qpms_errno_t qpms_tmatrix_spherical_mu0_fill(
   return qpms_tmatrix_spherical_fill(t, a, k_i, k_e, 1, 1);
 }
 
+complex double *qpms_apply_tmatrix(
+    complex double *f, const complex double *a, const qpms_tmatrix_t *T) 
+{
+  const size_t n = T->spec->n;
+  if(!f)
+    QPMS_CRASHING_CALLOC(f, n, sizeof(complex double));
+  const complex double one = 1;
+  const complex double zero = 0;
+  cblas_zgemv(CblasRowMajor, CblasNoTrans, n, n, &one, T->m, n, a, 1, &zero, NULL, 1);
+  return f;
+}
+
+
