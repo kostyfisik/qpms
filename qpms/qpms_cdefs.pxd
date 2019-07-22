@@ -61,7 +61,7 @@ cdef extern from "qpms_types.h":
         QPMS_BESSEL_SINGULAR
         QPMS_HANKEL_PLUS
         QPMS_HANKEL_MINUS
-        QPMS_HANKEL_UNDEF
+        QPMS_BESSEL_UNDEF
     ctypedef int qpms_lm_t
     ctypedef int qpms_l_t
     ctypedef int qpms_m_t

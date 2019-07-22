@@ -25,6 +25,13 @@ class VSWFType(enum.IntEnum):
     N = QPMS_VSWF_ELECTRIC
     L = QPMS_VSWF_LONGITUDINAL
 
+class BesselType(enum.IntEnum):
+    UNDEF = QPMS_BESSEL_UNDEF
+    REGULAR = QPMS_BESSEL_REGULAR
+    SINGULAR = QPMS_BESSEL_SINGULAR
+    HANKEL_PLUS = QPMS_HANKEL_PLUS
+    HANKEL_MINUS = QPMS_HANKEL_MINUS
+
 class VSWFNorm(enum.IntEnum):
     # TODO try to make this an enum.IntFlag if supported
     # TODO add the other flags from qpms_normalisation_t as well
@@ -672,7 +679,8 @@ cdef class trans_calculator:
         return a, b
     
     def get_trans_array_bspec_sph(self, BaseSpec destspec, BaseSpec srcspec,
-            double k, kdlj, qpms_bessel_t J = QPMS_HANKEL_PLUS):
+            kdlj, qpms_bessel_t J = QPMS_HANKEL_PLUS):
+        kdlj = np.array(kdlj)
         if kdlj.shape != (3,):
             raise ValueError("Array of shape (3,) with spherical coordinates of the translation expected")
         cdef size_t destn = len(destspec)
@@ -691,6 +699,8 @@ cdef class trans_calculator:
 
     def get_trans_array_bspec_c3pos(self, BaseSpec destspec, BaseSpec srcspec,
             double k, destpos, srcpos, qpms_bessel_t J = QPMS_HANKEL_PLUS):
+        destpos = np.array(destpos)
+        srcpos = np.array(srcpos)
         if destpos.shape != (3,) or srcpos.shape != (3,):
             raise ValueError("Array of shape (3,) with cartesian coordinates of the particle position expected")
         cdef size_t destn = len(destspec)
@@ -827,6 +837,10 @@ cdef class BaseSpec:
     property rawpointer:
         def __get__(self):
             return <uintptr_t> &(self.s)
+    
+    property norm:
+        def __get__(self):
+            return VSWFNorm(self.s.norm)
 
 # Quaternions from wigner.h 
 # (mainly for testing; use moble's quaternions in python)
