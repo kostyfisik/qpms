@@ -59,6 +59,24 @@ static inline void TROPS_ONLY_EIMF_IMPLEMENTED(qpms_normalisation_t norm) {
     QPMS_NOT_IMPLEMENTED("Translation operators for real or inverse complex spherical harmonics based waves are not implemented.");
 }
 
+// Use if only the symmetric form [[A, B], [B, A]] (without additional factors) of translation operator is allowed.
+static inline void TROPS_ONLY_AB_SYMMETRIC_NORMS_IMPLEMENTED(qpms_normalisation_t norm) {
+  switch (norm & QPMS_NORMALISATION_NORM_BITS) {
+    case QPMS_NORMALISATION_NORM_SPHARM:
+    case QPMS_NORMALISATION_NORM_POWER:
+      break; // OK
+    default:
+      QPMS_NOT_IMPLEMENTED("Only spherical harmonic and power normalisation supported.");
+  }
+  if (
+      ( !(norm & QPMS_NORMALISATION_N_I) != !(norm & QPMS_NORMALISATION_M_I)  )
+      ||
+      ( !(norm & QPMS_NORMALISATION_N_MINUS) != !(norm & QPMS_NORMALISATION_M_MINUS) )
+     )
+    QPMS_NOT_IMPLEMENTED("Only normalisations without a phase factors between M and N waves are supported.");
+}
+
+
 /*
  * References:
  * [Xu_old] Yu-Lin Xu, Journal of Computational Physics 127, 285–298 (1996)
@@ -1094,6 +1112,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
     const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
     sph_t kdlj, bool r_ge_d, qpms_bessel_t J) 
 {
+  TROPS_ONLY_AB_SYMMETRIC_NORMS_IMPLEMENTED(c->normalisation);
   assert(c->normalisation == destspec->norm && c->normalisation == srcspec->norm);
   assert(c->lMax >= destspec->lMax && c->lMax >= srcspec->lMax);
   assert(destspec->lMax_L < 0 && srcspec->lMax_L < 0);
