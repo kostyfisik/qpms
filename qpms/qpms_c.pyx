@@ -670,6 +670,46 @@ cdef class trans_calculator:
                     r_ge_d_c.data, r_ge_d_c.shape, r_ge_d_c.strides
                     )
         return a, b
+    
+    def get_trans_array_bspec_sph(self, BaseSpec destspec, BaseSpec srcspec,
+            double k, kdlj, qpms_bessel_t J = QPMS_HANKEL_PLUS):
+        if kdlj.shape != (3,):
+            raise ValueError("Array of shape (3,) with spherical coordinates of the translation expected")
+        cdef size_t destn = len(destspec)
+        cdef size_t srcn = len(srcspec)
+        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
+                (destn, srcn), dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target
+        cdef sph_t kdlj_sph
+        kdlj_sph.r = kdlj[0]
+        kdlj_sph.theta = kdlj[1]
+        kdlj_sph.phi = kdlj[2]
+        qpms_trans_calculator_get_trans_array(self.c, &target_view[0][0], 
+                destspec.rawpointer(), srcn, srcspec.rawpointer(), 1, 
+                kdlj_sph, False, J)
+        return target
+
+    def get_trans_array_bspec_c3pos(self, BaseSpec destspec, BaseSpec srcspec,
+            double k, destpos, srcpos, qpms_bessel_t J = QPMS_HANKEL_PLUS):
+        if destpos.shape != (3,) or srcpos.shape != (3,):
+            raise ValueError("Array of shape (3,) with cartesian coordinates of the particle position expected")
+        cdef size_t destn = len(destspec)
+        cdef size_t srcn = len(srcspec)
+        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
+                (destn, srcn), dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target
+        cdef cart3_t srcp, destp
+        srcp.x = srcpos[0]
+        srcp.y = srcpos[1]
+        srcp.z = srcpos[2]
+        destp.x = destpos[0]
+        destp.y = destpos[1]
+        destp.z = destpos[2]
+        qpms_trans_calculator_get_trans_array_lc3p(self.c, &target_view[0][0], 
+                destspec.rawpointer(), srcn, srcspec.rawpointer(), 1, k,
+                destp, srcp, J)
+        return target
+
 
     # TODO make possible to access the attributes (to show normalization etc)
 

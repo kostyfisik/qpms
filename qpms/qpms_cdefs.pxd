@@ -269,6 +269,21 @@ cdef extern from "translations.h":
             char *phi_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides,
             char *r_ge_d_data, np.npy_intp *phi_shape, np.npy_intp *phi_strides) nogil
 
+    int qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *c,
+                cdouble *target,
+                const qpms_vswf_set_spec_t *destspec, size_t deststride,
+                const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+                sph_t kdlj, bint r_ge_d, qpms_bessel_t J);
+
+    int qpms_trans_calculator_get_trans_array_lc3p(
+                const qpms_trans_calculator *c,
+                cdouble *target,
+                const qpms_vswf_set_spec_t *destspec, size_t deststride,
+                const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+                double k, cart3_t destpos, cart3_t srcpos,
+                qpms_bessel_t J
+                );
+
 cdef extern from "gsl/gsl_interp.h":
     struct gsl_interp_type:
         pass

@@ -24,6 +24,8 @@ TODO list before public release
   * As a description of a T-matrix / particle metadata.
 - Nice CLI for all general enough utilities.
 - Remove legacy code.
+- Split qpms_c.pyx.
+- Reduce compiler warnings.
 - Prefix all identifiers. Maybe think about a different prefix than qpms?
 - Consistent indentation and style overall.
 - Rewrite the parallelized translation matrix, mode problem matrix generators
