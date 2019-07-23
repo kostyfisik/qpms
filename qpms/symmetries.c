@@ -1,7 +1,7 @@
 #include "symmetries.h"
 #include "tiny_inlines.h"
 #include "indexing.h"
-#include "wigner.h"
+#include "quaternions.h"
 #include "qpms_error.h"
 
 // TODO at some point, maybe support also other norms.

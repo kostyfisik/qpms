@@ -1,4 +1,4 @@
-/*! \file wigner.h
+/*! \file quaternions.h
  * \brief Quaternions and Wigner matrices
  */
 #ifndef QPMS_WIGNER_H

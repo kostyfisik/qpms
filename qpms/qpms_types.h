@@ -250,21 +250,21 @@ typedef enum {
  * Internaly represented as a pair of complex numbers,
  * \f$ Q_a = Q_1 + iQ_z, Q_b = Q_y + i Q_x\f$.
  *
- * See wigner.h for "methods".
+ * See quaternions.h for "methods".
  */
 typedef struct qpms_quat_t {
         complex double a, b;
 } qpms_quat_t;
 
 /// Quaternion type as four doubles.
-/** See wigner.h for "methods".
+/** See quaternions.h for "methods".
  */
 typedef struct qpms_quat4d_t {
         double c1, ci, cj, ck;
 } qpms_quat4d_t;
 
 /// 3D improper rotations represented as a quaternion and a sign of the determinant.
-/** See wigner.h for "methods".
+/** See quaternions.h for "methods".
  */
 typedef struct qpms_irot3_t {
         qpms_quat_t rot; ///< Quaternion representing the rotation part.

@@ -14,7 +14,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include "vectors.h"
-#include "wigner.h"
+#include "quaternions.h"
 #include <string.h>
 #include "qpms_error.h"
 #include "translations.h"

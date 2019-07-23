@@ -2,7 +2,7 @@
 #define POINTGROUPS_H
 
 #include "qpms_error.h"
-#include "wigner.h"
+#include "quaternions.h"
 
 
 static inline _Bool qpms_pg_is_finite_axial(qpms_pointgroup_class cls) {

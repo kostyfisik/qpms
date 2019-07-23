@@ -1,4 +1,4 @@
-#include "wigner.h"
+#include "quaternions.h"
 #include "tiny_inlines.h"
 #include "kahansum.h"
 #define WIGNER_ATOL (1e-15)

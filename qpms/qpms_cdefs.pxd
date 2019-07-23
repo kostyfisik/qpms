@@ -171,7 +171,7 @@ cdef extern from "lattices.h":
             double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
 
 
-cdef extern from "wigner.h":
+cdef extern from "quaternions.h":
     qpms_quat_t qpms_quat_2c_from_4d(qpms_quat4d_t q)
     qpms_quat4d_t qpms_quat_4d_from_2c(qpms_quat_t q)
     qpms_quat_t qpms_quat_mult(qpms_quat_t p, qpms_quat_t q)

@@ -842,7 +842,7 @@ cdef class BaseSpec:
         def __get__(self):
             return VSWFNorm(self.s.norm)
 
-# Quaternions from wigner.h 
+# Quaternions from quaternions.h
 # (mainly for testing; use moble's quaternions in python)
 
 cdef class CQuat:
