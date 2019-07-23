@@ -45,6 +45,14 @@ static inline qpms_quat_t qpms_quat_add(qpms_quat_t p, qpms_quat_t q) {
 	return r;
 }
 
+/// Quaternion substraction.
+static inline qpms_quat_t qpms_quat_sub(qpms_quat_t p, qpms_quat_t q) {
+	qpms_quat_t r;
+	r.a = p.a-q.a;
+	r.b = p.b-q.b;
+	return r;
+}
+
 /// Exponential function of a quaternion \f$e^Q$\f.
 static inline qpms_quat_t qpms_quat_exp(const qpms_quat_t q) {
 	const qpms_quat4d_t q4 = qpms_quat_4d_from_2c(q);
@@ -62,10 +70,14 @@ static inline qpms_quat_t qpms_quat_rscale(double s, qpms_quat_t q) {
 }
 
 // quaternion "basis"
-static const qpms_quat_t qpms_quat_1 = {1, 0};
-static const qpms_quat_t qpms_quat_i = {I, 0};
-static const qpms_quat_t qpms_quat_j = {0, 1};
-static const qpms_quat_t qpms_quat_k = {0, I};
+/// Quaternion real unit.
+static const qpms_quat_t QPMS_QUAT_1 = {1, 0};
+/// Quaternion imaginary unit i.
+static const qpms_quat_t QPMS_QUAT_I = {0, I};
+/// Quaternion imaginury unik j.
+static const qpms_quat_t QPMS_QUAT_J = {0, 1};
+/// Quaternion imaginary unit k.
+static const qpms_quat_t QPMS_QUAT_K = {I, 0};
 
 /// Quaternion conjugation.
 static inline qpms_quat_t qpms_quat_conj(const qpms_quat_t q) {
@@ -76,6 +88,11 @@ static inline qpms_quat_t qpms_quat_conj(const qpms_quat_t q) {
 /// Quaternion norm.
 static inline double qpms_quat_norm(const qpms_quat_t q) {
 	return sqrt(creal(q.a * conj(q.a) + q.b * conj(q.b)));
+}
+
+/// Test approximate equality of quaternions.
+static inline bool qpms_quat_isclose(const qpms_quat_t p, const qpms_quat_t q, double atol) {
+	return qpms_quat_norm(qpms_quat_sub(p,q)) <= atol;
 }
 
 /// Norm of the quaternion imaginary (vector) part.
@@ -112,7 +129,6 @@ static inline qpms_quat_t qpms_quat_pow(const qpms_quat_t q, const double expone
 			qpms_quat_log(q));
 	return qpms_quat_exp(qe);
 }
-
 
 /// Quaternion inversion.
 /** \f[ q^{-1} = \frac{q*}{|q|}. \f] */
@@ -195,12 +211,51 @@ static inline qpms_irot3_t qpms_irot3_pow(const qpms_irot3_t p, int n) {
 	return r;
 }
 
+/// Test approximate equality of irot3.
+static inline bool qpms_irot3_isclose(const qpms_irot3_t p, const qpms_irot3_t q, double atol) {
+	return qpms_quat_isclose(p.rot, q.rot, atol) && p.det == q.det;
+}
+
 /// Apply an improper rotation onto a 3d cartesian vector.
 static inline cart3_t qpms_irot3_apply_cart3(const qpms_irot3_t p, const cart3_t v) {
 #ifndef NDEBUG
 	qpms_irot3_checkdet(p);
 #endif
 	return cart3_scale(p.det, qpms_quat_rot_cart3(p.rot, v));
+}
+
+// Some basic transformations with irot3 type
+/// Identity
+static const qpms_irot3_t QPMS_IROT3_IDENTITY = {QPMS_QUAT_1, 1};
+/// Spatial inversion.
+static const qpms_irot3_t QPMS_IROT3_INVERSION = {QPMS_QUAT_1, -1};
+/// yz-plane mirror symmetry
+static const qpms_irot3_t QPMS_IROT3_XFLIP = {QPMS_QUAT_I, -1};
+/// xz-plane mirror symmetry
+static const qpms_irot3_t QPMS_IROT3_YFLIP = {QPMS_QUAT_J, -1};
+/// xy-plane mirror symmetry
+static const qpms_irot3_t QPMS_IROT3_ZFLIP = {QPMS_QUAT_K, -1};
+
+/// versor representing rotation around z-axis.
+static inline qpms_quat_t qpms_quat_zrot_angle(double angle) {
+	qpms_quat_t q =  {cexp(I*(angle/2)), 0};
+	return q;
+}
+
+/// versor representing rotation \f$ C_N^k \f$, i.e. of angle \f$ 2\pi k / N\f$ around z axis.
+static inline qpms_quat_t qpms_quat_zrot_Nk(double N, double k) {
+	return qpms_quat_zrot_angle(M_PI * k / N);
+}
+
+/// Rotation around z-axis.
+static inline qpms_irot3_t qpms_irot3_zrot_angle(double angle) {
+	qpms_irot3_t q = {qpms_quat_zrot_angle(angle), 1};
+	return q;
+}
+
+/// Rotation \f$ C_N^k \f$, i.e. of angle \f$ 2\pi k / N\f$ around z axis.
+static inline qpms_irot3_t qpms_irot3_zrot_Nk(double N, double k) {
+	return qpms_irot3_zrot_angle(M_PI * k / N);
 }
 
 #endif //QPMS_WIGNER_H
