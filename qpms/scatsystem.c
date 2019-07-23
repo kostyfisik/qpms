@@ -1022,8 +1022,8 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
   complex double *tmp;
   QPMS_CRASHING_MALLOC(tmp, SQ(ss->max_bspecn) * sizeof(complex double));
   memset(target, 0, SQ(full_len) * sizeof(complex double)); //unnecessary?
-  complex double one = 1, zero = 0;
-  { // Non-diagonal part; M[piR, piC] = T[piR] S(piR<-piC)
+  const complex double zero = 0, minusone = -1;
+  { // Non-diagonal part; M[piR, piC] = -T[piR] S(piR<-piC)
     size_t fullvec_offsetR = 0;
     for(qpms_ss_pi_t piR = 0; piR < ss->p_count; ++piR) {
       const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[piR].tmatrix_id]->spec;
@@ -1041,7 +1041,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
                 k, posR, posC, QPMS_HANKEL_PLUS));      
           cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
               bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/, 
-              &one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
+              &minusone/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
               tmp/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
               target + fullvec_offsetR*full_len + fullvec_offsetC /*c*/,
               full_len /*ldc*/);
@@ -1051,8 +1051,8 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
       fullvec_offsetR += bspecR->n;
     }
   }
-  // diagonal part M[pi,pi] = -1
-  for (size_t i = 0; i < full_len; ++i) target[full_len * i + i] = -1;
+  // diagonal part M[pi,pi] = +1
+  for (size_t i = 0; i < full_len; ++i) target[full_len * i + i] = +1;
   
   free(tmp);
   return target;
@@ -1076,7 +1076,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
   // some of the following workspaces are probably redundant; TODO optimize later.
 
   // workspaces for the uncompressed particle<-particle tranlation matrix block
-  // and the result of multiplying with a T-matrix
+  // and the result of multiplying with a T-matrix (times -1)
   complex double *Sblock, *TSblock;
   QPMS_CRASHING_MALLOC(Sblock, sizeof(complex double)*SQ(ss->max_bspecn));
   QPMS_CRASHING_MALLOC(TSblock, sizeof(complex double)*SQ(ss->max_bspecn));
@@ -1085,7 +1085,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
   complex double *tmp;
   QPMS_CRASHING_MALLOC(tmp, sizeof(complex double) * SQ(ss->max_bspecn) * ss->sym->order);
 
-  const complex double one = 1, zero = 0;
+  const complex double one = 1, zero = 0, minusone = -1;
 
   for(qpms_ss_pi_t piR = 0; piR < ss->p_count; ++piR) { //Row loop
     const qpms_ss_oti_t otiR = ss->p_orbitinfo[piR].t;
@@ -1134,13 +1134,13 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
 
 						cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
 								bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
-								&one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
+								&minusone/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
 								Sblock/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
 								TSblock /*c*/, bspecC->n /*ldc*/);
-          } else { // diagonal, fill with diagonal -1
+          } else { // diagonal, fill with diagonal +1
             for (size_t row = 0; row < bspecR->n; ++row)
               for (size_t col = 0; col < bspecC->n; ++col)
-                TSblock[row * bspecC->n + col] = (row == col)? -1 : 0;
+                TSblock[row * bspecC->n + col] = (row == col)? +1 : 0;
           }
 
           // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]
@@ -1186,7 +1186,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
   // some of the following workspaces are probably redundant; TODO optimize later.
 
   // workspaces for the uncompressed particle<-particle tranlation matrix block
-  // and the result of multiplying with a T-matrix
+  // and the result of multiplying with a T-matrix (times -1)
   complex double *Sblock, *TSblock;
   QPMS_CRASHING_MALLOC(Sblock, sizeof(complex double)*SQ(ss->max_bspecn));
   QPMS_CRASHING_MALLOC(TSblock, sizeof(complex double)*SQ(ss->max_bspecn));
@@ -1195,7 +1195,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
   complex double *tmp;
   QPMS_CRASHING_MALLOC(tmp, sizeof(complex double) * SQ(ss->max_bspecn) * ss->sym->order);
 
-  const complex double one = 1, zero = 0;
+  const complex double one = 1, zero = 0, minusone = -1;
 
   for(qpms_ss_pi_t opistartR = 0; opistartR < ss->p_count; 
       opistartR += ss->orbit_types[ss->p_orbitinfo[ss->p_by_orbit[opistartR]].t].size //orbit_p_countR; might write a while() instead
@@ -1253,13 +1253,13 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
 
               cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                   bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
-                  &one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
+                  &minusone/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
                   Sblock/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
                   TSblock /*c*/, bspecC->n /*ldc*/);
-            } else { // diagonal, fill with diagonal -1
+            } else { // diagonal, fill with diagonal +1
               for (size_t row = 0; row < bspecR->n; ++row)
                 for (size_t col = 0; col < bspecC->n; ++col)
-                  TSblock[row * bspecC->n + col] = (row == col)? -1 : 0;
+                  TSblock[row * bspecC->n + col] = (row == col)? +1 : 0;
             }
 
             // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]
@@ -1308,7 +1308,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
   // some of the following workspaces are probably redundant; TODO optimize later.
 
   // workspaces for the uncompressed particle<-particle tranlation matrix block
-  // and the result of multiplying with a T-matrix
+  // and the result of multiplying with a T-matrix (times -1)
   complex double *Sblock, *TSblock;
   QPMS_CRASHING_MALLOC(Sblock, sizeof(complex double)*SQ(ss->max_bspecn));
   QPMS_CRASHING_MALLOC(TSblock, sizeof(complex double)*SQ(ss->max_bspecn));
@@ -1317,7 +1317,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
   complex double *tmp;
   QPMS_CRASHING_MALLOC(tmp, sizeof(complex double) * SQ(ss->max_bspecn) * ss->sym->order);
 
-  const complex double one = 1, zero = 0;
+  const complex double one = 1, zero = 0, minusone = -1;
 
   while(1) {
     // In the beginning, pick a target (row) orbit for this thread
@@ -1385,13 +1385,13 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
 
               SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                   bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
-                  &one/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
+                  &minusone/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
                   Sblock/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
                   TSblock /*c*/, bspecC->n /*ldc*/);
-            } else { // diagonal, fill with diagonal -1
+            } else { // diagonal, fill with diagonal +1
               for (size_t row = 0; row < bspecR->n; ++row)
                 for (size_t col = 0; col < bspecC->n; ++col)
-                  TSblock[row * bspecC->n + col] = (row == col)? -1 : 0;
+                  TSblock[row * bspecC->n + col] = (row == col)? +1 : 0;
             }
 
             // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]

@@ -111,6 +111,7 @@ typedef struct qpms_ss_orbit_type_t {
 	qpms_ss_pi_t p_offset;
 } qpms_ss_orbit_type_t;
 
+
 typedef ptrdiff_t qpms_ss_osn_t; ///< "serial number" of av orbit in a given type.
 
 /// Auxillary type used in qpms_scatsys_t that identifies the particle's orbit and its id inside that orbit.
@@ -265,14 +266,14 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 		qpms_bessel_t J
 		);
 
-/// Creates the full \f$ (-I + TS) \f$ matrix of the scattering system.
+/// Creates the full \f$ (I - TS) \f$ matrix of the scattering system.
 complex double *qpms_scatsys_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss,
 		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
 		);
-/// Creates the mode problem matrix \f$ (-I + TS) \f$ directly in the irrep-packed form.
+/// Creates the mode problem matrix \f$ (I - TS) \f$ directly in the irrep-packed form.
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
@@ -293,6 +294,16 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorder_pa
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
 		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
 		);
+
+/// LU factorisation (LAPACKE_zgetrf) result holder.
+typedef struct qpms_ss_LU {
+	/// LU decomposition array.
+	complex double *a;
+	/// Pivot index array, size at least max(1,min(m, n)).
+	lapack_int *ipiv; 
+} qpms_ss_LU;
+
+void qpms_ss_LU_free(qpms_ss_LU *);
 
 /// NOT IMPLEMENTED Dumps a qpms_scatsys_t structure to a file.
 qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);
@@ -421,4 +432,5 @@ ccart3_t qpms_scatsys_eval_E_irrep(const qpms_scatsys_t *ss,
 		complex double k ///< Wave number.
 		);
 #endif
+
 #endif //QPMS_SCATSYSTEM_H
