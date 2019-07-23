@@ -1681,6 +1681,8 @@ cdef class ScatteringSystem:
         return ar
    
     def planewave_full(self, k_cart, E_cart):
+        k_cart = np.array(k_cart)
+        E_cart = np.array(E_cart)
         if k_cart.shape != (3,) or E_cart.shape != (3,):
             raise ValueError("k_cart and E_cart must be ndarrays of shape (3,)")
         cdef qpms_incfield_planewave_params_t p
@@ -1709,7 +1711,57 @@ cdef class ScatteringSystem:
         cdef cdouble[::1] target_view = target_np
         qpms_scatsys_apply_Tmatrices_full(&target_view[0], &a_view[0], self.s)
         return target_np
+    
+    cdef qpms_scatsys_t *rawpointer(self):
+        return self.s
 
+    def scatter_solver(self, double k, iri=None):
+        return ScatteringMatrix(self, k, iri)
+
+cdef class ScatteringMatrix:
+    '''
+    Wrapper over the C qpms_ss_LU structure that keeps the factorised mode problem matrix.
+    '''
+    cdef ScatteringSystem ss # Here we keep the reference to the parent scattering system
+    cdef qpms_ss_LU lu
+
+    def __cinit__(self, ScatteringSystem ss, double k, iri=None):
+        self.ss = ss
+        # TODO? pre-allocate the matrix with numpy to make it transparent?
+        if iri is None:
+            self.lu = qpms_scatsys_build_modeproblem_matrix_full_LU(
+                    NULL, NULL, ss.rawpointer(), k)
+        else:
+            self.lu = qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
+                    NULL, NULL, ss.rawpointer(), iri, k)
+
+    def __dealloc__(self):
+        qpms_ss_LU_free(self.lu)
+
+    property iri:
+        def __get__(self):
+            return None if self.lu.full else self.lu.iri
+
+    def __call__(self, a_inc):
+        cdef size_t vlen
+        cdef qpms_iri_t iri = -1;
+        if self.lu.full:
+            vlen = self.lu.ss[0].fecv_size
+            if len(a_inc) != vlen:
+                raise ValueError("Length of a full coefficient vector has to be %d, not %d"
+                        % (vlen, len(a_inc)))
+        else:
+            iri = self.lu.iri
+            vlen = self.lu.ss[0].saecv_sizes[iri]
+            if len(a_inc) != vlen:
+                raise ValueError("Length of a %d. irrep packed coefficient vector has to be %d, not %d"
+                        % (iri, vlen, len(a_inc)))
+        a_inc = np.array(a_inc, dtype=complex, copy=False, order='C')
+        cdef const cdouble[::1] a_view = a_inc;
+        cdef np.ndarray f = np.empty((vlen,), dtype=complex, order='C')
+        cdef cdouble[::1] f_view = f
+        qpms_scatsys_scatter_solve(&f_view[0], &a_view[0], self.lu)
+        return f
 
 
 def tlm2uvswfi(t, l, m):

@@ -14,7 +14,6 @@
 #include "vswf.h"
 #include <stdbool.h>
 
-
 /// Overrides the number of threads spawned by the paralellized functions.
 /** TODO MORE DOC which are those? */
 void qpms_scatsystem_set_nthreads(long n);
@@ -297,13 +296,53 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorder_pa
 
 /// LU factorisation (LAPACKE_zgetrf) result holder.
 typedef struct qpms_ss_LU {
+	const qpms_scatsys_t *ss;
+	bool full; ///< true if full matrix; false if irrep-packed.
+	qpms_iri_t iri; ///< Irrep index if `full == false`.
 	/// LU decomposition array.
 	complex double *a;
 	/// Pivot index array, size at least max(1,min(m, n)).
-	lapack_int *ipiv; 
+	int *ipiv; 
 } qpms_ss_LU;
+void qpms_ss_LU_free(qpms_ss_LU);
 
-void qpms_ss_LU_free(qpms_ss_LU *);
+/// Builds an LU-factorised mode/scattering problem \f$ (I - TS) \f$ matrix from scratch.
+qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(
+		complex double *target, ///< Pre-allocated target array. Optional (if NULL, new one is allocated).
+		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
+		const qpms_scatsys_t *ss,
+		/*COMPLEXIFY*/ double k ///< Wave number to use in the translation matrix.
+		);
+
+/// Builds an irrep-packed LU-factorised mode/scattering problem matrix from scratch.
+qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
+		complex double *target, ///< Pre-allocated target array. Optional (if NULL, new one is allocated).
+		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
+		const qpms_scatsys_t *ss, qpms_iri_t iri,
+		/*COMPLEXIFY*/ double k ///< Wave number to use in the translation matrix.
+		);
+
+/// Computes LU factorisation of a pre-calculated mode/scattering problem matrix, replacing its contents.
+qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(
+		complex double *modeproblem_matrix_full, ///< Pre-calculated mode problem matrix (I-TS). Mandatory.
+		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
+		const qpms_scatsys_t *ss
+		);
+
+/// Computes LU factorisation of a pre-calculated irrep-packed mode/scattering problem matrix, replacing its contents.
+qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(
+		complex double *modeproblem_matrix_irrep_packed, ///< Pre-calculated mode problem matrix (I-TS). Mandatory.
+		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
+		const qpms_scatsys_t *ss, qpms_iri_t iri
+		);
+
+/// Solves a (possibly partial, irrep-packed) scattering problem \f$ (I-TS)f = Ta_\mathrm{inc} \f$ using a pre-factorised \f$ (I-TS) \f$.
+complex double *qpms_scatsys_scatter_solve(
+		complex double *target_f, ///< Target (full or irrep-packed, depending on `ludata.full`) array for \a f. If NULL, a new one is allocated.
+		const complex double *a_inc, ///< Incident field expansion coefficient vector \a a (full or irrep-packed, depending on `ludata.full`).
+		qpms_ss_LU ludata ///< Pre-factorised \f$ I - TS \f$ matrix data.
+		);
+
 
 /// NOT IMPLEMENTED Dumps a qpms_scatsys_t structure to a file.
 qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path);

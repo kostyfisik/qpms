@@ -1,4 +1,9 @@
 #include <stdlib.h>
+#define lapack_int int
+#define lapack_complex_double complex double
+#define lapack_complex_double_real(z) (creal(z))
+#define lapack_complex_double_imag(z) (cimag(z))
+#include <lapacke.h>
 #include <cblas.h>
 #include <lapacke.h>
 #include "scatsystem.h"
@@ -1737,4 +1742,64 @@ ccart3_t qpms_scatsys_eval_E_irrep(const qpms_scatsys_t *ss,
   TODO;
 }
 #endif
+
+void qpms_ss_LU_free(qpms_ss_LU lu) {
+  free(lu.a);
+  free(lu.ipiv);
+}
+
+qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(complex double *mpmatrix_full,
+    int *target_piv, const qpms_scatsys_t *ss) {
+  QPMS_ENSURE(mpmatrix_full, "A non-NULL pointer to the pre-calculated mode matrix is required");
+  if (!target_piv) QPMS_CRASHING_MALLOC(target_piv, ss->fecv_size * sizeof(int));
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR, ss->fecv_size, ss->fecv_size,
+        mpmatrix_full, ss->fecv_size, target_piv));
+  qpms_ss_LU lu;
+  lu.a = mpmatrix_full;
+  lu.ipiv = target_piv;
+  lu.ss = ss;
+  lu.full = true;
+  lu.iri = -1;
+  return lu;
+}
+
+qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(complex double *mpmatrix_packed,
+    int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri) {
+  QPMS_ENSURE(mpmatrix_packed, "A non-NULL pointer to the pre-calculated mode matrix is required");
+  size_t n = ss->saecv_sizes[iri];
+  if (!target_piv) QPMS_CRASHING_MALLOC(target_piv, n * sizeof(int));
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR, n, n,
+        mpmatrix_packed, n, target_piv));
+  qpms_ss_LU lu;
+  lu.a = mpmatrix_packed;
+  lu.ipiv = target_piv;
+  lu.ss = ss;
+  lu.full = false;
+  lu.iri = iri;
+  return lu;
+}
+
+qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(
+    complex double *target, int *target_piv,
+    const qpms_scatsys_t *ss, double k){
+  target = qpms_scatsys_build_modeproblem_matrix_full(target, ss, k);
+  return qpms_scatsys_modeproblem_matrix_full_factorise(target, target_piv, ss);
+}
+
+qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
+    complex double *target, int *target_piv,
+    const qpms_scatsys_t *ss, qpms_iri_t iri, double k){
+  target = qpms_scatsys_build_modeproblem_matrix_irrep_packed(target, ss, iri, k);
+  return qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(target, target_piv, ss, iri);
+}
+
+complex double *qpms_scatsys_scatter_solve(
+    complex double *f, const complex double *a_inc, qpms_ss_LU lu) {
+  const size_t n = lu.full ? lu.ss->fecv_size : lu.ss->saecv_sizes[lu.iri];
+  if (!f) QPMS_CRASHING_MALLOC(f, n * sizeof(complex double));
+  memcpy(f, a_inc, n*sizeof(complex double)); // It will be rewritten by zgetrs
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,  n /*n*/, 1 /*nrhs number of right hand sides*/,
+        lu.a /*a*/, n /*lda*/, lu.ipiv /*ipiv*/, f/*b*/, 1 /*ldb; CHECKME*/));
+  return f;
+}
 

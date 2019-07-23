@@ -398,6 +398,20 @@ cdef extern from "scatsystem.h":
             const void *args, bint add)
     cdouble *qpms_scatsys_apply_Tmatrices_full(cdouble *target_full, const cdouble *inc_full,
             const qpms_scatsys_t *ss)
-
-
+    struct qpms_ss_LU:
+        const qpms_scatsys_t *ss
+        bint full
+        qpms_iri_t iri
+        cdouble *a
+        int *ipiv
+    void qpms_ss_LU_free(qpms_ss_LU lu)
+    qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(cdouble *target,
+            int *target_piv, const qpms_scatsys_t *ss, double k)
+    qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(cdouble *target,
+            int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
+    qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(cdouble *modeproblem_matrix_full,
+            int *target_piv, const qpms_scatsys_t *ss)
+    qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(cdouble *modeproblem_matrix_full,
+            int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri)
+    cdouble *qpms_scatsys_scatter_solve(cdouble *target_f, const cdouble *a_inc, qpms_ss_LU ludata)
 
