@@ -389,7 +389,14 @@ typedef struct qpms_pointgroup_t {
 	 * and in which direction \a orientation goes.
 	 */
 	qpms_irot3_t orientation;
-} qpms_pgs_t;
+} qpms_pointgroup_t;
+
+
+/// An abstract T-matrix without actual elements, but with info about particle symmetry.
+typedef struct qpms_abstract_tmatrix_t {
+        const qpms_vswf_set_spec_t *spec;
+	qpms_pointgroup_t sym;
+} qpms_abstract_tmatrix_t;
 
 
 
