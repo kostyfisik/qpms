@@ -8,6 +8,8 @@
 #include "vectors.h"
 #include "tiny_inlines.h"
 
+/// Just some arbitrarily chosen "default" value for quaternion comparison tolerance. 
+#define QPMS_QUAT_ATOL (1e-10)
 
 /// Conversion from the 4*double to the 2*complex quaternion.
 // TODO is this really correct? 
@@ -226,21 +228,21 @@ static inline cart3_t qpms_irot3_apply_cart3(const qpms_irot3_t p, const cart3_t
 
 // Some basic transformations with irot3 type
 /// Identity
-static const qpms_irot3_t QPMS_IROT3_IDENTITY = {QPMS_QUAT_1, 1};
+static const qpms_irot3_t QPMS_IROT3_IDENTITY = {{1, 0}, 1};
 /// \f$ \pi \f$ rotation around x axis.
-static const qpms_irot3_t QPMS_IROT3_XROT_PI = {QPMS_QUAT_I, 1};
+static const qpms_irot3_t QPMS_IROT3_XROT_PI =  {{0, I}, 1};
 /// \f$ \pi \f$ rotation around y axis.
-static const qpms_irot3_t QPMS_IROT3_YROT_PI = {QPMS_QUAT_J, 1};
+static const qpms_irot3_t QPMS_IROT3_YROT_PI =  {{0, 1}, 1};
 /// \f$ \pi \f$ rotation around z axis.
-static const qpms_irot3_t QPMS_IROT3_ZROT_PI = {QPMS_QUAT_K, 1};
+static const qpms_irot3_t QPMS_IROT3_ZROT_PI =  {{I, 0}, 1};
 /// Spatial inversion.
-static const qpms_irot3_t QPMS_IROT3_INVERSION = {QPMS_QUAT_1, -1};
+static const qpms_irot3_t QPMS_IROT3_INVERSION = {{1, 0}, -1};
 /// yz-plane mirror symmetry
-static const qpms_irot3_t QPMS_IROT3_XFLIP = {QPMS_QUAT_I, -1};
+static const qpms_irot3_t QPMS_IROT3_XFLIP = {{0, I}, -1};
 /// xz-plane mirror symmetry
-static const qpms_irot3_t QPMS_IROT3_YFLIP = {QPMS_QUAT_J, -1};
+static const qpms_irot3_t QPMS_IROT3_YFLIP = {{0, 1}, -1};
 /// xy-plane mirror symmetry
-static const qpms_irot3_t QPMS_IROT3_ZFLIP = {QPMS_QUAT_K, -1};
+static const qpms_irot3_t QPMS_IROT3_ZFLIP = {{I, 0}, -1};
 
 /// versor representing rotation around z-axis.
 static inline qpms_quat_t qpms_quat_zrot_angle(double angle) {
