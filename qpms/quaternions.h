@@ -99,6 +99,8 @@ static inline bool qpms_quat_isclose(const qpms_quat_t p, const qpms_quat_t q, d
 
 /// "Standardises" a quaternion to have the largest component "positive".
 /**
+ * FIXME
+ * NUMERICALLY UNSTABLE. DON'T USE
  * This is to remove the ambiguity stemming from the double cover of SO(3).
  */
 static inline qpms_quat_t qpms_quat_standardise(qpms_quat_t p) {

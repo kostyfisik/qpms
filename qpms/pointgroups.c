@@ -7,7 +7,9 @@
   if ((a) > (b)) return 1;\
 }
 
+// THIS IS NUMERICALLY UNSTABLE! FIXME!!!!!!
 int qpms_pg_irot3_cmp(const qpms_irot3_t *p1, const qpms_irot3_t *p2) {
+  QPMS_WARN("NUMERICALLY UNSTABLE! DON'T USE ME!")
   PAIRCMP(p1->det, p2->det);
   const qpms_quat_t r1 = qpms_quat_standardise(p1->rot), r2 = qpms_quat_standardise(p2->rot);
   PAIRCMP(creal(r1.a), creal(r2.a));
