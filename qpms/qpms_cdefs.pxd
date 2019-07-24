@@ -103,6 +103,32 @@ cdef extern from "qpms_types.h":
         qpms_vswf_set_spec_t *spec
         cdouble *m
         bint owns_m # FIXME in fact bool
+    ctypedef enum qpms_pointgroup_class:
+        QPMS_PGS_CN
+        QPMS_PGS_S2N
+        QPMS_PGS_CNH
+        QPMS_PGS_CNV
+        QPMS_PGS_DN
+        QPMS_PGS_DND
+        QPMS_PGS_DNH
+        QPMS_PGS_T
+        QPMS_PGS_TD
+        QPMS_PGS_TH
+        QPMS_PGS_O
+        QPMS_PGS_OH
+        QPMS_PGS_I
+        QPMS_PGS_IH
+        QPMS_PGS_CINF
+        QPMS_PGS_CINFH
+        QPMS_PGS_CINFV
+        QPMS_PGS_DINF
+        QPMS_PGS_DINFH
+        QPMS_PGS_SO3
+        QPMS_PGS_O3
+    struct qpms_pointgroup_t:
+        qpms_pointgroup_class c
+        qpms_gmi_t n
+        qpms_irot3_t orientation
     # maybe more if needed
 
 cdef extern from "qpms_error.h":
@@ -349,6 +375,20 @@ cdef extern from "tmatrices.h":
     double qpms_permittivity_interpolator_omega_min(const qpms_permittivity_interpolator_t *interp)
     void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp)
 
+cdef extern from "pointgroups.h":
+    bint qpms_pg_is_finite_axial(qpms_pointgroup_class cls)
+    double qpms_pg_quat_cmp_atol
+    int qpms_pg_irot3_cmp(const qpms_irot3_t *, const qpms_irot3_t *);
+    int qpms_pg_irot3_cmp_v(const void *, const void *);
+    int qpms_pg_irot3_approx_cmp(const qpms_irot3_t *a, const qpms_irot3_t *b, double atol)
+    int qpms_pg_irot3_approx_cmp_v(const void *a, const void *b)
+
+    qpms_gmi_t qpms_pg_order(qpms_pointgroup_class cls, qpms_gmi_t n)
+    qpms_irot3_t *qpms_pg_canonical_elems( qpms_irot3_t *target, qpms_pointgroup_class cls, qpms_gmi_t n)
+    qpms_gmi_t qpms_pg_genset_size(qpms_pointgroup_class cls, qpms_gmi_t n)
+    qpms_gmi_t qpms_pg_genset(qpms_pointgroup_class cls, qpms_gmi_t n, qpms_irot3_t *gen)
+    qpms_irot3_t *qpms_pg_elems(qpms_irot3_t *target, qpms_pointgroup_t g)
+    bint qpms_pg_is_subgroup(qpms_pointgroup_t a, qpms_pointgroup_t b);
 
 cdef extern from "scatsystem.h":
     void qpms_scatsystem_set_nthreads(long n)
@@ -414,4 +454,5 @@ cdef extern from "scatsystem.h":
     qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(cdouble *modeproblem_matrix_full,
             int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri)
     cdouble *qpms_scatsys_scatter_solve(cdouble *target_f, const cdouble *a_inc, qpms_ss_LU ludata)
+
 

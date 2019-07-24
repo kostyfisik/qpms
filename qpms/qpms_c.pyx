@@ -32,6 +32,29 @@ class BesselType(enum.IntEnum):
     HANKEL_PLUS = QPMS_HANKEL_PLUS
     HANKEL_MINUS = QPMS_HANKEL_MINUS
 
+class PointGroupClass(enum.IntEnum):
+    CN    = QPMS_PGS_CN
+    S2N   = QPMS_PGS_S2N
+    CNH   = QPMS_PGS_CNH
+    CNV   = QPMS_PGS_CNV
+    DN    = QPMS_PGS_DN
+    DND   = QPMS_PGS_DND
+    DNH   = QPMS_PGS_DNH
+    T     = QPMS_PGS_T
+    TD    = QPMS_PGS_TD
+    TH    = QPMS_PGS_TH
+    O     = QPMS_PGS_O
+    OH    = QPMS_PGS_OH
+    I     = QPMS_PGS_I
+    IH    = QPMS_PGS_IH
+    CINF  = QPMS_PGS_CINF
+    CINFH = QPMS_PGS_CINFH
+    CINFV = QPMS_PGS_CINFV
+    DINF  = QPMS_PGS_DINF
+    DINFH = QPMS_PGS_DINFH
+    SO3   = QPMS_PGS_SO3
+    O3    = QPMS_PGS_O3
+
 class VSWFNorm(enum.IntEnum):
     # TODO try to make this an enum.IntFlag if supported
     # TODO add the other flags from qpms_normalisation_t as well
@@ -1022,6 +1045,9 @@ cdef class IRot3:
         else:
             raise ValueError('Unsupported constructor arguments')
 
+    cdef void cset(self, qpms_irot3_t qd):
+        self.qd = qd
+
     def copy(self):
         res = IRot3(CQuat(1,0,0,0),1)
         res.qd = self.qd
@@ -1328,6 +1354,49 @@ cdef char *make_c_string(pythonstring):
 
 def string_c2py(const char* cstring):
     return cstring.decode('UTF-8')
+
+cdef class PointGroup:
+    cdef readonly qpms_pointgroup_t G
+
+    def __init__(self, cls, qpms_gmi_t n = 0, IRot3 orientation = IRot3()):
+        cls = PointGroupClass(cls)
+        self.G.c = cls
+        if n <= 0 and qpms_pg_is_finite_axial(cls):
+            raise ValueError("For finite axial groups, n argument must be positive")
+        self.G.n = n
+        self.G.orientation = orientation.qd
+
+    def __len__(self):
+        return qpms_pg_order(self.G.c, self.G.n);
+
+    def __le__(PointGroup self, PointGroup other):
+        if qpms_pg_is_subgroup(self.G, other.G):
+            return True
+        else:
+            return False
+    def __ge__(PointGroup self, PointGroup other):
+        if qpms_pg_is_subgroup(other.G, self.G):
+            return True
+        else:
+            return False
+    def __lt__(PointGroup self, PointGroup other):
+        return qpms_pg_is_subgroup(self.G, other.G) and not qpms_pg_is_subgroup(other.G, self.G)
+    def __eq__(PointGroup self, PointGroup other):
+        return qpms_pg_is_subgroup(self.G, other.G) and qpms_pg_is_subgroup(other.G, self.G)
+    def __gt__(PointGroup self, PointGroup other):
+        return not qpms_pg_is_subgroup(self.G, other.G) and qpms_pg_is_subgroup(other.G, self.G)
+
+    def elems(self):
+        els = list()
+        cdef qpms_irot3_t *arr
+        arr = qpms_pg_elems(NULL, self.G)
+        cdef IRot3 q
+        for i in range(len(self)):
+            q = IRot3()
+            q.cset(arr[i])
+            els.append(q)
+        free(arr)
+        return els
 
 cdef class FinitePointGroup:
     '''

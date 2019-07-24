@@ -97,6 +97,33 @@ static inline bool qpms_quat_isclose(const qpms_quat_t p, const qpms_quat_t q, d
 	return qpms_quat_norm(qpms_quat_sub(p,q)) <= atol;
 }
 
+/// "Standardises" a quaternion to have the largest component "positive".
+/**
+ * This is to remove the ambiguity stemming from the double cover of SO(3).
+ */
+static inline qpms_quat_t qpms_quat_standardise(qpms_quat_t p) {
+	double maxabs = 0;
+	int maxi = 0;
+	const double *arr = (double *) &(p.a);
+	for(int i = 0; i < 4; ++i)
+		if (fabs(arr[i]) > maxabs) {
+			maxi = i;
+			maxabs = fabs(arr[i]);
+		}
+	if(arr[maxi] < 0) {
+		p.a = -p.a;
+		p.b = -p.b;
+	}
+	return p;
+}		
+
+/// Test approximate equality of "standardised" quaternions, so that \f$-q\f$ is considered equal to \f$q\f$.
+static inline bool qpms_quat_isclose2(const qpms_quat_t p, const qpms_quat_t q, double atol) {
+	return qpms_quat_norm(qpms_quat_sub(
+				qpms_quat_standardise(p),
+				qpms_quat_standardise(q))) <= atol;
+}
+
 /// Norm of the quaternion imaginary (vector) part.
 static inline double qpms_quat_imnorm(const qpms_quat_t q) {
 	const double z = cimag(q.a), x = cimag(q.b), y = creal(q.b);
@@ -224,7 +251,7 @@ static inline qpms_irot3_t qpms_irot3_pow(const qpms_irot3_t p, int n) {
 
 /// Test approximate equality of irot3.
 static inline bool qpms_irot3_isclose(const qpms_irot3_t p, const qpms_irot3_t q, double atol) {
-	return qpms_quat_isclose(p.rot, q.rot, atol) && p.det == q.det;
+	return qpms_quat_isclose2(p.rot, q.rot, atol) && p.det == q.det;
 }
 
 /// Apply an improper rotation onto a 3d cartesian vector.
@@ -261,7 +288,7 @@ static inline qpms_quat_t qpms_quat_zrot_angle(double angle) {
 
 /// versor representing rotation \f$ C_N^k \f$, i.e. of angle \f$ 2\pi k / N\f$ around z axis.
 static inline qpms_quat_t qpms_quat_zrot_Nk(double N, double k) {
-	return qpms_quat_zrot_angle(M_PI * k / N);
+	return qpms_quat_zrot_angle(2 * M_PI * k / N);
 }
 
 /// Rotation around z-axis.
@@ -272,7 +299,7 @@ static inline qpms_irot3_t qpms_irot3_zrot_angle(double angle) {
 
 /// Rotation \f$ C_N^k \f$, i.e. of angle \f$ 2\pi k / N\f$ around z axis.
 static inline qpms_irot3_t qpms_irot3_zrot_Nk(double N, double k) {
-	return qpms_irot3_zrot_angle(M_PI * k / N);
+	return qpms_irot3_zrot_angle(2 * M_PI * k / N);
 }
 
 #endif //QPMS_WIGNER_H

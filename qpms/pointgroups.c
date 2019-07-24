@@ -7,12 +7,13 @@
   if ((a) > (b)) return 1;\
 }
 
-int qpms_pg_irot3_cmp(const qpms_irot3_t *a, const qpms_irot3_t *b) {
-  PAIRCMP(a->det, b->det);
-  PAIRCMP(creal(a->rot.a), creal(b->rot.a));
-  PAIRCMP(cimag(a->rot.a), cimag(b->rot.a));
-  PAIRCMP(creal(a->rot.b), creal(b->rot.b));
-  PAIRCMP(cimag(a->rot.b), cimag(b->rot.b));
+int qpms_pg_irot3_cmp(const qpms_irot3_t *p1, const qpms_irot3_t *p2) {
+  PAIRCMP(p1->det, p2->det);
+  const qpms_quat_t r1 = qpms_quat_standardise(p1->rot), r2 = qpms_quat_standardise(p2->rot);
+  PAIRCMP(creal(r1.a), creal(r2.a));
+  PAIRCMP(cimag(r1.a), cimag(r2.a));
+  PAIRCMP(creal(r1.b), creal(r2.b));
+  PAIRCMP(cimag(r1.b), cimag(r2.b));
   return 0;
 }
 
@@ -38,16 +39,15 @@ int qpms_pg_irot3_approx_cmp_v(const void *av, const void *bv) {
 qpms_irot3_t *qpms_pg_canonical_elems(qpms_irot3_t *target,
     qpms_pointgroup_class cls, const qpms_gmi_t then) {
   QPMS_UNTESTED;
-  qpms_gmi_t order = qpms_pg_order(cls, then);
+  const qpms_gmi_t order = qpms_pg_order(cls, then);
   QPMS_ENSURE(order, "Cannot generate an infinite group!");
-  if (!target) QPMS_CRASHING_MALLOC(target, order * sizeof(qpms_irot3_t));
+  if (!target) QPMS_CRASHING_MALLOC(target, (1+order) * sizeof(qpms_irot3_t));
   target[0] = QPMS_IROT3_IDENTITY;
   qpms_gmi_t ngen = qpms_pg_genset_size(cls, then);
   qpms_irot3_t gens[ngen]; 
   (void) qpms_pg_genset(cls, then, gens);
 
   // Let's try it with a binary search tree, as an exercise :)
-  qpms_irot3_t tree[order];
   void *root = NULL;
   // put the starting element (identity) to the tree
   (void) tsearch((void *) target, &root, qpms_pg_irot3_approx_cmp_v);
@@ -62,7 +62,7 @@ qpms_irot3_t *qpms_pg_canonical_elems(qpms_irot3_t *target,
 
   while (si >= 0) { // DFS
     if (gistack[si] < ngen) { // are there generators left at this level? If so, try another elem
-      if (n >= order) QPMS_WTF; // TODO some error message
+      if (n > order) QPMS_WTF; // TODO some error message
       target[n] = qpms_irot3_mult(gens[gistack[si]], target[srcstack[si]]);
       if (tfind((void *) &(target[n]), &root, qpms_pg_irot3_approx_cmp_v))
         // elem found, try it with another gen in the next iteration
@@ -85,7 +85,7 @@ qpms_irot3_t *qpms_pg_canonical_elems(qpms_irot3_t *target,
       "(assumed group order = %d, got %d; qpms_pg_quat_cmp_atol = %g)",
       order, n, qpms_pg_quat_cmp_atol);
 
-  while(root) tdelete(root, &root, qpms_pg_irot3_approx_cmp_v); // I hope this is the correct way.
+  while(root) tdelete(*(qpms_irot3_t **)root, &root, qpms_pg_irot3_approx_cmp_v); // I hope this is the correct way.
 
   return target;
 }
