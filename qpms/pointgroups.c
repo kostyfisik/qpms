@@ -1,5 +1,6 @@
 #include "pointgroups.h"
 #include <search.h>
+#include <stdlib.h>
 
 #define PAIRCMP(a, b) {\
   if ((a) < (b)) return -1;\
@@ -89,6 +90,37 @@ qpms_irot3_t *qpms_pg_canonical_elems(qpms_irot3_t *target,
   return target;
 }
 
+qpms_irot3_t *qpms_pg_elems(qpms_irot3_t *target, qpms_pointgroup_t g) {
+  QPMS_UNTESTED;
+  target = qpms_pg_canonical_elems(target, g.c, g.n);
+  qpms_gmi_t order = qpms_pg_order(g.c, g.n);
+  const qpms_irot3_t o = g.orientation, o_inv = qpms_irot3_inv(o);
+  for(qpms_gmi_t i = 0 ; i < order; ++i) 
+    target[i] = qpms_irot3_mult(o_inv, qpms_irot3_mult(target[i], o));
+  return target;
+}
+
+_Bool qpms_pg_is_subgroup(qpms_pointgroup_t small, qpms_pointgroup_t big) {
+  QPMS_UNTESTED;
+  qpms_gmi_t order_big = qpms_pg_order(big.c, big.n);
+  qpms_gmi_t order_small = qpms_pg_order(small.c, small.n);
+  if (!order_big || !order_small)
+    QPMS_NOT_IMPLEMENTED("Subgroup testing for infinite groups not implemented");
+  if (order_big < order_small) return false;
+  // TODO maybe some other fast-track negative decisions
+
+  qpms_irot3_t *elems_small = qpms_pg_elems(NULL, small);
+  qpms_irot3_t *elems_big = qpms_pg_elems(NULL, small);
+  qsort(elems_big, order_big, sizeof(qpms_irot3_t), qpms_pg_irot3_cmp_v);
+
+  for(qpms_gmi_t smalli = 0; smalli < order_small; ++smalli) {
+    qpms_irot3_t *match = bsearch(&elems_small[smalli], elems_big, order_big,
+        sizeof(qpms_irot3_t), qpms_pg_irot3_approx_cmp_v);
+    if (!match) return false;
+  }
+
+  return true;
+}
 
 /// Returns the order of a given 3D point group type.
 /** For infinite groups returns 0. */

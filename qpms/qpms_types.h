@@ -366,7 +366,7 @@ typedef enum {
 /// Full characterisation of a 3D point group.
 typedef struct qpms_pointgroup_t {
 	qpms_pointgroup_class c; ///< Point group classification.
-	size_t n; ///< Order of the rotational subgroup \f$ \mathrm{C_n} \f$ of finite axial groups.
+	qpms_gmi_t n; ///< Order of the rotational subgroup \f$ \mathrm{C_n} \f$ of finite axial groups.
 	/// Transformation between this point group and the "canonical" point group of the same type.
 	/**
 	 * Each 3D point group of a given type (specified by the \a c 

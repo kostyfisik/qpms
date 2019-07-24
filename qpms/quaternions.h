@@ -203,6 +203,15 @@ static inline qpms_irot3_t qpms_irot3_mult(const qpms_irot3_t p, const qpms_irot
 	return r;
 }
 
+/// Improper rotation inverse operation.
+static inline qpms_irot3_t qpms_irot3_inv(qpms_irot3_t p) {
+#ifndef NDEBUG
+	qpms_irot3_checkdet(p);
+#endif
+	p.rot = qpms_quat_inv(p.rot);
+	return p;
+}
+
 /// Improper rotation power \f$ p^n \f$.
 static inline qpms_irot3_t qpms_irot3_pow(const qpms_irot3_t p, int n) {
 #ifndef NDEBUG

@@ -74,4 +74,16 @@ qpms_gmi_t qpms_pg_genset(qpms_pointgroup_class cls, ///< Point group class.
 		qpms_irot3_t gen[] ///< Target generator array
 		);
 
+/// Generates all elements of a given point group.
+/** The order of elements corresponds to the one obtained from qpms_pg_canonical_elems().
+ */
+qpms_irot3_t *qpms_pg_elems(qpms_irot3_t *target, ///< Target array (optional; if NULL, a new one is allocated)
+	       	qpms_pointgroup_t g ///< Specification of the point group.
+		);
+
+/// Checks whether \a a is subgroup of \a b (in a dirty general way).
+_Bool qpms_pg_is_subgroup(qpms_pointgroup_t a, qpms_pointgroup_t b);
+
+
+
 #endif //POINTGROUPS_H
