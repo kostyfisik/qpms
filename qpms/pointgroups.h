@@ -1,7 +1,6 @@
 /*! \file pointgroups.h
  * \brief Quaternion-represented 3D point groups.
  */
-
 #ifndef POINTGROUPS_H
 #define POINTGROUPS_H
 
@@ -34,10 +33,6 @@ static inline _Bool qpms_pg_is_finite_axial(qpms_pointgroup_class cls) {
  */
 extern double qpms_pg_quat_cmp_atol;
 
-/// An ordering of qpms_irot3_t.
-int qpms_pg_irot3_cmp(const qpms_irot3_t *, const qpms_irot3_t *);
-/// A `search.h` and `qsort()` compatible ordering of qpms_irot3_t.
-int qpms_pg_irot3_cmp_v(const void *, const void *);
 /// An ordering of qpms_irot3_t that considers close enough elements equal.
 int qpms_pg_irot3_approx_cmp(const qpms_irot3_t *, const qpms_irot3_t *, 
 		double atol ///< Absolute tolerance for the quaternion part difference.

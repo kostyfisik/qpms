@@ -1,35 +1,32 @@
 #include "pointgroups.h"
 #include <search.h>
 #include <stdlib.h>
+#include <assert.h>
+
+double qpms_pg_quat_cmp_atol = QPMS_QUAT_ATOL;
 
 #define PAIRCMP(a, b) {\
   if ((a) < (b)) return -1;\
   if ((a) > (b)) return 1;\
 }
 
-// THIS IS NUMERICALLY UNSTABLE! FIXME!!!!!!
-int qpms_pg_irot3_cmp(const qpms_irot3_t *p1, const qpms_irot3_t *p2) {
-  QPMS_WARN("NUMERICALLY UNSTABLE! DON'T USE ME!")
+#define PAIRCMP_ATOL(a, b, atol) {\
+  if ((a) < (b) + (atol)) return -1;\
+  if ((a) + (atol) > (b)) return 1;\
+}
+
+int qpms_pg_irot3_approx_cmp(const qpms_irot3_t *p1, 
+    const qpms_irot3_t *p2, double atol) {
+  assert(atol >= 0);
   PAIRCMP(p1->det, p2->det);
-  const qpms_quat_t r1 = qpms_quat_standardise(p1->rot), r2 = qpms_quat_standardise(p2->rot);
-  PAIRCMP(creal(r1.a), creal(r2.a));
-  PAIRCMP(cimag(r1.a), cimag(r2.a));
-  PAIRCMP(creal(r1.b), creal(r2.b));
-  PAIRCMP(cimag(r1.b), cimag(r2.b));
+  const qpms_quat_t r1 = qpms_quat_standardise(p1->rot, atol),
+        r2 = qpms_quat_standardise(p2->rot, atol);
+  PAIRCMP_ATOL(creal(r1.a), creal(r2.a), atol);
+  PAIRCMP_ATOL(cimag(r1.a), cimag(r2.a), atol);
+  PAIRCMP_ATOL(creal(r1.b), creal(r2.b), atol);
+  PAIRCMP_ATOL(cimag(r1.b), cimag(r2.b), atol);
   return 0;
 }
-
-int qpms_pg_irot3_cmp_v(const void *av, const void *bv) {
-  const qpms_irot3_t *a = av, *b = bv;
-  return qpms_pg_irot3_cmp(a, b);
-}
-
-int qpms_pg_irot3_approx_cmp(const qpms_irot3_t *a, const qpms_irot3_t *b, double atol) {
-  if (qpms_irot3_isclose(*a, *b, atol)) return 0;
-  else return qpms_pg_irot3_cmp(a, b);
-}
-
-double qpms_pg_quat_cmp_atol = QPMS_QUAT_ATOL;
 
 int qpms_pg_irot3_approx_cmp_v(const void *av, const void *bv) {
   const qpms_irot3_t *a = av, *b = bv;
@@ -113,7 +110,7 @@ _Bool qpms_pg_is_subgroup(qpms_pointgroup_t small, qpms_pointgroup_t big) {
 
   qpms_irot3_t *elems_small = qpms_pg_elems(NULL, small);
   qpms_irot3_t *elems_big = qpms_pg_elems(NULL, small);
-  qsort(elems_big, order_big, sizeof(qpms_irot3_t), qpms_pg_irot3_cmp_v);
+  qsort(elems_big, order_big, sizeof(qpms_irot3_t), qpms_pg_irot3_approx_cmp_v);
 
   for(qpms_gmi_t smalli = 0; smalli < order_small; ++smalli) {
     qpms_irot3_t *match = bsearch(&elems_small[smalli], elems_big, order_big,

@@ -99,16 +99,15 @@ static inline bool qpms_quat_isclose(const qpms_quat_t p, const qpms_quat_t q, d
 
 /// "Standardises" a quaternion to have the largest component "positive".
 /**
- * FIXME
- * NUMERICALLY UNSTABLE. DON'T USE
  * This is to remove the ambiguity stemming from the double cover of SO(3).
  */
-static inline qpms_quat_t qpms_quat_standardise(qpms_quat_t p) {
+static inline qpms_quat_t qpms_quat_standardise(qpms_quat_t p, double atol) {
+	//assert(atol >= 0);
 	double maxabs = 0;
 	int maxi = 0;
 	const double *arr = (double *) &(p.a);
 	for(int i = 0; i < 4; ++i)
-		if (fabs(arr[i]) > maxabs) {
+		if (fabs(arr[i]) > maxabs + atol) {
 			maxi = i;
 			maxabs = fabs(arr[i]);
 		}
@@ -122,8 +121,8 @@ static inline qpms_quat_t qpms_quat_standardise(qpms_quat_t p) {
 /// Test approximate equality of "standardised" quaternions, so that \f$-q\f$ is considered equal to \f$q\f$.
 static inline bool qpms_quat_isclose2(const qpms_quat_t p, const qpms_quat_t q, double atol) {
 	return qpms_quat_norm(qpms_quat_sub(
-				qpms_quat_standardise(p),
-				qpms_quat_standardise(q))) <= atol;
+				qpms_quat_standardise(p, atol),
+				qpms_quat_standardise(q, atol))) <= atol;
 }
 
 /// Norm of the quaternion imaginary (vector) part.
