@@ -443,8 +443,15 @@ reference "eq:plane wave expansion"
 \end_layout
 
 \begin_layout Standard
-For a system of many scatterers, Kristensson derives only the scattering
- cross section formula 
+For a system of many scatterers, Kristensson 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kristensson_scattering_2016"
+literal "false"
+
+\end_inset
+
+ derives only the scattering cross section formula 
 \begin_inset Formula 
 \[
 \sigma_{\mathrm{scat}}\left(\uvec k\right)=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\left\Vert \outcoeffp p\right\Vert ^{2}.
