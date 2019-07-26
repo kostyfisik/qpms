@@ -1,5 +1,5 @@
-#LyX 2.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 544
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 583
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -9,8 +9,8 @@
 \maintain_unincluded_children false
 \language finnish
 \language_package default
-\inputencoding auto
-\fontencoding global
+\inputencoding auto-legacy
+\fontencoding auto
 \font_roman "default" "TeX Gyre Pagella"
 \font_sans "default" "default"
 \font_typewriter "default" "default"
@@ -18,7 +18,9 @@
 \font_default_family default
 \use_non_tex_fonts true
 \font_sc false
-\font_osf true
+\font_roman_osf true
+\font_sans_osf false
+\font_typewriter_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
 \use_microtype false
@@ -64,6 +66,7 @@
 \justification true
 \use_refstyle 1
 \use_minted 0
+\use_lineno 0
 \index Index
 \shortcut idx
 \color #008000
@@ -79,6 +82,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\tablestyle default
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -350,7 +354,8 @@ outside.
 \end_layout
 
 \begin_layout Standard
-The translation operator can be expressed explicitly as 
+In our convention, the regular translation operator can be expressed explicitly
+ as 
 \begin_inset Formula 
 \begin{equation}
 \tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)=\dots.\label{eq:translation operator}
@@ -358,7 +363,48 @@ The translation operator can be expressed explicitly as
 
 \end_inset
 
+The singular operator 
+\begin_inset Formula $\trops$
+\end_inset
 
+ for re-expanding outgoing waves into regular ones has the same form except
+ the regular spherical Bessel functions 
+\begin_inset Formula $j_{l}$
+\end_inset
+
+ in are replaced with spherical Hankel functions 
+\begin_inset Formula $h_{l}^{(1)}=j_{l}+iy_{l}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In our convention, the regular translation operator is unitary, 
+\begin_inset Formula $\left(\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)\right)^{-1}=\tropr_{\tau lm;\tau'l'm'}\left(-\vect d\right)=\tropr_{\tau'l'm';\tau lm}^{*}\left(\vect d\right)$
+\end_inset
+
+,
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+todo different notation for the complex conjugation without transposition???
+\end_layout
+
+\end_inset
+
+ or in the per-particle matrix notation, 
+\begin_inset Formula $\troprp qp^{-1}=\troprp pq=\troprp qp^{\dagger}$
+\end_inset
+
+.
+ Note that truncation at finite multipole degree breaks the unitarity, 
+\begin_inset Formula $\truncated{\troprp qp}L^{-1}\ne\truncated{\troprp pq}L=\truncated{\troprp qp^{\dagger}}L$
+\end_inset
+
+, which has to be taken into consideration when evaluating quantities such
+ as absorption or scattering cross sections.
 \end_layout
 
 \begin_layout Subsection
@@ -389,8 +435,8 @@ A transversal (
 with expansion coefficients
 \begin_inset Formula 
 \begin{eqnarray}
-\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD1lm\left(\uvec k\right),\nonumber \\
-\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD2lm\left(\uvec k\right).\label{eq:plane wave expansion}
+\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
+\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
 \end{eqnarray}
 
 \end_inset
