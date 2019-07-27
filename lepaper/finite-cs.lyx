@@ -405,6 +405,25 @@ todo different notation for the complex conjugation without transposition???
 
 , which has to be taken into consideration when evaluating quantities such
  as absorption or scattering cross sections.
+ Similarly, the full regular operators can be composed
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+better wording
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Formula $\troprp ac=\troprp ab\troprp bc$
+\end_inset
+
+ but truncation breaks this, 
+\begin_inset Formula $\truncated{\troprp ac}L\ne\truncated{\troprp ab}L\truncated{\troprp bc}L.$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -560,6 +579,52 @@ reference "eq:absorption CS single"
 \end_inset
 
 .
+ The original incident field re-expanded around 
+\begin_inset Formula $p$
+\end_inset
+
+-th particle reads according to 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:regular vswf translation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\rcoeffincp p=\troprp p{\square}\rcoeffp{\square}\label{eq:a_inc local from global}
+\end{equation}
+
+\end_inset
+
+whereas the contributions of fields scattered from each particle expanded
+ around the global origin 
+\begin_inset Formula $\vect r_{\square}$
+\end_inset
+
+ is, according to 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:singular vswf translation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{equation}
+\outcoeffp{\square}=\sum_{q\in\mathcal{P}}\troprp{\square}q\outcoeffp q.\label{eq:f global from local}
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \end_body
