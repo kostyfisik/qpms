@@ -265,6 +265,11 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\rcoeffincp}[1]{a_{#1}^{\mathrm{inc.}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\rcoeffptlm}[4]{\rcoeffp{#1}_{#2#3#4}}
 \end_inset
 

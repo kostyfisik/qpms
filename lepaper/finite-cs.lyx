@@ -395,7 +395,11 @@ todo different notation for the complex conjugation without transposition???
 \end_inset
 
  or in the per-particle matrix notation, 
-\begin_inset Formula $\troprp qp^{-1}=\troprp pq=\troprp qp^{\dagger}$
+\begin_inset Formula 
+\begin{equation}
+\troprp qp^{-1}=\troprp pq=\troprp qp^{\dagger}\label{eq:regular translation unitarity}
+\end{equation}
+
 \end_inset
 
 .
@@ -416,7 +420,11 @@ better wording
 \end_inset
 
 , 
-\begin_inset Formula $\troprp ac=\troprp ab\troprp bc$
+\begin_inset Formula 
+\begin{equation}
+\troprp ac=\troprp ab\troprp bc\label{eq:regular translation composition}
+\end{equation}
+
 \end_inset
 
  but truncation breaks this, 
@@ -624,7 +632,35 @@ noprefix "false"
 
 \end_inset
 
+Using the unitarity 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:regular translation unitarity"
+plural "false"
+caps "false"
+noprefix "false"
 
+\end_inset
+
+ and composition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:regular translation composition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ properties, one has
+\begin_inset Formula 
+\[
+\rcoeffp{\square}^{\dagger}\outcoeffp{\square}=\rcoeffincp p^{\dagger}\sum_{q\in\mathcal{P}}\troprp pqf_{q}.
+\]
+
+\end_inset
+
+ 
 \end_layout
 
 \end_body
