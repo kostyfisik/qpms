@@ -472,6 +472,31 @@ with expansion coefficients
 \end_layout
 
 \begin_layout Subsection
+Power transport
+\end_layout
+
+\begin_layout Standard
+Radiated power 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sect. 7.3"
+key "kristensson_scattering_2016"
+literal "true"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+P=\frac{1}{2k^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)=\frac{1}{2k^{2}\eta_{0}\eta}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{}.\label{eq:Power transport}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Cross-sections (single-particle)
 \end_layout
 
@@ -519,20 +544,15 @@ reference "eq:plane wave expansion"
 For a system of many scatterers, Kristensson 
 \begin_inset CommandInset citation
 LatexCommand cite
+after "sect. 9.2.2"
 key "kristensson_scattering_2016"
 literal "false"
 
 \end_inset
 
- derives only the scattering cross section formula 
-\begin_inset Formula 
-\[
-\sigma_{\mathrm{scat}}\left(\uvec k\right)=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\left\Vert \outcoeffp p\right\Vert ^{2}.
-\]
-
-\end_inset
-
-Let us derive the many-particle scattering and absorption cross sections.
+ derives only the extinction cross section formula.
+ Let us re-derive it together with the many-particle scattering and absorption
+ cross sections.
  First, let us take a ball circumscribing all the scatterers at once, 
 \begin_inset Formula $\openball R{\vect r_{\square}}\supset\particle$
 \end_inset
@@ -577,6 +597,10 @@ reference "eq:extincion CS single"
 LatexCommand eqref
 reference "eq:absorption CS single"
 
+\end_inset
+
+ with 
+\begin_inset Formula $\rcoeffp{}=\rcoeffp{\square},\outcoeffp{}=\outcoeffp{\square}$
 \end_inset
 
  to obtain the cross sections.
@@ -654,13 +678,80 @@ noprefix "false"
 
  properties, one has
 \begin_inset Formula 
-\[
-\rcoeffp{\square}^{\dagger}\outcoeffp{\square}=\rcoeffincp p^{\dagger}\sum_{q\in\mathcal{P}}\troprp pqf_{q}.
-\]
+\begin{align}
+\rcoeffp{\square}^{\dagger}\outcoeffp{\square} & =\rcoeffincp p^{\dagger}\troprp p{\square}\troprp{\square}q\outcoeffp q=\rcoeffincp p^{\dagger}\sum_{q\in\mathcal{P}}\troprp pqf_{q}\nonumber \\
+ & =\sum_{q\in\mathcal{P}}\left(\troprp qp\rcoeffincp p\right)^{\dagger}f_{q}=\sum_{q\in\mathcal{P}}\rcoeffincp q^{\dagger}f_{q},\label{eq:atf form multiparticle}
+\end{align}
 
 \end_inset
 
- 
+where only the last expression is suitable for numerical evaluation with
+ truncated matrices, because the previous ones contain a translation operator
+ right next to an incident field coefficient vector (see Sec.
+ TODO).
+ Similarly, 
+\begin_inset Formula 
+\begin{align}
+\left\Vert \outcoeffp{\square}\right\Vert ^{2} & =\outcoeffp{\square}^{\dagger}\outcoeffp{\square}=\sum_{p\in\mathcal{P}}\left(\troprp{\square}p\outcoeffp p\right)^{\dagger}\sum_{q\in\mathcal{P}}\troprp{\square}q\outcoeffp q\nonumber \\
+ & =\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q.\label{eq:f squared form multiparticle}
+\end{align}
+
+\end_inset
+
+Substituting 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:atf form multiparticle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:f squared form multiparticle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:scattering CS single"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:absorption CS single"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we get the many-particle expressions for extinction, scattering and absorption
+ cross sections suitable for numerical evaluation: 
+\begin_inset Formula 
+\begin{eqnarray}
+\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\outcoeffp p=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\left(\Tp p+\Tp p^{\dagger}\right)\rcoeffp p,\label{eq:extincion CS multi}\\
+\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q\nonumber \\
+ &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\rcoeffp p^{\dagger}\Tp p^{\dagger}\troprp pq\Tp q\rcoeffp q,\label{eq:scattering CS multi}\\
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}}\troprp pq\outcoeffp q\right)\right)\nonumber \\
+ &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}TODO,\label{eq:absorption CS multi}
+\end{eqnarray}
+
+\end_inset
+
+
 \end_layout
 
 \end_body
