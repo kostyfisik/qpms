@@ -1,37 +1,29 @@
-#LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 583
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
-\save_transient_properties true
-\origin unavailable
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
-\language english
+\language finnish
 \language_package default
-\inputencoding utf8
-\fontencoding auto
-\font_roman "default" "TeX Gyre Pagella"
-\font_sans "default" "default"
-\font_typewriter "default" "default"
-\font_math "auto" "auto"
+\inputencoding auto
+\fontencoding global
+\font_roman TeX Gyre Pagella
+\font_sans default
+\font_typewriter default
+\font_math auto
 \font_default_family default
-\use_non_tex_fonts false
+\use_non_tex_fonts true
 \font_sc false
-\font_roman_osf true
-\font_sans_osf false
-\font_typewriter_osf false
-\font_sf_scale 100 100
-\font_tt_scale 100 100
-\use_microtype false
-\use_dash_ligatures true
+\font_osf true
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
-\default_output_format default
+\default_output_format pdf4
 \output_sync 0
 \bibtex_command default
 \index_command default
-\float_placement class
-\float_alignment class
 \paperfontsize default
 \spacing single
 \use_hyperref true
@@ -66,8 +58,6 @@
 \suppress_date false
 \justification true
 \use_refstyle 1
-\use_minted 0
-\use_lineno 0
 \index Index
 \shortcut idx
 \color #008000
@@ -76,14 +66,10 @@
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\is_math_indent 0
-\math_numbering_side default
-\quotes_style english
-\dynamic_quotes 0
+\quotes_language swedish
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
-\tablestyle default
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -95,6 +81,159 @@
 
 \begin_layout Section
 Introduction
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Introduction"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The problem of electromagnetic response of a system consisting of many compact
+ scatterers in various geometries, and its numerical solution, is relevant
+ to many branches of nanophotonics (TODO refs).
+ The most commonly used general approaches used in computational electrodynamics
+, such as the finite difference time domain (FDTD) method or the finite
+ element method (FEM), are very often unsuitable for simulating systems
+ with larger number of scatterers due to their computational complexity.
+ Therefore, a common (frequency-domain) approach to get an approximate solution
+ of the scattering problem for many small particles has been the coupled
+ dipole approximation (CDA) where individual scatterers are reduced to electric
+ dipoles (characterised by a polarisability tensor) and coupled to each
+ other through Green's functions.
+ 
+\end_layout
+
+\begin_layout Standard
+CDA is easy to implement and has favorable computational complexity but
+ suffers from at least two fundamental drawbacks.
+ The obvious one is that the dipole approximation is too rough for particles
+ with diameter larger than a small fraction of the wavelength.
+ The other one, more subtle, manifests itself in photonic crystal-like structure
+s used in nanophotonics: there are modes in which the particles' electric
+ dipole moments completely vanish due to symmetry, regardless of how small
+ the particles are, and the excitations have quadrupolar or higher-degree
+ multipolar character.
+ These modes typically appear at the band edges where interesting phenomena
+ such as lasing or Bose-Einstein condensation have been observed – and CDA
+ by definition fails to capture such modes.
+\end_layout
+
+\begin_layout Standard
+The natural way to overcome both limitations of CDA mentioned above is to
+ include higher multipoles into account.
+ Instead of polarisability tensor, the scattering properties of an individual
+ particle are then described a more general 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, and different particles' multipole excitations are coupled together
+ via translation operators, a generalisation of the Green's functions in
+ CDA.
+ This is the idea behind the 
+\emph on
+multiple-scattering 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix method 
+\emph default
+(MSTMM) (TODO a.k.a something??), and it has been implemented previously for
+ a limited subset of problems (TODO refs and list the limitations of the
+ available).
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO přestože blablaba, moc se to nepoužívalo, protože je težké udělat to
+ správně.
+\end_layout
+
+\end_inset
+
+ Due to the limitations of the existing available codes, we have been developing
+ our own implementation of MSTMM, which we have used in several previous
+ works studying various physical phenomena in plasmonic nanoarrays (TODO
+ examples with refs).
+ 
+\end_layout
+
+\begin_layout Standard
+Hereby we release our MSTMM implementation, the 
+\emph on
+QPMS Photonic Multiple Scattering
+\emph default
+ suite, as an open source software under the GNU General Public License
+ version 3.
+ (TODO refs to the code repositories.) QPMS allows for linear optics simulations
+ of arbitrary sets of compact scatterers in isotropic media.
+ The features include computations of electromagnetic response to external
+ driving, the related cross sections, and finding resonances of finite structure
+s.
+ Moreover, in QPMS we extensively employ group theory to exploit the physical
+ symmetries of the system to further reduce the demands on computational
+ resources, enabling to simulate even larger systems.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(TODO put a specific example here of how large system we are able to simulate?)
+\end_layout
+
+\end_inset
+
+ Although systems of large 
+\emph on
+finite
+\emph default
+ number of scatterers are the area where MSTMM excels the most—simply because
+ other methods fail due to their computational complexity—we also extended
+ the method onto infinite periodic systems (photonic crystals); this can
+ be used for quickly evaluating dispersions of such structures and also
+ their topological invariants (TODO).
+ The QPMS suite contains a core C library, Python bindings and several utilities
+ for routine computations, such as TODO.
+ It includes extensive Doxygen documentation, together with description
+ of the API, making extending and customising the code easy.
+\end_layout
+
+\begin_layout Standard
+The current paper is organised as follows: Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Finite"
+
+\end_inset
+
+ is devoted to MSTMM theory for finite systems, in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Infinite"
+
+\end_inset
+
+ we develop the theory for infinite periodic structures.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Applications"
+
+\end_inset
+
+ demonstrates some basic practical results that can be obtained using QPMS.
+ Finally, in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Comparison"
+
+\end_inset
+
+ we comment on the computational complexity of MSTMM in comparison to other
+ methods.
 \end_layout
 
 \end_body
