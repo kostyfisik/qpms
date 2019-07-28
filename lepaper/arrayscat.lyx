@@ -275,6 +275,11 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\rcoeffincptlm}[4]{\rcoeffincp{#1}_{#2#3#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\vswfrtlm}[3]{\vect v_{#1#2#3}}
 \end_inset
 
@@ -331,6 +336,64 @@
 
 \begin_inset FormulaMacro
 \newcommand{\truncated}[2]{\left[#1\right]_{l\le#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+These are compatibility macros for the (...)-old files:
+\end_layout
+
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vswfr}[3]{\vswfrtlm{#3}{#1}{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vswfs}[3]{\vswfouttlm{#3}{#1}{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\svwfs}[3]{\vswfouttlm{#3}{#1}{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffrip}[4]{\rcoeffptlm{#1}{#4}{#2}{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffsip}[4]{\outcoeffptlm{#1}{#4}{#2}{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffr}{\rcoeffp{}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffs}{\outcoeffp{}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\transop}{\trops}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffripext}[4]{\rcoeffincptlm{#1}{#4}{#2}{#3}}
 \end_inset
 
 
@@ -574,6 +637,17 @@ literal "true"
 \begin_inset CommandInset include
 LatexCommand include
 filename "finite.lyx"
+literal "true"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "finite-old.lyx"
 literal "true"
 
 \end_inset
