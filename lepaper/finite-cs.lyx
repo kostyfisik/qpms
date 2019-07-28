@@ -472,6 +472,21 @@ with expansion coefficients
 \end_layout
 
 \begin_layout Subsection
+Multiple-scattering problem
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rcoeffp p=\rcoeffincp p+\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q\label{eq:particle total incident field coefficient a}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Power transport
 \end_layout
 
@@ -501,9 +516,14 @@ Cross-sections (single-particle)
 \end_layout
 
 \begin_layout Standard
-Extinction, scattering and absorption cross sections of a single particle
- irradiated by a plane wave propagating in direction 
+Assuming a non-lossy background medium, extinction, scattering and absorption
+ cross sections of a single scatterer irradiated by a plane wave propagating
+ in direction 
 \begin_inset Formula $\uvec k$
+\end_inset
+
+ and (complex) amplitude 
+\begin_inset Formula $\vect E_{0}$
 \end_inset
 
  are 
@@ -538,6 +558,7 @@ reference "eq:plane wave expansion"
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
@@ -746,12 +767,135 @@ noprefix "false"
 \sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q\nonumber \\
  &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\rcoeffp p^{\dagger}\Tp p^{\dagger}\troprp pq\Tp q\rcoeffp q,\label{eq:scattering CS multi}\\
 \sigma_{\mathrm{abs}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}}\troprp pq\outcoeffp q\right)\right)\nonumber \\
- &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}TODO,\label{eq:absorption CS multi}
+ &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\mbox{TODO}.\label{eq:absorption CS multi}
 \end{eqnarray}
 
 \end_inset
 
+An alternative approach to derive the absorption cross section is via a
+ power transport argument.
+ Note the direct proportionality between absorption cross section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:absorption CS single"
+plural "false"
+caps "false"
+noprefix "false"
 
+\end_inset
+
+ and net radiated power for single scatterer 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Power transport"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{\mathrm{abs}}=-\eta_{0}\eta P/2\left\Vert \vect E_{0}\right\Vert ^{2}$
+\end_inset
+
+.
+ In the many-particle setup (with non-lossy background medium, so that only
+ the particles absorb), the total absorbed power is equal to the sum of
+ absorbed powers on each particle, 
+\begin_inset Formula $-P=\sum_{p\in\mathcal{P}}-P_{p}$
+\end_inset
+
+.
+ Using the power transport formula 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Power transport"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ particle-wise gives
+\begin_inset Formula 
+\begin{equation}
+\sigma_{\mathrm{abs}}\left(\uvec k\right)=-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\left(\Re\left(\rcoeffp p^{\dagger}\outcoeffp p\right)+\left\Vert \outcoeffp p\right\Vert ^{2}\right)\label{eq:absorption CS multi alternative}
+\end{equation}
+
+\end_inset
+
+which seems different from 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:absorption CS multi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, but using 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:particle total incident field coefficient a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we can rewrite it as
+\begin_inset Formula 
+\begin{align*}
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & =-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffp p+\outcoeffp p\right)\right)\\
+ & =-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q+\outcoeffp p\right)\right).
+\end{align*}
+
+\end_inset
+
+It is easy to show that all the terms of 
+\begin_inset Formula $\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\tropsp pq\outcoeffp q$
+\end_inset
+
+ containing the singular spherical Bessel functions 
+\begin_inset Formula $y_{l}$
+\end_inset
+
+ are imaginary, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO better formulation
+\end_layout
+
+\end_inset
+
+ so that actually 
+\begin_inset Formula $\sum_{p\in\mathcal{P}}\Re\left(\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\tropsp pq\outcoeffp q+\outcoeffp p^{\dagger}\outcoeffp p\right)=\sum_{p\in\mathcal{P}}\Re\left(\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\troprp pq\outcoeffp q+\outcoeffp p^{\dagger}\outcoeffp p\right)=\sum_{p\in\mathcal{P}}\Re\left(\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\troprp pq\outcoeffp q+\outcoeffp p^{\dagger}\troprp pp\outcoeffp p\right)=\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q,$
+\end_inset
+
+ proving that the expressions in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:absorption CS multi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:absorption CS multi alternative"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ are equal.
 \end_layout
 
 \end_body
