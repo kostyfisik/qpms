@@ -5,18 +5,21 @@
 \save_transient_properties true
 \origin unavailable
 \textclass article
+\begin_preamble
+\DeclareUnicodeCharacter{0428}{Ш }
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding auto-legacy
+\inputencoding utf8
 \fontencoding auto
 \font_roman "default" "TeX Gyre Pagella"
 \font_sans "default" "default"
 \font_typewriter "default" "default"
 \font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts true
+\use_non_tex_fonts false
 \font_sc false
 \font_roman_osf true
 \font_sans_osf false
@@ -26,10 +29,12 @@
 \use_microtype false
 \use_dash_ligatures true
 \graphics default
-\default_output_format pdf4
+\default_output_format default
 \output_sync 0
 \bibtex_command default
 \index_command default
+\float_placement class
+\float_alignment class
 \paperfontsize default
 \spacing single
 \use_hyperref true
@@ -270,12 +275,12 @@
 
 
 \begin_inset FormulaMacro
-\newcommand{\rcoeffptlm}[4]{\rcoeffp{#1}_{#2#3#4}}
+\newcommand{\rcoeffptlm}[4]{\rcoeffp{#1,#2#3#4}}
 \end_inset
 
 
 \begin_inset FormulaMacro
-\newcommand{\rcoeffincptlm}[4]{\rcoeffincp{#1}_{#2#3#4}}
+\newcommand{\rcoeffincptlm}[4]{\rcoeffincp{#1,#2#3#4}}
 \end_inset
 
 
@@ -290,7 +295,7 @@
 
 
 \begin_inset FormulaMacro
-\newcommand{\outcoeffptlm}[4]{\outcoeffp{#1}_{#2#3#4}}
+\newcommand{\outcoeffptlm}[4]{\outcoeffp{#1,#2#3#4}}
 \end_inset
 
 
@@ -394,6 +399,11 @@ These are compatibility macros for the (...)-old files:
 
 \begin_inset FormulaMacro
 \newcommand{\coeffripext}[4]{\rcoeffincptlm{#1}{#4}{#2}{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\Kp}{K}
 \end_inset
 
 
@@ -670,6 +680,17 @@ literal "true"
 \begin_inset CommandInset include
 LatexCommand include
 filename "infinite.lyx"
+literal "true"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "infinite-old.lyx"
 literal "true"
 
 \end_inset

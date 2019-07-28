@@ -1,5 +1,5 @@
-#LyX 2.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 544
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 583
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -7,27 +7,31 @@
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
-\language finnish
+\language english
 \language_package default
-\inputencoding auto
-\fontencoding global
+\inputencoding utf8
+\fontencoding auto
 \font_roman "default" "TeX Gyre Pagella"
 \font_sans "default" "default"
 \font_typewriter "default" "default"
 \font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts true
+\use_non_tex_fonts false
 \font_sc false
-\font_osf true
+\font_roman_osf true
+\font_sans_osf false
+\font_typewriter_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
 \use_microtype false
 \use_dash_ligatures true
 \graphics default
-\default_output_format pdf4
+\default_output_format default
 \output_sync 0
 \bibtex_command default
 \index_command default
+\float_placement class
+\float_alignment class
 \paperfontsize default
 \spacing single
 \use_hyperref true
@@ -63,6 +67,7 @@
 \justification true
 \use_refstyle 1
 \use_minted 0
+\use_lineno 0
 \index Index
 \shortcut idx
 \color #008000
@@ -73,11 +78,12 @@
 \paragraph_indentation default
 \is_math_indent 0
 \math_numbering_side default
-\quotes_style swedish
+\quotes_style english
 \dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\tablestyle default
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -92,8 +98,6 @@ Finite systems
 \end_layout
 
 \begin_layout Itemize
-
-\lang english
 motivation (classes of problems that this can solve: response to external
  radiation, resonances, ...)
 \begin_inset Separator latexpar
@@ -104,8 +108,6 @@ motivation (classes of problems that this can solve: response to external
 
 \begin_deeper
 \begin_layout Itemize
-
-\lang english
 theory
 \begin_inset Separator latexpar
 \end_inset
@@ -115,8 +117,6 @@ theory
 
 \begin_deeper
 \begin_layout Itemize
-
-\lang english
 T-matrix definition, basics
 \begin_inset Separator latexpar
 \end_inset
@@ -126,23 +126,17 @@ T-matrix definition, basics
 
 \begin_deeper
 \begin_layout Itemize
-
-\lang english
 How to get it?
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-
-\lang english
 translation operators (TODO think about how explicit this should be, but
  I guess it might be useful to write them to write them explicitly (but
  in the shortest possible form) in the normalisation used in my program)
 \end_layout
 
 \begin_layout Itemize
-
-\lang english
 employing point group symmetries and decomposing the problem to decrease
  the computational complexity (maybe separately)
 \end_layout
@@ -150,8 +144,6 @@ employing point group symmetries and decomposing the problem to decrease
 \end_deeper
 \end_deeper
 \begin_layout Subsection
-
-\lang english
 Motivation
 \end_layout
 
@@ -167,8 +159,6 @@ The basic idea of MSTMM is quite simple: the driving electromagnetic field
 \end_layout
 
 \begin_layout Subsection
-
-\lang english
 Single-particle scattering
 \end_layout
 
@@ -227,8 +217,6 @@ todo define
 \end_layout
 
 \begin_layout Standard
-
-\lang english
 Throughout this text, we will use the same normalisation conventions as
  in 
 \begin_inset CommandInset citation
@@ -242,20 +230,14 @@ literal "true"
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 Spherical waves
 \end_layout
 
 \begin_layout Standard
-
-\lang english
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-
-\lang english
 TODO small note about cartesian multipoles, anapoles etc.
  (There should be some comparing paper that the Russians at META 2018 mentioned.)
 \end_layout
@@ -266,8 +248,6 @@ TODO small note about cartesian multipoles, anapoles etc.
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 T-matrix definition
 \end_layout
 
@@ -276,26 +256,18 @@ Absorbed power
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 T-matrix compactness, cutoff validity
 \end_layout
 
 \begin_layout Subsection
-
-\lang english
 Multiple scattering
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 Translation operator
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 Numerical complexity, comparison to other methods
 \end_layout
 
