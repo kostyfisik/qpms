@@ -155,7 +155,19 @@ The basic idea of MSTMM is quite simple: the driving electromagnetic field
  Repeating the same procedure with all (pairs of) scatterers yields a set
  of linear equations, solution of which gives the coefficients of the scattered
  field in the VSWF bases.
- However, 
+ Once these coefficients have been found, one can evaluate various quantities
+ related to the scattering (such as cross sections or the scattered fields)
+ quite easily.
+ 
+\end_layout
+
+\begin_layout Standard
+However, the expressions appearing in the re-expansions are fairly complicated,
+ and the implementation of MSTMM is extremely error-prone also due to the
+ various conventions used in the literature.
+ Therefore although we do not re-derive from scratch the expressions that
+ can be found elsewhere in literature, we always state them explicitly in
+ our convention.
 \end_layout
 
 \begin_layout Subsection
@@ -185,12 +197,40 @@ ity
 , and that the whole system is linear, i.e.
  the material properties of neither the medium nor the scatterer depend
  on field intensities.
- Under these assumptions, the EM fields in 
+ Under these assumptions, the EM fields 
+\begin_inset Formula $\vect{\Psi}=\vect E,\vect H$
+\end_inset
+
+ in 
 \begin_inset Formula $\medium$
 \end_inset
 
- must satisfy the homogeneous vector Helmholtz equation 
-\begin_inset Formula $\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0$
+ must satisfy the homogeneous vector Helmholtz equation together with the
+ transversality condition 
+\begin_inset Formula 
+\begin{equation}
+\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0,\quad\nabla\cdot\vect{\Psi}\left(\vect r,\vect{\omega}\right)=0\label{eq:Helmholtz eq}
+\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+frequency-space Maxwell's equations
+\begin_inset Formula 
+\begin{align*}
+\nabla\times\vect E\left(\vect r,\omega\right)-ik\eta_{0}\eta\vect H\left(\vect r,\omega\right) & =0,\\
+\eta_{0}\eta\nabla\times\vect H\left(\vect r,\omega\right)+ik\vect E\left(\vect r,\omega\right) & =0.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
  
@@ -208,29 +248,165 @@ todo define
 \end_inset
 
  with 
-\begin_inset Formula $k=TODO$
+\begin_inset Formula $k=k\left(\omega\right)=\omega\sqrt{\mubg(\omega)\epsbg(\omega)}/c_{0}$
 \end_inset
 
- [TODO REF Jackson?].
- Its solutions (TODO under which conditions? What vector space do the SVWFs
- actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
+, as can be derived from the Maxwell's equations [REF Jackson?].
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Spherical waves
 \end_layout
 
 \begin_layout Standard
-Throughout this text, we will use the same normalisation conventions as
- in 
+Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Helmholtz eq"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be solved by separation of variables in spherical coordinates to give
+ the solutions – the 
+\emph on
+regular
+\emph default
+ and 
+\emph on
+outgoing
+\emph default
+ vector spherical wavefunctions (VSWFs) 
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\vswfouttlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+, respectively, defined as follows:
+\begin_inset Formula 
+\begin{align*}
+\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
+\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
+\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\\
+ & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\vect r=r\uvec r$
+\end_inset
+
+, 
+\begin_inset Formula $j_{l}\left(x\right),h_{l}^{\left(1\right)}\left(x\right)=j_{l}\left(x\right)+iy_{l}\left(x\right)$
+\end_inset
+
+ are the regular spherical Bessel function and spherical Hankel function
+ of the first kind, respectively, as in [DLMF §10.47], and 
+\begin_inset Formula $\vsh{\tau}lm$
+\end_inset
+
+ are the 
+\emph on
+vector spherical harmonics
+\emph default
+
+\begin_inset Formula 
+\begin{align*}
+\vsh 1lm & =\\
+\vsh 2lm & =\\
+\vsh 3lm & =
+\end{align*}
+
+\end_inset
+
+In our convention, the (scalar) spherical harmonics 
+\begin_inset Formula $\ush lm$
+\end_inset
+
+ are identical to those in [DLMF 14.30.1], i.e.
+\begin_inset Formula 
+\[
+\ush lm=\left(\frac{\left(l-m\right)!\left(2l+1\right)}{4\pi\left(l+m\right)!}\right)^{\frac{1}{2}}e^{im\phi}\dlmfFer lm\left(\cos\theta\right)
+\]
+
+\end_inset
+
+where importantly, the Ferrers functions 
+\begin_inset Formula $\dlmfFer lm$
+\end_inset
+
+ defined as in [DLMF §14.3(i)] do already contain the Condon-Shortley phase
+ 
+\begin_inset Formula $\left(-1\right)^{m}$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO názornější definice.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The convention for VSWFs used here is the same as in [Kristensson 2014];
+ over other conventions used elsewhere in literature, it has several fundamental
+ advantages – most importantly, the translation operators introduced later
+ in eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:translation op def"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ are unitary, and it gives the simplest possible expressions for power transport
+ and cross sections without additional 
+\begin_inset Formula $l,m$
+\end_inset
+
+-dependent factors (for that reason, we also call our VSWFs as 
+\emph on
+power-normalised
+\emph default
+).
+ Power-normalisation and unitary translation operators are possible to achieve
+ also with real spherical harmonics – such a convention is used in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kristensson_scattering_2016"
-literal "true"
+literal "false"
 
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Subsubsection
-Spherical waves
+\begin_layout Standard
+Its solutions (TODO under which conditions? What vector space do the SVWFs
+ actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
 \end_layout
 
 \begin_layout Standard
