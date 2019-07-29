@@ -405,8 +405,17 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Its solutions (TODO under which conditions? What vector space do the SVWFs
  actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -427,12 +436,282 @@ TODO small note about cartesian multipoles, anapoles etc.
 T-matrix definition
 \end_layout
 
-\begin_layout Subsubsection
-Absorbed power
+\begin_layout Standard
+The regular VSWFs 
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+ constitute a basis for solutions of the Helmholtz equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Helmholtz eq"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ inside a ball 
+\begin_inset Formula $\openball 0R$
+\end_inset
+
+ with radius 
+\begin_inset Formula $R$
+\end_inset
+
+ and center in the origin; however, if the equation is not guaranteed to
+ hold inside a smaller ball 
+\begin_inset Formula $B_{0}\left(R_{<}\right)$
+\end_inset
+
+ around the origin (typically due to presence of a scatterer), one has to
+ add the outgoing VSWFs 
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+ to have a complete basis of the solutions in the volume 
+\begin_inset Formula $\openball 0R\backslash B_{0}\left(R_{<}\right)$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Vnitřní koule uzavřená? Jak se řekne mezikulí anglicky?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The single-particle scattering problem at frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+ can be posed as follows: Let a scatterer be enclosed inside the ball 
+\begin_inset Formula $B_{0}\left(R_{<}\right)$
+\end_inset
+
+ and let the whole volume 
+\begin_inset Formula $\openball 0R\backslash B_{0}\left(R_{<}\right)$
+\end_inset
+
+ be filled with a homogeneous isotropic medium with wave number 
+\begin_inset Formula $k\left(\omega\right)$
+\end_inset
+
+.
+ Inside this volume, the electric field can be expanded as
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+doplnit frekvence a polohy
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\vect E\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm+\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm\right).
+\]
+
+\end_inset
+
+If there was no scatterer and 
+\begin_inset Formula $B_{0}\left(R_{<}\right)$
+\end_inset
+
+ was filled with the same homogeneous medium, the part with the outgoing
+ VSWFs would vanish and only the part 
+\begin_inset Formula $\vect E_{\mathrm{inc}}=\sum_{\tau lm}\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm$
+\end_inset
+
+ due to sources outside 
+\begin_inset Formula $\openball 0R$
+\end_inset
+
+ would remain.
+ Let us assume that the 
+\begin_inset Quotes eld
+\end_inset
+
+driving field
+\begin_inset Quotes erd
+\end_inset
+
+ is given, so that presence of the scatterer does not affect 
+\begin_inset Formula $\vect E_{\mathrm{inc}}$
+\end_inset
+
+ and is fully manifested in the latter part, 
+\begin_inset Formula $\vect E_{\mathrm{scat}}=\sum_{\tau lm}\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm$
+\end_inset
+
+.
+ We also assume that the scatterer is made of optically linear materials,
+ and hence reacts on the incident field in a linear manner.
+ This gives a linearity constraint between the expansion coefficients
+\begin_inset Formula 
+\begin{equation}
+\outcoefftlm{\tau}lm=\sum_{\tau'l'm'}T_{\tau lm}^{\tau'l'm'}\rcoefftlm{\tau'}{l'}{m'}\label{eq:T-matrix definition}
+\end{equation}
+
+\end_inset
+
+where the 
+\begin_inset Formula $T_{\tau lm}^{\tau'l'm'}=T_{\tau lm}^{\tau'l'm'}\left(\omega\right)$
+\end_inset
+
+ are the elements of the 
+\emph on
+transition matrix,
+\emph default
+ a.k.a.
+ 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix.
+ It completely describes the scattering properties of a linear scatterer,
+ so with the knowledge of the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, we can solve the single-patricle scatering prroblem simply by substitut
+ing appropriate expansion coefficients 
+\begin_inset Formula $\rcoefftlm{\tau'}{l'}{m'}$
+\end_inset
+
+ of the driving field into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:T-matrix definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $T$
+\end_inset
+
+-matrices of particles with certain simple geometries (most famously spherical)
+ can be obtained analytically [Kristensson 2016, Mie], but in general one
+ can find them numerically by simulating scattering of a regular spherical
+ wave 
+\begin_inset Formula $\vswfouttlm{\tau}lm$
+\end_inset
+
+ and projecting the scattered fields (or induced currents, depending on
+ the method) onto the outgoing VSWFs 
+\begin_inset Formula $\vswfrtlm{\tau}{'l'}{m'}$
+\end_inset
+
+.
+ In practice, one can compute only a finite number of elements with a cut-off
+ value 
+\begin_inset Formula $L$
+\end_inset
+
+ on the multipole degree, 
+\begin_inset Formula $l,l'\le L$
+\end_inset
+
+, see below.
+ We typically use the scuff-tmatrix tool from the free software SCUFF-EM
+ suite [SCUFF-EM].
+ Note that older versions of SCUFF-EM contained a bug that rendered almost
+ all 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix results wrong; we found and fixed the bug and from upstream version
+ xxx onwards, it should behave correctly.
+ 
 \end_layout
 
 \begin_layout Subsubsection
 T-matrix compactness, cutoff validity
+\end_layout
+
+\begin_layout Standard
+The magnitude of the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix elements depends heavily on the scatterer's size compared to the
+ wavelength.
+ Fortunately, the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a bounded scatterer is a compact operator [REF???], so from certain
+ multipole degree onwards, 
+\begin_inset Formula $l,l'>L$
+\end_inset
+
+, the elements of the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix are negligible, so truncating the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix at finite multipole degree 
+\begin_inset Formula $L$
+\end_inset
+
+ gives a good approximation of the actual infinite-dimensional itself.
+ If the incident field is well-behaved, i.e.
+ the expansion coefficients 
+\begin_inset Formula $\rcoefftlm{\tau'}{l'}{m'}$
+\end_inset
+
+ do not take excessive values for 
+\begin_inset Formula $l'>L$
+\end_inset
+
+, the scattered field expansion coefficients 
+\begin_inset Formula $\outcoefftlm{\tau}lm$
+\end_inset
+
+ with 
+\begin_inset Formula $l>L$
+\end_inset
+
+ will also be negligible.
+\end_layout
+
+\begin_layout Standard
+A rule of thumb to choose the 
+\begin_inset Formula $L$
+\end_inset
+
+ with desired 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix element accuracy 
+\begin_inset Formula $\delta$
+\end_inset
+
+ can be obtained from the spherical Bessel function expansion around zero,
+ TODO.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Absorbed power
 \end_layout
 
 \begin_layout Subsection

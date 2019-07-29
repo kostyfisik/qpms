@@ -280,6 +280,11 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\rcoefftlm}[3]{\rcoeffp{#1#2#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\rcoeffincptlm}[4]{\rcoeffincp{#1,#2#3#4}}
 \end_inset
 
@@ -296,6 +301,11 @@
 
 \begin_inset FormulaMacro
 \newcommand{\outcoeffptlm}[4]{\outcoeffp{#1,#2#3#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\outcoefftlm}[3]{\outcoeffp{#1#2#3}}
 \end_inset
 
 
@@ -341,6 +351,11 @@
 
 \begin_inset FormulaMacro
 \newcommand{\truncated}[2]{\left[#1\right]_{l\le#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\dlmfFer}[2]{\mathsf{P}_{#1}^{#2}}
 \end_inset
 
 
