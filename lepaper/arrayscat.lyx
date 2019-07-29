@@ -660,6 +660,27 @@ My implementation.
 Maybe put the numerical results separately in the end.
 \end_layout
 
+\begin_layout Section
+TODOs
+\end_layout
+
+\begin_layout Itemize
+Consistent notation of balls.
+ How is the difference between two cocentric balls called?
+\end_layout
+
+\begin_layout Itemize
+Abstract.
+\end_layout
+
+\begin_layout Itemize
+Example results.
+\end_layout
+
+\begin_layout Itemize
+Concrete comparison with other methods.
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
@@ -680,6 +701,10 @@ literal "true"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
 filename "finite-old.lyx"
@@ -689,12 +714,6 @@ literal "true"
 
 
 \end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset include
-LatexCommand include
-filename "finite-cs.lyx"
-literal "true"
 
 \end_inset
 
@@ -713,10 +732,19 @@ literal "true"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
 filename "infinite-old.lyx"
 literal "true"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
