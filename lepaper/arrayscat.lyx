@@ -275,6 +275,16 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\rcoeff}{a}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rcoeffinc}{a^{\mathrm{inc.}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\rcoeffptlm}[4]{\rcoeffp{#1,#2#3#4}}
 \end_inset
 
@@ -291,6 +301,11 @@
 
 \begin_inset FormulaMacro
 \newcommand{\vswfrtlm}[3]{\vect v_{#1#2#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\outcoeff}{f}
 \end_inset
 
 
@@ -351,6 +366,11 @@
 
 \begin_inset FormulaMacro
 \newcommand{\truncated}[2]{\left[#1\right]_{l\le#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\truncate}[2]{\left[#1\right]_{#2}}
 \end_inset
 
 
@@ -671,6 +691,10 @@ Consistent notation of balls.
 
 \begin_layout Itemize
 Abstract.
+\end_layout
+
+\begin_layout Itemize
+Truncation notation.
 \end_layout
 
 \begin_layout Itemize

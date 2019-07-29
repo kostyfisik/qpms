@@ -1014,7 +1014,7 @@ jaksetometuje?
  Then the EM field inside each such volume can be expanded in a way similar
  to 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:E field expansion"
 plural "false"
 caps "false"
@@ -1083,6 +1083,190 @@ noprefix "false"
 \end_inset
 
 .
+ For each scatterer, we also have its 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix relation as in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+\outcoeffp q=T_{q}\rcoeffp q.
+\]
+
+\end_inset
+
+Together with 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:particle total incident field coefficient a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, this gives rise to a set of linear equations
+\begin_inset Formula 
+\begin{equation}
+\outcoeffp p-T_{p}\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q=T_{p}\rcoeffincp p,\quad p\in\mathcal{P}\label{eq:Multiple-scattering problem}
+\end{equation}
+
+\end_inset
+
+which defines the multiple-scattering problem.
+ If all the 
+\begin_inset Formula $p,q$
+\end_inset
+
+-indexed vectors and matrices (note that without truncation, they are infinite-d
+imensional) are arranged into blocks of even larger vectors and matrices,
+ this can be written in a short-hand form
+\begin_inset Formula 
+\begin{equation}
+\left(I-T\trops\right)\outcoeff=T\rcoeffinc\label{eq:Multiple-scattering problem block form}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $I$
+\end_inset
+
+ is the identity matrix and 
+\begin_inset Formula $T$
+\end_inset
+
+is a block-diagonal matrix containing all the individual 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices.
+\end_layout
+
+\begin_layout Standard
+In practice, the multiple-scattering problem is solved in its truncated
+ form, in which all the 
+\begin_inset Formula $l$
+\end_inset
+
+-indices related to a given scatterer 
+\begin_inset Formula $p$
+\end_inset
+
+ are truncated as 
+\begin_inset Formula $l\le L_{p}$
+\end_inset
+
+, laeving only 
+\begin_inset Formula $N_{p}=2L_{p}\left(L_{p}+2\right)$
+\end_inset
+
+ different 
+\begin_inset Formula $\tau lm$
+\end_inset
+
+-multiindices left.
+ The truncation degree can vary for different scatterers (e.g.
+ due to different physical sizes), so the truncated block 
+\begin_inset Formula $\tropsp pq$
+\end_inset
+
+ has shape 
+\begin_inset Formula $N_{p}\times N_{q}$
+\end_inset
+
+, not necessarily square.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Such truncation of the translation operator 
+\begin_inset Formula $\tropsp pq$
+\end_inset
+
+ is justified by the fact on the left, TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If no other type of truncation is done, there remain 
+\begin_inset Formula $2L_{p}\left(L_{p}+2\right)$
+\end_inset
+
+ different 
+\begin_inset Formula $\tau lm$
+\end_inset
+
+-multiindices for 
+\begin_inset Formula $p$
+\end_inset
+
+-th scatterer, so that the truncated version of the matrix 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ is a square matrix with 
+\begin_inset Formula $\left(\sum_{p\in\mathcal{P}}N_{p}\right)^{2}$
+\end_inset
+
+ elements in total.
+ The truncated problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can then be solved using standard numerical linear algebra methods.
+\end_layout
+
+\begin_layout Standard
+Alternatively, the multiple scattering problem can be formulated in terms
+ of the regular field expansion coefficients,
+\begin_inset Formula 
+\begin{align*}
+\rcoeffp p-\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pqT_{q}\rcoeffp q & =\rcoeffincp p,\quad p\in\mathcal{P},\\
+\left(I-\trops T\right)\rcoeff & =\rcoeffinc,
+\end{align*}
+
+\end_inset
+
+but this form is less suitable for numerical calculations due to the fact
+ that the regular VSWF expansion coefficients on both sides of the equation
+ are typically non-negligible even for large multipole degree 
+\begin_inset Formula $l$
+\end_inset
+
+, and the truncation is not justified in this case.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO less bulshit.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
