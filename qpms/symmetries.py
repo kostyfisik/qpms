@@ -10,6 +10,8 @@ import numbers
 import re
 ň = None
 
+s3long = np.sqrt(np.longdouble(3.))
+
 def grouprep_try(tdict, src, im, srcgens, imgens, immultop = None, imcmp = None):
     tdict[src] = im
     for i in range(len(srcgens)):
@@ -192,13 +194,13 @@ def generate_grouprep(srcgroup, im_identity, srcgens, imgens, immultop = None, i
     
 # matrices appearing in 2d representations of common groups as used in Bradley, Cracknell p. 61 (with arabic names instead of greek, because lambda is a keyword)
 epsilon = np.eye(2)
-alif = np.array(((-1/2,-sqrt(3)/2),(sqrt(3)/2,-1/2)))
-bih = np.array(((-1/2,sqrt(3)/2),(-sqrt(3)/2,-1/2)))
+alif = np.array(((-1/2,-s3long/2),(s3long/2,-1/2)))
+bih = np.array(((-1/2,s3long/2),(-s3long/2,-1/2)))
 kaf = np.array(((0,1),(1,0)))
 lam = np.array(((1,0),(0,-1)))
 ra = np.array(((0,-1),(1,0)))
-mim =  np.array(((-1/2,-sqrt(3)/2),(-sqrt(3)/2,1/2)))
-nun =  np.array(((-1/2,sqrt(3)/2),(sqrt(3)/2,1/2)))
+mim =  np.array(((-1/2,-s3long/2),(-s3long/2,1/2)))
+nun =  np.array(((-1/2,s3long/2),(s3long/2,1/2)))
 
 
 
