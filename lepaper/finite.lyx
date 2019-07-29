@@ -968,6 +968,13 @@ reference "eq:plane wave expansion"
 
 \begin_layout Subsection
 Multiple scattering
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Multiple-scattering"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
