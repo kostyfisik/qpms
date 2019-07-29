@@ -425,12 +425,7 @@ These are compatibility macros for the (...)-old files:
 \end_layout
 
 \begin_layout Title
-Some nice title about multiple scattering approach to photonic nanoparticle
- arrays (outline)
-\end_layout
-
-\begin_layout Author
-Marek Nečada
+QPMS Photonic Multiple Scattering suite (TODO better title)
 \end_layout
 
 \begin_layout Standard
@@ -499,6 +494,21 @@ Due to space limitations, articles are normally limited to 20 journal pages.
 
 \begin_layout Standard
 Category: Methods and Algorithms for Scientific Computing?
+\end_layout
+
+\begin_layout Abstract
+The (somewhat underrated) T-matrix multiple scattering method (TMMSM) can
+ be used to solve the electromagnetic response of systems consisting of
+ many compact scatterers.
+ It largely surpasses other methods in the number of scatterers it can deal
+ with, while retaining very good accuracy.
+\end_layout
+
+\begin_layout Abstract
+TODO REWRITE: We release a modern implementation of the method under GNU
+ General Public Licence, with several theoretical advancements presented
+ here, such as exploiting the system symmetries to further improve the efficienc
+y of the method, or extending it on infinite periodic systems.
 \end_layout
 
 \begin_layout Section
