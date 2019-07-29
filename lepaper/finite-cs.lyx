@@ -95,36 +95,6 @@
 \begin_body
 
 \begin_layout Subsection
-Dual vector spherical harmonics
-\end_layout
-
-\begin_layout Standard
-For evaluation of expansion coefficients of incident fields, it is useful
- to introduce „dual“ vector spherical harmonics 
-\begin_inset Formula $\vshD{\tau}lm$
-\end_inset
-
- defined by duality relation
-\begin_inset Formula 
-\begin{equation}
-\iint\vshD{\tau'}{l'}{m'}\left(\uvec r\right)\cdot\vsh{\tau}lm\left(\uvec r\right)\,\ud\Omega=\delta_{\tau'\tau}\delta_{l'l}\delta_{m'm}\label{eq:dual vsh}
-\end{equation}
-
-\end_inset
-
-(complex conjugation not implied in the dot product here).
- In our convention, we have
-\begin_inset Formula 
-\[
-\vshD{\tau}lm\left(\uvec r\right)=\left(\vsh{\tau}lm\left(\uvec r\right)\right)^{*}=\left(-1\right)^{m}\vsh{\tau}{l-}m\left(\uvec r\right).
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
 Translation operators
 \end_layout
 
@@ -440,39 +410,6 @@ better wording
 Plane wave expansion coefficients
 \end_layout
 
-\begin_layout Standard
-A transversal (
-\begin_inset Formula $\vect k\cdot\vect E_{0}=0$
-\end_inset
-
-) plane wave propagating in direction 
-\begin_inset Formula $\uvec k$
-\end_inset
-
- with (complex) amplitude 
-\begin_inset Formula $\vect E_{0}$
-\end_inset
-
- can be expanded into regular VSWFs [REF KRIS]
-\begin_inset Formula 
-\[
-\vect E_{\mathrm{PW}}\left(\vect r,\omega\right)=\vect E_{0}e^{ik\uvec k\cdot\vect r}=\sum_{\tau,l,m}\rcoeffptlm{}{\tau}lm\left(\vect k,\vect E_{0}\right)\vswfrtlm{\tau}lm\left(k\vect r\right),
-\]
-
-\end_inset
-
-with expansion coefficients
-\begin_inset Formula 
-\begin{eqnarray}
-\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
-\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
-\end{eqnarray}
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Multiple-scattering problem
 \end_layout
@@ -489,78 +426,7 @@ Multiple-scattering problem
 \end_layout
 
 \begin_layout Subsection
-Power transport
-\end_layout
-
-\begin_layout Standard
-Radiated power 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "sect. 7.3"
-key "kristensson_scattering_2016"
-literal "true"
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{equation}
-P=\frac{1}{2k^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)=\frac{1}{2k^{2}\eta_{0}\eta}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{}.\label{eq:Power transport}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Cross-sections (single-particle)
-\end_layout
-
-\begin_layout Standard
-Assuming a non-lossy background medium, extinction, scattering and absorption
- cross sections of a single scatterer irradiated by a plane wave propagating
- in direction 
-\begin_inset Formula $\uvec k$
-\end_inset
-
- and (complex) amplitude 
-\begin_inset Formula $\vect E_{0}$
-\end_inset
-
- are 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "sect. 7.8.2"
-key "kristensson_scattering_2016"
-literal "true"
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{eqnarray}
-\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}+\Tp{}^{\dagger}\right)\rcoeffp{},\label{eq:extincion CS single}\\
-\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left\Vert \outcoeffp{}\right\Vert ^{2}=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}\right)\rcoeffp{},\label{eq:scattering CS single}\\
-\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & \sigma_{\mathrm{ext}}\left(\uvec k\right)-\sigma_{\mathrm{scat}}\left(\uvec k\right)=-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)\nonumber \\
- &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{},\label{eq:absorption CS single}
-\end{eqnarray}
-
-\end_inset
-
-where 
-\begin_inset Formula $\rcoeffp{}=\rcoeffp{}\left(\vect k,\vect E_{0}\right)$
-\end_inset
-
- is the vector of plane wave expansion coefficients as in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:plane wave expansion"
-
-\end_inset
-
-.
- 
+Cross-sections (many scatterers)
 \end_layout
 
 \begin_layout Standard
