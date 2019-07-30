@@ -136,7 +136,8 @@ Notation
 \end_layout
 
 \begin_layout Standard
-TODO Fourier transforms, Delta comb, lattice bases etc.
+TODO Fourier transforms, Delta comb, lattice bases, reciprocal lattices
+ etc.
 \end_layout
 
 \begin_layout Subsection
@@ -277,12 +278,12 @@ noprefix "false"
 
  can be rewritten as follows
 \begin_inset Formula 
-\begin{align*}
-\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect n,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}},\\
-\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m-\vect n,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m-\vect n}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\\
-\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect 0,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\\
-\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\beta\in\mathcal{P}}W_{\alpha\beta}\left(\vect k\right)\outcoeffp{\vect 0,\beta}\left(\vect k\right) & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),
-\end{align*}
+\begin{align}
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect n,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}},\nonumber \\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m-\vect n,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m-\vect n}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\nonumber \\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect 0,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\nonumber \\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\beta\in\mathcal{P}}W_{\alpha\beta}\left(\vect k\right)\outcoeffp{\vect 0,\beta}\left(\vect k\right) & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\label{eq:Multiple-scattering problem unit cell}
+\end{align}
 
 \end_inset
 
@@ -299,16 +300,35 @@ lattice Fourier transform
  of the translation operator,
 \begin_inset Formula 
 \begin{equation}
-W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\beta}\right)\tropsp{\vect 0,\alpha}{\vect m,\beta}e^{i\vect k\cdot\vect R_{\vect m}}.\label{eq:W definition}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\beta}\right)\tropsp{\vect 0,\alpha}{\vect m,\beta}e^{i\vect k\cdot\vect R_{\vect m}},\label{eq:W definition}
 \end{equation}
 
 \end_inset
 
+evaluation of which is possible but quite non-trivial due to the infinite
+ lattice sum, so we explain it separately in Sect.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:W operator evaluation"
+plural "false"
+caps "false"
+noprefix "false"
 
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
 Computing the Fourier sum of the translation operator
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:W operator evaluation"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -576,7 +596,178 @@ W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\bas
 
 \end_inset
 
-where both sums should converge nicely.
+where both sums expected to converge nicely.
+ We note that the elements of the translation operators 
+\begin_inset Formula $\tropr,\trops$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be rewritten as linear combinations of expressions 
+\begin_inset Formula $\ush{\nu}{\mu}\left(\uvec d\right)j_{n}\left(d\right),\ush{\nu}{\mu}\left(\uvec d\right)h_{n}^{(1)}\left(d\right)$
+\end_inset
+
+ (TODO WRITE THEM EXPLICITLY IN THIS FORM), respectively, hence if we are
+ able evaluate the lattice sums sums
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CHECK THE FOLLOWING EXPRESSION FOR CORRECT FUNCTION ARGUMENTS
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\sigma_{\nu}^{\mu}\left(\vect k\right)=\sum_{\vect n\in\ints^{d}\backslash\left\{ \vect 0\right\} }e^{i\vect{\vect k}\cdot\vect R_{\vect n}}\ush{\nu}{\mu}\left(\uvec{R_{n}}\right)h_{n}^{(1)}\left(R_{n}\right),\label{eq:sigma lattice sums}
+\end{equation}
+
+\end_inset
+
+then by linearity, we can get the 
+\begin_inset Formula $W_{\alpha\beta}\left(\vect k\right)$
+\end_inset
+
+ operator as well.
+\end_layout
+
+\begin_layout Standard
+TODO ADD MOROZ AND OTHER REFS HERE.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_one-_2009"
+literal "true"
+
+\end_inset
+
+ offers an exponentially convergent Ewald-type summation method for 
+\begin_inset Formula $\sigma_{\nu}^{\mu}\left(\vect k\right)=\sigma_{\nu}^{\mu(\mathrm{S})}\left(\vect k\right)+\sigma_{\nu}^{\mu(\mathrm{L})}\left(\vect k\right)$
+\end_inset
+
+.
+ Here we rewrite them in a form independent on the convention used for spherical
+ harmonics (as long as they are complex
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+lepší formulace
+\end_layout
+
+\end_inset
+
+).
+ The short-range part reads (UNIFY INDEX NOTATION)
+\begin_inset Formula 
+\begin{multline}
+\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)=-\frac{2^{n+1}i}{k^{n+1}\sqrt{\pi}}\sum_{\vect R\in\Lambda}^{'}\left|\vect R\right|^{n}e^{i\vect{\beta}\cdot\vect R}Y_{n}^{m}\left(\vect R\right)\int_{\eta}^{\infty}e^{-\left|\vect R\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2n}\ud\xi\\
++\frac{\delta_{n0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)Y_{n}^{m},\label{eq:Ewald in 3D short-range part}
+\end{multline}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+NEPATŘÍ TAM NĚJAKÁ DELTA FUNKCE K PŮVODNÍMU 
+\begin_inset Formula $\sigma_{n}^{m(0)}$
+\end_inset
+
+?
+\end_layout
+
+\end_inset
+
+and the long-range part (FIXME, this is the 2D version; include the 1D and
+ 3D lattice expressions as well)
+\begin_inset Formula 
+\begin{multline}
+\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)=-\frac{i^{n+1}}{k^{2}\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\\
+\times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1}\label{eq:Ewald in 3D long-range part}
+\end{multline}
+
+\end_inset
+
+where 
+\begin_inset Formula $\xi$
+\end_inset
+
+ is TODO, 
+\begin_inset Formula $\beta_{pq}$
+\end_inset
+
+ is TODO, 
+\begin_inset Formula $\Gamma_{j,pq}$
+\end_inset
+
+ is TODO and 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is a real parameter that determines the pace of convergence of both parts.
+ The larger 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is, the faster 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)$
+\end_inset
+
+ converges but the slower 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)$
+\end_inset
+
+ converges.
+ Therefore (based on the lattice geometry) it has to be adjusted in a way
+ that a reasonable amount of terms needs to be evaluated numerically from
+ both 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)$
+\end_inset
+
+ .
+ Generally, a good choice for 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is TODO; in order to achieve accuracy TODO, one has to evaluate the terms
+ on TODO lattice points.
+ (I HAVE SOME DERIVATIONS OF THE ESTIMATES IN MY NOTES; SHOULD I INCLUDE
+ THEM?)
+\end_layout
+
+\begin_layout Standard
+In practice, the integrals in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D short-range part"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be easily evaluated by numerical quadrature and the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+-functions using the series TODO and TODO from DLMF.
 \end_layout
 
 \end_body

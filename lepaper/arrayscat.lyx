@@ -713,6 +713,12 @@ Abstract.
 \end_layout
 
 \begin_layout Itemize
+Translation operators: explicit expression, also in sph.
+ harm.
+ convention independent form.
+\end_layout
+
+\begin_layout Itemize
 Truncation notation.
 \end_layout
 
