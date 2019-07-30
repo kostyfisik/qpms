@@ -1149,7 +1149,7 @@ where
 \begin_inset Formula $I$
 \end_inset
 
- is the identity matrix and 
+ is the identity matrix, 
 \begin_inset Formula $T$
 \end_inset
 
@@ -1157,7 +1157,16 @@ is a block-diagonal matrix containing all the individual
 \begin_inset Formula $T$
 \end_inset
 
--matrices.
+-matrices, and 
+\begin_inset Formula $\trops$
+\end_inset
+
+ contains the individual 
+\begin_inset Formula $\tropsp pq$
+\end_inset
+
+matrices as the off-diagonal blocks, whereas the diagonal blocks are set
+ to zeros.
 \end_layout
 
 \begin_layout Standard

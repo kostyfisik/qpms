@@ -149,8 +149,22 @@
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset FormulaMacro
 \newcommand{\dc}[1]{Ш_{#1}}
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\dc}[1]{|||_{#1}}
 \end_inset
 
 
@@ -376,6 +390,11 @@
 
 \begin_inset FormulaMacro
 \newcommand{\dlmfFer}[2]{\mathsf{P}_{#1}^{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\antidelta}{\gamma}
 \end_inset
 
 
@@ -703,6 +722,10 @@ Example results.
 
 \begin_layout Itemize
 Concrete comparison with other methods.
+\end_layout
+
+\begin_layout Itemize
+Fix notation (mainly index) clashes in infinite lattices.
 \end_layout
 
 \begin_layout Standard

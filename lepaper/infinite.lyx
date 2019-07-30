@@ -96,7 +96,7 @@
 \begin_layout Section
 Infinite periodic systems
 \begin_inset FormulaMacro
-\newcommand{\dlv}{\vect b}
+\newcommand{\dlv}{\vect a}
 \end_inset
 
 
@@ -135,6 +135,10 @@ Topology anoyne?
 Notation
 \end_layout
 
+\begin_layout Standard
+TODO Fourier transforms, Delta comb, lattice bases etc.
+\end_layout
+
 \begin_layout Subsection
 Formulation of the problem
 \end_layout
@@ -151,7 +155,7 @@ noprefix "false"
 
 \end_inset
 
-, but this time, system shall be periodic: let there be a 
+, but this time, the system shall be periodic: let there be a 
 \begin_inset Formula $d$
 \end_inset
 
@@ -160,110 +164,131 @@ noprefix "false"
 \end_inset
 
  can be 1, 2 or 3) lattice embedded into the three-dimensional real space,
- with lattice vectors.
- set of 
+ with lattice vectors 
+\begin_inset Formula $\left\{ \dlv_{i}\right\} _{i=1}^{d}$
+\end_inset
+
+, and let the lattice points be labeled with an 
 \begin_inset Formula $d$
 \end_inset
 
- (one to three) lattice vectorsAssume a system of compact EM scatterers
- in otherwise homogeneous and isotropic medium, and assume that the system,
- i.e.
- both the medium and the scatterers, have linear response.
- A scattering problem in such system can be written as
-\begin_inset Formula 
-\[
-A_{α}=T_{α}P_{α}=T_{α}(\sum_{β}S_{α\leftarrowβ}A_{β}+P_{0α})
-\]
-
+-dimensional integar multiindex 
+\begin_inset Formula $\vect n\in\ints^{d}$
 \end_inset
 
-where 
-\begin_inset Formula $T_{α}$
-\end_inset
-
- is the 
-\begin_inset Formula $T$
-\end_inset
-
--matrix for scatterer α, 
-\begin_inset Formula $A_{α}$
-\end_inset
-
- is its vector of the scattered wave expansion coefficient (the multipole
- indices are not explicitely indicated here) and 
-\begin_inset Formula $P_{α}$
-\end_inset
-
- is the local expansion of the incoming sources.
- 
-\begin_inset Formula $S_{α\leftarrowβ}$
-\end_inset
-
- is ...
- and ...
- is ...
-\end_layout
-
-\begin_layout Standard
-...
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\sum_{β}(\delta_{αβ}-T_{α}S_{α\leftarrowβ})A_{β}=T_{α}P_{0α}.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Now suppose that the scatterers constitute an infinite lattice
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{\vect aα}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=T_{\vect aα}P_{0\vect aα}.
-\]
-
-\end_inset
-
-Due to the periodicity, we can write 
-\begin_inset Formula $S_{\vect aα\leftarrow\vect bβ}=S_{α\leftarrowβ}(\vect b-\vect a)$
-\end_inset
-
- and 
-\begin_inset Formula $T_{\vect aα}=T_{\alpha}$
+, so the lattice points have cartesian coordinates 
+\begin_inset Formula $\vect R_{\vect n}=\sum_{i=1}^{d}n_{i}\vect a_{i}$
 \end_inset
 
 .
- In order to find lattice modes, we search for solutions with zero RHS
+ There can be several scatterers per unit cell with indices 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ from set 
+\begin_inset Formula $\mathcal{P}_{1}$
+\end_inset
+
+ and (relative) positions inside the unit cell 
+\begin_inset Formula $\vect r_{\alpha}$
+\end_inset
+
+; any particle of the periodic system can thus be labeled by a multiindex
+ from 
+\begin_inset Formula $\mathcal{P}=\ints^{d}\times\mathcal{P}_{1}$
+\end_inset
+
+.
+ The scatterers are located at positions 
+\begin_inset Formula $\vect r_{\vect n,\alpha}=\vect R_{\vect n}+\vect r_{\alpha}$
+\end_inset
+
+ and their 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices are periodic, 
+\begin_inset Formula $T_{\vect n,\alpha}=T_{\alpha}$
+\end_inset
+
+.
+ In such system, the multiple-scattering problem 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Multiple-scattering problem"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be rewritten as
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
-\[
-\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=0
-\]
+\begin{equation}
+\outcoeffp{\vect n,\alpha}-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect n,\alpha}{\vect m,\beta}\outcoeffp{\vect m,\beta}=T_{\alpha}\rcoeffincp{\vect n,\alpha}.\quad\left(\vect n,\alpha\right)\in\mathcal{P}\label{eq:Multiple-scattering problem periodic}
+\end{equation}
 
 \end_inset
 
-and we assume periodic solution 
-\begin_inset Formula $A_{\vect b\beta}(\vect k)=A_{\vect a\beta}e^{i\vect k\cdot\vect r_{\vect b-\vect a}}$
+
+\end_layout
+
+\begin_layout Standard
+Due to periodicity, we can also write 
+\begin_inset Formula $\tropsp{\vect n,\alpha}{\vect m,\beta}=\tropsp{\alpha}{\beta}\left(\vect R_{\vect m}-\vect R_{\vect n}\right)=\tropsp{\alpha}{\beta}\left(\vect R_{\vect m-\vect n}\right)=\tropsp{\vect 0,\alpha}{\vect m-\vect n,\beta}$
 \end_inset
 
-, yielding
+.
+ Assuming quasi-periodic right-hand side with quasi-momentum 
+\begin_inset Formula $\vect k$
+\end_inset
+
+, 
+\begin_inset Formula $\rcoeffincp{\vect n,\alpha}=\rcoeffincp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
+\end_inset
+
+, the solutions of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Multiple-scattering problem periodic"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ will be also quasi-periodic according to Bloch theorem, 
+\begin_inset Formula $\outcoeffp{\vect n,\alpha}=\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
+\end_inset
+
+, and eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Multiple-scattering problem periodic"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be rewritten as follows
 \begin_inset Formula 
-\begin{eqnarray*}
-\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect a\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b-\vect a}} & = & 0,\\
-\sum_{\vect bβ}(\delta_{\vect{0b}}\delta_{αβ}-T_{α}S_{\vect 0α\leftarrow\vect bβ})A_{\vect 0\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b}} & = & 0,\\
-\sum_{β}(\delta_{αβ}-T_{α}\underbrace{\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}}_{W_{\alpha\beta}(\vect k)})A_{\vect 0\beta}\left(\vect k\right) & = & 0,\\
-A_{\vect 0\alpha}\left(\vect k\right)-T_{α}\sum_{\beta}W_{\alpha\beta}\left(\vect k\right)A_{\vect 0\beta}\left(\vect k\right) & = & 0.
-\end{eqnarray*}
+\begin{align*}
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect n,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}},\\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m-\vect n,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m-\vect n}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect 0,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\beta\in\mathcal{P}}W_{\alpha\beta}\left(\vect k\right)\outcoeffp{\vect 0,\beta}\left(\vect k\right) & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),
+\end{align*}
 
 \end_inset
 
-Therefore, in order to solve the modes, we need to compute the 
+so we reduced the initial scattering problem to one involving only the field
+ expansion coefficients from a single unit cell, but we need to compute
+ the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -274,7 +299,7 @@ lattice Fourier transform
  of the translation operator,
 \begin_inset Formula 
 \begin{equation}
-W_{\alpha\beta}(\vect k)\equiv\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}.\label{eq:W definition}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\beta}\right)\tropsp{\vect 0,\alpha}{\vect m,\beta}e^{i\vect k\cdot\vect R_{\vect m}}.\label{eq:W definition}
 \end{equation}
 
 \end_inset
@@ -295,14 +320,18 @@ reference "eq:W definition"
 \end_inset
 
  is the asymptotic behaviour of the translation operator, 
-\begin_inset Formula $S_{\vect 0α\leftarrow\vect bβ}\sim\left|\vect r_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect r_{\vect b}\right|}$
+\begin_inset Formula $\tropsp{\vect 0,\alpha}{\vect m,\beta}\sim\left|\vect R_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect R_{\vect b}\right|}$
 \end_inset
 
- that makes the convergence of the sum quite problematic for any 
+ that does not in the strict sense converge for any 
 \begin_inset Formula $d>1$
 \end_inset
 
 -dimensional lattice.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Foot
 status open
 
@@ -318,11 +347,17 @@ Note that
 
 \end_inset
 
- In electrostatics, one can solve this problem with Ewald summation.
+
+\end_layout
+
+\end_inset
+
+ In electrostatics, this problem can be solved with Ewald summation [TODO
+ REF].
  Its basic idea is that if what asymptoticaly decays poorly in the direct
  space, will perhaps decay fast in the Fourier space.
- I use the same idea here, but everything will be somehow harder than in
- electrostatics.
+ We use the same idea here, but the technical details are more complicated
+ than in electrostatics.
 \end_layout
 
 \begin_layout Standard
@@ -520,7 +555,7 @@ reference "eq:W definition"
 
 \end_inset
 
- and legendre
+ and 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:W sum in reciprocal space"
