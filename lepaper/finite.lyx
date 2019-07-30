@@ -326,9 +326,9 @@ vector spherical harmonics
 
 \begin_inset Formula 
 \begin{align*}
-\vsh 1lm & =TODO\\
-\vsh 2lm & =fixme\\
-\vsh 3lm & =
+\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\\
+\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\\
+\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).
 \end{align*}
 
 \end_inset
