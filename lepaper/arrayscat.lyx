@@ -807,6 +807,17 @@ literal "true"
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
+filename "symmetries.lyx"
+literal "true"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
 filename "examples.lyx"
 literal "true"
 

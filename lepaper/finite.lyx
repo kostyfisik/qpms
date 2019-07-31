@@ -290,8 +290,8 @@ outgoing
 , respectively, defined as follows:
 \begin_inset Formula 
 \begin{align*}
-\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
-\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),
+\vswfrtlm1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh1lm\left(\uvec r\right),\\
+\vswfrtlm2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh3lm\left(\uvec r\right),
 \end{align*}
 
 \end_inset
@@ -299,8 +299,8 @@ outgoing
 
 \begin_inset Formula 
 \begin{align*}
-\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
-\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\\
+\vswfouttlm1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh1lm\left(\uvec r\right),\\
+\vswfouttlm2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh3lm\left(\uvec r\right),\\
  & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,
 \end{align*}
 
@@ -326,9 +326,9 @@ vector spherical harmonics
 
 \begin_inset Formula 
 \begin{align*}
-\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\\
-\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\\
-\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).
+\vsh1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\\
+\vsh2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\\
+\vsh3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).
 \end{align*}
 
 \end_inset
@@ -452,7 +452,7 @@ noprefix "false"
 \end_inset
 
  inside a ball 
-\begin_inset Formula $\openball 0{R^{>}}$
+\begin_inset Formula $\openball0{R^{>}}$
 \end_inset
 
  with radius 
@@ -470,7 +470,7 @@ noprefix "false"
 \end_inset
 
  to have a complete basis of the solutions in the volume 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
 .
@@ -496,7 +496,7 @@ The single-particle scattering problem at frequency
 \end_inset
 
  and let the whole volume 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
  be filled with a homogeneous isotropic medium with wave number 
@@ -532,7 +532,7 @@ If there was no scatterer and
 \end_inset
 
  due to sources outside 
-\begin_inset Formula $\openball 0R$
+\begin_inset Formula $\openball0R$
 \end_inset
 
  would remain.
@@ -793,7 +793,7 @@ literal "true"
 
 .
  Let the field in 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
  have expansion as in 
@@ -812,7 +812,7 @@ noprefix "false"
 \end_inset
 
  to 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
  via by electromagnetic radiation is
@@ -864,8 +864,8 @@ In many scattering problems considered in practice, the driving field is
 with expansion coefficients
 \begin_inset Formula 
 \begin{eqnarray}
-\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
-\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
+\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD1lm\left(\uvec k\right),\nonumber \\
+\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD2lm\left(\uvec k\right).\label{eq:plane wave expansion}
 \end{eqnarray}
 
 \end_inset
@@ -1251,7 +1251,17 @@ noprefix "false"
 
 \end_inset
 
- can then be solved using standard numerical linear algebra methods.
+ can then be solved using standard numerical linear algebra methods (typically,
+ by LU factorisation of the 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ matrix at a given frequency, and then solving with Gauss elimination for
+ as many different incident 
+\begin_inset Formula $\rcoeffinc$
+\end_inset
+
+ vectors as needed).
 \end_layout
 
 \begin_layout Standard

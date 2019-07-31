@@ -324,9 +324,9 @@ noprefix "false"
 As in the case of a finite system, eq.
  can be written in a shorter block-matrix form,
 \begin_inset Formula 
-\[
-\left(I-WT\right)\outcoeffp{\vect 0}\left(\vect k\right)=\rcoeffincp{\vect 0}\left(\vect k\right)
-\]
+\begin{equation}
+\left(I-WT\right)\outcoeffp{\vect 0}\left(\vect k\right)=\rcoeffincp{\vect 0}\left(\vect k\right)\label{eq:Multiple-scattering problem unit cell block form}
+\end{equation}
 
 \end_inset
 
@@ -343,8 +343,196 @@ noprefix "false"
 
  can be used to calculate electromagnetic response of the structure to external
  quasiperiodic driving field – most notably a plane wave.
- However, if one sets the right the right-hand side to zero, it can also
- be used to find electromagnetic lattice modes
+ However, the non-trivial solutions of the equation with right hand side
+ (i.e.
+ the external driving) set to zero, 
+\begin_inset Formula 
+\begin{equation}
+\left(I-WT\right)\outcoeffp{\vect 0}\left(\vect k\right)=0,\label{eq:lattice mode equation}
+\end{equation}
+
+\end_inset
+
+describes the 
+\emph on
+lattice modes.
+
+\emph default
+ Non-trivial solutions to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ exist if the matrix on the left-hand side 
+\begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-W\left(\omega,\vect k\right)T\left(\omega\right)\right)$
+\end_inset
+
+ is singular – this condition gives the 
+\emph on
+dispersion relation
+\emph default
+ for the periodic structure.
+ Note that in realistic (lossy) systems, at least one of the pair 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ will acquire complex values.
+\end_layout
+
+\begin_layout Subsection
+Numerical solution
+\end_layout
+
+\begin_layout Standard
+In practice, equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem unit cell block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is solved in the same way as eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ in the multipole degree truncated form.
+\end_layout
+
+\begin_layout Standard
+The lattice mode problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is (after multipole degree truncation) solved by finding 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ for which the matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ has a zero singular value.
+ A naïve approach to do that is to sample a volume with a grid in the 
+\begin_inset Formula $\left(\omega,\vect k\right)$
+\end_inset
+
+ space, performing a singular value decomposition of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ at each point and finding where the lowest singular value of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ is close enough to zero.
+ However, this approach is quite expensive, for 
+\begin_inset Formula $W\left(\omega,\vect k\right)$
+\end_inset
+
+ has to be evaluated for each 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ pair separately (unlike the original finite case 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ translation operator 
+\begin_inset Formula $\trops$
+\end_inset
+
+, which, for a given geometry, depends only on frequency).
+ Therefore, a much more efficient approach to determine the photonic bands
+ is to sample the 
+\begin_inset Formula $\vect k$
+\end_inset
+
+-space (a whole Brillouin zone or its part) and for each fixed 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ to find a corresponding frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+ with zero singular value of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ using a minimisation algorithm (two- or one-dimensional, depending on whether
+ one needs the exact complex-valued 
+\begin_inset Formula $\omega$
+\end_inset
+
+ or whether the its real-valued approximation is satisfactory).
+ Typically, a good initial guess for 
+\begin_inset Formula $\omega\left(\vect k\right)$
+\end_inset
+
+ is obtained from the empty lattice approximation, 
+\begin_inset Formula $\left|\vect k\right|=\sqrt{\epsilon\mu}\omega/c_{0}$
+\end_inset
+
+ (modulo lattice points; TODO write this a clean way).
+ A somehow challenging step is to distinguish the different bands that can
+ all be very close to the empty lattice approximation, especially if the
+ particles in the systems are small.
+ In high-symmetry points of the Brilloin zone, this can be solved by factorising
+ 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ into irreducible representations 
+\begin_inset Formula $\Gamma_{i}$
+\end_inset
+
+ and performing the minimisation in each irrep separately, cf.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Symmetries"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, and using the different 
+\begin_inset Formula $\omega_{\Gamma_{i}}\left(\vect k\right)$
+\end_inset
+
+ to obtain the initial guesses for the nearby points 
+\begin_inset Formula $\vect k+\delta\vect k$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -617,8 +805,8 @@ reference "eq:W sum in reciprocal space"
 \begin_inset Formula 
 \begin{eqnarray}
 W_{\alpha\beta}\left(\vect k\right) & = & W_{\alpha\beta}^{\textup{S}}\left(\vect k\right)+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right)\nonumber \\
-W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
-W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
+W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect 0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
 \end{eqnarray}
 
 \end_inset
@@ -656,7 +844,7 @@ CHECK THE FOLLOWING EXPRESSION FOR CORRECT FUNCTION ARGUMENTS
 
 \begin_inset Formula 
 \begin{equation}
-\sigma_{\nu}^{\mu}\left(\vect k\right)=\sum_{\vect n\in\ints^{d}\backslash\left\{ \vect0\right\} }e^{i\vect{\vect k}\cdot\vect R_{\vect n}}\ush{\nu}{\mu}\left(\uvec{R_{n}}\right)h_{n}^{(1)}\left(R_{n}\right),\label{eq:sigma lattice sums}
+\sigma_{\nu}^{\mu}\left(\vect k\right)=\sum_{\vect n\in\ints^{d}\backslash\left\{ \vect 0\right\} }e^{i\vect{\vect k}\cdot\vect R_{\vect n}}\ush{\nu}{\mu}\left(\uvec{R_{n}}\right)h_{n}^{(1)}\left(R_{n}\right),\label{eq:sigma lattice sums}
 \end{equation}
 
 \end_inset
