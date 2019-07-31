@@ -443,7 +443,7 @@ The regular VSWFs
 
  constitute a basis for solutions of the Helmholtz equation 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:Helmholtz eq"
 plural "false"
 caps "false"
@@ -589,7 +589,7 @@ ing appropriate expansion coefficients
 
  of the driving field into 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:T-matrix definition"
 plural "false"
 caps "false"
@@ -602,7 +602,7 @@ noprefix "false"
 \begin_inset Formula $\outcoefftlm{\tau}lm$
 \end_inset
 
- are related to the induced electric (
+ are the effective induced electric (
 \begin_inset Formula $\tau=1$
 \end_inset
 
@@ -756,7 +756,7 @@ For convenience, let us introduce a short-hand matrix notation for the expansion
  indices explicitly; so for example, eq.
  
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:T-matrix definition"
 plural "false"
 caps "false"
@@ -798,7 +798,7 @@ literal "true"
 
  have expansion as in 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:E field expansion"
 plural "false"
 caps "false"
@@ -1722,7 +1722,7 @@ reference "eq:absorption CS single"
 
 -th particle reads according to 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:regular vswf translation"
 plural "false"
 caps "false"
@@ -1745,7 +1745,7 @@ whereas the contributions of fields scattered from each particle expanded
 
  is, according to 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:singular vswf translation"
 plural "false"
 caps "false"
@@ -1763,7 +1763,7 @@ noprefix "false"
 
 Using the unitarity 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:regular translation unitarity"
 plural "false"
 caps "false"
@@ -1773,7 +1773,7 @@ noprefix "false"
 
  and composition 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:regular translation composition"
 plural "false"
 caps "false"
@@ -1805,7 +1805,7 @@ where only the last expression is suitable for numerical evaluation with
 
 Substituting 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:atf form multiparticle"
 plural "false"
 caps "false"
@@ -1815,7 +1815,7 @@ noprefix "false"
 
 , 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:f squared form multiparticle"
 plural "false"
 caps "false"
@@ -1825,7 +1825,7 @@ noprefix "false"
 
  into 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:scattering CS single"
 plural "false"
 caps "false"
@@ -1835,7 +1835,7 @@ noprefix "false"
 
  and 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:absorption CS single"
 plural "false"
 caps "false"
@@ -1873,7 +1873,7 @@ An alternative approach to derive the absorption cross section is via a
  power transport argument.
  Note the direct proportionality between absorption cross section 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:absorption CS single"
 plural "false"
 caps "false"
@@ -1883,7 +1883,7 @@ noprefix "false"
 
  and net radiated power for single scatterer 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:Power transport"
 plural "false"
 caps "false"
@@ -1905,7 +1905,7 @@ noprefix "false"
 .
  Using the power transport formula 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:Power transport"
 plural "false"
 caps "false"
@@ -1923,7 +1923,7 @@ noprefix "false"
 
 which seems different from 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:absorption CS multi"
 plural "false"
 caps "false"
@@ -1933,7 +1933,7 @@ noprefix "false"
 
 , but using 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:particle total incident field coefficient a"
 plural "false"
 caps "false"
@@ -1974,7 +1974,7 @@ TODO better formulation
 
  proving that the expressions in 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:absorption CS multi"
 plural "false"
 caps "false"
@@ -1984,7 +1984,7 @@ noprefix "false"
 
  and 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:absorption CS multi alternative"
 plural "false"
 caps "false"

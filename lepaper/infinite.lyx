@@ -215,7 +215,7 @@ noprefix "false"
 .
  In such system, the multiple-scattering problem 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:Multiple-scattering problem"
 plural "false"
 caps "false"
@@ -253,7 +253,7 @@ Due to periodicity, we can also write
 
 , the solutions of 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:Multiple-scattering problem periodic"
 plural "false"
 caps "false"
@@ -268,7 +268,7 @@ noprefix "false"
 , and eq.
  
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:Multiple-scattering problem periodic"
 plural "false"
 caps "false"
@@ -309,7 +309,7 @@ evaluation of which is possible but quite non-trivial due to the infinite
  lattice sum, so we explain it separately in Sect.
  
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "subsec:W operator evaluation"
 plural "false"
 caps "false"
