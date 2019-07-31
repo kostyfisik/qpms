@@ -1,0 +1,409 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 583
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Symmetries
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Symmetries"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the system has nontrivial point group symmetries, group theory gives
+ additional understanding of the system properties, and can be used to reduce
+ the computational costs.
+ 
+\end_layout
+
+\begin_layout Standard
+As an example, if our system has a 
+\begin_inset Formula $D_{2h}$
+\end_inset
+
+ symmetry and our truncated 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ matrix has size 
+\begin_inset Formula $N\times N$
+\end_inset
+
+,
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+nepoužívám 
+\begin_inset Formula $N$
+\end_inset
+
+ už v jiném kontextu?
+\end_layout
+
+\end_inset
+
+ it can be block-diagonalized into eight blocks of size about 
+\begin_inset Formula $N/8\times N/8$
+\end_inset
+
+, each of which can be LU-factorised separately (this is due to the fact
+ that 
+\begin_inset Formula $D_{2h}$
+\end_inset
+
+ has eight different one-dimensional irreducible representations).
+ This can reduce both memory and time requirements to solve the scattering
+ problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ by a factor of 64.
+\end_layout
+
+\begin_layout Standard
+In periodic systems (problems 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem unit cell block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) due to small number of particles per unit cell, the costliest part is
+ usually the evaluation of the lattice sums in the 
+\begin_inset Formula $W\left(\omega,\vect k\right)$
+\end_inset
+
+ matrix, not the linear algebra.
+ However, the lattice modes can be searched for in each irrep separately,
+ and the irrep dimension gives a priori information about mode degeneracy.
+\end_layout
+
+\begin_layout Subsection
+Finite systems
+\end_layout
+
+\begin_layout Subsection
+Periodic systems
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+A general overview of utilizing group theory to find lattice modes at high-symme
+try points of the Brillouin zone can be found e.g.
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "chapters 10–11"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+; here we use the same notation.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+We analyse the symmetries of the system in the same VSWF representation
+ as used in the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix formalism introduced above.
+ We are interested in the modes at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point of the hexagonal lattice, which has the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ point symmetry.
+ The six irreducible representations (irreps) of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ group are known and are available in the literature in their explicit forms.
+ In order to find and classify the modes, we need to find a decomposition
+ of the lattice mode representation 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}=\Gamma^{\mathrm{equiv.}}\otimes\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ into the irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ The equivalence representation 
+\begin_inset Formula $\Gamma^{\mathrm{equiv.}}$
+\end_inset
+
+ is the 
+\begin_inset Formula $E'$
+\end_inset
+
+ representation as can be deduced from 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (11.19)"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+, eq.
+ (11.19) and the character table for 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ operates on a space spanned by the VSWFs around each nanoparticle in the
+ unit cell (the effects of point group operations on VSWFs are described
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schulz_point-group_1999"
+literal "true"
+
+\end_inset
+
+).
+ This space can be then decomposed into invariant subspaces of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ using the projectors 
+\begin_inset Formula $\hat{P}_{ab}^{\left(\Gamma\right)}$
+\end_inset
+
+ defined by 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (4.28)"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+.
+ This way, we obtain a symmetry adapted basis 
+\begin_inset Formula $\left\{ \vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}\right\} $
+\end_inset
+
+ as linear combinations of VSWFs 
+\begin_inset Formula $\vswfs lm{p,t}$
+\end_inset
+
+ around the constituting nanoparticles (labeled 
+\begin_inset Formula $p$
+\end_inset
+
+), 
+\begin_inset Formula 
+\[
+\vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}=\sum_{l,m,p,t}U_{\Gamma,r,i}^{p,t,l,m}\vswfs lm{p,t},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ stands for one of the six different irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+, 
+\begin_inset Formula $r$
+\end_inset
+
+ labels the different realisations of the same irrep, and the last index
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ going from 1 to 
+\begin_inset Formula $d_{\Gamma}$
+\end_inset
+
+ (the dimensionality of 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) labels the different partners of the same given irrep.
+ The number of how many times is each irrep contained in 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}$
+\end_inset
+
+ (i.e.
+ the range of index 
+\begin_inset Formula $r$
+\end_inset
+
+ for given 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) depends on the multipole degree cutoff 
+\begin_inset Formula $l_{\mathrm{max}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Each mode at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point shall lie in the irreducible spaces of only one of the six possible
+ irreps and it can be shown via 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (2.51)"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+ that, at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point, the matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ defined above takes a block-diagonal form in the symmetry-adapted basis,
+ 
+\begin_inset Formula 
+\[
+M\left(\omega,\vect K\right)_{\Gamma,r,i;\Gamma',r',j}^{\mathrm{s.a.b.}}=\frac{\delta_{\Gamma\Gamma'}\delta_{ij}}{d_{\Gamma}}\sum_{q}M\left(\omega,\vect K\right)_{\Gamma,r,q;\Gamma',r',q}^{\mathrm{s.a.b.}}.
+\]
+
+\end_inset
+
+This enables us to decompose the matrix according to the irreps and to solve
+ the singular value problem in each irrep separately, as done in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "smfig:dispersions"
+
+\end_inset
+
+(a).
+\end_layout
+
+\end_body
+\end_document

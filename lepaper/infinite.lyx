@@ -382,6 +382,25 @@ dispersion relation
 \end_inset
 
  will acquire complex values.
+ The solution 
+\begin_inset Formula $\outcoeffp{\vect 0}\left(\vect k\right)$
+\end_inset
+
+ is then obtained as the right 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CHECK!
+\end_layout
+
+\end_inset
+
+ singular vector of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ corresponding to the zero singular value.
 \end_layout
 
 \begin_layout Subsection

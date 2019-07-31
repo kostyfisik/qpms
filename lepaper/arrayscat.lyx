@@ -731,7 +731,7 @@ Concrete comparison with other methods.
 \end_layout
 
 \begin_layout Itemize
-Fix notation (mainly index) clashes in infinite lattices.
+Fix and unify notation (mainly indices) in infinite lattices section.
 \end_layout
 
 \begin_layout Standard

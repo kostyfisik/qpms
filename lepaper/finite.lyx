@@ -1565,7 +1565,7 @@ m & -m' & m'-m
 \end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
 m & -m' & m'-m
 \end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
-\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}}.\label{eq:translation operator}
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\qquad\tau\ne\tau'.\label{eq:translation operator}
 \end{multline}
 
 \end_inset
