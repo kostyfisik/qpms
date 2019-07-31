@@ -713,7 +713,7 @@ Abstract.
 \end_layout
 
 \begin_layout Itemize
-Translation operators: explicit expression, also in sph.
+Translation operators: rewrite in sph.
  harm.
  convention independent form.
 \end_layout

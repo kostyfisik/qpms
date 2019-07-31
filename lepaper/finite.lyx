@@ -290,8 +290,8 @@ outgoing
 , respectively, defined as follows:
 \begin_inset Formula 
 \begin{align*}
-\vswfrtlm1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh1lm\left(\uvec r\right),\\
-\vswfrtlm2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh3lm\left(\uvec r\right),
+\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
+\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),
 \end{align*}
 
 \end_inset
@@ -299,8 +299,8 @@ outgoing
 
 \begin_inset Formula 
 \begin{align*}
-\vswfouttlm1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh1lm\left(\uvec r\right),\\
-\vswfouttlm2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh3lm\left(\uvec r\right),\\
+\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
+\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\\
  & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,
 \end{align*}
 
@@ -326,9 +326,9 @@ vector spherical harmonics
 
 \begin_inset Formula 
 \begin{align*}
-\vsh1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\\
-\vsh2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\\
-\vsh3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).
+\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\\
+\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\\
+\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).
 \end{align*}
 
 \end_inset
@@ -452,7 +452,7 @@ noprefix "false"
 \end_inset
 
  inside a ball 
-\begin_inset Formula $\openball0{R^{>}}$
+\begin_inset Formula $\openball 0{R^{>}}$
 \end_inset
 
  with radius 
@@ -470,7 +470,7 @@ noprefix "false"
 \end_inset
 
  to have a complete basis of the solutions in the volume 
-\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
 .
@@ -496,7 +496,7 @@ The single-particle scattering problem at frequency
 \end_inset
 
  and let the whole volume 
-\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
  be filled with a homogeneous isotropic medium with wave number 
@@ -532,7 +532,7 @@ If there was no scatterer and
 \end_inset
 
  due to sources outside 
-\begin_inset Formula $\openball0R$
+\begin_inset Formula $\openball 0R$
 \end_inset
 
  would remain.
@@ -793,7 +793,7 @@ literal "true"
 
 .
  Let the field in 
-\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
  have expansion as in 
@@ -812,7 +812,7 @@ noprefix "false"
 \end_inset
 
  to 
-\begin_inset Formula $\openball0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
 \end_inset
 
  via by electromagnetic radiation is
@@ -1535,10 +1535,37 @@ outside.
 
 \begin_layout Standard
 In our convention, the regular translation operator can be expressed explicitly
- as 
+ as (TODO CHECK CAREFULLY FOR POSSIBLE 
+\begin_inset Formula $(-1)^{m'}$
+\end_inset
+
+ AND SIMILAR FACTORS AND REWRITE IN TERMS OF SPHERICAL HARMONICS)
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Teďka jsou tam zkopírovány výrazy pro C a D z Kristenssona, chybějí fase
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{multline}
-\tropr_{\tau lm;\tau l'm'}\left(\vect d\right)=\dots.\label{eq:translation operator}
+\tropr_{\tau lm;\tau l'm'}\left(\vect d\right)=\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\\
+\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)=-i\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}}.\label{eq:translation operator}
 \end{multline}
 
 \end_inset
