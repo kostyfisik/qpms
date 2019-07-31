@@ -864,8 +864,8 @@ In many scattering problems considered in practice, the driving field is
 with expansion coefficients
 \begin_inset Formula 
 \begin{eqnarray}
-\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD1lm\left(\uvec k\right),\nonumber \\
-\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD2lm\left(\uvec k\right).\label{eq:plane wave expansion}
+\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
+\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
 \end{eqnarray}
 
 \end_inset
@@ -1281,7 +1281,7 @@ but this form is less suitable for numerical calculations due to the fact
 \begin_inset Formula $l$
 \end_inset
 
-, and the truncation is not justified in this case.
+, hence the truncation is not justified in this case.
  
 \begin_inset Note Note
 status open
@@ -1537,9 +1537,9 @@ outside.
 In our convention, the regular translation operator can be expressed explicitly
  as 
 \begin_inset Formula 
-\begin{equation}
-\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)=\dots.\label{eq:translation operator}
-\end{equation}
+\begin{multline}
+\tropr_{\tau lm;\tau l'm'}\left(\vect d\right)=\dots.\label{eq:translation operator}
+\end{multline}
 
 \end_inset
 
