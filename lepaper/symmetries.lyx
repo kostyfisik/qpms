@@ -7,7 +7,7 @@
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
-\language finnish
+\language english
 \language_package default
 \inputencoding utf8
 \fontencoding auto
@@ -509,9 +509,10 @@ noprefix "false"
 \lang english
 
 \begin_inset Formula 
-\begin{align}
-\vect E\left(\omega,R_{g}\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)+\outcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right).\label{eq:rotated E field expansion around outside origin}
-\end{align}
+\begin{multline}
+\vect E\left(\omega,R_{g}\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
++\left.\outcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right).\label{eq:rotated E field expansion around outside origin}
+\end{multline}
 
 \end_inset
 
@@ -688,8 +689,10 @@ status open
 
 \begin_inset Formula 
 \begin{align}
-\vect E\left(\omega,R_{g}\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}(p)}\right)\right)+\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right)\label{eq:rotated E field expansion around outside origin-1}\\
- & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)+\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right).
+\vect E\left(\omega,R_{g}\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}(p)}\right)\right)\right.+\label{eq:rotated E field expansion around outside origin-1}\\
+ & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right)\\
+ & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right.+\\
+ & \quad+\left.\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right).
 \end{align}
 
 \end_inset

@@ -97,52 +97,6 @@
 Finite systems
 \end_layout
 
-\begin_layout Itemize
-motivation (classes of problems that this can solve: response to external
- radiation, resonances, ...)
-\begin_inset Separator latexpar
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-theory
-\begin_inset Separator latexpar
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-T-matrix definition, basics
-\begin_inset Separator latexpar
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-How to get it?
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-translation operators (TODO think about how explicit this should be, but
- I guess it might be useful to write them to write them explicitly (but
- in the shortest possible form) in the normalisation used in my program)
-\end_layout
-
-\begin_layout Itemize
-employing point group symmetries and decomposing the problem to decrease
- the computational complexity (maybe separately)
-\end_layout
-
-\end_deeper
-\end_deeper
 \begin_layout Subsection
 Motivation/intro
 \end_layout
@@ -660,9 +614,16 @@ TOOD H-field expansion here?
 \end_inset
 
 -matrices of particles with certain simple geometries (most famously spherical)
- can be obtained analytically [Kristensson 2016, Mie], but in general one
- can find them numerically by simulating scattering of a regular spherical
- wave 
+ can be obtained analytically 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kristensson_scattering_2016,mie_beitrage_1908"
+literal "false"
+
+\end_inset
+
+, but in general one can find them numerically by simulating scattering
+ of a regular spherical wave 
 \begin_inset Formula $\vswfouttlm{\tau}lm$
 \end_inset
 
