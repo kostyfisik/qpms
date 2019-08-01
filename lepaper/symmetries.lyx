@@ -758,7 +758,21 @@ If the particle indices are ordered in a way that the particles belonging
 \begin_inset Formula $J\left(g\right)$
 \end_inset
 
- will be a block-diagonal matrix, each block representing one particle orbit.
+ will be a block-diagonal unitary matrix, each block (also unitary) representing
+ the action of 
+\begin_inset Formula $g$
+\end_inset
+
+ on one particle orbit.
+ All the 
+\begin_inset Formula $J\left(g\right)$
+\end_inset
+
+s make together a (reducible) linear representation of 
+\begin_inset Formula $G$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -767,7 +781,7 @@ Irrep decomposition
 
 \begin_layout Standard
 Knowledge of symmetry group actions 
-\begin_inset Formula $D\left(g\right)$
+\begin_inset Formula $J\left(g\right)$
 \end_inset
 
  on the field expansion coefficients give us the possibility to construct
@@ -777,10 +791,250 @@ ing problem matrix
 \end_inset
 
 .
+ Let 
+\begin_inset Formula $\Gamma_{n}$
+\end_inset
+
+ be the 
+\begin_inset Formula $d_{n}$
+\end_inset
+
+-dimensional irreducible matrix representations of 
+\begin_inset Formula $G$
+\end_inset
+
+consisting of matrices 
+\begin_inset Formula $D^{\Gamma_{n}}\left(g\right)$
+\end_inset
+
+.
+ Then the projection operators
+\begin_inset Formula 
+\[
+P_{kl}^{\left(\Gamma_{n}\right)}\equiv\frac{d_{n}}{\left|G\right|}\sum_{g\in G}\left(D^{\Gamma_{n}}\left(g\right)\right)_{kl}^{*}J\left(g\right),\quad k,l=1,\dots,d_{n}
+\]
+
+\end_inset
+
+project the full scattering system field expansion coefficient vectors 
+\begin_inset Formula $\rcoeff,\outcoeff$
+\end_inset
+
+ onto a subspace corresponding to the irreducible representation 
+\begin_inset Formula $\Gamma_{n}$
+\end_inset
+
+.
+ The projectors can be used to construct a unitary transformation 
+\begin_inset Formula $U$
+\end_inset
+
+ with components
+\begin_inset Formula 
+\begin{equation}
+U_{nri;p\tau lm}=\frac{d_{n}}{\left|G\right|}\sum_{g\in G}\left(D^{\Gamma_{n}}\left(g\right)\right)_{rr}^{*}J\left(g\right)_{p'\tau'l'm'(nri);p\tau lm}\label{eq:SAB unitary transformation operator}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $r$
+\end_inset
+
+ goes from 
+\begin_inset Formula $1$
+\end_inset
+
+ through 
+\begin_inset Formula $d_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $i$
+\end_inset
+
+ goes from 1 through the multiplicity of irreducible representation 
+\begin_inset Formula $\Gamma_{n}$
+\end_inset
+
+ in the (reducible) representation of 
+\begin_inset Formula $G$
+\end_inset
+
+ spanned by the field expansion coefficients 
+\begin_inset Formula $\rcoeff$
+\end_inset
+
+ or 
+\begin_inset Formula $\outcoeff$
+\end_inset
+
+.
+ The indices 
+\begin_inset Formula $p',\tau',l',m'$
+\end_inset
+
+ are given by an arbitrary bijective mapping 
+\begin_inset Formula $\left(n,r,i\right)\mapsto\left(p',\tau',l',m'\right)$
+\end_inset
+
+ with the constraint that for given 
+\begin_inset Formula $n,r,i$
+\end_inset
+
+ there are at least some non-zero elements 
+\begin_inset Formula $U_{nri;p\tau lm}$
+\end_inset
+
+.
+ For details, we refer the reader to textbooks about group representation
+ theory
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+or linear representations?
+\end_layout
+
+\end_inset
+
+, e.g.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Chapter 4"
+key "dresselhaus_group_2008"
+literal "false"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "???"
+key "bradley_mathematical_1972"
+literal "false"
+
+\end_inset
+
+.
+ The transformation given by 
+\begin_inset Formula $U$
+\end_inset
+
+ transforms the excitation coefficient vectors 
+\begin_inset Formula $\rcoeff,\outcoeff$
+\end_inset
+
+ into a new, 
+\emph on
+symmetry-adapted basis
+\emph default
+.
  
 \end_layout
 
 \begin_layout Standard
+One can show that if an operator 
+\begin_inset Formula $M$
+\end_inset
+
+ acting on the excitation coefficient vectors is invariant under the operations
+ of group 
+\begin_inset Formula $G$
+\end_inset
+
+, meaning that
+\begin_inset Formula 
+\[
+\forall g\in G:J\left(g\right)MJ\left(g\right)^{\dagger}=M,
+\]
+
+\end_inset
+
+then in the symmetry-adapted basis, 
+\begin_inset Formula $M$
+\end_inset
+
+ is block diagonal, or more specifically
+\begin_inset Formula 
+\[
+M_{\Gamma,r,i;\Gamma',r',j}^{\mathrm{s.a.b.}}=\frac{\delta_{\Gamma\Gamma'}\delta_{ij}}{d_{\Gamma}}\sum_{q}M{}_{\Gamma,r,q;\Gamma',r',q}^{\mathrm{s.a.b.}}.
+\]
+
+\end_inset
+
+Both the 
+\begin_inset Formula $T$
+\end_inset
+
+ and 
+\begin_inset Formula $\trops$
+\end_inset
+
+ operators (and trivially also the identity 
+\begin_inset Formula $I$
+\end_inset
+
+) in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ are invariant under the actions of whole system symmetry group, so 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ is also invariant, hence 
+\begin_inset Formula $U\left(I-T\trops\right)U^{\dagger}$
+\end_inset
+
+ is a block-diagonal matrix, and the problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be solved for each block separately.
+\end_layout
+
+\begin_layout Standard
+From the computational perspective, it is important to note that 
+\begin_inset Formula $U$
+\end_inset
+
+ is at least as sparse as 
+\begin_inset Formula $J\left(g\right)$
+\end_inset
+
+ (which is 
+\begin_inset Quotes eld
+\end_inset
+
+orbit-block
+\begin_inset Quotes erd
+\end_inset
+
+ diagonal), hence the block-diagonalisation can be performed fast.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Kvantifikovat!
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
