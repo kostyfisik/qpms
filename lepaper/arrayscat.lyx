@@ -723,7 +723,11 @@ Truncation notation.
 \end_layout
 
 \begin_layout Itemize
-Example results.
+Example results!
+\end_layout
+
+\begin_layout Itemize
+Figures.
 \end_layout
 
 \begin_layout Itemize
@@ -738,7 +742,7 @@ Fix and unify notation (mainly indices) in infinite lattices section.
 Carefully check the transformation directions in sec.
  
 \begin_inset CommandInset ref
-LatexCommand eqref
+LatexCommand ref
 reference "sec:Symmetries"
 plural "false"
 caps "false"
@@ -747,6 +751,11 @@ noprefix "false"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Itemize
+The text about symmetries is pretty dense.
+ Make it more explanatory and human-readable.
 \end_layout
 
 \begin_layout Standard
