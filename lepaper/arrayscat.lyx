@@ -1,5 +1,5 @@
 #LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 583
+\lyxformat 584
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -732,6 +732,21 @@ Concrete comparison with other methods.
 
 \begin_layout Itemize
 Fix and unify notation (mainly indices) in infinite lattices section.
+\end_layout
+
+\begin_layout Itemize
+Carefully check the transformation directions in sec.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sec:Symmetries"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

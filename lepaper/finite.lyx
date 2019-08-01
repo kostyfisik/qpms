@@ -1,5 +1,5 @@
 #LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 583
+\lyxformat 584
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -289,20 +289,20 @@ outgoing
 
 , respectively, defined as follows:
 \begin_inset Formula 
-\begin{align*}
-\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
-\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),
-\end{align*}
+\begin{align}
+\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
+\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
+\end{align}
 
 \end_inset
 
 
 \begin_inset Formula 
-\begin{align*}
-\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\\
-\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\\
- & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,
-\end{align*}
+\begin{align}
+\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
+\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
+ & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,\nonumber 
+\end{align}
 
 \end_inset
 
@@ -325,11 +325,11 @@ vector spherical harmonics
 \emph default
 
 \begin_inset Formula 
-\begin{align*}
-\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\\
-\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\\
-\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).
-\end{align*}
+\begin{align}
+\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\nonumber \\
+\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\nonumber \\
+\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).\label{eq:vector spherical harmonics definition}
+\end{align}
 
 \end_inset
 
@@ -517,7 +517,7 @@ doplnit frekvence a polohy
 
 \begin_inset Formula 
 \begin{equation}
-\vect E\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm+\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm\right).\label{eq:E field expansion}
+\vect E\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm\left(k\vect r\right)+\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm\left(k\vect r\right)\right).\label{eq:E field expansion}
 \end{equation}
 
 \end_inset
@@ -603,14 +603,27 @@ noprefix "false"
 \end_inset
 
  are the effective induced electric (
-\begin_inset Formula $\tau=1$
-\end_inset
-
-) and magnetic (
 \begin_inset Formula $\tau=2$
 \end_inset
 
-) multipole polarisation amplitudes of the scatterer.
+) and magnetic (
+\begin_inset Formula $\tau=1$
+\end_inset
+
+) multipole polarisation amplitudes of the scatterer, and this is why we
+ sometimes refer to the corresponding VSWFs as the electric and magnetic
+ VSWFs.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO mention the pseudovector character of magnetic VSWFs.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

@@ -1,5 +1,5 @@
 #LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 583
+\lyxformat 584
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -181,6 +181,318 @@ noprefix "false"
 
 \begin_layout Subsection
 Finite systems
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO Zkontrolovat všechny vzorečky zde!!!
+\end_layout
+
+\end_inset
+
+In order to use the point group symmetries, we first need to know how they
+ affect our basis functions, i.e.
+ the VSWFs.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $g$
+\end_inset
+
+ be a member of orthogonal group 
+\begin_inset Formula $O(3)$
+\end_inset
+
+, i.e.
+ a 3D point rotation or reflection operation that transforms vectors in
+ 
+\begin_inset Formula $\reals^{3}$
+\end_inset
+
+ with an orthogonal matrix 
+\begin_inset Formula $R_{g}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\vect r\mapsto R_{g}\vect r.
+\]
+
+\end_inset
+
+Spherical harmonics 
+\begin_inset Formula $\ush lm$
+\end_inset
+
+, being a basis the 
+\begin_inset Formula $l$
+\end_inset
+
+-dimensional representation of 
+\begin_inset Formula $O(3)$
+\end_inset
+
+, transform as 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "???"
+key "dresselhaus_group_2008"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\ush lm\left(R_{g}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\ush l{m'}\left(\uvec r\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $D_{m,m'}^{l}\left(g\right)$
+\end_inset
+
+ denotes the elements of the 
+\emph on
+Wigner matrix
+\emph default
+ representing the operation 
+\begin_inset Formula $g$
+\end_inset
+
+.
+ By their definition, vector spherical harmonics 
+\begin_inset Formula $\vsh 2lm,\vsh 3lm$
+\end_inset
+
+ transform in the same way,
+\begin_inset Formula 
+\begin{align*}
+\vsh 2lm\left(R_{g}\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
+\vsh 3lm\left(R_{g}\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\end{align*}
+
+\end_inset
+
+but the remaining set 
+\begin_inset Formula $\vsh 1lm$
+\end_inset
+
+ transforms differently due to their pseudovector nature stemming from the
+ cross product in their definition:
+\begin_inset Formula 
+\[
+\vsh 3lm\left(R_{g}\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\widetilde{D_{m,m'}^{l}}\left(g\right)=D_{m,m'}^{l}\left(g\right)$
+\end_inset
+
+ if 
+\begin_inset Formula $g$
+\end_inset
+
+ is a proper rotation, but for spatial inversion operation 
+\begin_inset Formula $i:\vect r\mapsto-\vect r$
+\end_inset
+
+ we have 
+\begin_inset Formula $\widetilde{D_{m,m'}^{l}}\left(i\right)=\left(-1\right)^{l+m}D_{m,m'}^{l}\left(i\right)$
+\end_inset
+
+.
+ The transformation behaviour of vector spherical harmonics directly propagates
+ to the spherical vector waves, cf.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VSWF regular"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VSWF outgoing"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+\vswfouttlm 1lm\left(R_{g}\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm 1l{m'}\left(\vect r\right),\\
+\vswfouttlm 2lm\left(R_{g}\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm 2l{m'}\left(\vect r\right),
+\end{align*}
+
+\end_inset
+
+(and analogously for the regular waves 
+\begin_inset Formula $\vswfrtlm{\tau}lm$
+\end_inset
+
+).
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO víc obdivu.
+\end_layout
+
+\end_inset
+
+ For convenience, we introduce the symbol 
+\begin_inset Formula $D_{m,m'}^{\tau l}$
+\end_inset
+
+ that describes the transformation of both types (
+\begin_inset Quotes eld
+\end_inset
+
+magnetic
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+electric
+\begin_inset Quotes erd
+\end_inset
+
+) of waves at once:
+\begin_inset Formula 
+\[
+\vswfouttlm{\tau}lm\left(R_{g}\vect r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\vect r\right).
+\]
+
+\end_inset
+
+Using these, we can express the VSWF expansion 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:E field expansion"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ of the electric field around origin in a rotated/reflected system,
+\begin_inset Formula 
+\[
+\vect E\left(\omega,R_{g}\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfrtlm{\tau}lm\left(k\vect r\right)+D_{m,m'}^{\tau l}\left(g\right)\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm\left(k\vect r\right)\right),
+\]
+
+\end_inset
+
+which, together with the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix definition, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be used to obtain a 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a rotated or mirror-reflected particle.
+ Let 
+\begin_inset Formula $T$
+\end_inset
+
+ be the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of an original particle; the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a particle physically transformed by operation 
+\begin_inset Formula $g\in O(3)$
+\end_inset
+
+ is then 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+check sides
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+T'_{\tau lm;\tau'l'm'}=\sum_{\mu=-l}^{l}\sum_{\mu'=-l'}^{l'}\left(D_{\mu,m}^{\tau l}\left(g\right)\right)^{*}T_{\tau l\mu;\tau'l'm'}D_{m',\mu'}^{\tau l}\left(g\right).\label{eq:T-matrix of a transformed particle}
+\end{equation}
+
+\end_inset
+
+If the particle is symmetric (so that 
+\begin_inset Formula $g$
+\end_inset
+
+ produces a particle indistinguishable from the original one), the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix must remain invariant under the transformation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix of a transformed particle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset Formula $T'_{\tau lm;\tau'l'm'}=T{}_{\tau lm;\tau'l'm'}$
+\end_inset
+
+.
+ Explicit forms of these invariance properties for the most imporant point
+ group symmetries can be found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schulz_point-group_1999"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+With these point group transformation properties in hand, we can proceed
+ to rotating (or mirror-reflecting) the whole many-particle system.
 \end_layout
 
 \begin_layout Subsection
