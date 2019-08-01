@@ -1,29 +1,37 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 583
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
-\language finnish
+\language english
 \language_package default
-\inputencoding auto
-\fontencoding global
-\font_roman TeX Gyre Pagella
-\font_sans default
-\font_typewriter default
-\font_math auto
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "TeX Gyre Pagella"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts true
+\use_non_tex_fonts false
 \font_sc false
-\font_osf true
-\font_sf_scale 100
-\font_tt_scale 100
+\font_roman_osf true
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
-\default_output_format pdf4
+\default_output_format default
 \output_sync 0
 \bibtex_command default
 \index_command default
+\float_placement class
+\float_alignment class
 \paperfontsize default
 \spacing single
 \use_hyperref true
@@ -58,6 +66,8 @@
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_minted 0
+\use_lineno 0
 \index Index
 \shortcut idx
 \color #008000
@@ -66,10 +76,14 @@
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language swedish
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\tablestyle default
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -81,123 +95,201 @@
 
 \begin_layout Section
 Infinite periodic systems
+\begin_inset FormulaMacro
+\newcommand{\dlv}{\vect a}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rlv}{\vect b}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Although large finite systems are where MSTMM excels the most, there are
+ several reasons that makes its extension to infinite lattices (where periodic
+ boundary conditions might be applied) desirable as well.
+ Other methods might be already fast enough, but MSTMM will be faster in
+ most cases in which there is enough spacing between the neighboring particles.
+ MSTMM works well with any space group symmetry the system might have (as
+ opposed to, for example, FDTD with cubic mesh applied to a honeycomb lattice),
+ which makes e.g.
+ application of group theory in mode analysis quite easy.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Topology anoyne?
+\end_layout
+
+\end_inset
+
+ And finally, having a method that handles well both infinite and large
+ finite system gives a possibility to study finite-size effects in periodic
+ scatterer arrays.
 \end_layout
 
 \begin_layout Subsection
+Notation
+\end_layout
 
-\lang english
+\begin_layout Standard
+TODO Fourier transforms, Delta comb, lattice bases, reciprocal lattices
+ etc.
+\end_layout
+
+\begin_layout Subsection
 Formulation of the problem
 \end_layout
 
 \begin_layout Standard
-
-\lang english
-Assume a system of compact EM scatterers in otherwise homogeneous and isotropic
- medium, and assume that the system, i.e.
- both the medium and the scatterers, have linear response.
- A scattering problem in such system can be written as
-\begin_inset Formula 
-\[
-A_{α}=T_{α}P_{α}=T_{α}(\sum_{β}S_{α\leftarrowβ}A_{β}+P_{0α})
-\]
+Let us have a linear system of compact EM scatterers on a homogeneous background
+ as in Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "subsec:Multiple-scattering"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
-where 
-\begin_inset Formula $T_{α}$
+, but this time, the system shall be periodic: let there be a 
+\begin_inset Formula $d$
 \end_inset
 
- is the 
-\begin_inset Formula $T$
+-dimensional (
+\begin_inset Formula $d$
 \end_inset
 
--matrix for scatterer α, 
-\begin_inset Formula $A_{α}$
+ can be 1, 2 or 3) lattice embedded into the three-dimensional real space,
+ with lattice vectors 
+\begin_inset Formula $\left\{ \dlv_{i}\right\} _{i=1}^{d}$
 \end_inset
 
- is its vector of the scattered wave expansion coefficient (the multipole
- indices are not explicitely indicated here) and 
-\begin_inset Formula $P_{α}$
+, and let the lattice points be labeled with an 
+\begin_inset Formula $d$
 \end_inset
 
- is the local expansion of the incoming sources.
- 
-\begin_inset Formula $S_{α\leftarrowβ}$
+-dimensional integar multiindex 
+\begin_inset Formula $\vect n\in\ints^{d}$
 \end_inset
 
- is ...
- and ...
- is ...
-\end_layout
-
-\begin_layout Standard
-
-\lang english
-...
-\end_layout
-
-\begin_layout Standard
-
-\lang english
-\begin_inset Formula 
-\[
-\sum_{β}(\delta_{αβ}-T_{α}S_{α\leftarrowβ})A_{β}=T_{α}P_{0α}.
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-
-\lang english
-Now suppose that the scatterers constitute an infinite lattice
-\end_layout
-
-\begin_layout Standard
-
-\lang english
-\begin_inset Formula 
-\[
-\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{\vect aα}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=T_{\vect aα}P_{0\vect aα}.
-\]
-
-\end_inset
-
-Due to the periodicity, we can write 
-\begin_inset Formula $S_{\vect aα\leftarrow\vect bβ}=S_{α\leftarrowβ}(\vect b-\vect a)$
-\end_inset
-
- and 
-\begin_inset Formula $T_{\vect aα}=T_{\alpha}$
+, so the lattice points have cartesian coordinates 
+\begin_inset Formula $\vect R_{\vect n}=\sum_{i=1}^{d}n_{i}\vect a_{i}$
 \end_inset
 
 .
- In order to find lattice modes, we search for solutions with zero RHS
+ There can be several scatterers per unit cell with indices 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ from set 
+\begin_inset Formula $\mathcal{P}_{1}$
+\end_inset
+
+ and (relative) positions inside the unit cell 
+\begin_inset Formula $\vect r_{\alpha}$
+\end_inset
+
+; any particle of the periodic system can thus be labeled by a multiindex
+ from 
+\begin_inset Formula $\mathcal{P}=\ints^{d}\times\mathcal{P}_{1}$
+\end_inset
+
+.
+ The scatterers are located at positions 
+\begin_inset Formula $\vect r_{\vect n,\alpha}=\vect R_{\vect n}+\vect r_{\alpha}$
+\end_inset
+
+ and their 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices are periodic, 
+\begin_inset Formula $T_{\vect n,\alpha}=T_{\alpha}$
+\end_inset
+
+.
+ In such system, the multiple-scattering problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be rewritten as
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
-\[
-\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect bβ}=0
-\]
+\begin{equation}
+\outcoeffp{\vect n,\alpha}-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect n,\alpha}{\vect m,\beta}\outcoeffp{\vect m,\beta}=T_{\alpha}\rcoeffincp{\vect n,\alpha}.\quad\left(\vect n,\alpha\right)\in\mathcal{P}\label{eq:Multiple-scattering problem periodic}
+\end{equation}
 
 \end_inset
 
-and we assume periodic solution 
-\begin_inset Formula $A_{\vect b\beta}(\vect k)=A_{\vect a\beta}e^{i\vect k\cdot\vect r_{\vect b-\vect a}}$
+
+\end_layout
+
+\begin_layout Standard
+Due to periodicity, we can also write 
+\begin_inset Formula $\tropsp{\vect n,\alpha}{\vect m,\beta}=\tropsp{\alpha}{\beta}\left(\vect R_{\vect m}-\vect R_{\vect n}\right)=\tropsp{\alpha}{\beta}\left(\vect R_{\vect m-\vect n}\right)=\tropsp{\vect 0,\alpha}{\vect m-\vect n,\beta}$
 \end_inset
 
-, yielding
+.
+ Assuming quasi-periodic right-hand side with quasi-momentum 
+\begin_inset Formula $\vect k$
+\end_inset
+
+, 
+\begin_inset Formula $\rcoeffincp{\vect n,\alpha}=\rcoeffincp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
+\end_inset
+
+, the solutions of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem periodic"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ will be also quasi-periodic according to Bloch theorem, 
+\begin_inset Formula $\outcoeffp{\vect n,\alpha}=\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
+\end_inset
+
+, and eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem periodic"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be rewritten as follows
 \begin_inset Formula 
-\begin{eqnarray*}
-\sum_{\vect bβ}(\delta_{\vect{ab}}\delta_{αβ}-T_{α}S_{\vect aα\leftarrow\vect bβ})A_{\vect a\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b-\vect a}} & = & 0,\\
-\sum_{\vect bβ}(\delta_{\vect{0b}}\delta_{αβ}-T_{α}S_{\vect 0α\leftarrow\vect bβ})A_{\vect 0\beta}\left(\vect k\right)e^{i\vect k\cdot\vect r_{\vect b}} & = & 0,\\
-\sum_{β}(\delta_{αβ}-T_{α}\underbrace{\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}}_{W_{\alpha\beta}(\vect k)})A_{\vect 0\beta}\left(\vect k\right) & = & 0,\\
-A_{\vect 0\alpha}\left(\vect k\right)-T_{α}\sum_{\beta}W_{\alpha\beta}\left(\vect k\right)A_{\vect 0\beta}\left(\vect k\right) & = & 0.
-\end{eqnarray*}
+\begin{align}
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect n,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}},\nonumber \\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect n,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m-\vect n,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m-\vect n}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\nonumber \\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\left(\vect m,\beta\right)\in\mathcal{P}\backslash\left\{ \left(\vect 0,\alpha\right)\right\} }\tropsp{\vect 0,\alpha}{\vect m,\beta}\outcoeffp{\vect 0,\beta}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect m}} & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\nonumber \\
+\outcoeffp{\vect 0,\alpha}\left(\vect k\right)-T_{\alpha}\sum_{\beta\in\mathcal{P}}W_{\alpha\beta}\left(\vect k\right)\outcoeffp{\vect 0,\beta}\left(\vect k\right) & =T_{\alpha}\rcoeffincp{\vect 0,\alpha}\left(\vect k\right),\label{eq:Multiple-scattering problem unit cell}
+\end{align}
 
 \end_inset
 
-Therefore, in order to solve the modes, we need to compute the 
+so we reduced the initial scattering problem to one involving only the field
+ expansion coefficients from a single unit cell, but we need to compute
+ the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -208,23 +300,272 @@ lattice Fourier transform
  of the translation operator,
 \begin_inset Formula 
 \begin{equation}
-W_{\alpha\beta}(\vect k)\equiv\sum_{\vect b}S_{\vect 0α\leftarrow\vect bβ}e^{i\vect k\cdot\vect r_{\vect b}}.\label{eq:W definition}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\beta}\right)\tropsp{\vect 0,\alpha}{\vect m,\beta}e^{i\vect k\cdot\vect R_{\vect m}},\label{eq:W definition}
 \end{equation}
+
+\end_inset
+
+evaluation of which is possible but quite non-trivial due to the infinite
+ lattice sum, so we explain it separately in Sect.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "subsec:W operator evaluation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+As in the case of a finite system, eq.
+ can be written in a shorter block-matrix form,
+\begin_inset Formula 
+\begin{equation}
+\left(I-WT\right)\outcoeffp{\vect 0}\left(\vect k\right)=\rcoeffincp{\vect 0}\left(\vect k\right)\label{eq:Multiple-scattering problem unit cell block form}
+\end{equation}
+
+\end_inset
+
+ Eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem unit cell"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be used to calculate electromagnetic response of the structure to external
+ quasiperiodic driving field – most notably a plane wave.
+ However, the non-trivial solutions of the equation with right hand side
+ (i.e.
+ the external driving) set to zero, 
+\begin_inset Formula 
+\begin{equation}
+\left(I-WT\right)\outcoeffp{\vect 0}\left(\vect k\right)=0,\label{eq:lattice mode equation}
+\end{equation}
+
+\end_inset
+
+describes the 
+\emph on
+lattice modes.
+
+\emph default
+ Non-trivial solutions to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ exist if the matrix on the left-hand side 
+\begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-W\left(\omega,\vect k\right)T\left(\omega\right)\right)$
+\end_inset
+
+ is singular – this condition gives the 
+\emph on
+dispersion relation
+\emph default
+ for the periodic structure.
+ Note that in realistic (lossy) systems, at least one of the pair 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ will acquire complex values.
+ The solution 
+\begin_inset Formula $\outcoeffp{\vect 0}\left(\vect k\right)$
+\end_inset
+
+ is then obtained as the right 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CHECK!
+\end_layout
+
+\end_inset
+
+ singular vector of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ corresponding to the zero singular value.
+\end_layout
+
+\begin_layout Subsection
+Numerical solution
+\end_layout
+
+\begin_layout Standard
+In practice, equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem unit cell block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is solved in the same way as eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ in the multipole degree truncated form.
+\end_layout
+
+\begin_layout Standard
+The lattice mode problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is (after multipole degree truncation) solved by finding 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ for which the matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ has a zero singular value.
+ A naïve approach to do that is to sample a volume with a grid in the 
+\begin_inset Formula $\left(\omega,\vect k\right)$
+\end_inset
+
+ space, performing a singular value decomposition of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ at each point and finding where the lowest singular value of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ is close enough to zero.
+ However, this approach is quite expensive, for 
+\begin_inset Formula $W\left(\omega,\vect k\right)$
+\end_inset
+
+ has to be evaluated for each 
+\begin_inset Formula $\omega,\vect k$
+\end_inset
+
+ pair separately (unlike the original finite case 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ translation operator 
+\begin_inset Formula $\trops$
+\end_inset
+
+, which, for a given geometry, depends only on frequency).
+ Therefore, a much more efficient approach to determine the photonic bands
+ is to sample the 
+\begin_inset Formula $\vect k$
+\end_inset
+
+-space (a whole Brillouin zone or its part) and for each fixed 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ to find a corresponding frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+ with zero singular value of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ using a minimisation algorithm (two- or one-dimensional, depending on whether
+ one needs the exact complex-valued 
+\begin_inset Formula $\omega$
+\end_inset
+
+ or whether the its real-valued approximation is satisfactory).
+ Typically, a good initial guess for 
+\begin_inset Formula $\omega\left(\vect k\right)$
+\end_inset
+
+ is obtained from the empty lattice approximation, 
+\begin_inset Formula $\left|\vect k\right|=\sqrt{\epsilon\mu}\omega/c_{0}$
+\end_inset
+
+ (modulo lattice points; TODO write this a clean way).
+ A somehow challenging step is to distinguish the different bands that can
+ all be very close to the empty lattice approximation, especially if the
+ particles in the systems are small.
+ In high-symmetry points of the Brilloin zone, this can be solved by factorising
+ 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ into irreducible representations 
+\begin_inset Formula $\Gamma_{i}$
+\end_inset
+
+ and performing the minimisation in each irrep separately, cf.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Symmetries"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, and using the different 
+\begin_inset Formula $\omega_{\Gamma_{i}}\left(\vect k\right)$
+\end_inset
+
+ to obtain the initial guesses for the nearby points 
+\begin_inset Formula $\vect k+\delta\vect k$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Computing the Fourier sum of the translation operator
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:W operator evaluation"
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection
-
-\lang english
-Computing the Fourier sum of the translation operator
-\end_layout
-
 \begin_layout Standard
-
-\lang english
 The problem evaluating 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -233,20 +574,22 @@ reference "eq:W definition"
 \end_inset
 
  is the asymptotic behaviour of the translation operator, 
-\begin_inset Formula $S_{\vect 0α\leftarrow\vect bβ}\sim\left|\vect r_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect r_{\vect b}\right|}$
+\begin_inset Formula $\tropsp{\vect 0,\alpha}{\vect m,\beta}\sim\left|\vect R_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect R_{\vect b}\right|}$
 \end_inset
 
- that makes the convergence of the sum quite problematic for any 
+ that does not in the strict sense converge for any 
 \begin_inset Formula $d>1$
 \end_inset
 
 -dimensional lattice.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-
-\lang english
 Note that 
 \begin_inset Formula $d$
 \end_inset
@@ -258,16 +601,20 @@ Note that
 
 \end_inset
 
- In electrostatics, one can solve this problem with Ewald summation.
+
+\end_layout
+
+\end_inset
+
+ In electrostatics, this problem can be solved with Ewald summation [TODO
+ REF].
  Its basic idea is that if what asymptoticaly decays poorly in the direct
  space, will perhaps decay fast in the Fourier space.
- I use the same idea here, but everything will be somehow harder than in
- electrostatics.
+ We use the same idea here, but the technical details are more complicated
+ than in electrostatics.
 \end_layout
 
 \begin_layout Standard
-
-\lang english
 Let us re-express the sum in 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -276,11 +623,14 @@ reference "eq:W definition"
 \end_inset
 
  in terms of integral with a delta comb
+\begin_inset FormulaMacro
+\renewcommand{\basis}[1]{\mathfrak{#1}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-
-\lang english
 \begin_inset Formula 
 \begin{equation}
 W_{\alpha\beta}(\vect k)=\int\ud^{d}\vect r\dc{\basis u}(\vect r)S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})e^{i\vect k\cdot\vect r}.\label{eq:W integral}
@@ -382,8 +732,6 @@ W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(
 status open
 
 \begin_layout Plain Layout
-
-\lang english
 Factor 
 \begin_inset Formula $\left(2\pi\right)^{\frac{d}{2}}$
 \end_inset
@@ -416,8 +764,6 @@ whole
 \end_layout
 
 \begin_layout Standard
-
-\lang english
 However, Fourier transform is linear, so we can in principle separate 
 \begin_inset Formula $S$
 \end_inset
@@ -463,7 +809,7 @@ reference "eq:W definition"
 
 \end_inset
 
- and legendre
+ and 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:W sum in reciprocal space"
@@ -484,7 +830,178 @@ W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\bas
 
 \end_inset
 
-where both sums should converge nicely.
+where both sums expected to converge nicely.
+ We note that the elements of the translation operators 
+\begin_inset Formula $\tropr,\trops$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be rewritten as linear combinations of expressions 
+\begin_inset Formula $\ush{\nu}{\mu}\left(\uvec d\right)j_{n}\left(d\right),\ush{\nu}{\mu}\left(\uvec d\right)h_{n}^{(1)}\left(d\right)$
+\end_inset
+
+ (TODO WRITE THEM EXPLICITLY IN THIS FORM), respectively, hence if we are
+ able evaluate the lattice sums sums
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CHECK THE FOLLOWING EXPRESSION FOR CORRECT FUNCTION ARGUMENTS
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\sigma_{\nu}^{\mu}\left(\vect k\right)=\sum_{\vect n\in\ints^{d}\backslash\left\{ \vect 0\right\} }e^{i\vect{\vect k}\cdot\vect R_{\vect n}}\ush{\nu}{\mu}\left(\uvec{R_{n}}\right)h_{n}^{(1)}\left(R_{n}\right),\label{eq:sigma lattice sums}
+\end{equation}
+
+\end_inset
+
+then by linearity, we can get the 
+\begin_inset Formula $W_{\alpha\beta}\left(\vect k\right)$
+\end_inset
+
+ operator as well.
+\end_layout
+
+\begin_layout Standard
+TODO ADD MOROZ AND OTHER REFS HERE.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_one-_2009"
+literal "true"
+
+\end_inset
+
+ offers an exponentially convergent Ewald-type summation method for 
+\begin_inset Formula $\sigma_{\nu}^{\mu}\left(\vect k\right)=\sigma_{\nu}^{\mu(\mathrm{S})}\left(\vect k\right)+\sigma_{\nu}^{\mu(\mathrm{L})}\left(\vect k\right)$
+\end_inset
+
+.
+ Here we rewrite them in a form independent on the convention used for spherical
+ harmonics (as long as they are complex
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+lepší formulace
+\end_layout
+
+\end_inset
+
+).
+ The short-range part reads (UNIFY INDEX NOTATION)
+\begin_inset Formula 
+\begin{multline}
+\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)=-\frac{2^{n+1}i}{k^{n+1}\sqrt{\pi}}\sum_{\vect R\in\Lambda}^{'}\left|\vect R\right|^{n}e^{i\vect{\beta}\cdot\vect R}Y_{n}^{m}\left(\vect R\right)\int_{\eta}^{\infty}e^{-\left|\vect R\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2n}\ud\xi\\
++\frac{\delta_{n0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)Y_{n}^{m},\label{eq:Ewald in 3D short-range part}
+\end{multline}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+NEPATŘÍ TAM NĚJAKÁ DELTA FUNKCE K PŮVODNÍMU 
+\begin_inset Formula $\sigma_{n}^{m(0)}$
+\end_inset
+
+?
+\end_layout
+
+\end_inset
+
+and the long-range part (FIXME, this is the 2D version; include the 1D and
+ 3D lattice expressions as well)
+\begin_inset Formula 
+\begin{multline}
+\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)=-\frac{i^{n+1}}{k^{2}\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\\
+\times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1}\label{eq:Ewald in 3D long-range part}
+\end{multline}
+
+\end_inset
+
+where 
+\begin_inset Formula $\xi$
+\end_inset
+
+ is TODO, 
+\begin_inset Formula $\beta_{pq}$
+\end_inset
+
+ is TODO, 
+\begin_inset Formula $\Gamma_{j,pq}$
+\end_inset
+
+ is TODO and 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is a real parameter that determines the pace of convergence of both parts.
+ The larger 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is, the faster 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)$
+\end_inset
+
+ converges but the slower 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)$
+\end_inset
+
+ converges.
+ Therefore (based on the lattice geometry) it has to be adjusted in a way
+ that a reasonable amount of terms needs to be evaluated numerically from
+ both 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)$
+\end_inset
+
+ .
+ Generally, a good choice for 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is TODO; in order to achieve accuracy TODO, one has to evaluate the terms
+ on TODO lattice points.
+ (I HAVE SOME DERIVATIONS OF THE ESTIMATES IN MY NOTES; SHOULD I INCLUDE
+ THEM?)
+\end_layout
+
+\begin_layout Standard
+In practice, the integrals in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D short-range part"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be easily evaluated by numerical quadrature and the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+-functions using the series TODO and TODO from DLMF.
 \end_layout
 
 \end_body

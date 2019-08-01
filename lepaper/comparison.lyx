@@ -35,6 +35,7 @@
 \paperfontsize default
 \spacing single
 \use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
 \pdf_author "Marek Nečada"
 \pdf_bookmarks true
 \pdf_bookmarksnumbered false
@@ -94,7 +95,14 @@
 \begin_body
 
 \begin_layout Section
-Applications
+Comparison to other methods
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Comparison"
+
+\end_inset
+
+
 \end_layout
 
 \end_body

@@ -1,29 +1,40 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 584
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
+\begin_preamble
+\DeclareUnicodeCharacter{0428}{Ш }
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding auto
-\fontencoding global
-\font_roman TeX Gyre Pagella
-\font_sans default
-\font_typewriter default
-\font_math auto
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "TeX Gyre Pagella"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts true
+\use_non_tex_fonts false
 \font_sc false
-\font_osf true
-\font_sf_scale 100
-\font_tt_scale 100
+\font_roman_osf true
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
-\default_output_format pdf4
+\default_output_format default
 \output_sync 0
 \bibtex_command default
 \index_command default
+\float_placement class
+\float_alignment class
 \paperfontsize default
 \spacing single
 \use_hyperref true
@@ -38,7 +49,7 @@
 \pdf_colorlinks false
 \pdf_backref false
 \pdf_pdfusetitle true
-\papersize default
+\papersize a4paper
 \use_geometry false
 \use_package amsmath 2
 \use_package amssymb 1
@@ -59,6 +70,8 @@
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_minted 0
+\use_lineno 0
 \index Index
 \shortcut idx
 \color #008000
@@ -67,10 +80,14 @@
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\tablestyle default
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -118,6 +135,11 @@
 
 
 \begin_inset FormulaMacro
+\newcommand{\uvec}[1]{\mathbf{\hat{#1}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\ud}{\mathrm{d}}
 \end_inset
 
@@ -127,8 +149,22 @@
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset FormulaMacro
 \newcommand{\dc}[1]{Ш_{#1}}
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\dc}[1]{\mathrm{III}_{#1}}
 \end_inset
 
 
@@ -159,6 +195,16 @@
 
 \begin_inset FormulaMacro
 \newcommand{\ush}[2]{Y_{#1,#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vsh}[3]{\vect A_{#1,#2,#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vshD}[3]{\vect A'_{#1,#2,#3}}
 \end_inset
 
 
@@ -213,7 +259,7 @@
 
 
 \begin_inset FormulaMacro
-\newcommand{\particle}{\mathrm{\Omega}}
+\newcommand{\particle}{\mathrm{\Theta}}
 \end_inset
 
 
@@ -232,15 +278,193 @@
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\rcoeffp}[1]{a_{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rcoeffincp}[1]{a_{#1}^{\mathrm{inc.}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rcoeff}{a}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rcoeffinc}{a^{\mathrm{inc.}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rcoeffptlm}[4]{\rcoeffp{#1,#2#3#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rcoefftlm}[3]{\rcoeffp{#1#2#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\rcoeffincptlm}[4]{\rcoeffincp{#1,#2#3#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vswfrtlm}[3]{\vect v_{#1#2#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\outcoeff}{f}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\outcoeffp}[1]{f_{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\outcoeffptlm}[4]{\outcoeffp{#1,#2#3#4}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\outcoefftlm}[3]{\outcoeffp{#1#2#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vswfouttlm}[3]{\vect u_{#1#2#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\Tp}[1]{T_{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\openball}[2]{B_{#1}\left(#2\right)}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\closedball}[2]{B_{#1}#2}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\tropr}{\mathcal{R}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\troprp}[2]{\mathcal{\tropr}_{#1\leftarrow#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\trops}{\mathcal{S}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\tropsp}[2]{\mathcal{\trops}_{#1\leftarrow#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\truncated}[2]{\left[#1\right]_{l\le#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\truncate}[2]{\left[#1\right]_{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\dlmfFer}[2]{\mathsf{P}_{#1}^{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\antidelta}{\gamma}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+These are compatibility macros for the (...)-old files:
+\end_layout
+
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vswfr}[3]{\vswfrtlm{#3}{#1}{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vswfs}[3]{\vswfouttlm{#3}{#1}{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\svwfs}[3]{\vswfouttlm{#3}{#1}{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffrip}[4]{\rcoeffptlm{#1}{#4}{#2}{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffsip}[4]{\outcoeffptlm{#1}{#4}{#2}{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffr}{\rcoeffp{}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffs}{\outcoeffp{}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\transop}{\trops}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\coeffripext}[4]{\rcoeffincptlm{#1}{#4}{#2}{#3}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\Kp}{K}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Title
-Some nice title about multiple scattering approach to photonic nanoparticle
- arrays (outline)
-\end_layout
-
-\begin_layout Author
-Marek Nečada
+QPMS Photonic Multiple Scattering suite (TODO better title)
 \end_layout
 
 \begin_layout Standard
@@ -254,6 +478,10 @@ The purpose of SIAM Journal on Scientific Computing (SISC) is to advance
 
 \begin_layout Quotation
 SISC papers are classified into three categories:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -307,12 +535,31 @@ Due to space limitations, articles are normally limited to 20 journal pages.
 Category: Methods and Algorithms for Scientific Computing?
 \end_layout
 
+\begin_layout Abstract
+The (somewhat underrated) T-matrix multiple scattering method (TMMSM) can
+ be used to solve the electromagnetic response of systems consisting of
+ many compact scatterers.
+ It largely surpasses other methods in the number of scatterers it can deal
+ with, while retaining very good accuracy.
+\end_layout
+
+\begin_layout Abstract
+TODO REWRITE: We release a modern implementation of the method under GNU
+ General Public Licence, with several theoretical advancements presented
+ here, such as exploiting the system symmetries to further improve the efficienc
+y of the method, or extending it on infinite periodic systems.
+\end_layout
+
 \begin_layout Section
 Outline
 \end_layout
 
 \begin_layout Itemize
 Intro: 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -343,6 +590,10 @@ my implementation
 \end_deeper
 \begin_layout Itemize
 Finite systems:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -353,11 +604,19 @@ motivation (classes of problems that this can solve: response to external
 
 \begin_layout Itemize
 theory
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
 T-matrix definition, basics
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -385,6 +644,10 @@ Example results (or maybe rather in the end)
 \end_deeper
 \begin_layout Itemize
 Infinite lattices:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -394,6 +657,10 @@ motivation (dispersion relations / modes, ...?)
 
 \begin_layout Itemize
 theory
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -432,10 +699,83 @@ My implementation.
 Maybe put the numerical results separately in the end.
 \end_layout
 
+\begin_layout Section
+TODOs
+\end_layout
+
+\begin_layout Itemize
+Consistent notation of balls.
+ How is the difference between two cocentric balls called?
+\end_layout
+
+\begin_layout Itemize
+Abstract.
+\end_layout
+
+\begin_layout Itemize
+Translation operators: rewrite in sph.
+ harm.
+ convention independent form.
+\end_layout
+
+\begin_layout Itemize
+Truncation notation.
+\end_layout
+
+\begin_layout Itemize
+Example results!
+\end_layout
+
+\begin_layout Itemize
+Figures.
+\end_layout
+
+\begin_layout Itemize
+Concrete comparison with other methods.
+\end_layout
+
+\begin_layout Itemize
+Fix and unify notation (mainly indices) in infinite lattices section.
+\end_layout
+
+\begin_layout Itemize
+Carefully check the transformation directions in sec.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Symmetries"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The text about symmetries is pretty dense.
+ Make it more explanatory and human-readable.
+\end_layout
+
+\begin_layout Itemize
+Check whether everything written is correct also for non-symmetric space
+ groups.
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
 filename "intro.lyx"
+literal "true"
+
+\end_inset
+
+
+\begin_inset CommandInset include
+LatexCommand include
+filename "finite.lyx"
+literal "true"
 
 \end_inset
 
@@ -443,9 +783,19 @@ filename "intro.lyx"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset include
 LatexCommand include
-filename "finite.lyx"
+filename "finite-old.lyx"
+literal "true"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -456,6 +806,38 @@ filename "finite.lyx"
 \begin_inset CommandInset include
 LatexCommand include
 filename "infinite.lyx"
+literal "true"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset include
+LatexCommand include
+filename "infinite-old.lyx"
+literal "true"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "symmetries.lyx"
+literal "true"
 
 \end_inset
 
@@ -466,6 +848,7 @@ filename "infinite.lyx"
 \begin_inset CommandInset include
 LatexCommand include
 filename "examples.lyx"
+literal "true"
 
 \end_inset
 
@@ -475,8 +858,10 @@ filename "examples.lyx"
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "T-matrix paper"
+btprint "btPrintCited"
+bibfiles "tmpaper"
 options "plain"
+encoding "default"
 
 \end_inset
 

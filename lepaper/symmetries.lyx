@@ -1,0 +1,1440 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 584
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Symmetries
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Symmetries"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the system has nontrivial point group symmetries, group theory gives
+ additional understanding of the system properties, and can be used to reduce
+ the computational costs.
+ 
+\end_layout
+
+\begin_layout Standard
+As an example, if our system has a 
+\begin_inset Formula $D_{2h}$
+\end_inset
+
+ symmetry and our truncated 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ matrix has size 
+\begin_inset Formula $N\times N$
+\end_inset
+
+,
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+nepoužívám 
+\begin_inset Formula $N$
+\end_inset
+
+ už v jiném kontextu?
+\end_layout
+
+\end_inset
+
+ it can be block-diagonalized into eight blocks of size about 
+\begin_inset Formula $N/8\times N/8$
+\end_inset
+
+, each of which can be LU-factorised separately (this is due to the fact
+ that 
+\begin_inset Formula $D_{2h}$
+\end_inset
+
+ has eight different one-dimensional irreducible representations).
+ This can reduce both memory and time requirements to solve the scattering
+ problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ by a factor of 64.
+\end_layout
+
+\begin_layout Standard
+In periodic systems (problems 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem unit cell block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) due to small number of particles per unit cell, the costliest part is
+ usually the evaluation of the lattice sums in the 
+\begin_inset Formula $W\left(\omega,\vect k\right)$
+\end_inset
+
+ matrix, not the linear algebra.
+ However, the lattice modes can be searched for in each irrep separately,
+ and the irrep dimension gives a priori information about mode degeneracy.
+\end_layout
+
+\begin_layout Subsection
+Excitation coefficients under point group operations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO Zkontrolovat všechny vzorečky zde!!!
+\end_layout
+
+\end_inset
+
+In order to use the point group symmetries, we first need to know how they
+ affect our basis functions, i.e.
+ the VSWFs.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $g$
+\end_inset
+
+ be a member of orthogonal group 
+\begin_inset Formula $O(3)$
+\end_inset
+
+, i.e.
+ a 3D point rotation or reflection operation that transforms vectors in
+ 
+\begin_inset Formula $\reals^{3}$
+\end_inset
+
+ with an orthogonal matrix 
+\begin_inset Formula $R_{g}$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\vect r\mapsto R_{g}\vect r.
+\]
+
+\end_inset
+
+Spherical harmonics 
+\begin_inset Formula $\ush lm$
+\end_inset
+
+, being a basis the 
+\begin_inset Formula $l$
+\end_inset
+
+-dimensional representation of 
+\begin_inset Formula $O(3)$
+\end_inset
+
+, transform as 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "???"
+key "dresselhaus_group_2008"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\ush lm\left(R_{g}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\ush l{m'}\left(\uvec r\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $D_{m,m'}^{l}\left(g\right)$
+\end_inset
+
+ denotes the elements of the 
+\emph on
+Wigner matrix
+\emph default
+ representing the operation 
+\begin_inset Formula $g$
+\end_inset
+
+.
+ By their definition, vector spherical harmonics 
+\begin_inset Formula $\vsh 2lm,\vsh 3lm$
+\end_inset
+
+ transform in the same way,
+\begin_inset Formula 
+\begin{align*}
+\vsh 2lm\left(R_{g}\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
+\vsh 3lm\left(R_{g}\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\end{align*}
+
+\end_inset
+
+but the remaining set 
+\begin_inset Formula $\vsh 1lm$
+\end_inset
+
+ transforms differently due to their pseudovector nature stemming from the
+ cross product in their definition:
+\begin_inset Formula 
+\[
+\vsh 3lm\left(R_{g}\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\widetilde{D_{m,m'}^{l}}\left(g\right)=D_{m,m'}^{l}\left(g\right)$
+\end_inset
+
+ if 
+\begin_inset Formula $g$
+\end_inset
+
+ is a proper rotation, but for spatial inversion operation 
+\begin_inset Formula $i:\vect r\mapsto-\vect r$
+\end_inset
+
+ we have 
+\begin_inset Formula $\widetilde{D_{m,m'}^{l}}\left(i\right)=\left(-1\right)^{l+m}D_{m,m'}^{l}\left(i\right)$
+\end_inset
+
+.
+ The transformation behaviour of vector spherical harmonics directly propagates
+ to the spherical vector waves, cf.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VSWF regular"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:VSWF outgoing"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+\vswfouttlm 1lm\left(R_{g}\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm 1l{m'}\left(\vect r\right),\\
+\vswfouttlm 2lm\left(R_{g}\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm 2l{m'}\left(\vect r\right),
+\end{align*}
+
+\end_inset
+
+(and analogously for the regular waves 
+\begin_inset Formula $\vswfrtlm{\tau}lm$
+\end_inset
+
+).
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO víc obdivu.
+\end_layout
+
+\end_inset
+
+ For convenience, we introduce the symbol 
+\begin_inset Formula $D_{m,m'}^{\tau l}$
+\end_inset
+
+ that describes the transformation of both types (
+\begin_inset Quotes eld
+\end_inset
+
+magnetic
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+electric
+\begin_inset Quotes erd
+\end_inset
+
+) of waves at once:
+\begin_inset Formula 
+\[
+\vswfouttlm{\tau}lm\left(R_{g}\vect r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\vect r\right).
+\]
+
+\end_inset
+
+Using these, we can express the VSWF expansion 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:E field expansion"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ of the electric field around origin in a rotated/reflected system,
+\begin_inset Formula 
+\[
+\vect E\left(\omega,R_{g}\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\vect r\right)+\outcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\vect r\right)\right),
+\]
+
+\end_inset
+
+which, together with the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix definition, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be used to obtain a 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a rotated or mirror-reflected particle.
+ Let 
+\begin_inset Formula $T$
+\end_inset
+
+ be the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of an original particle; the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a particle physically transformed by operation 
+\begin_inset Formula $g\in O(3)$
+\end_inset
+
+ is then 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+check sides
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+T'_{\tau lm;\tau'l'm'}=\sum_{\mu=-l}^{l}\sum_{\mu'=-l'}^{l'}\left(D_{\mu,m}^{\tau l}\left(g\right)\right)^{*}T_{\tau l\mu;\tau'l'm'}D_{m',\mu'}^{\tau l}\left(g\right).\label{eq:T-matrix of a transformed particle}
+\end{equation}
+
+\end_inset
+
+If the particle is symmetric (so that 
+\begin_inset Formula $g$
+\end_inset
+
+ produces a particle indistinguishable from the original one), the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix must remain invariant under the transformation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix of a transformed particle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset Formula $T'_{\tau lm;\tau'l'm'}=T{}_{\tau lm;\tau'l'm'}$
+\end_inset
+
+.
+ Explicit forms of these invariance properties for the most imporant point
+ group symmetries can be found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schulz_point-group_1999"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If the field expansion is done around a point 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+ different from the global origin, as in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:E field expansion multiparticle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we have
+\lang english
+
+\begin_inset Formula 
+\begin{align}
+\vect E\left(\omega,R_{g}\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)+\outcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right).\label{eq:rotated E field expansion around outside origin}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Scatterer orbits under 
+\begin_inset Formula $D_{2}$
+\end_inset
+
+ symmetry.
+ Particles 
+\begin_inset Formula $A,B,C,D$
+\end_inset
+
+ lie outside of origin or any mirror planes, and together constitute an
+ orbit of the size equal to the order of the group, 
+\begin_inset Formula $\left|D_{2}\right|=4$
+\end_inset
+
+.
+ Particles 
+\begin_inset Formula $E,F$
+\end_inset
+
+ lie on the 
+\begin_inset Formula $xz$
+\end_inset
+
+ plane, hence the corresponding reflection maps each of them to itself,
+ but the 
+\begin_inset Formula $yz$
+\end_inset
+
+ reflection (or the 
+\begin_inset Formula $\pi$
+\end_inset
+
+ rotation around the 
+\begin_inset Formula $z$
+\end_inset
+
+ axis) maps them to each other, forming a particle orbit of size 2
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+=???
+\end_layout
+
+\end_inset
+
+.
+ The particle 
+\begin_inset Formula $O$
+\end_inset
+
+ in the very origin is always mapped to itself, constituting its own orbit.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:D2-symmetric structure particle orbits"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO restructure this
+\end_layout
+
+\end_inset
+
+With these transformation properties in hand, we can proceed to the effects
+ of point symmetries on the whole many-particle system.
+ Let us have a many-particle system symmetric with respect to a point group
+ 
+\begin_inset Formula $G$
+\end_inset
+
+.
+ A symmetry operation 
+\begin_inset Formula $g\in G$
+\end_inset
+
+ determines a permutation of the particles: 
+\begin_inset Formula $p\mapsto\pi_{g}(p)$
+\end_inset
+
+, 
+\begin_inset Formula $p\in\mathcal{P}$
+\end_inset
+
+.
+ For a given particle 
+\begin_inset Formula $p$
+\end_inset
+
+, we will call the set of particles onto which any of the symmetries maps
+ the particle 
+\begin_inset Formula $p$
+\end_inset
+
+, i.e.
+ the set 
+\begin_inset Formula $\left\{ \pi_{g}\left(p\right);g\in G\right\} $
+\end_inset
+
+, as the 
+\emph on
+orbit
+\emph default
+ of particle 
+\begin_inset Formula $p$
+\end_inset
+
+.
+ The whole set 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+ can therefore be divided into the different particle orbits; an example
+ is in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:D2-symmetric structure particle orbits"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The importance of the particle orbits stems from the following: in the
+ multiple-scattering problem, outside of the scatterers 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+< FIXME
+\end_layout
+
+\end_inset
+
+ one has 
+\lang english
+
+\begin_inset Formula 
+\begin{align}
+\vect E\left(\omega,R_{g}\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}(p)}\right)\right)+\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right)\label{eq:rotated E field expansion around outside origin-1}\\
+ & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)+\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right).
+\end{align}
+
+\end_inset
+
+This means that the field expansion coefficients 
+\begin_inset Formula $\rcoeffp p,\outcoeffp p$
+\end_inset
+
+ transform as 
+\begin_inset Formula 
+\begin{align}
+\rcoeffptlm p{\tau}lm & \mapsto\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right),\nonumber \\
+\outcoeffptlm p{\tau}lm & \mapsto\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right).\label{eq:excitation coefficient under symmetry operation}
+\end{align}
+
+\end_inset
+
+Obviously, the expansion coefficients belonging to particles in different
+ orbits do not mix together.
+ As before, we introduce a short-hand block-matrix notation for 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:excitation coefficient under symmetry operation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ (TODO avoid notation clash here in a more consistent and readable way!)
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\begin{align}
+\rcoeff & \mapsto J\left(g\right)a,\nonumber \\
+\outcoeff & \mapsto J\left(g\right)\outcoeff.\label{eq:excitation coefficient under symmetry operation block form}
+\end{align}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+The matrices 
+\begin_inset Formula $D\left(g\right)$
+\end_inset
+
+, 
+\begin_inset Formula $g\in G$
+\end_inset
+
+ will play a crucial role blablabla
+\end_layout
+
+\end_inset
+
+If the particle indices are ordered in a way that the particles belonging
+ to the same orbit are grouped together, 
+\begin_inset Formula $J\left(g\right)$
+\end_inset
+
+ will be a block-diagonal unitary matrix, each block (also unitary) representing
+ the action of 
+\begin_inset Formula $g$
+\end_inset
+
+ on one particle orbit.
+ All the 
+\begin_inset Formula $J\left(g\right)$
+\end_inset
+
+s make together a (reducible) linear representation of 
+\begin_inset Formula $G$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Irrep decomposition
+\end_layout
+
+\begin_layout Standard
+Knowledge of symmetry group actions 
+\begin_inset Formula $J\left(g\right)$
+\end_inset
+
+ on the field expansion coefficients give us the possibility to construct
+ a symmetry adapted basis in which we can block-diagonalise the multiple-scatter
+ing problem matrix 
+\begin_inset Formula $\left(I-TS\right)$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\Gamma_{n}$
+\end_inset
+
+ be the 
+\begin_inset Formula $d_{n}$
+\end_inset
+
+-dimensional irreducible matrix representations of 
+\begin_inset Formula $G$
+\end_inset
+
+consisting of matrices 
+\begin_inset Formula $D^{\Gamma_{n}}\left(g\right)$
+\end_inset
+
+.
+ Then the projection operators
+\begin_inset Formula 
+\[
+P_{kl}^{\left(\Gamma_{n}\right)}\equiv\frac{d_{n}}{\left|G\right|}\sum_{g\in G}\left(D^{\Gamma_{n}}\left(g\right)\right)_{kl}^{*}J\left(g\right),\quad k,l=1,\dots,d_{n}
+\]
+
+\end_inset
+
+project the full scattering system field expansion coefficient vectors 
+\begin_inset Formula $\rcoeff,\outcoeff$
+\end_inset
+
+ onto a subspace corresponding to the irreducible representation 
+\begin_inset Formula $\Gamma_{n}$
+\end_inset
+
+.
+ The projectors can be used to construct a unitary transformation 
+\begin_inset Formula $U$
+\end_inset
+
+ with components
+\begin_inset Formula 
+\begin{equation}
+U_{nri;p\tau lm}=\frac{d_{n}}{\left|G\right|}\sum_{g\in G}\left(D^{\Gamma_{n}}\left(g\right)\right)_{rr}^{*}J\left(g\right)_{p'\tau'l'm'(nri);p\tau lm}\label{eq:SAB unitary transformation operator}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $r$
+\end_inset
+
+ goes from 
+\begin_inset Formula $1$
+\end_inset
+
+ through 
+\begin_inset Formula $d_{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $i$
+\end_inset
+
+ goes from 1 through the multiplicity of irreducible representation 
+\begin_inset Formula $\Gamma_{n}$
+\end_inset
+
+ in the (reducible) representation of 
+\begin_inset Formula $G$
+\end_inset
+
+ spanned by the field expansion coefficients 
+\begin_inset Formula $\rcoeff$
+\end_inset
+
+ or 
+\begin_inset Formula $\outcoeff$
+\end_inset
+
+.
+ The indices 
+\begin_inset Formula $p',\tau',l',m'$
+\end_inset
+
+ are given by an arbitrary bijective mapping 
+\begin_inset Formula $\left(n,r,i\right)\mapsto\left(p',\tau',l',m'\right)$
+\end_inset
+
+ with the constraint that for given 
+\begin_inset Formula $n,r,i$
+\end_inset
+
+ there are at least some non-zero elements 
+\begin_inset Formula $U_{nri;p\tau lm}$
+\end_inset
+
+.
+ For details, we refer the reader to textbooks about group representation
+ theory
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+or linear representations?
+\end_layout
+
+\end_inset
+
+, e.g.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Chapter 4"
+key "dresselhaus_group_2008"
+literal "false"
+
+\end_inset
+
+ or 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "???"
+key "bradley_mathematical_1972"
+literal "false"
+
+\end_inset
+
+.
+ The transformation given by 
+\begin_inset Formula $U$
+\end_inset
+
+ transforms the excitation coefficient vectors 
+\begin_inset Formula $\rcoeff,\outcoeff$
+\end_inset
+
+ into a new, 
+\emph on
+symmetry-adapted basis
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+One can show that if an operator 
+\begin_inset Formula $M$
+\end_inset
+
+ acting on the excitation coefficient vectors is invariant under the operations
+ of group 
+\begin_inset Formula $G$
+\end_inset
+
+, meaning that
+\begin_inset Formula 
+\[
+\forall g\in G:J\left(g\right)MJ\left(g\right)^{\dagger}=M,
+\]
+
+\end_inset
+
+then in the symmetry-adapted basis, 
+\begin_inset Formula $M$
+\end_inset
+
+ is block diagonal, or more specifically
+\begin_inset Formula 
+\[
+M_{\Gamma,r,i;\Gamma',r',j}^{\mathrm{s.a.b.}}=\frac{\delta_{\Gamma\Gamma'}\delta_{ij}}{d_{\Gamma}}\sum_{q}M{}_{\Gamma,r,q;\Gamma',r',q}^{\mathrm{s.a.b.}}.
+\]
+
+\end_inset
+
+Both the 
+\begin_inset Formula $T$
+\end_inset
+
+ and 
+\begin_inset Formula $\trops$
+\end_inset
+
+ operators (and trivially also the identity 
+\begin_inset Formula $I$
+\end_inset
+
+) in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ are invariant under the actions of whole system symmetry group, so 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ is also invariant, hence 
+\begin_inset Formula $U\left(I-T\trops\right)U^{\dagger}$
+\end_inset
+
+ is a block-diagonal matrix, and the problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be solved for each block separately.
+\end_layout
+
+\begin_layout Standard
+From the computational perspective, it is important to note that 
+\begin_inset Formula $U$
+\end_inset
+
+ is at least as sparse as 
+\begin_inset Formula $J\left(g\right)$
+\end_inset
+
+ (which is 
+\begin_inset Quotes eld
+\end_inset
+
+orbit-block
+\begin_inset Quotes erd
+\end_inset
+
+ diagonal), hence the block-diagonalisation can be performed fast.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Kvantifikovat!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Periodic systems
+\end_layout
+
+\begin_layout Standard
+For periodic systems, we can in similar manner also block-diagonalise the
+ 
+\begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-W\left(\omega,\vect k\right)T\left(\omega\right)\right)$
+\end_inset
+
+ from the left hand side of eqs.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem unit cell block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Hovewer, in this case, 
+\begin_inset Formula $W\left(\omega,\vect k\right)$
+\end_inset
+
+ is in general not invariant under the whole point group symmetry subgroup
+ of the system geometry due to the 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ dependence.
+ In other words, only those point symmetries that the 
+\begin_inset Formula $e^{i\vect k\cdot\vect r}$
+\end_inset
+
+ modulation does not break are preserved, and no preservation of point symmetrie
+s happens unless 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ lies somewhere in the high-symmetry parts of the Brillouin zone.
+ However, the high-symmetry points are usually the ones of the highest physical
+ interest, for it is where the band edges 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+or 
+\begin_inset Quotes eld
+\end_inset
+
+dirac points
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ are typically located.
+\end_layout
+
+\begin_layout Standard
+The transformation to the symmetry adapted basis 
+\begin_inset Formula $U$
+\end_inset
+
+ is constructed in a similar way as in the finite case, but because we do
+ not work with all the (infinite number of) scatterers but only with one
+ unit cell, additional phase factors 
+\begin_inset Formula $e^{i\vect k\cdot\vect r_{p}}$
+\end_inset
+
+ appear in the per-unit-cell group action 
+\begin_inset Formula $J(g)$
+\end_inset
+
+.
+ This is illustrated in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Phase factor illustration"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "Phase factor illustration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+More rigorous analysis can be found e.g.
+ in 
+\lang english
+
+\begin_inset CommandInset citation
+LatexCommand cite
+after "chapters 10–11"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+In the group-theoretical terminology, blablabla little groups blabla bla...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+A general overview of utilizing group theory to find lattice modes at high-symme
+try points of the Brillouin zone can be found e.g.
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "chapters 10–11"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+; here we use the same notation.
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang english
+We analyse the symmetries of the system in the same VSWF representation
+ as used in the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix formalism introduced above.
+ We are interested in the modes at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point of the hexagonal lattice, which has the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ point symmetry.
+ The six irreducible representations (irreps) of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ group are known and are available in the literature in their explicit forms.
+ In order to find and classify the modes, we need to find a decomposition
+ of the lattice mode representation 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}=\Gamma^{\mathrm{equiv.}}\otimes\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ into the irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ The equivalence representation 
+\begin_inset Formula $\Gamma^{\mathrm{equiv.}}$
+\end_inset
+
+ is the 
+\begin_inset Formula $E'$
+\end_inset
+
+ representation as can be deduced from 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (11.19)"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+, eq.
+ (11.19) and the character table for 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\Gamma_{\mathrm{vec.}}$
+\end_inset
+
+ operates on a space spanned by the VSWFs around each nanoparticle in the
+ unit cell (the effects of point group operations on VSWFs are described
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schulz_point-group_1999"
+literal "true"
+
+\end_inset
+
+).
+ This space can be then decomposed into invariant subspaces of the 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+ using the projectors 
+\begin_inset Formula $\hat{P}_{ab}^{\left(\Gamma\right)}$
+\end_inset
+
+ defined by 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (4.28)"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+.
+ This way, we obtain a symmetry adapted basis 
+\begin_inset Formula $\left\{ \vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}\right\} $
+\end_inset
+
+ as linear combinations of VSWFs 
+\begin_inset Formula $\vswfs lm{p,t}$
+\end_inset
+
+ around the constituting nanoparticles (labeled 
+\begin_inset Formula $p$
+\end_inset
+
+), 
+\begin_inset Formula 
+\[
+\vect b_{\Gamma,r,i}^{\mathrm{s.a.b.}}=\sum_{l,m,p,t}U_{\Gamma,r,i}^{p,t,l,m}\vswfs lm{p,t},
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ stands for one of the six different irreps of 
+\begin_inset Formula $D_{3h}$
+\end_inset
+
+, 
+\begin_inset Formula $r$
+\end_inset
+
+ labels the different realisations of the same irrep, and the last index
+ 
+\begin_inset Formula $i$
+\end_inset
+
+ going from 1 to 
+\begin_inset Formula $d_{\Gamma}$
+\end_inset
+
+ (the dimensionality of 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) labels the different partners of the same given irrep.
+ The number of how many times is each irrep contained in 
+\begin_inset Formula $\Gamma_{\mathrm{lat.mod.}}$
+\end_inset
+
+ (i.e.
+ the range of index 
+\begin_inset Formula $r$
+\end_inset
+
+ for given 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+) depends on the multipole degree cutoff 
+\begin_inset Formula $l_{\mathrm{max}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang english
+Each mode at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point shall lie in the irreducible spaces of only one of the six possible
+ irreps and it can be shown via 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "eq. (2.51)"
+key "dresselhaus_group_2008"
+literal "true"
+
+\end_inset
+
+ that, at the 
+\begin_inset Formula $\Kp$
+\end_inset
+
+-point, the matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ defined above takes a block-diagonal form in the symmetry-adapted basis,
+ 
+\begin_inset Formula 
+\[
+M\left(\omega,\vect K\right)_{\Gamma,r,i;\Gamma',r',j}^{\mathrm{s.a.b.}}=\frac{\delta_{\Gamma\Gamma'}\delta_{ij}}{d_{\Gamma}}\sum_{q}M\left(\omega,\vect K\right)_{\Gamma,r,q;\Gamma',r',q}^{\mathrm{s.a.b.}}.
+\]
+
+\end_inset
+
+This enables us to decompose the matrix according to the irreps and to solve
+ the singular value problem in each irrep separately, as done in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "smfig:dispersions"
+
+\end_inset
+
+(a).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

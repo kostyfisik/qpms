@@ -1,29 +1,37 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 584
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
-\language finnish
+\language english
 \language_package default
-\inputencoding auto
-\fontencoding global
-\font_roman TeX Gyre Pagella
-\font_sans default
-\font_typewriter default
-\font_math auto
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "TeX Gyre Pagella"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family default
-\use_non_tex_fonts true
+\use_non_tex_fonts false
 \font_sc false
-\font_osf true
-\font_sf_scale 100
-\font_tt_scale 100
+\font_roman_osf true
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
-\default_output_format pdf4
+\default_output_format default
 \output_sync 0
 \bibtex_command default
 \index_command default
+\float_placement class
+\float_alignment class
 \paperfontsize default
 \spacing single
 \use_hyperref true
@@ -58,6 +66,8 @@
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_minted 0
+\use_lineno 0
 \index Index
 \shortcut idx
 \color #008000
@@ -66,10 +76,14 @@
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language swedish
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\tablestyle default
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -84,45 +98,45 @@ Finite systems
 \end_layout
 
 \begin_layout Itemize
-
-\lang english
 motivation (classes of problems that this can solve: response to external
  radiation, resonances, ...)
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-
-\lang english
 theory
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-
-\lang english
 T-matrix definition, basics
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-
-\lang english
 How to get it?
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-
-\lang english
 translation operators (TODO think about how explicit this should be, but
  I guess it might be useful to write them to write them explicitly (but
  in the shortest possible form) in the normalisation used in my program)
 \end_layout
 
 \begin_layout Itemize
-
-\lang english
 employing point group symmetries and decomposing the problem to decrease
  the computational complexity (maybe separately)
 \end_layout
@@ -130,14 +144,33 @@ employing point group symmetries and decomposing the problem to decrease
 \end_deeper
 \end_deeper
 \begin_layout Subsection
+Motivation/intro
+\end_layout
 
-\lang english
-Motivation
+\begin_layout Standard
+The basic idea of MSTMM is quite simple: the driving electromagnetic field
+ incident onto a scatterer is expanded into a vector spherical wavefunction
+ (VSWF) basis in which the single scattering problem is solved, and the
+ scattered field is then re-expanded into VSWFs centered at the other scatterers.
+ Repeating the same procedure with all (pairs of) scatterers yields a set
+ of linear equations, solution of which gives the coefficients of the scattered
+ field in the VSWF bases.
+ Once these coefficients have been found, one can evaluate various quantities
+ related to the scattering (such as cross sections or the scattered fields)
+ quite easily.
+ 
+\end_layout
+
+\begin_layout Standard
+The expressions appearing in the re-expansions are fairly complicated, and
+ the implementation of MSTMM is extremely error-prone also due to the various
+ conventions used in the literature.
+ Therefore although we do not re-derive from scratch the expressions that
+ can be found elsewhere in literature, we always state them explicitly in
+ our convention.
 \end_layout
 
 \begin_layout Subsection
-
-\lang english
 Single-particle scattering
 \end_layout
 
@@ -164,12 +197,40 @@ ity
 , and that the whole system is linear, i.e.
  the material properties of neither the medium nor the scatterer depend
  on field intensities.
- Under these assumptions, the EM fields in 
+ Under these assumptions, the EM fields 
+\begin_inset Formula $\vect{\Psi}=\vect E,\vect H$
+\end_inset
+
+ in 
 \begin_inset Formula $\medium$
 \end_inset
 
- must satisfy the homogeneous vector Helmholtz equation 
-\begin_inset Formula $\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0$
+ must satisfy the homogeneous vector Helmholtz equation together with the
+ transversality condition 
+\begin_inset Formula 
+\begin{equation}
+\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0,\quad\nabla\cdot\vect{\Psi}\left(\vect r,\vect{\omega}\right)=0\label{eq:Helmholtz eq}
+\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+frequency-space Maxwell's equations
+\begin_inset Formula 
+\begin{align*}
+\nabla\times\vect E\left(\vect r,\omega\right)-ik\eta_{0}\eta\vect H\left(\vect r,\omega\right) & =0,\\
+\eta_{0}\eta\nabla\times\vect H\left(\vect r,\omega\right)+ik\vect E\left(\vect r,\omega\right) & =0.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
  
@@ -187,43 +248,197 @@ todo define
 \end_inset
 
  with 
-\begin_inset Formula $k=TODO$
+\begin_inset Formula $k=k\left(\omega\right)=\omega\sqrt{\mubg(\omega)\epsbg(\omega)}/c_{0}$
 \end_inset
 
- [TODO REF Jackson?].
- Its solutions (TODO under which conditions? What vector space do the SVWFs
- actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
+, as can be derived from the Maxwell's equations 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "???"
+key "jackson_classical_1998"
+literal "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Spherical waves
 \end_layout
 
 \begin_layout Standard
+Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Helmholtz eq"
+plural "false"
+caps "false"
+noprefix "false"
 
-\lang english
-Throughout this text, we will use the same normalisation conventions as
- in 
+\end_inset
+
+ can be solved by separation of variables in spherical coordinates to give
+ the solutions – the 
+\emph on
+regular
+\emph default
+ and 
+\emph on
+outgoing
+\emph default
+ vector spherical wavefunctions (VSWFs) 
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\vswfouttlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+, respectively, defined as follows:
+\begin_inset Formula 
+\begin{align}
+\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
+\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
+\end{align}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
+\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
+ & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,\nonumber 
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $\vect r=r\uvec r$
+\end_inset
+
+, 
+\begin_inset Formula $j_{l}\left(x\right),h_{l}^{\left(1\right)}\left(x\right)=j_{l}\left(x\right)+iy_{l}\left(x\right)$
+\end_inset
+
+ are the regular spherical Bessel function and spherical Hankel function
+ of the first kind, respectively, as in [DLMF §10.47], and 
+\begin_inset Formula $\vsh{\tau}lm$
+\end_inset
+
+ are the 
+\emph on
+vector spherical harmonics
+\emph default
+
+\begin_inset Formula 
+\begin{align}
+\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\nonumber \\
+\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\nonumber \\
+\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).\label{eq:vector spherical harmonics definition}
+\end{align}
+
+\end_inset
+
+In our convention, the (scalar) spherical harmonics 
+\begin_inset Formula $\ush lm$
+\end_inset
+
+ are identical to those in [DLMF 14.30.1], i.e.
+\begin_inset Formula 
+\[
+\ush lm=\left(\frac{\left(l-m\right)!\left(2l+1\right)}{4\pi\left(l+m\right)!}\right)^{\frac{1}{2}}e^{im\phi}\dlmfFer lm\left(\cos\theta\right)
+\]
+
+\end_inset
+
+where importantly, the Ferrers functions 
+\begin_inset Formula $\dlmfFer lm$
+\end_inset
+
+ defined as in [DLMF §14.3(i)] do already contain the Condon-Shortley phase
+ 
+\begin_inset Formula $\left(-1\right)^{m}$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO názornější definice.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The convention for VSWFs used here is the same as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kristensson_spherical_2014"
+literal "false"
+
+\end_inset
+
+; over other conventions used elsewhere in literature, it has several fundamenta
+l advantages – most importantly, the translation operators introduced later
+ in eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:translation op def"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ are unitary, and it gives the simplest possible expressions for power transport
+ and cross sections without additional 
+\begin_inset Formula $l,m$
+\end_inset
+
+-dependent factors (for that reason, we also call our VSWFs as 
+\emph on
+power-normalised
+\emph default
+).
+ Power-normalisation and unitary translation operators are possible to achieve
+ also with real spherical harmonics – such a convention is used in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kristensson_scattering_2016"
+literal "false"
 
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Subsubsection
-
-\lang english
-Spherical waves
-\end_layout
-
 \begin_layout Standard
-
-\lang english
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
+Its solutions (TODO under which conditions? What vector space do the SVWFs
+ actually span? Check Comment 9.2 and Appendix f.9.1 in Kristensson)
+\end_layout
 
-\lang english
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 TODO small note about cartesian multipoles, anapoles etc.
  (There should be some comparing paper that the Russians at META 2018 mentioned.)
 \end_layout
@@ -234,37 +449,1596 @@ TODO small note about cartesian multipoles, anapoles etc.
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 T-matrix definition
 \end_layout
 
-\begin_layout Subsubsection
-Absorbed power
+\begin_layout Standard
+The regular VSWFs 
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+ constitute a basis for solutions of the Helmholtz equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Helmholtz eq"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ inside a ball 
+\begin_inset Formula $\openball 0{R^{>}}$
+\end_inset
+
+ with radius 
+\begin_inset Formula $R^{>}$
+\end_inset
+
+ and center in the origin; however, if the equation is not guaranteed to
+ hold inside a smaller ball 
+\begin_inset Formula $B_{0}\left(R\right)$
+\end_inset
+
+ around the origin (typically due to presence of a scatterer), one has to
+ add the outgoing VSWFs 
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\end_inset
+
+ to have a complete basis of the solutions in the volume 
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Vnitřní koule uzavřená? Jak se řekne mezikulí anglicky?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The single-particle scattering problem at frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+ can be posed as follows: Let a scatterer be enclosed inside the ball 
+\begin_inset Formula $B_{0}\left(R\right)$
+\end_inset
+
+ and let the whole volume 
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\end_inset
+
+ be filled with a homogeneous isotropic medium with wave number 
+\begin_inset Formula $k\left(\omega\right)$
+\end_inset
+
+.
+ Inside this volume, the electric field can be expanded as
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+doplnit frekvence a polohy
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\vect E\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm\left(k\vect r\right)+\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm\left(k\vect r\right)\right).\label{eq:E field expansion}
+\end{equation}
+
+\end_inset
+
+If there was no scatterer and 
+\begin_inset Formula $B_{0}\left(R_{<}\right)$
+\end_inset
+
+ was filled with the same homogeneous medium, the part with the outgoing
+ VSWFs would vanish and only the part 
+\begin_inset Formula $\vect E_{\mathrm{inc}}=\sum_{\tau lm}\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm$
+\end_inset
+
+ due to sources outside 
+\begin_inset Formula $\openball 0R$
+\end_inset
+
+ would remain.
+ Let us assume that the 
+\begin_inset Quotes eld
+\end_inset
+
+driving field
+\begin_inset Quotes erd
+\end_inset
+
+ is given, so that presence of the scatterer does not affect 
+\begin_inset Formula $\vect E_{\mathrm{inc}}$
+\end_inset
+
+ and is fully manifested in the latter part, 
+\begin_inset Formula $\vect E_{\mathrm{scat}}=\sum_{\tau lm}\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm$
+\end_inset
+
+.
+ We also assume that the scatterer is made of optically linear materials,
+ and hence reacts on the incident field in a linear manner.
+ This gives a linearity constraint between the expansion coefficients
+\begin_inset Formula 
+\begin{equation}
+\outcoefftlm{\tau}lm=\sum_{\tau'l'm'}T_{\tau lm}^{\tau'l'm'}\rcoefftlm{\tau'}{l'}{m'}\label{eq:T-matrix definition}
+\end{equation}
+
+\end_inset
+
+where the 
+\begin_inset Formula $T_{\tau lm}^{\tau'l'm'}=T_{\tau lm}^{\tau'l'm'}\left(\omega\right)$
+\end_inset
+
+ are the elements of the 
+\emph on
+transition matrix,
+\emph default
+ a.k.a.
+ 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix.
+ It completely describes the scattering properties of a linear scatterer,
+ so with the knowledge of the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, we can solve the single-patricle scatering prroblem simply by substitut
+ing appropriate expansion coefficients 
+\begin_inset Formula $\rcoefftlm{\tau'}{l'}{m'}$
+\end_inset
+
+ of the driving field into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The outgoing VSWF expansion coefficients 
+\begin_inset Formula $\outcoefftlm{\tau}lm$
+\end_inset
+
+ are the effective induced electric (
+\begin_inset Formula $\tau=2$
+\end_inset
+
+) and magnetic (
+\begin_inset Formula $\tau=1$
+\end_inset
+
+) multipole polarisation amplitudes of the scatterer, and this is why we
+ sometimes refer to the corresponding VSWFs as the electric and magnetic
+ VSWFs.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO mention the pseudovector character of magnetic VSWFs.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TOOD H-field expansion here?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $T$
+\end_inset
+
+-matrices of particles with certain simple geometries (most famously spherical)
+ can be obtained analytically [Kristensson 2016, Mie], but in general one
+ can find them numerically by simulating scattering of a regular spherical
+ wave 
+\begin_inset Formula $\vswfouttlm{\tau}lm$
+\end_inset
+
+ and projecting the scattered fields (or induced currents, depending on
+ the method) onto the outgoing VSWFs 
+\begin_inset Formula $\vswfrtlm{\tau}{'l'}{m'}$
+\end_inset
+
+.
+ In practice, one can compute only a finite number of elements with a cut-off
+ value 
+\begin_inset Formula $L$
+\end_inset
+
+ on the multipole degree, 
+\begin_inset Formula $l,l'\le L$
+\end_inset
+
+, see below.
+ We typically use the scuff-tmatrix tool from the free software SCUFF-EM
+ suite 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "reid_efficient_2015,SCUFF2"
+literal "false"
+
+\end_inset
+
+.
+ Note that older versions of SCUFF-EM contained a bug that rendered almost
+ all 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix results wrong; we found and fixed the bug and from upstream version
+ xxx onwards, it should behave correctly.
+ 
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 T-matrix compactness, cutoff validity
 \end_layout
 
+\begin_layout Standard
+The magnitude of the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix elements depends heavily on the scatterer's size compared to the
+ wavelength.
+ Fortunately, the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a bounded scatterer is a compact operator [REF???], so from certain
+ multipole degree onwards, 
+\begin_inset Formula $l,l'>L$
+\end_inset
+
+, the elements of the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix are negligible, so truncating the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix at finite multipole degree 
+\begin_inset Formula $L$
+\end_inset
+
+ gives a good approximation of the actual infinite-dimensional itself.
+ If the incident field is well-behaved, i.e.
+ the expansion coefficients 
+\begin_inset Formula $\rcoefftlm{\tau'}{l'}{m'}$
+\end_inset
+
+ do not take excessive values for 
+\begin_inset Formula $l'>L$
+\end_inset
+
+, the scattered field expansion coefficients 
+\begin_inset Formula $\outcoefftlm{\tau}lm$
+\end_inset
+
+ with 
+\begin_inset Formula $l>L$
+\end_inset
+
+ will also be negligible.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO when it will not be negligible
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A rule of thumb to choose the 
+\begin_inset Formula $L$
+\end_inset
+
+ with desired 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix element accuracy 
+\begin_inset Formula $\delta$
+\end_inset
+
+ can be obtained from the spherical Bessel function expansion around zero,
+ TODO.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Power transport
+\end_layout
+
+\begin_layout Standard
+For convenience, let us introduce a short-hand matrix notation for the expansion
+ coefficients and related quantities, so that we do not need to write the
+ indices explicitly; so for example, eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ would be written as 
+\begin_inset Formula $\outcoeffp{}=T\rcoeffp{}$
+\end_inset
+
+, where 
+\begin_inset Formula $\rcoeffp{},\outcoeffp{}$
+\end_inset
+
+ are column vectors with the expansion coefficients.
+ Transposed and complex-conjugated matrices are labeled with the 
+\begin_inset Formula $\dagger$
+\end_inset
+
+ superscript.
+\end_layout
+
+\begin_layout Standard
+With this notation, we state an important result about power transport,
+ derivation of which can be found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sect. 7.3"
+key "kristensson_scattering_2016"
+literal "true"
+
+\end_inset
+
+.
+ Let the field in 
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\end_inset
+
+ have expansion as in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:E field expansion"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Then the net power transported from 
+\begin_inset Formula $B_{0}\left(R\right)$
+\end_inset
+
+ to 
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\end_inset
+
+ via by electromagnetic radiation is
+\begin_inset Formula 
+\begin{equation}
+P=\frac{1}{2k^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)=\frac{1}{2k^{2}\eta_{0}\eta}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{}.\label{eq:Power transport}
+\end{equation}
+
+\end_inset
+
+In realistic scattering setups, power is transferred by radiation into 
+\begin_inset Formula $B_{0}\left(R\right)$
+\end_inset
+
+ and absorbed by the enclosed scatterer, so 
+\begin_inset Formula $P$
+\end_inset
+
+ is negative and its magnitude equals to power absorbed by the scatterer.
+\end_layout
+
+\begin_layout Subsubsection
+Plane wave expansion
+\end_layout
+
+\begin_layout Standard
+In many scattering problems considered in practice, the driving field is
+ a plane wave.
+ A transversal (
+\begin_inset Formula $\vect k\cdot\vect E_{0}=0$
+\end_inset
+
+) plane wave propagating in direction 
+\begin_inset Formula $\uvec k$
+\end_inset
+
+ with (complex) amplitude 
+\begin_inset Formula $\vect E_{0}$
+\end_inset
+
+ can be expanded into regular VSWFs 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "7.???"
+key "kristensson_scattering_2016"
+literal "false"
+
+\end_inset
+
+ as
+\begin_inset Formula 
+\[
+\vect E_{\mathrm{PW}}\left(\vect r,\omega\right)=\vect E_{0}e^{ik\uvec k\cdot\vect r}=\sum_{\tau,l,m}\rcoeffptlm{}{\tau}lm\left(\vect k,\vect E_{0}\right)\vswfrtlm{\tau}lm\left(k\vect r\right),
+\]
+
+\end_inset
+
+with expansion coefficients
+\begin_inset Formula 
+\begin{eqnarray}
+\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
+\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $\vshD{\tau}lm$
+\end_inset
+
+ are the 
+\begin_inset Quotes eld
+\end_inset
+
+dual
+\begin_inset Quotes erd
+\end_inset
+
+ vector spherical harmonics defined by duality relation with the 
+\begin_inset Quotes eld
+\end_inset
+
+usual
+\begin_inset Quotes erd
+\end_inset
+
+ vector spherical harmonics 
+\begin_inset Formula 
+\begin{equation}
+\iint\vshD{\tau'}{l'}{m'}\left(\uvec r\right)\cdot\vsh{\tau}lm\left(\uvec r\right)\,\ud\Omega=\delta_{\tau'\tau}\delta_{l'l}\delta_{m'm}\label{eq:dual vsh}
+\end{equation}
+
+\end_inset
+
+(complex conjugation not implied in the dot product here).
+ In our convention, we have
+\begin_inset Formula 
+\[
+\vshD{\tau}lm\left(\uvec r\right)=\left(\vsh{\tau}lm\left(\uvec r\right)\right)^{*}=\left(-1\right)^{m}\vsh{\tau}{l-}m\left(\uvec r\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Cross-sections (single-particle)
+\end_layout
+
+\begin_layout Standard
+With the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix and expansion coefficients of plane waves in hand, we can state
+ the expressions for cross-sections of a single scatterer.
+ Assuming a non-lossy background medium, extinction, scattering and absorption
+ cross sections of a single scatterer irradiated by a plane wave propagating
+ in direction 
+\begin_inset Formula $\uvec k$
+\end_inset
+
+ and (complex) amplitude 
+\begin_inset Formula $\vect E_{0}$
+\end_inset
+
+ are 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sect. 7.8.2"
+key "kristensson_scattering_2016"
+literal "true"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray}
+\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}+\Tp{}^{\dagger}\right)\rcoeffp{},\label{eq:extincion CS single}\\
+\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left\Vert \outcoeffp{}\right\Vert ^{2}=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}\right)\rcoeffp{},\label{eq:scattering CS single}\\
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & \sigma_{\mathrm{ext}}\left(\uvec k\right)-\sigma_{\mathrm{scat}}\left(\uvec k\right)=-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)\nonumber \\
+ &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{},\label{eq:absorption CS single}
+\end{eqnarray}
+
+\end_inset
+
+where 
+\begin_inset Formula $\rcoeffp{}=\rcoeffp{}\left(\vect k,\vect E_{0}\right)$
+\end_inset
+
+ is the vector of plane wave expansion coefficients as in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:plane wave expansion"
+
+\end_inset
+
+.
+ 
+\end_layout
+
 \begin_layout Subsection
-
-\lang english
 Multiple scattering
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Multiple-scattering"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the system consists of multiple scatterers, the EM fields around each
+ one can be expanded in analogous way.
+ Let 
+\begin_inset Formula $\mathcal{P}$
+\end_inset
+
+ be an index set labeling the scatterers.
+ We enclose each scatterer in a ball 
+\begin_inset Formula $B_{\vect r_{p}}\left(R_{p}\right)$
+\end_inset
+
+ such that the balls do not touch, 
+\begin_inset Formula $B_{\vect r_{p}}\left(R_{p}\right)\cap B_{\vect r_{q}}\left(R_{q}\right)=\emptyset;p,q\in\mathcal{P}$
+\end_inset
+
+, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO bacha, musejí být uzavřené!
+\end_layout
+
+\end_inset
+
+so there is a non-empty volume
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+jaksetometuje?
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Formula $\openball{\vect r_{p}}{R_{p}^{>}}\backslash B_{\vect r_{p}}\left(R_{p}\right)$
+\end_inset
+
+ around each one that contains only the background medium without any scatterers.
+ Then the EM field inside each such volume can be expanded in a way similar
+ to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:E field expansion"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, using VSWFs with origins shifted to the centre of the volume:
+\begin_inset Formula 
+\begin{align}
+\vect E\left(\omega,\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)+\outcoeffptlm p{\tau}lm\vswfouttlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)\right),\label{eq:E field expansion multiparticle}\\
+ & \vect r\in\openball{\vect r_{p}}{R_{p}^{>}}\backslash B_{\vect r_{p}}\left(R_{p}\right).\nonumber 
+\end{align}
+
+\end_inset
+
+Unlike the single scatterer case, the incident field coefficients 
+\begin_inset Formula $\rcoeffptlm p{\tau}lm$
+\end_inset
+
+ here are not only due to some external driving field that the particle
+ does not influence but they also contain the contributions of fields scattered
+ from 
+\emph on
+all other scatterers
+\emph default
+: 
+\begin_inset Formula 
+\begin{equation}
+\rcoeffp p=\rcoeffincp p+\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q\label{eq:particle total incident field coefficient a}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\rcoeffincp p$
+\end_inset
+
+ represents the part due to the external driving that the scatterers can
+ not influence, and 
+\begin_inset Formula $\tropsp pq$
+\end_inset
+
+ is a 
+\emph on
+translation operator
+\emph default
+ defined below in Sec.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Translation-operator"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, that contains the re-expansion coefficients of the outgoing waves in origin
+ 
+\begin_inset Formula $\vect r_{q}$
+\end_inset
+
+ into regular waves in origin 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+.
+ For each scatterer, we also have its 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix relation as in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T-matrix definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+\outcoeffp q=T_{q}\rcoeffp q.
+\]
+
+\end_inset
+
+Together with 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:particle total incident field coefficient a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, this gives rise to a set of linear equations
+\begin_inset Formula 
+\begin{equation}
+\outcoeffp p-T_{p}\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q=T_{p}\rcoeffincp p,\quad p\in\mathcal{P}\label{eq:Multiple-scattering problem}
+\end{equation}
+
+\end_inset
+
+which defines the multiple-scattering problem.
+ If all the 
+\begin_inset Formula $p,q$
+\end_inset
+
+-indexed vectors and matrices (note that without truncation, they are infinite-d
+imensional) are arranged into blocks of even larger vectors and matrices,
+ this can be written in a short-hand form
+\begin_inset Formula 
+\begin{equation}
+\left(I-T\trops\right)\outcoeff=T\rcoeffinc\label{eq:Multiple-scattering problem block form}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $I$
+\end_inset
+
+ is the identity matrix, 
+\begin_inset Formula $T$
+\end_inset
+
+is a block-diagonal matrix containing all the individual 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices, and 
+\begin_inset Formula $\trops$
+\end_inset
+
+ contains the individual 
+\begin_inset Formula $\tropsp pq$
+\end_inset
+
+matrices as the off-diagonal blocks, whereas the diagonal blocks are set
+ to zeros.
+\end_layout
+
+\begin_layout Standard
+In practice, the multiple-scattering problem is solved in its truncated
+ form, in which all the 
+\begin_inset Formula $l$
+\end_inset
+
+-indices related to a given scatterer 
+\begin_inset Formula $p$
+\end_inset
+
+ are truncated as 
+\begin_inset Formula $l\le L_{p}$
+\end_inset
+
+, laeving only 
+\begin_inset Formula $N_{p}=2L_{p}\left(L_{p}+2\right)$
+\end_inset
+
+ different 
+\begin_inset Formula $\tau lm$
+\end_inset
+
+-multiindices left.
+ The truncation degree can vary for different scatterers (e.g.
+ due to different physical sizes), so the truncated block 
+\begin_inset Formula $\tropsp pq$
+\end_inset
+
+ has shape 
+\begin_inset Formula $N_{p}\times N_{q}$
+\end_inset
+
+, not necessarily square.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Such truncation of the translation operator 
+\begin_inset Formula $\tropsp pq$
+\end_inset
+
+ is justified by the fact on the left, TODO
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If no other type of truncation is done, there remain 
+\begin_inset Formula $2L_{p}\left(L_{p}+2\right)$
+\end_inset
+
+ different 
+\begin_inset Formula $\tau lm$
+\end_inset
+
+-multiindices for 
+\begin_inset Formula $p$
+\end_inset
+
+-th scatterer, so that the truncated version of the matrix 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ is a square matrix with 
+\begin_inset Formula $\left(\sum_{p\in\mathcal{P}}N_{p}\right)^{2}$
+\end_inset
+
+ elements in total.
+ The truncated problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can then be solved using standard numerical linear algebra methods (typically,
+ by LU factorisation of the 
+\begin_inset Formula $\left(I-T\trops\right)$
+\end_inset
+
+ matrix at a given frequency, and then solving with Gauss elimination for
+ as many different incident 
+\begin_inset Formula $\rcoeffinc$
+\end_inset
+
+ vectors as needed).
+\end_layout
+
+\begin_layout Standard
+Alternatively, the multiple scattering problem can be formulated in terms
+ of the regular field expansion coefficients,
+\begin_inset Formula 
+\begin{align*}
+\rcoeffp p-\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pqT_{q}\rcoeffp q & =\rcoeffincp p,\quad p\in\mathcal{P},\\
+\left(I-\trops T\right)\rcoeff & =\rcoeffinc,
+\end{align*}
+
+\end_inset
+
+but this form is less suitable for numerical calculations due to the fact
+ that the regular VSWF expansion coefficients on both sides of the equation
+ are typically non-negligible even for large multipole degree 
+\begin_inset Formula $l$
+\end_inset
+
+, hence the truncation is not justified in this case.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO less bulshit.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
-
-\lang english
 Translation operator
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Translation-operator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\vect r_{1},\vect r_{2}$
+\end_inset
+
+ be two different origins; a regular VSWF with origin 
+\begin_inset Formula $\vect r_{1}$
+\end_inset
+
+ can be always expanded in terms of regular VSWFs with origin 
+\begin_inset Formula $\vect r_{2}$
+\end_inset
+
+ as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{1}\right)\right)=\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right),\label{eq:regular vswf translation}
+\end{equation}
+
+\end_inset
+
+where an explicit formula for the (regular) 
+\emph on
+translation operator
+\emph default
+ 
+\begin_inset Formula $\tropr$
+\end_inset
+
+ reads in eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator"
+
+\end_inset
+
+ below.
+ For singular (outgoing) waves, the form of the expansion differs inside
+ and outside the ball 
+\begin_inset Formula $\openball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}:$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{eqnarray}
+\vswfouttlm{\tau}lm\left(k\left(\vect r-\vect r_{1}\right)\right) & = & \begin{cases}
+\sum_{\tau'l'm'}\trops_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfouttlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right), & \vect r\in\openball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}\\
+\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right), & \vect r\notin\closedball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\left|\vect r_{1}\right|}
+\end{cases},\label{eq:singular vswf translation}
+\end{eqnarray}
+
+\end_inset
+
+where the singular translation operator 
+\begin_inset Formula $\trops$
+\end_inset
+
+ has the same form as 
+\begin_inset Formula $\tropr$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator"
+
+\end_inset
+
+ except the regular spherical Bessel functions 
+\begin_inset Formula $j_{l}$
+\end_inset
+
+ are replaced with spherical Hankel functions 
+\begin_inset Formula $h_{l}^{(1)}$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO note about expansion exactly on the sphere.
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+As MSTMM deals most of the time with the 
+\emph on
+expansion coefficients
+\emph default
+ of fields 
+\begin_inset Formula $\rcoeffptlm p{\tau}lm,\outcoeffptlm p{\tau}lm$
+\end_inset
+
+ in different origins 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+ rather than with the VSWFs directly, let us write down how 
+\emph on
+they
+\emph default
+ transform under translation.
+ Let us assume the field can be in terms of regular waves everywhere, and
+ expand it in two different origins 
+\begin_inset Formula $\vect r_{p},\vect r_{q}$
+\end_inset
+
+,
+\begin_inset Formula 
+\[
+\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)=\sum_{\tau',l',m'}\rcoeffptlm q{\tau'}{l'}{m'}\vswfrtlm{\tau}{'l'}{m'}\left(k\left(\vect r-\vect r_{q}\right)\right).
+\]
+
+\end_inset
+
+Re-expanding the waves around 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+ in terms of waves around 
+\begin_inset Formula $\vect r_{q}$
+\end_inset
+
+ using 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf translation"
+
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{q}\right)
+\]
+
+\end_inset
+
+and comparing to the original expansion around 
+\begin_inset Formula $\vect r_{q}$
+\end_inset
+
+, we obtain
+\begin_inset Formula 
+\begin{equation}
+\rcoeffptlm q{\tau'}{l'}{m'}=\sum_{\tau,l,m}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\rcoeffptlm p{\tau}lm.\label{eq:regular vswf coefficient translation}
+\end{equation}
+
+\end_inset
+
+For the sake of readability, we introduce a shorthand matrix form for 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf coefficient translation"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\rcoeffp q=\troprp qp\rcoeffp p\label{eq:reqular vswf coefficient vector translation}
+\end{equation}
+
+\end_inset
+
+(note the reversed indices; TODO redefine them in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf translation"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:singular vswf translation"
+
+\end_inset
+
+? Similarly, if we had only outgoing waves in the original expansion around
+ 
+\begin_inset Formula $\vect r_{p}$
+\end_inset
+
+, we would get
+\begin_inset Formula 
+\begin{equation}
+\rcoeffp q=\tropsp qp\outcoeffp p\label{eq:singular to regular vswf coefficient vector translation}
+\end{equation}
+
+\end_inset
+
+for the expansion inside the ball 
+\begin_inset Formula $\openball{\left\Vert \vect r_{q}-\vect r_{p}\right\Vert }{\vect r_{p}}$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+CHECKME
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Formula 
+\begin{equation}
+\outcoeffp q=\troprp qp\outcoeffp p\label{eq:singular to singular vswf coefficient vector translation-1}
+\end{equation}
+
+\end_inset
+
+outside.
+\end_layout
+
+\begin_layout Standard
+In our convention, the regular translation operator can be expressed explicitly
+ as (TODO CHECK CAREFULLY FOR POSSIBLE 
+\begin_inset Formula $(-1)^{m'}$
+\end_inset
+
+ AND SIMILAR FACTORS AND REWRITE IN TERMS OF SPHERICAL HARMONICS)
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Teďka jsou tam zkopírovány výrazy pro C a D z Kristenssona, chybějí fase
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline}
+\tropr_{\tau lm;\tau l'm'}\left(\vect d\right)=\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\\
+\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)=-i\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\qquad\tau\ne\tau'.\label{eq:translation operator}
+\end{multline}
+
+\end_inset
+
+The singular operator 
+\begin_inset Formula $\trops$
+\end_inset
+
+ for re-expanding outgoing waves into regular ones has the same form except
+ the regular spherical Bessel functions 
+\begin_inset Formula $j_{l}$
+\end_inset
+
+ in are replaced with spherical Hankel functions 
+\begin_inset Formula $h_{l}^{(1)}=j_{l}+iy_{l}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In our convention, the regular translation operator is unitary, 
+\begin_inset Formula $\left(\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)\right)^{-1}=\tropr_{\tau lm;\tau'l'm'}\left(-\vect d\right)=\tropr_{\tau'l'm';\tau lm}^{*}\left(\vect d\right)$
+\end_inset
+
+,
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+todo different notation for the complex conjugation without transposition???
+\end_layout
+
+\end_inset
+
+ or in the per-particle matrix notation, 
+\begin_inset Formula 
+\begin{equation}
+\troprp qp^{-1}=\troprp pq=\troprp qp^{\dagger}\label{eq:regular translation unitarity}
+\end{equation}
+
+\end_inset
+
+.
+ Note that truncation at finite multipole degree breaks the unitarity, 
+\begin_inset Formula $\truncated{\troprp qp}L^{-1}\ne\truncated{\troprp pq}L=\truncated{\troprp qp^{\dagger}}L$
+\end_inset
+
+, which has to be taken into consideration when evaluating quantities such
+ as absorption or scattering cross sections.
+ Similarly, the full regular operators can be composed
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+better wording
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+\troprp ac=\troprp ab\troprp bc\label{eq:regular translation composition}
+\end{equation}
+
+\end_inset
+
+ but truncation breaks this, 
+\begin_inset Formula $\truncated{\troprp ac}L\ne\truncated{\troprp ab}L\truncated{\troprp bc}L.$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
+Cross-sections (many scatterers)
+\end_layout
 
-\lang english
-Numerical complexity, comparison to other methods
+\begin_layout Standard
+For a system of many scatterers, Kristensson 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "sect. 9.2.2"
+key "kristensson_scattering_2016"
+literal "false"
+
+\end_inset
+
+ derives only the extinction cross section formula.
+ Let us re-derive it together with the many-particle scattering and absorption
+ cross sections.
+ First, let us take a ball circumscribing all the scatterers at once, 
+\begin_inset Formula $\openball R{\vect r_{\square}}\supset\particle$
+\end_inset
+
+.
+ Outside 
+\begin_inset Formula $\openball R{\vect r_{\square}}$
+\end_inset
+
+, we can describe the EM fields as if there was only a single scatterer,
+\begin_inset Formula 
+\[
+\vect E\left(\vect r\right)=\sum_{\tau,l,m}\left(\rcoeffptlm{\square}{\tau}lm\vswfrtlm{\tau}lm\left(\vect r-\vect r_{\square}\right)+\outcoeffptlm{\square}{\tau}lm\vswfouttlm{\tau}lm\left(\vect r-\vect r_{\square}\right)\right),
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\rcoeffp{\square},\outcoeffp{\square}$
+\end_inset
+
+ are the vectors of VSWF expansion coefficients of the incident and total
+ scattered fields, respectively, at origin 
+\begin_inset Formula $\vect r_{\square}$
+\end_inset
+
+.
+ In principle, one could evaluate 
+\begin_inset Formula $\outcoeffp{\square}$
+\end_inset
+
+ using the translation operators (REF!!!) and use the single-scatterer formulae
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:extincion CS single"
+
+\end_inset
+
+–
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS single"
+
+\end_inset
+
+ with 
+\begin_inset Formula $\rcoeffp{}=\rcoeffp{\square},\outcoeffp{}=\outcoeffp{\square}$
+\end_inset
+
+ to obtain the cross sections.
+ However, this is not suitable for numerical evaluation with truncation
+ in multipole degree; hence we need to express them in terms of particle-wise
+ expansions 
+\begin_inset Formula $\rcoeffp p,\outcoeffp p$
+\end_inset
+
+.
+ The original incident field re-expanded around 
+\begin_inset Formula $p$
+\end_inset
+
+-th particle reads according to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf translation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\rcoeffincp p=\troprp p{\square}\rcoeffp{\square}\label{eq:a_inc local from global}
+\end{equation}
+
+\end_inset
+
+whereas the contributions of fields scattered from each particle expanded
+ around the global origin 
+\begin_inset Formula $\vect r_{\square}$
+\end_inset
+
+ is, according to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:singular vswf translation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{equation}
+\outcoeffp{\square}=\sum_{q\in\mathcal{P}}\troprp{\square}q\outcoeffp q.\label{eq:f global from local}
+\end{equation}
+
+\end_inset
+
+Using the unitarity 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular translation unitarity"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and composition 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular translation composition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ properties, one has
+\begin_inset Formula 
+\begin{align}
+\rcoeffp{\square}^{\dagger}\outcoeffp{\square} & =\rcoeffincp p^{\dagger}\troprp p{\square}\troprp{\square}q\outcoeffp q=\rcoeffincp p^{\dagger}\sum_{q\in\mathcal{P}}\troprp pqf_{q}\nonumber \\
+ & =\sum_{q\in\mathcal{P}}\left(\troprp qp\rcoeffincp p\right)^{\dagger}f_{q}=\sum_{q\in\mathcal{P}}\rcoeffincp q^{\dagger}f_{q},\label{eq:atf form multiparticle}
+\end{align}
+
+\end_inset
+
+where only the last expression is suitable for numerical evaluation with
+ truncated matrices, because the previous ones contain a translation operator
+ right next to an incident field coefficient vector (see Sec.
+ TODO).
+ Similarly, 
+\begin_inset Formula 
+\begin{align}
+\left\Vert \outcoeffp{\square}\right\Vert ^{2} & =\outcoeffp{\square}^{\dagger}\outcoeffp{\square}=\sum_{p\in\mathcal{P}}\left(\troprp{\square}p\outcoeffp p\right)^{\dagger}\sum_{q\in\mathcal{P}}\troprp{\square}q\outcoeffp q\nonumber \\
+ & =\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q.\label{eq:f squared form multiparticle}
+\end{align}
+
+\end_inset
+
+Substituting 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:atf form multiparticle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:f squared form multiparticle"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:scattering CS single"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS single"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we get the many-particle expressions for extinction, scattering and absorption
+ cross sections suitable for numerical evaluation: 
+\begin_inset Formula 
+\begin{eqnarray}
+\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\outcoeffp p=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\left(\Tp p+\Tp p^{\dagger}\right)\rcoeffp p,\label{eq:extincion CS multi}\\
+\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q\nonumber \\
+ &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\rcoeffp p^{\dagger}\Tp p^{\dagger}\troprp pq\Tp q\rcoeffp q,\label{eq:scattering CS multi}\\
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}}\troprp pq\outcoeffp q\right)\right).\nonumber \\
+\label{eq:absorption CS multi}
+\end{eqnarray}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\mbox{TODO}.$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+An alternative approach to derive the absorption cross section is via a
+ power transport argument.
+ Note the direct proportionality between absorption cross section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS single"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and net radiated power for single scatterer 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Power transport"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{\mathrm{abs}}=-\eta_{0}\eta P/2\left\Vert \vect E_{0}\right\Vert ^{2}$
+\end_inset
+
+.
+ In the many-particle setup (with non-lossy background medium, so that only
+ the particles absorb), the total absorbed power is equal to the sum of
+ absorbed powers on each particle, 
+\begin_inset Formula $-P=\sum_{p\in\mathcal{P}}-P_{p}$
+\end_inset
+
+.
+ Using the power transport formula 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Power transport"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ particle-wise gives
+\begin_inset Formula 
+\begin{equation}
+\sigma_{\mathrm{abs}}\left(\uvec k\right)=-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\left(\Re\left(\rcoeffp p^{\dagger}\outcoeffp p\right)+\left\Vert \outcoeffp p\right\Vert ^{2}\right)\label{eq:absorption CS multi alternative}
+\end{equation}
+
+\end_inset
+
+which seems different from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS multi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, but using 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:particle total incident field coefficient a"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we can rewrite it as
+\begin_inset Formula 
+\begin{align*}
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & =-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffp p+\outcoeffp p\right)\right)\\
+ & =-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q+\outcoeffp p\right)\right).
+\end{align*}
+
+\end_inset
+
+It is easy to show that all the terms of 
+\begin_inset Formula $\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\tropsp pq\outcoeffp q$
+\end_inset
+
+ containing the singular spherical Bessel functions 
+\begin_inset Formula $y_{l}$
+\end_inset
+
+ are imaginary, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO better formulation
+\end_layout
+
+\end_inset
+
+ so that actually 
+\begin_inset Formula $\sum_{p\in\mathcal{P}}\Re\left(\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\tropsp pq\outcoeffp q+\outcoeffp p^{\dagger}\outcoeffp p\right)=\sum_{p\in\mathcal{P}}\Re\left(\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\troprp pq\outcoeffp q+\outcoeffp p^{\dagger}\outcoeffp p\right)=\sum_{p\in\mathcal{P}}\Re\left(\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\outcoeffp p^{\dagger}\troprp pq\outcoeffp q+\outcoeffp p^{\dagger}\troprp pp\outcoeffp p\right)=\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q,$
+\end_inset
+
+ proving that the expressions in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS multi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS multi alternative"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ are equal.
 \end_layout
 
 \end_body

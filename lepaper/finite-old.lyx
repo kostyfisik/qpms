@@ -1,0 +1,385 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 583
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "TeX Gyre Pagella"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf true
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "Sähköpajan päiväkirja"
+\pdf_author "Marek Nečada"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+The multiple-scattering problem
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:The-multiple-scattering-problem"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix approach, scattering properties of single nanoparticles in a homogeneous
+ medium are first computed in terms of vector sperical wavefunctions (VSWFs)—the
+ field incident onto the 
+\begin_inset Formula $n$
+\end_inset
+
+-th nanoparticle from external sources can be expanded as 
+\begin_inset Formula 
+\begin{equation}
+\vect E_{n}^{\mathrm{inc}}(\vect r)=\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{t=\mathrm{E},\mathrm{M}}\coeffrip nlmt\vswfr lmt\left(\vect r_{n}\right)\label{eq:E_inc}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\vect r_{n}=\vect r-\vect R_{n}$
+\end_inset
+
+, 
+\begin_inset Formula $\vect R_{n}$
+\end_inset
+
+ being the position of the centre of 
+\begin_inset Formula $n$
+\end_inset
+
+-th nanoparticle and 
+\begin_inset Formula $\vswfr lmt$
+\end_inset
+
+ are the regular VSWFs which can be expressed in terms of regular spherical
+ Bessel functions of 
+\begin_inset Formula $j_{k}\left(\left|\vect r_{n}\right|\right)$
+\end_inset
+
+ and spherical harmonics 
+\begin_inset Formula $\ush km\left(\hat{\vect r}_{n}\right)$
+\end_inset
+
+; the expressions, together with a proof that the VSWFs span all the solutions
+ of vector Helmholtz equation around the particle, justifying the expansion,
+ can be found e.g.
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "chapter 7"
+key "kristensson_scattering_2016"
+literal "true"
+
+\end_inset
+
+ (care must be taken because of varying normalisation and phase conventions).
+ On the other hand, the field scattered by the particle can be (outside
+ the particle's circumscribing sphere) expanded in terms of singular VSWFs
+ 
+\begin_inset Formula $\vswfs lmt$
+\end_inset
+
+ which differ from the regular ones by regular spherical Bessel functions
+ being replaced with spherical Hankel functions 
+\begin_inset Formula $h_{k}^{(1)}\left(\left|\vect r_{n}\right|\right)$
+\end_inset
+
+, 
+\begin_inset Formula 
+\begin{equation}
+\vect E_{n}^{\mathrm{scat}}\left(\vect r\right)=\sum_{l,m,t}\coeffsip nlmt\vswfs lmt\left(\vect r_{n}\right).\label{eq:E_scat}
+\end{equation}
+
+\end_inset
+
+The expansion coefficients 
+\begin_inset Formula $\coeffsip nlmt$
+\end_inset
+
+, 
+\begin_inset Formula $t=\mathrm{E},\mathrm{M}$
+\end_inset
+
+ are related to the electric and magnetic multipole polarization amplitudes
+ of the nanoparticle.
+\end_layout
+
+\begin_layout Standard
+At a given frequency, assuming the system is linear, the relation between
+ the expansion coefficients in the VSWF bases is given by the so-called
+ 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, 
+\begin_inset Formula 
+\begin{equation}
+\coeffsip nlmt=\sum_{l',m',t'}T_{n}^{lmt;l'm't'}\coeffrip n{l'}{m'}{t'}.\label{eq:Tmatrix definition}
+\end{equation}
+
+\end_inset
+
+The 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix is given by the shape and composition of the particle and fully
+ describes its scattering properties.
+ In theory it is infinite-dimensional, but in practice (at least for subwaveleng
+th nanoparticles) its elements drop very quickly to negligible values with
+ growing degree indices 
+\begin_inset Formula $l,l'$
+\end_inset
+
+, enabling to take into account only the elements up to some finite degree,
+ 
+\begin_inset Formula $l,l'\le l_{\mathrm{max}}$
+\end_inset
+
+.
+ The 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix can be calculated numerically using various methods; here we used
+ the scuff-tmatrix tool from the SCUFF-EM suite 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SCUFF2,reid_efficient_2015"
+literal "true"
+
+\end_inset
+
+, which implements the boundary element method (BEM).
+\end_layout
+
+\begin_layout Standard
+The singular VSWFs originating at 
+\begin_inset Formula $\vect R_{n}$
+\end_inset
+
+ can be then re-expanded around another origin (nanoparticle location) 
+\begin_inset Formula $\vect R_{n'}$
+\end_inset
+
+ in terms of regular VSWFs, 
+\begin_inset Formula 
+\begin{equation}
+\begin{split}\svwfs lmt\left(\vect r_{n}\right)=\sum_{l',m',t'}\transop^{l'm't';lmt}\left(\vect R_{n'}-\vect R_{n}\right)\vswfr{l'}{m'}{t'}\left(\vect r_{n'}\right),\\
+\left|\vect r_{n'}\right|<\left|\vect R_{n'}-\vect R_{n}\right|.
+\end{split}
+\label{eq:translation op def}
+\end{equation}
+
+\end_inset
+
+Analytical expressions for the translation operator 
+\begin_inset Formula $\transop^{lmt;l'm't'}\left(\vect R_{n'}-\vect R_{n}\right)$
+\end_inset
+
+ can be found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "xu_efficient_1998"
+literal "true"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If we write the field incident onto the 
+\begin_inset Formula $n$
+\end_inset
+
+-th nanoparticle as the sum of fields scattered from all the other nanoparticles
+ and an external field 
+\begin_inset Formula $\vect E_{0}$
+\end_inset
+
+ (which we also expand around each nanoparticle, 
+\begin_inset Formula $\vect E_{0}\left(\vect r\right)=\sum_{l,m,t}\coeffripext nlmt\vswfr lmt\left(\vect r_{n}\right)$
+\end_inset
+
+), 
+\begin_inset Formula 
+\[
+\vect E_{n}^{\mathrm{inc}}\left(\vect r\right)=\vect E_{0}\left(\vect r\right)+\sum_{n'\ne n}\vect E_{n'}^{\mathrm{scat}}\left(\vect r\right)
+\]
+
+\end_inset
+
+and use eqs.
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:E_inc"
+
+\end_inset
+
+)–(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:translation op def"
+
+\end_inset
+
+), we obtain a set of linear equations for the electromagnetic response
+ (multiple scattering) of the whole set of nanoparticles, 
+\begin_inset Formula 
+\begin{equation}
+\begin{split}\coeffrip nlmt=\coeffripext nlmt+\sum_{n'\ne n}\sum_{l',m',t'}\transop^{lmt;l'm't'}\left(\vect R_{n}-\vect R_{n'}\right)\\
+\times\sum_{l'',m'',t''}T_{n'}^{l'm't';l''m''t''}\coeffrip{n'}{l''}{m''}{t''}.
+\end{split}
+\label{eq:multiplescattering element-wise}
+\end{equation}
+
+\end_inset
+
+It is practical to get rid of the VSWF indices, rewriting (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:multiplescattering element-wise"
+
+\end_inset
+
+) in a per-particle matrix form 
+\begin_inset Formula 
+\begin{equation}
+\coeffr_{n}=\coeffr_{\mathrm{ext}(n)}+\sum_{n'\ne n}S_{n,n'}T_{n'}p_{n'}\label{eq:multiple scattering per particle p}
+\end{equation}
+
+\end_inset
+
+and to reformulate the problem using (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Tmatrix definition"
+
+\end_inset
+
+) in terms of the 
+\begin_inset Formula $\coeffs$
+\end_inset
+
+-coefficients which describe the multipole excitations of the particles
+ 
+\begin_inset Formula 
+\begin{equation}
+\coeffs_{n}-T_{n}\sum_{n'\ne n}S_{n,n'}\coeffs_{n'}=T_{n}\coeffr_{\mathrm{ext}(n)}.\label{eq:multiple scattering per particle a}
+\end{equation}
+
+\end_inset
+
+Knowing 
+\begin_inset Formula $T_{n},S_{n,n'},\coeffr_{\mathrm{ext}(n)}$
+\end_inset
+
+, the nanoparticle excitations 
+\begin_inset Formula $a_{n}$
+\end_inset
+
+ can be solved by standard linear algebra methods.
+ The total scattered field anywhere outside the particles' circumscribing
+ spheres is then obtained by summing the contributions (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:E_scat"
+
+\end_inset
+
+) from all particles.
+\end_layout
+
+\end_body
+\end_document
