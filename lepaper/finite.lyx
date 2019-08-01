@@ -251,7 +251,16 @@ todo define
 \begin_inset Formula $k=k\left(\omega\right)=\omega\sqrt{\mubg(\omega)\epsbg(\omega)}/c_{0}$
 \end_inset
 
-, as can be derived from the Maxwell's equations [REF Jackson?].
+, as can be derived from the Maxwell's equations 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "???"
+key "jackson_classical_1998"
+literal "false"
+
+\end_inset
+
+.
  
 \end_layout
 
@@ -368,9 +377,16 @@ TODO názornější definice.
 \end_layout
 
 \begin_layout Standard
-The convention for VSWFs used here is the same as in [Kristensson 2014];
- over other conventions used elsewhere in literature, it has several fundamental
- advantages – most importantly, the translation operators introduced later
+The convention for VSWFs used here is the same as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kristensson_spherical_2014"
+literal "false"
+
+\end_inset
+
+; over other conventions used elsewhere in literature, it has several fundamenta
+l advantages – most importantly, the translation operators introduced later
  in eq.
  
 \begin_inset CommandInset ref
@@ -667,7 +683,15 @@ TOOD H-field expansion here?
 
 , see below.
  We typically use the scuff-tmatrix tool from the free software SCUFF-EM
- suite [SCUFF-EM].
+ suite 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "reid_efficient_2015,SCUFF2"
+literal "false"
+
+\end_inset
+
+.
  Note that older versions of SCUFF-EM contained a bug that rendered almost
  all 
 \begin_inset Formula $T$
@@ -866,7 +890,16 @@ In many scattering problems considered in practice, the driving field is
 \begin_inset Formula $\vect E_{0}$
 \end_inset
 
- can be expanded into regular VSWFs [REF KRIS] as
+ can be expanded into regular VSWFs 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "7.???"
+key "kristensson_scattering_2016"
+literal "false"
+
+\end_inset
+
+ as
 \begin_inset Formula 
 \[
 \vect E_{\mathrm{PW}}\left(\vect r,\omega\right)=\vect E_{0}e^{ik\uvec k\cdot\vect r}=\sum_{\tau,l,m}\rcoeffptlm{}{\tau}lm\left(\vect k,\vect E_{0}\right)\vswfrtlm{\tau}lm\left(k\vect r\right),
@@ -2006,10 +2039,6 @@ noprefix "false"
 \end_inset
 
  are equal.
-\end_layout
-
-\begin_layout Subsubsection
-Numerical complexity, comparison to other methods
 \end_layout
 
 \end_body

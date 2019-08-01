@@ -164,7 +164,7 @@ status open
 
 
 \begin_inset FormulaMacro
-\newcommand{\dc}[1]{|||_{#1}}
+\newcommand{\dc}[1]{\mathrm{III}_{#1}}
 \end_inset
 
 
@@ -858,8 +858,10 @@ literal "true"
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "T-matrix paper"
+btprint "btPrintCited"
+bibfiles "tmpaper"
 options "plain"
+encoding "default"
 
 \end_inset
 
