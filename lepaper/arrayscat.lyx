@@ -758,6 +758,11 @@ The text about symmetries is pretty dense.
  Make it more explanatory and human-readable.
 \end_layout
 
+\begin_layout Itemize
+Check whether everything written is correct also for non-symmetric space
+ groups.
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand include
