@@ -722,7 +722,7 @@ Obviously, the expansion coefficients belonging to particles in different
  orbits do not mix together.
  As before, we introduce a short-hand block-matrix notation for 
 \begin_inset CommandInset ref
-LatexCommand ref
+LatexCommand eqref
 reference "eq:excitation coefficient under symmetry operation"
 plural "false"
 caps "false"
