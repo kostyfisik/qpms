@@ -7,6 +7,7 @@
 \textclass article
 \begin_preamble
 \DeclareUnicodeCharacter{0428}{Ш }
+\usepackage{tikz}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false

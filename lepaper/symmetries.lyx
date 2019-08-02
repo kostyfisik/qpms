@@ -506,8 +506,6 @@ noprefix "false"
 \end_inset
 
 , we have
-\lang english
-
 \begin_inset Formula 
 \begin{multline}
 \vect E\left(\omega,R_{g}\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
@@ -526,6 +524,18 @@ alignment document
 wide false
 sideways false
 status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset CommandInset include
+LatexCommand input
+filename "orbits.tex"
+literal "true"
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -551,12 +561,12 @@ Scatterer orbits under
 \end_inset
 
  lie on the 
-\begin_inset Formula $xz$
+\begin_inset Formula $yz$
 \end_inset
 
  plane, hence the corresponding reflection maps each of them to itself,
  but the 
-\begin_inset Formula $yz$
+\begin_inset Formula $xz$
 \end_inset
 
  reflection (or the 
@@ -685,8 +695,6 @@ status open
 \end_inset
 
  one has 
-\lang english
-
 \begin_inset Formula 
 \begin{align}
 \vect E\left(\omega,R_{g}\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}(p)}\right)\right)\right.+\label{eq:rotated E field expansion around outside origin-1}\\
@@ -726,8 +734,6 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-
-\lang english
 \begin_inset Formula 
 \begin{align}
 \rcoeff & \mapsto J\left(g\right)a,\nonumber \\
@@ -741,8 +747,6 @@ noprefix "false"
 status open
 
 \begin_layout Plain Layout
-
-\lang english
 The matrices 
 \begin_inset Formula $D\left(g\right)$
 \end_inset
@@ -1184,8 +1188,6 @@ name "Phase factor illustration"
 \begin_layout Standard
 More rigorous analysis can be found e.g.
  in 
-\lang english
-
 \begin_inset CommandInset citation
 LatexCommand cite
 after "chapters 10–11"
@@ -1211,14 +1213,10 @@ In the group-theoretical terminology, blablabla little groups blabla bla...
 \end_layout
 
 \begin_layout Standard
-
-\lang english
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-
-\lang english
 A general overview of utilizing group theory to find lattice modes at high-symme
 try points of the Brillouin zone can be found e.g.
  in 
@@ -1234,8 +1232,6 @@ literal "true"
 \end_layout
 
 \begin_layout Plain Layout
-
-\lang english
 We analyse the symmetries of the system in the same VSWF representation
  as used in the 
 \begin_inset Formula $T$
@@ -1389,8 +1385,6 @@ where
 \end_layout
 
 \begin_layout Plain Layout
-
-\lang english
 Each mode at the 
 \begin_inset Formula $\Kp$
 \end_inset
