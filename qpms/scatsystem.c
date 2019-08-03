@@ -461,9 +461,9 @@ complex double *qpms_orbit_action_matrix(complex double *target,
   memset(target, 0, n*n*N*N*sizeof(complex double));
   complex double tmp[n][n]; // this is the 'per-particle' action
   qpms_irot3_uvswfi_dense(tmp[0], bspec, sym->rep3d[g]); 
-  for(qpms_gmi_t Col = 0; Col < ot->size; ++Col) {
+  for(qpms_ss_orbit_pi_t Col = 0; Col < ot->size; ++Col) {
     // Row is the 'destination' of the symmetry operation, Col is the 'source'
-    const qpms_gmi_t Row = ot->action[sym->order * Col + g];
+    const qpms_ss_orbit_pi_t Row = ot->action[sym->order * Col + g];
     for(size_t row = 0; row < bspec->n; ++row)
       for(size_t col = 0; col < bspec->n; ++col)
         target[n*n*N*Row + n*Col + n*N*row + col] = conj(tmp[row][col]); //CHECKCONJ
