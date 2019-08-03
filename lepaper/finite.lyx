@@ -1541,56 +1541,234 @@ outside.
 \end_layout
 
 \begin_layout Standard
-In our convention, the regular translation operator can be expressed explicitly
- as (TODO CHECK CAREFULLY FOR POSSIBLE 
-\begin_inset Formula $(-1)^{m'}$
+In our convention, the regular translation operator elements can be expressed
+ explicitly as 
+\begin_inset Formula 
+\begin{align}
+\tropr_{\tau lm;\tau l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|}^{l+l'}C_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)j_{\lambda}\left(d\right),\nonumber \\
+\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)j_{\lambda}\left(d\right),\quad\tau'\ne\tau,\label{eq:translation operator}
+\end{align}
+
 \end_inset
 
- AND SIMILAR FACTORS AND REWRITE IN TERMS OF SPHERICAL HARMONICS)
+and analogously the elements of the singular operator 
+\begin_inset Formula $\trops$
+\end_inset
+
+, having spherical Hankel functions (
+\begin_inset Formula $h_{l}^{(1)}=j_{l}+iy_{l}$
+\end_inset
+
+) in the radial part instead of the regular bessel functions,
+\begin_inset Formula 
+\begin{align}
+\trops_{\tau lm;\tau l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|}^{l+l'}C_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)h_{\lambda}^{(1)}\left(d\right),\nonumber \\
+\trops_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)h_{\lambda}^{(1)}\left(d\right),\quad\tau'\ne\tau,\label{eq:translation operator singular}
+\end{align}
+
+\end_inset
+
+where the constant factors in our convention read (TODO CHECK ONCE AGAIN
+ CAREFULLY FOR POSSIBLE PHASE FACTORS FACTORS)
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
-Teďka jsou tam zkopírovány výrazy pro C a D z Kristenssona, chybějí fase
-\end_layout
-
+Original Kristensson's 
+\begin_inset Formula $C,D's$
 \end_inset
 
-
+from F.7:
 \begin_inset Formula 
-\begin{multline}
-\tropr_{\tau lm;\tau l'm'}\left(\vect d\right)=\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\begin{multline*}
+C_{ml,m'l'}\left(\vect d\right)=\frac{\left(-1\right)^{m+m'}}{2}\sqrt{\frac{\varepsilon_{m}\varepsilon_{m'}}{4}}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
 \times\begin{pmatrix}l & l' & \lambda\\
 0 & 0 & 0
 \end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
 m & -m' & m'-m
 \end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
 \times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\\
-\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right)=-i\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+D_{ml,m'l'}\left(\vect d\right)=\frac{\left(-1\right)^{m+m'}}{2}\sqrt{\frac{\varepsilon_{m}\varepsilon_{m'}}{4}}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
 \times\begin{pmatrix}l & l' & \lambda-1\\
 0 & 0 & 0
 \end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
 m & -m' & m'-m
 \end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
-\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\qquad\tau\ne\tau'.\label{eq:translation operator}
-\end{multline}
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\qquad\tau\ne\tau'.
+\end{multline*}
 
 \end_inset
 
-The singular operator 
-\begin_inset Formula $\trops$
+where I have found a 
+\begin_inset Formula $-i$
 \end_inset
 
- for re-expanding outgoing waves into regular ones has the same form except
- the regular spherical Bessel functions 
-\begin_inset Formula $j_{l}$
+ factor in the 
+\begin_inset Formula $\tau\ne\tau'$
 \end_inset
 
- in are replaced with spherical Hankel functions 
-\begin_inset Formula $h_{l}^{(1)}=j_{l}+iy_{l}$
+ coefficients, so I force it here: 
+\begin_inset Formula 
+\begin{multline*}
+C_{ml,m'l'}\left(\vect d\right)=\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\\
+D_{ml,m'l'}\left(\vect d\right)=-i\frac{\left(-1\right)^{m+m'}}{2}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
+\times j_{\lambda}\left(d\right)P_{\lambda}^{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\qquad\tau\ne\tau'.
+\end{multline*}
+
 \end_inset
 
-.
+ TODO check influence of the 
+\begin_inset Formula $\varepsilon_{m}$
+\end_inset
+
+s, whether they can be just removed as above.
+ If we take our definition of spherical harmonics, 
+\begin_inset Formula 
+\[
+\ush lm=\left(\frac{\left(l-m\right)!\left(2l+1\right)}{4\pi\left(l+m\right)!}\right)^{\frac{1}{2}}e^{im\phi}\dlmfFer lm\left(\cos\theta\right)
+\]
+
+\end_inset
+
+so 
+\begin_inset Formula 
+\[
+\dlmfFer{\lambda}{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}}=\sqrt{\frac{4\pi\left(\lambda+m-m'\right)!}{\left(\lambda-m+m'\right)!\left(2\lambda+1\right)}}\ush{\lambda}{m-m'}\left(\uvec d\right)
+\]
+
+\end_inset
+
+and taking into account that we use the CS phase 
+\begin_inset Formula $\dlmfFer lm\left(\cos\theta\right)=\left(-1\right)^{m}P_{l}^{m}$
+\end_inset
+
+, and that 
+\begin_inset Formula $\left(-1\right)^{m+m'}=\left(-1\right)^{m-m'}$
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{multline*}
+C_{ml,m'l'}\left(\vect d\right)=\frac{1}{2}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
+\times j_{\lambda}\left(d\right)\dlmfFer{\lambda}{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\\
+D_{ml,m'l'}\left(\vect d\right)=-i\frac{1}{2}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
+\times j_{\lambda}\left(d\right)\dlmfFer{\lambda}{m-m'}\left(\cos\theta_{\uvec d}\right)e^{i\left(m-m'\right)\phi_{\uvec d}},\qquad\tau\ne\tau'.
+\end{multline*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline*}
+C_{ml,m'l'}\left(\vect d\right)=\frac{1}{2}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
+\times j_{\lambda}\left(d\right)\sqrt{\frac{4\pi\left(\lambda+m-m'\right)!}{\left(\lambda-m+m'\right)!\left(2\lambda+1\right)}}\ush{\lambda}{m-m'}\left(\uvec d\right),\\
+D_{ml,m'l'}\left(\vect d\right)=-i\frac{1}{2}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\left(2\lambda+1\right)\sqrt{\frac{\left(2l+1\right)\left(2l'+1\right)\left(\lambda-\left(m-m'\right)\right)!}{l\left(l+1\right)l'\left(l'+1\right)\left(\lambda+\left(m-m'\right)\right)!}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
+\times j_{\lambda}\left(d\right)\sqrt{\frac{4\pi\left(\lambda+m-m'\right)!}{\left(\lambda-m+m'\right)!\left(2\lambda+1\right)}}\ush{\lambda}{m-m'}\left(\uvec d\right),\qquad\tau\ne\tau'.
+\end{multline*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline*}
+C_{ml,m'l'}\left(\vect d\right)=\frac{1}{2}\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
+\times j_{\lambda}\left(d\right)\ush{\lambda}{m-m'}\left(\uvec d\right),\\
+D_{ml,m'l'}\left(\vect d\right)=-i\frac{1}{2}\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
+\times j_{\lambda}\left(d\right)\ush{\lambda}{m-m'}\left(\uvec d\right),\qquad\tau\ne\tau'.
+\end{multline*}
+
+\end_inset
+
+and finally 
+\begin_inset Formula 
+\begin{multline*}
+C_{ml,m'l'}\left(\vect d\right)=\sum_{\lambda=\left|l-l'\right|}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right)\times\\
+\times j_{\lambda}\left(d\right)\ush{\lambda}{m-m'}\left(\uvec d\right),\\
+D_{ml,m'l'}\left(\vect d\right)=-i\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}\times\\
+\times j_{\lambda}\left(d\right)\ush{\lambda}{m-m'}\left(\uvec d\right),\qquad\tau\ne\tau'.
+\end{multline*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline*}
+C_{lm;l'm'}^{\lambda}=\left(-1\right)^{\frac{l'-l+\lambda}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+\times\begin{pmatrix}l & l' & \lambda\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right),\\
+D_{lm;l'm'}^{\lambda}=-i\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+\times\begin{pmatrix}l & l' & \lambda-1\\
+0 & 0 & 0
+\end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
+m & -m' & m'-m
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}.
+\end{multline*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1611,12 +1789,11 @@ todo different notation for the complex conjugation without transposition???
  or in the per-particle matrix notation, 
 \begin_inset Formula 
 \begin{equation}
-\troprp qp^{-1}=\troprp pq=\troprp qp^{\dagger}\label{eq:regular translation unitarity}
+\troprp qp^{-1}=\troprp pq=\troprp qp^{\dagger}.\label{eq:regular translation unitarity}
 \end{equation}
 
 \end_inset
 
-.
  Note that truncation at finite multipole degree breaks the unitarity, 
 \begin_inset Formula $\truncated{\troprp qp}L^{-1}\ne\truncated{\troprp pq}L=\truncated{\troprp qp^{\dagger}}L$
 \end_inset
