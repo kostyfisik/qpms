@@ -712,15 +712,15 @@ This means that the field expansion coefficients
  transform as 
 \begin_inset Formula 
 \begin{align}
-\rcoeffptlm p{\tau}lm & \mapsto\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right),\nonumber \\
-\outcoeffptlm p{\tau}lm & \mapsto\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right).\label{eq:excitation coefficient under symmetry operation}
+\rcoeffptlm p{\tau}lm & \overset{g}{\longmapsto}\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right),\nonumber \\
+\outcoeffptlm p{\tau}lm & \overset{g}{\longmapsto}\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right).\label{eq:excitation coefficient under symmetry operation}
 \end{align}
 
 \end_inset
 
 Obviously, the expansion coefficients belonging to particles in different
  orbits do not mix together.
- As before, we introduce a short-hand block-matrix notation for 
+ As before, we introduce a short-hand pairwise matrix notation for 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:excitation coefficient under symmetry operation"
@@ -730,14 +730,23 @@ noprefix "false"
 
 \end_inset
 
- (TODO avoid notation clash here in a more consistent and readable way!)
+ (TODO avoid notation clash here in a more consistent and readable way!
+\begin_inset Formula 
+\begin{align}
+\rcoeffp p & \overset{g}{\longmapsto}\tilde{J}\left(g\right)\rcoeffp{\pi_{g}^{-1}(p)},\nonumber \\
+\outcoeffp p & \overset{g}{\longmapsto}\tilde{J}\left(g\right)\outcoeffp{\pi_{g}^{-1}(p)},\label{eq:excitation coefficient under symmetry operation matrix form}
+\end{align}
+
+\end_inset
+
+and also a global block-matrix form
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align}
-\rcoeff & \mapsto J\left(g\right)a,\nonumber \\
-\outcoeff & \mapsto J\left(g\right)\outcoeff.\label{eq:excitation coefficient under symmetry operation block form}
+\rcoeff & \overset{g}{\longmapsto}J\left(g\right)a,\nonumber \\
+\outcoeff & \overset{g}{\longmapsto}J\left(g\right)\outcoeff.\label{eq:excitation coefficient under symmetry operation global block form}
 \end{align}
 
 \end_inset
@@ -1134,7 +1143,8 @@ The transformation to the symmetry adapted basis
 \begin_inset Formula $J(g)$
 \end_inset
 
-.
+: this can happen if the point group symmetry maps some of the scatterers
+ from the reference unit cell to scatterers belonging to other unit cells.
  This is illustrated in Fig.
  
 \begin_inset CommandInset ref
@@ -1147,14 +1157,232 @@ noprefix "false"
 \end_inset
 
 .
+ Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Phase factor illustration"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+a shows a hexagonal periodic array with 
+\begin_inset Formula $p6m$
+\end_inset
+
+ wallpaper group symmetry, with lattice vectors 
+\begin_inset Formula $\vect a_{1}=\left(a,0\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\vect a_{2}=\left(a/2,\sqrt{3}a/2\right)$
+\end_inset
+
+.
+ If we delimit our representative unit cell as the Wigner-Seitz cell with
+ origin in a 
+\begin_inset Formula $D_{6}$
+\end_inset
+
+ point group symmetry center (there is one per each unit cell).
+ Per unit cell, there are five different particles placed on the unit cell
+ boundary, and we need to make a choice to which unit cell the particles
+ on the boundary belong; in our case, we choose that a unit cell includes
+ the particles on the left as denoted by different colors.
+ If the Bloch vector is at the upper 
+\begin_inset Formula $M$
+\end_inset
+
+point, 
+\begin_inset Formula $\vect k=\vect M_{1}=\left(0,2\pi/\sqrt{3}a\right)$
+\end_inset
+
+, it creates a relative phase of 
+\begin_inset Formula $\pi$
+\end_inset
+
+ between the unit cell rows, and the original 
+\begin_inset Formula $D_{6}$
+\end_inset
+
+ symmetry is reduced to 
+\begin_inset Formula $D_{2}$
+\end_inset
+
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+horizontal
+\begin_inset Quotes erd
+\end_inset
+
+ mirror operation 
+\begin_inset Formula $\sigma_{xz}$
+\end_inset
+
+ maps, acording to our boundary division, all the particles only inside
+ the same unit cell, e.g.
+\begin_inset Formula 
+\begin{align*}
+\outcoeffp{\vect 0A} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect 0E},\\
+\outcoeff_{\vect 0C} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect 0C},
+\end{align*}
+
+\end_inset
+
+as in eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:excitation coefficient under symmetry operation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ However, both the 
+\begin_inset Quotes eld
+\end_inset
+
+vertical
+\begin_inset Quotes erd
+\end_inset
+
+ mirroring 
+\begin_inset Formula $\sigma_{yz}$
+\end_inset
+
+ and the 
+\begin_inset Formula $C_{2}$
+\end_inset
+
+ rotation map the boundary particles onto the boundaries that do not belong
+ to the reference unit cell with 
+\begin_inset Formula $\vect n=\left(0,0\right)$
+\end_inset
+
+, so we have, explicitly writing down also the lattice point indices 
+\begin_inset Formula $\vect n$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{align*}
+\outcoeffp{\vect 0A} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(0,1\right)E},\\
+\outcoeff_{\vect 0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(1,0\right)C},
+\end{align*}
+
+\end_inset
+
+but we want 
+\begin_inset Formula $J(g)$
+\end_inset
+
+ to operate only inside one unit cell, so we use the Bloch condition 
+\begin_inset Formula $\outcoeffp{\vect n,\alpha}=\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
+\end_inset
+
+: in this case, we have 
+\begin_inset Formula $\outcoeffp{\left(0,1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect M_{1}\cdot\vect a_{2}}=\outcoeffp{\vect 0\alpha}e^{i0}=\outcoeffp{\vect 0\alpha}$
+\end_inset
+
+, 
+\begin_inset Formula $\outcoeffp{\left(1,0\right)\alpha}=e^{i\vect M_{1}\cdot\vect a_{2}}\outcoeffp{\vect 0\alpha}=e^{i\pi}\outcoeffp{\vect 0\alpha}=-\outcoeffp{\vect 0\alpha},$
+\end_inset
+
+so 
+\begin_inset Formula 
+\begin{align*}
+\outcoeffp{\vect 0A} & \overset{\sigma_{yz}}{\longmapsto}-\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect 0E},\\
+\outcoeff_{\vect 0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect 0C}.
+\end{align*}
+
+\end_inset
+
+If we set instead 
+\begin_inset Formula $\vect k=\vect K=\left(4\pi/3a,0\right),$
+\end_inset
+
+the original 
+\begin_inset Formula $D_{6}$
+\end_inset
+
+ point group symmetry reduces to 
+\begin_inset Formula $D_{3}$
+\end_inset
+
+ and the unit cells can obtain a relative phase factor of 
+\begin_inset Formula $e^{-2\pi i/3}$
+\end_inset
+
+ (blue) or 
+\begin_inset Formula $e^{2\pi i/3}$
+\end_inset
+
+ (red).
+ The 
+\begin_inset Formula $\sigma_{xz}$
+\end_inset
+
+ mirror symmetry, as in the previous case, acts purely inside the reference
+ unit cell with our boundary division.
+ However, for a counterclockwise 
+\begin_inset Formula $C_{3}$
+\end_inset
+
+ rotation, as an example we have
+\begin_inset Formula 
+\begin{align*}
+\outcoeffp{\vect 0A} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(0,-1\right)E}=e^{2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0E},\\
+\outcoeff_{\vect 0C} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)A}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0A},\\
+\outcoeff_{\vect 0B} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)B}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0B},
+\end{align*}
+
+\end_inset
+
+because in this case, the Bloch condition gives 
+\begin_inset Formula $\outcoeffp{\left(0,-1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect K\cdot\left(-\vect a_{2}\right)}=\outcoeffp{\vect 0\alpha}e^{-4\pi i/3}=\outcoeffp{\vect 0\alpha}e^{2\pi i/3}=\outcoeffp{\vect 0\alpha}$
+\end_inset
+
+, 
+\begin_inset Formula $\outcoeffp{\left(1,-1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect K\cdot\left(\vect a_{1}-\vect a_{2}\right)}=e^{-2\pi i/3}\outcoeffp{\vect 0\alpha}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 placement document
 alignment document
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename p6m_mpoint.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename p6m_kpoint.png
+	width 100col%
+
+\end_inset
+
 
 \end_layout
 
@@ -1173,10 +1401,6 @@ name "Phase factor illustration"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
