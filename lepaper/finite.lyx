@@ -95,6 +95,13 @@
 
 \begin_layout Section
 Finite systems
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Finite"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -344,8 +351,8 @@ l advantages – most importantly, the translation operators introduced later
  in eq.
  
 \begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:translation op def"
+LatexCommand eqref
+reference "eq:reqular vswf coefficient vector translation"
 plural "false"
 caps "false"
 noprefix "false"
