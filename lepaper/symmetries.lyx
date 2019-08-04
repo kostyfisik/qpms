@@ -1061,7 +1061,7 @@ Periodic systems
 \begin_layout Standard
 For periodic systems, we can in similar manner also block-diagonalise the
  
-\begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-W\left(\omega,\vect k\right)T\left(\omega\right)\right)$
+\begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-T\left(\omega\right)W\left(\omega,\vect k\right)\right)$
 \end_inset
 
  from the left hand side of eqs.

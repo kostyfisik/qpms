@@ -285,7 +285,7 @@ status open
 
 
 \begin_inset FormulaMacro
-\newcommand{\rcoeffincp}[1]{a_{#1}^{\mathrm{inc.}}}
+\newcommand{\rcoeffincp}[1]{\tilde{a}_{#1}}
 \end_inset
 
 
@@ -295,7 +295,7 @@ status open
 
 
 \begin_inset FormulaMacro
-\newcommand{\rcoeffinc}{a^{\mathrm{inc.}}}
+\newcommand{\rcoeffinc}{\tilde{a}}
 \end_inset
 
 

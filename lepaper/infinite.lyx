@@ -1,5 +1,5 @@
 #LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 583
+\lyxformat 584
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -95,6 +95,13 @@
 
 \begin_layout Section
 Infinite periodic systems
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Infinite"
+
+\end_inset
+
+
 \begin_inset FormulaMacro
 \newcommand{\dlv}{\vect a}
 \end_inset
@@ -325,7 +332,7 @@ As in the case of a finite system, eq.
  can be written in a shorter block-matrix form,
 \begin_inset Formula 
 \begin{equation}
-\left(I-WT\right)\outcoeffp{\vect 0}\left(\vect k\right)=\rcoeffincp{\vect 0}\left(\vect k\right)\label{eq:Multiple-scattering problem unit cell block form}
+\left(I-TW\right)\outcoeffp{\vect 0}\left(\vect k\right)=T\rcoeffincp{\vect 0}\left(\vect k\right)\label{eq:Multiple-scattering problem unit cell block form}
 \end{equation}
 
 \end_inset
@@ -348,7 +355,7 @@ noprefix "false"
  the external driving) set to zero, 
 \begin_inset Formula 
 \begin{equation}
-\left(I-WT\right)\outcoeffp{\vect 0}\left(\vect k\right)=0,\label{eq:lattice mode equation}
+\left(I-TW\right)\outcoeffp{\vect 0}\left(\vect k\right)=0,\label{eq:lattice mode equation}
 \end{equation}
 
 \end_inset
@@ -369,7 +376,7 @@ noprefix "false"
 \end_inset
 
  exist if the matrix on the left-hand side 
-\begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-W\left(\omega,\vect k\right)T\left(\omega\right)\right)$
+\begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-T\left(\omega\right)W\left(\omega,\vect k\right)\right)$
 \end_inset
 
  is singular – this condition gives the 
@@ -710,13 +717,22 @@ where changed the sign of
 .
  Fourier transform of product is convolution of Fourier transforms, so (using
  formula 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:Dirac comb uaFt"
 
 \end_inset
 
- for the Fourier transform of Dirac comb)
+
+\end_layout
+
+\end_inset
+
+(REF?) for the Fourier transform of Dirac comb)
 \begin_inset Formula 
 \begin{eqnarray}
 W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect 0)}\right)\right)(\vect k)\nonumber \\

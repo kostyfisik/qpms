@@ -1,5 +1,5 @@
 #LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 583
+\lyxformat 584
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -95,6 +95,13 @@
 
 \begin_layout Section
 Applications
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Applications"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
