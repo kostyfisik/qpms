@@ -1768,6 +1768,42 @@ m & -m' & m'-m
 
 \end_inset
 
+Here 
+\begin_inset Formula $\begin{pmatrix}l_{1} & l_{2} & l_{3}\\
+m_{1} & m_{2} & m_{3}
+\end{pmatrix}$
+\end_inset
+
+ is the 
+\begin_inset Formula $3j$
+\end_inset
+
+ symbol defined as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "§34.2"
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+.
+ Importantly for practical calculations, these rather complicated coefficients
+ need to be evaluated only once up to the highest truncation order, 
+\begin_inset Formula $l,l'\le L$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO write more here.
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
