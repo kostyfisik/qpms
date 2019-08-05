@@ -399,6 +399,11 @@ status open
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\groupop}[1]{\hat{P}_{#1}}
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

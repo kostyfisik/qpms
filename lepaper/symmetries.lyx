@@ -203,8 +203,8 @@ Let
 \begin_inset Formula $g$
 \end_inset
 
- be a member of orthogonal group 
-\begin_inset Formula $O(3)$
+ be a member of the orthogonal group 
+\begin_inset Formula $\mathrm{O}(3)$
 \end_inset
 
 , i.e.
@@ -225,16 +225,45 @@ Let
 
 \end_inset
 
+With 
+\begin_inset Formula $\groupop g$
+\end_inset
+
+ we shall denote the action of 
+\begin_inset Formula $g$
+\end_inset
+
+ on a field in real space.
+ For a scalar field 
+\begin_inset Formula $w$
+\end_inset
+
+ we have 
+\begin_inset Formula $\left(\groupop gw\right)\left(\vect r\right)=w\left(R_{g}^{-1}\vect r\right)$
+\end_inset
+
+, whereas for a vector field 
+\begin_inset Formula $\vect w$
+\end_inset
+
+, 
+\begin_inset Formula $\left(\groupop g\vect w\right)\left(\vect r\right)=R_{g}\vect w\left(R_{g}^{-1}\vect r\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 Spherical harmonics 
 \begin_inset Formula $\ush lm$
 \end_inset
 
-, being a basis the 
+, being a basis of the 
 \begin_inset Formula $l$
 \end_inset
 
 -dimensional representation of 
-\begin_inset Formula $O(3)$
+\begin_inset Formula $\mathrm{O}(3)$
 \end_inset
 
 , transform as 
@@ -249,7 +278,7 @@ literal "false"
 
 \begin_inset Formula 
 \[
-\ush lm\left(R_{g}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\ush l{m'}\left(\uvec r\right)
+\left(\groupop g\ush lm\right)\left(\uvec r\right)=\ush lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\ush l{m'}\left(\uvec r\right)
 \]
 
 \end_inset
@@ -260,23 +289,62 @@ where
 
  denotes the elements of the 
 \emph on
-Wigner matrix
+Wigner matrix 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO explicit formulation
+\end_layout
+
+\end_inset
+
+
 \emph default
  representing the operation 
 \begin_inset Formula $g$
 \end_inset
 
 .
- By their definition, vector spherical harmonics 
+ From their definitions 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:vector spherical harmonics definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and the properties of the gradient operator under coordinate transforms,
+ vector spherical harmonics 
 \begin_inset Formula $\vsh 2lm,\vsh 3lm$
 \end_inset
 
  transform in the same way,
 \begin_inset Formula 
 \begin{align*}
-\vsh 2lm\left(R_{g}\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
-\vsh 3lm\left(R_{g}\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh 2lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
+\left(\groupop g\vsh 3lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
 \end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+\left(\groupop g\vsh 2lm\right)\left(\uvec r\right) & =R_{g}\vsh 2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
+\left(\groupop g\vsh 3lm\right)\left(\uvec r\right) & =R_{g}\vsh 2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\end{align*}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -288,7 +356,7 @@ but the remaining set
  cross product in their definition:
 \begin_inset Formula 
 \[
-\vsh 3lm\left(R_{g}\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh 1lm\right)\left(\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh 1l{m'}\left(\uvec r\right),
 \]
 
 \end_inset
@@ -301,12 +369,20 @@ where
 \begin_inset Formula $g$
 \end_inset
 
- is a proper rotation, but for spatial inversion operation 
+ is a proper rotation, 
+\begin_inset Formula $g\in\mathrm{SO(3)}$
+\end_inset
+
+, but for spatial inversion operation 
 \begin_inset Formula $i:\vect r\mapsto-\vect r$
 \end_inset
 
  we have 
-\begin_inset Formula $\widetilde{D_{m,m'}^{l}}\left(i\right)=\left(-1\right)^{l+m}D_{m,m'}^{l}\left(i\right)$
+\begin_inset Formula $D_{m,m'}^{l}\left(i\right)=\left(-1\right)^{l}$
+\end_inset
+
+ but 
+\begin_inset Formula $\widetilde{D_{m,m'}^{l}}\left(i\right)=\left(-1\right)^{l+1}$
 \end_inset
 
 .
@@ -335,8 +411,8 @@ noprefix "false"
 :
 \begin_inset Formula 
 \begin{align*}
-\vswfouttlm 1lm\left(R_{g}\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm 1l{m'}\left(\vect r\right),\\
-\vswfouttlm 2lm\left(R_{g}\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm 2l{m'}\left(\vect r\right),
+\left(\groupop g\vswfouttlm 1lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm 1l{m'}\left(\vect r\right),\\
+\left(\groupop g\vswfouttlm 2lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm 2l{m'}\left(\vect r\right),
 \end{align*}
 
 \end_inset
@@ -360,7 +436,7 @@ TODO víc obdivu.
 \begin_inset Formula $D_{m,m'}^{\tau l}$
 \end_inset
 
- that describes the transformation of both types (
+ that describes the transformation of both (
 \begin_inset Quotes eld
 \end_inset
 
@@ -376,10 +452,10 @@ electric
 \begin_inset Quotes erd
 \end_inset
 
-) of waves at once:
+) types of waves at once:
 \begin_inset Formula 
 \[
-\vswfouttlm{\tau}lm\left(R_{g}\vect r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\vect r\right).
+\groupop g\vswfouttlm{\tau}lm\left(\vect r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\vect r\right).
 \]
 
 \end_inset
@@ -397,7 +473,7 @@ noprefix "false"
  of the electric field around origin in a rotated/reflected system,
 \begin_inset Formula 
 \[
-\vect E\left(\omega,R_{g}\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\vect r\right)+\outcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\vect r\right)\right),
+\left(\groupop g\vect E\right)\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\vect r\right)+\outcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\vect r\right)\right),
 \]
 
 \end_inset
@@ -505,10 +581,10 @@ noprefix "false"
 
 \end_inset
 
-, we have
+, we have (CHECK THIS CAREFULLY AND EXPLAIN)
 \begin_inset Formula 
 \begin{multline}
-\vect E\left(\omega,R_{g}\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
+\left(\groupop g\vect E\right)\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
 +\left.\outcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right).\label{eq:rotated E field expansion around outside origin}
 \end{multline}
 
@@ -642,8 +718,56 @@ With these transformation properties in hand, we can proceed to the effects
 \begin_inset Formula $p\in\mathcal{P}$
 \end_inset
 
+; their positions transform as 
+\begin_inset Formula $\vect r_{\pi_{g}p}=R_{g}\vect r_{p}$
+\end_inset
+
+, 
+\begin_inset Formula $\vect r_{\pi_{g}^{-1}p}=R_{g}^{-1}\vect r_{p}$
+\end_inset
+
 .
- For a given particle 
+ In the symmetric multiple-scattering problem, transforming the whole field
+ according to 
+\begin_inset Formula $g$
+\end_inset
+
+, in terms of field expansion around a particle originally labelled as 
+\begin_inset Formula $p$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\left(\groupop g\vect E\right)\left(\omega,\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
+ & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right)\\
+ & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right.\\
+ & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right)\\
+ & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{q}\right)\right)\right.\\
+ & \quad+\left.\outcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{q}\right)\right)\right)
+\end{align*}
+
+\end_inset
+
+In the last step, we relabeled 
+\begin_inset Formula $q=\pi_{g}p$
+\end_inset
+
+.
+ This means that the field expansion coefficients 
+\begin_inset Formula $\rcoeffp p,\outcoeffp p$
+\end_inset
+
+ transform as 
+\begin_inset Formula 
+\begin{align}
+\rcoeffptlm p{\tau}lm & \overset{g}{\longmapsto}\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right),\nonumber \\
+\outcoeffptlm p{\tau}lm & \overset{g}{\longmapsto}\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right).\label{eq:excitation coefficient under symmetry operation}
+\end{align}
+
+\end_inset
+
+For a given particle 
 \begin_inset Formula $p$
 \end_inset
 
@@ -683,43 +807,19 @@ noprefix "false"
 \end_inset
 
 .
- The importance of the particle orbits stems from the following: in the
- multiple-scattering problem, outside of the scatterers 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-< FIXME
-\end_layout
-
-\end_inset
-
- one has 
-\begin_inset Formula 
-\begin{align}
-\vect E\left(\omega,R_{g}\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}(p)}\right)\right)\right.+\label{eq:rotated E field expansion around outside origin-1}\\
- & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right)\\
- & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right.+\\
- & \quad+\left.\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{p}\right)\right)\right).
-\end{align}
+ The importance of the particle orbits stems from fact that the expansion
+ coefficients belonging to particles in different orbits are not related
+ together under the group action in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:excitation coefficient under symmetry operation"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
-This means that the field expansion coefficients 
-\begin_inset Formula $\rcoeffp p,\outcoeffp p$
-\end_inset
-
- transform as 
-\begin_inset Formula 
-\begin{align}
-\rcoeffptlm p{\tau}lm & \overset{g}{\longmapsto}\rcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right),\nonumber \\
-\outcoeffptlm p{\tau}lm & \overset{g}{\longmapsto}\outcoeffptlm{\pi_{g}^{-1}(p)}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right).\label{eq:excitation coefficient under symmetry operation}
-\end{align}
-
-\end_inset
-
-Obviously, the expansion coefficients belonging to particles in different
- orbits do not mix together.
+.
  As before, we introduce a short-hand pairwise matrix notation for 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -730,7 +830,7 @@ noprefix "false"
 
 \end_inset
 
- (TODO avoid notation clash here in a more consistent and readable way!
+ (TODO avoid notation clash here in a more consistent and readable way!)
 \begin_inset Formula 
 \begin{align}
 \rcoeffp p & \overset{g}{\longmapsto}\tilde{J}\left(g\right)\rcoeffp{\pi_{g}^{-1}(p)},\nonumber \\
