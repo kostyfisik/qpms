@@ -746,9 +746,93 @@ A rule of thumb to choose the
 \begin_inset Formula $\delta$
 \end_inset
 
- can be obtained from the spherical Bessel function expansion around zero,
- TODO.
+ can be obtained from the spherical Bessel function expansion around zero
  
+\begin_inset CommandInset citation
+LatexCommand cite
+after "10.52.1"
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+ by requiring that 
+\begin_inset Formula $\delta\gtrsim\left(nR\right)^{L}/\left(2L+1\right)!!$
+\end_inset
+
+, where 
+\begin_inset Formula $R$
+\end_inset
+
+ is the scatterer radius and 
+\begin_inset Formula $n$
+\end_inset
+
+ its (maximum) refractive index.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+\left(2n+1\right)!! & =\frac{\left(2n+1\right)!}{2^{n}n!},\\
+\delta\gtrsim & \frac{R^{L}}{\left(2L+1\right)!!}=\frac{\left(2R\right)^{L}L!}{\left(2L+1\right)!}
+\end{align*}
+
+\end_inset
+
+Stirling 
+\begin_inset Formula $n!\approx\sqrt{2\pi n}\left(n/e\right)^{n}$
+\end_inset
+
+ so 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\delta & \gtrsim\left(2R\right)^{L}\frac{\sqrt{2\pi L}\left(\frac{L}{e}\right)^{L}}{\sqrt{2\pi\left(2L+1\right)}\left(\frac{2L+1}{e}\right)^{2L+1}}\\
+\delta & \gtrsim\left(2R\right)^{L}\frac{\sqrt{L}\left(\frac{L}{e}\right)^{L}}{\sqrt{2L+1}\left(\frac{2L+1}{e}\right)^{2L+1}}\\
+\log\delta & \gtrsim L\log2+L\log R+\frac{1}{2}\log L-\frac{1}{2}\log\left(2L+1\right)+L\log L-L\log e-\left(2L+1\right)\log\left(2L+1\right)+\left(2L+1\right)\log e\\
+\log\delta & \gtrsim L\log2+L\log R+\left(L+\frac{1}{2}\right)\log L-\left(2L+\frac{3}{2}\right)\log\left(2L+1\right)+\left(L+1\right)\\
+ & >L\log2+L\log R+\left(L+\frac{1}{2}\right)\log L-\left(2L+\frac{3}{2}\right)\log\left(2L\right)+\left(L+1\right)\\
+ & =L\log2+L\log R-\left(L+1\right)\log L-\left(2L+\frac{3}{2}\right)\log\left(2\right)+\left(L+1\right)\\
+ & =L\log2+L\log R-\left(L+1\right)\log L-\left(2L+\frac{3}{2}\right)\log\left(2\right)+\left(L+1\right)
+\end{align*}
+
+\end_inset
+
+too complicated, watabout
+\begin_inset Formula 
+\[
+\delta\gtrsim\left(2R\right)^{L}\frac{L^{L+1/2}e^{L}}{\left(2L\right)^{2L}}=\frac{R^{L}e^{L}}{2^{L}}L^{L+1/2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\log\delta\gtrsim L\log\frac{ReL}{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\log\delta\gtrsim L\log\frac{ReL}{2}
+\]
+
+\end_inset
+
+yäk
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
