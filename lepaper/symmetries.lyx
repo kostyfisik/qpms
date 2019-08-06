@@ -98,11 +98,11 @@ If the system has nontrivial point group symmetries, group theory gives
 \end_layout
 
 \begin_layout Standard
-As an example, if our system has a 
+As an example, if the system has a 
 \begin_inset Formula $D_{2h}$
 \end_inset
 
- symmetry and our truncated 
+ symmetry and the corresponding truncated 
 \begin_inset Formula $\left(I-T\trops\right)$
 \end_inset
 
@@ -961,7 +961,7 @@ where
 \begin_inset Formula $1$
 \end_inset
 
- through 
+ to 
 \begin_inset Formula $d_{n}$
 \end_inset
 
@@ -969,7 +969,7 @@ where
 \begin_inset Formula $i$
 \end_inset
 
- goes from 1 through the multiplicity of irreducible representation 
+ goes from 1 to the multiplicity of irreducible representation 
 \begin_inset Formula $\Gamma_{n}$
 \end_inset
 
@@ -1328,8 +1328,8 @@ horizontal
  the same unit cell, e.g.
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect 0A} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect 0E},\\
-\outcoeff_{\vect 0C} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect 0C},
+\outcoeffp{\vect0A} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect0E},\\
+\outcoeff_{\vect0C} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect0C},
 \end{align*}
 
 \end_inset
@@ -1374,8 +1374,8 @@ vertical
 ,
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect 0A} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(0,1\right)E},\\
-\outcoeff_{\vect 0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(1,0\right)C},
+\outcoeffp{\vect0A} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(0,1\right)E},\\
+\outcoeff_{\vect0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(1,0\right)C},
 \end{align*}
 
 \end_inset
@@ -1385,22 +1385,22 @@ but we want
 \end_inset
 
  to operate only inside one unit cell, so we use the Bloch condition 
-\begin_inset Formula $\outcoeffp{\vect n,\alpha}=\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
+\begin_inset Formula $\outcoeffp{\vect n,\alpha}=\outcoeffp{\vect0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
 \end_inset
 
 : in this case, we have 
-\begin_inset Formula $\outcoeffp{\left(0,1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect M_{1}\cdot\vect a_{2}}=\outcoeffp{\vect 0\alpha}e^{i0}=\outcoeffp{\vect 0\alpha}$
+\begin_inset Formula $\outcoeffp{\left(0,1\right)\alpha}=\outcoeffp{\vect0\alpha}e^{i\vect M_{1}\cdot\vect a_{2}}=\outcoeffp{\vect0\alpha}e^{i0}=\outcoeffp{\vect0\alpha}$
 \end_inset
 
 , 
-\begin_inset Formula $\outcoeffp{\left(1,0\right)\alpha}=e^{i\vect M_{1}\cdot\vect a_{2}}\outcoeffp{\vect 0\alpha}=e^{i\pi}\outcoeffp{\vect 0\alpha}=-\outcoeffp{\vect 0\alpha},$
+\begin_inset Formula $\outcoeffp{\left(1,0\right)\alpha}=e^{i\vect M_{1}\cdot\vect a_{2}}\outcoeffp{\vect0\alpha}=e^{i\pi}\outcoeffp{\vect0\alpha}=-\outcoeffp{\vect0\alpha},$
 \end_inset
 
 so 
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect 0A} & \overset{\sigma_{yz}}{\longmapsto}-\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect 0E},\\
-\outcoeff_{\vect 0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect 0C}.
+\outcoeffp{\vect0A} & \overset{\sigma_{yz}}{\longmapsto}-\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect0E},\\
+\outcoeff_{\vect0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect0C}.
 \end{align*}
 
 \end_inset
@@ -1439,19 +1439,19 @@ the original
  rotation, as an example we have
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect 0A} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(0,-1\right)E}=e^{2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0E},\\
-\outcoeff_{\vect 0C} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)A}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0A},\\
-\outcoeff_{\vect 0B} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)B}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0B},
+\outcoeffp{\vect0A} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(0,-1\right)E}=e^{2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect0E},\\
+\outcoeff_{\vect0C} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)A}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect0A},\\
+\outcoeff_{\vect0B} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)B}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect0B},
 \end{align*}
 
 \end_inset
 
 because in this case, the Bloch condition gives 
-\begin_inset Formula $\outcoeffp{\left(0,-1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect K\cdot\left(-\vect a_{2}\right)}=\outcoeffp{\vect 0\alpha}e^{-4\pi i/3}=\outcoeffp{\vect 0\alpha}e^{2\pi i/3}=\outcoeffp{\vect 0\alpha}$
+\begin_inset Formula $\outcoeffp{\left(0,-1\right)\alpha}=\outcoeffp{\vect0\alpha}e^{i\vect K\cdot\left(-\vect a_{2}\right)}=\outcoeffp{\vect0\alpha}e^{-4\pi i/3}=\outcoeffp{\vect0\alpha}e^{2\pi i/3}=\outcoeffp{\vect0\alpha}$
 \end_inset
 
 , 
-\begin_inset Formula $\outcoeffp{\left(1,-1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect K\cdot\left(\vect a_{1}-\vect a_{2}\right)}=e^{-2\pi i/3}\outcoeffp{\vect 0\alpha}.$
+\begin_inset Formula $\outcoeffp{\left(1,-1\right)\alpha}=\outcoeffp{\vect0\alpha}e^{i\vect K\cdot\left(\vect a_{1}-\vect a_{2}\right)}=e^{-2\pi i/3}\outcoeffp{\vect0\alpha}.$
 \end_inset
 
 

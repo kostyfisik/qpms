@@ -481,7 +481,11 @@ The single-particle scattering problem at frequency
 \end_inset
 
 .
- Inside this volume, the electric field can be expanded as
+ Inside 
+\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\end_inset
+
+, the electric field can be expanded as
 \begin_inset Note Note
 status open
 
@@ -770,7 +774,7 @@ literal "false"
 
  its (maximum) refractive index.
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Formula 
@@ -1281,7 +1285,7 @@ In practice, the multiple-scattering problem is solved in its truncated
 \begin_inset Formula $l\le L_{p}$
 \end_inset
 
-, laeving only 
+, leaving only 
 \begin_inset Formula $N_{p}=2L_{p}\left(L_{p}+2\right)$
 \end_inset
 
@@ -1428,11 +1432,7 @@ Let
 
 \end_inset
 
-where an explicit formula for the (regular) 
-\emph on
-translation operator
-\emph default
- 
+where an explicit formula for the regular translation operator 
 \begin_inset Formula $\tropr$
 \end_inset
 
@@ -1547,7 +1547,7 @@ reference "eq:regular vswf translation"
 , 
 \begin_inset Formula 
 \[
-\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{q}\right)
+\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(k\left(\vect r-\vect r_{q}\right)\right)
 \]
 
 \end_inset
@@ -1579,7 +1579,12 @@ reference "eq:regular vswf coefficient translation"
 
 \end_inset
 
-(note the reversed indices; TODO redefine them in 
+(note the reversed indices
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+; TODO redefine them in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:regular vswf translation"
@@ -1593,7 +1598,12 @@ reference "eq:singular vswf translation"
 
 \end_inset
 
-? Similarly, if we had only outgoing waves in the original expansion around
+?
+\end_layout
+
+\end_inset
+
+) Similarly, if we had only outgoing waves in the original expansion around
  
 \begin_inset Formula $\vect r_{p}$
 \end_inset
