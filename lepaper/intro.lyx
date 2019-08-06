@@ -1,5 +1,5 @@
 #LyX 2.4 created this file. For more info see https://www.lyx.org/
-\lyxformat 583
+\lyxformat 584
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -105,26 +105,32 @@ name "sec:Introduction"
 \end_layout
 
 \begin_layout Standard
-The problem of electromagnetic response of a system consisting of many compact
- scatterers in various geometries, and its numerical solution, is relevant
- to many branches of nanophotonics (TODO refs).
+The problem of electromagnetic response of a system consisting of many relativel
+y small, compact scatterers in various geometries, and its numerical solution,
+ is relevant to many branches of nanophotonics (TODO refs).
  The most commonly used general approaches used in computational electrodynamics
-, such as the finite difference time domain (FDTD) method or the finite
- element method (FEM), are very often unsuitable for simulating systems
- with larger number of scatterers due to their computational complexity.
+ are often unsuitable for simulating systems with larger number of scatterers
+ due to their computational complexity: differential methods such as the
+ finite difference time domain (FDTD) method or the finite element method
+ (FEM) include the field degrees of freedom (DoF) of the background medium
+ (which can have very large volumes), whereas integral approaches such as
+ the boundary element method (BEM) need much less DoF but require working
+ with dense matrices containing couplings between each pair of DoF.
  Therefore, a common (frequency-domain) approach to get an approximate solution
  of the scattering problem for many small particles has been the coupled
- dipole approximation (CDA) where individual scatterers are reduced to electric
- dipoles (characterised by a polarisability tensor) and coupled to each
- other through Green's functions.
+ dipole approximation (CDA) where drastic reduction of the number of DoF
+ is achieved by approximating individual scatterers to electric dipoles
+ (characterised by a polarisability tensor) coupled to each other through
+ Green's functions.
  
 \end_layout
 
 \begin_layout Standard
-CDA is easy to implement and has favorable computational complexity but
- suffers from at least two fundamental drawbacks.
+CDA is easy to implement and demands relatively little computational resources
+ but suffers from at least two fundamental drawbacks.
  The obvious one is that the dipole approximation is too rough for particles
- with diameter larger than a small fraction of the wavelength.
+ with diameter larger than a small fraction of the wavelength, which results
+ to quantitative errors.
  The other one, more subtle, manifests itself in photonic crystal-like structure
 s used in nanophotonics: there are modes in which the particles' electric
  dipole moments completely vanish due to symmetry, regardless of how small
@@ -154,7 +160,16 @@ multiple-scattering
 
 -matrix method 
 \emph default
-(MSTMM) (TODO a.k.a something??), and it has been implemented previously for
+(MSTMM), a.k.a.
+ 
+\emph on
+superposition 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix method
+\emph default
+ (TODO a.k.a something; refs??), and it has been implemented previously for
  a limited subset of problems (TODO refs and list the limitations of the
  available).
  
