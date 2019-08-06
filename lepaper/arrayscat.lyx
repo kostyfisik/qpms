@@ -720,7 +720,14 @@ Consistent notation of balls.
 \end_layout
 
 \begin_layout Itemize
-Abstract.
+It could be nice to include some illustration (example array) to the introductio
+n.
+ Put a specific example of how large system are we able to simulate?
+\end_layout
+
+\begin_layout Itemize
+Maybe mention that in infinite systems, it can be also much faster than
+ other methods.
 \end_layout
 
 \begin_layout Itemize
@@ -770,7 +777,7 @@ The text about symmetries is pretty dense.
 \end_layout
 
 \begin_layout Itemize
-Check whether everything written is correct also for non-symmetric space
+Check whether everything written is correct also for non-symmorphic space
  groups.
 \end_layout
 
@@ -870,7 +877,7 @@ literal "true"
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 btprint "btPrintCited"
-bibfiles "tmpaper"
+bibfiles "Tmatrix"
 options "plain"
 encoding "default"
 
