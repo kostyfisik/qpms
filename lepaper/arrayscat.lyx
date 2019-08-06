@@ -260,12 +260,12 @@ status open
 
 
 \begin_inset FormulaMacro
-\newcommand{\particle}{\mathrm{\Theta}}
+\newcommand{\medium}{\Theta}
 \end_inset
 
 
 \begin_inset FormulaMacro
-\newcommand{\medium}{\thespace\backslash\particle}
+\newcommand{\mezikuli}[3]{\Theta_{#1,#2}\left(#3\right)}
 \end_inset
 
 
@@ -355,7 +355,7 @@ status open
 
 
 \begin_inset FormulaMacro
-\newcommand{\closedball}[2]{B_{#1}#2}
+\newcommand{\closedball}[2]{\overline{B_{#1}\left(#2\right)}}
 \end_inset
 
 
@@ -566,7 +566,17 @@ The (somewhat underrated) T-matrix multiple scattering method (TMMSM) can
 Here we extend the method to infinite periodic structures using Ewald-type
  lattice summation, and we exploit the possible symmetries of the structure
  to further improve its efficiency.
- (SHOULD I MENTION ALSO THE CROSS SECTION FORMULAS IN THE ABSTRACT?)
+ 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Should I mention also the cross sections formulae in abstract / intro?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Abstract
@@ -737,11 +747,6 @@ TODOs
 \end_layout
 
 \begin_layout Itemize
-Consistent notation of balls.
- How is the difference between two cocentric balls called?
-\end_layout
-
-\begin_layout Itemize
 It could be nice to include some illustration (example array) to the introductio
 n.
  Put a specific example of how large system are we able to simulate?
@@ -753,25 +758,11 @@ Maybe mention that in infinite systems, it can be also much faster than
 \end_layout
 
 \begin_layout Itemize
-Translation operators: rewrite in sph.
- harm.
- convention independent form.
-\end_layout
-
-\begin_layout Itemize
 Truncation notation.
 \end_layout
 
 \begin_layout Itemize
-Example results!
-\end_layout
-
-\begin_layout Itemize
-Figures.
-\end_layout
-
-\begin_layout Itemize
-Concrete comparison with other methods.
+Example results and benchmarks with BEM; figures!
 \end_layout
 
 \begin_layout Itemize

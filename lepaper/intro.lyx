@@ -175,10 +175,29 @@ superposition
 \end_inset
 
 -matrix method
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+a.k.a.
+ something else?
+\end_layout
+
+\end_inset
+
+
 \emph default
- (TODO a.k.a something; refs??), and it has been implemented previously for
- a limited subset of problems (TODO refs and list the limitations of the
- available).
+, and it has been implemented previously for a limited subset of problems
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Refs; list the limitations of available codes?
+\end_layout
+
+\end_inset
+
+.
  
 \begin_inset Note Note
 status open
@@ -237,18 +256,46 @@ We hereby release our MSTMM implementation, the
 QPMS Photonic Multiple Scattering
 \emph default
  suite, as free software under the GNU General Public License version 3.
- (TODO refs to the code repositories.) QPMS allows for linear optics simulations
- of arbitrary sets of compact scatterers in isotropic media.
+ 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+TODO refs to the code repositories once it is published.
+\end_layout
+
+\end_inset
+
+ QPMS allows for linear optics simulations of arbitrary sets of compact
+ scatterers in isotropic media.
  The features include computations of electromagnetic response to external
  driving, the related cross sections, and finding resonances of finite structure
 s.
  Moreover, it includes the improvements covered in this paper, enabling
  to simulate even larger systems and also infinite structures with periodicity
  in one, two or three dimensions, which can be e.g.
- used for quickly evaluating dispersions of such structures, and also their
- topological invariants (TODO).
+ used for quickly evaluating dispersions of such structures
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+And also their topological invariants (TODO)?
+\end_layout
+
+\end_inset
+
+.
  The QPMS suite contains a core C library, Python bindings and several utilities
  for routine computations.
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Such as?
+\end_layout
+
+\end_inset
+
  
 \begin_inset Note Note
 status open

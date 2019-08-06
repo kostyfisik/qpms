@@ -138,16 +138,40 @@ Single-particle scattering
 \begin_layout Standard
 In order to define the basic concepts, let us first consider the case of
  EM radiation scattered by a single particle.
- We assume that the scatterer lies inside a closed sphere 
-\begin_inset Formula $\particle$
+ We assume that the scatterer lies inside a closed ball 
+\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
 \end_inset
 
-, the space outside this volume 
-\begin_inset Formula $\medium$
+ of radius 
+\begin_inset Formula $R^{<}$
 \end_inset
 
- is filled with an homogeneous isotropic medium with relative electric permittiv
-ity 
+ and center in the origin of the coordinate system (which can be chosen
+ that way; the natural choice of 
+\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
+\end_inset
+
+ is the circumscribed ball of the scatterer) and that there exists a larger
+ open cocentric ball 
+\begin_inset Formula $\openball{R^{>}}{\vect 0}$
+\end_inset
+
+, such that 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Is there a word for this?
+\end_layout
+
+\end_inset
+
+ the (non-empty) volume 
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}=\openball{R^{>}}{\vect 0}\setminus\closedball{R^{<}}{\vect 0}$
+\end_inset
+
+ is filled with a homogeneous isotropic medium with relative electric permittivi
+ty 
 \begin_inset Formula $\epsilon(\vect r,\omega)=\epsbg(\omega)$
 \end_inset
 
@@ -285,7 +309,16 @@ where
 \end_inset
 
  are the regular spherical Bessel function and spherical Hankel function
- of the first kind, respectively, as in [DLMF §10.47], and 
+ of the first kind, respectively, as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "§10.47"
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+, and 
 \begin_inset Formula $\vsh{\tau}lm$
 \end_inset
 
@@ -307,7 +340,16 @@ In our convention, the (scalar) spherical harmonics
 \begin_inset Formula $\ush lm$
 \end_inset
 
- are identical to those in [DLMF 14.30.1], i.e.
+ are identical to those in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "14.30.1"
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+, i.e.
 \begin_inset Formula 
 \[
 \ush lm=\left(\frac{\left(l-m\right)!\left(2l+1\right)}{4\pi\left(l+m\right)!}\right)^{\frac{1}{2}}e^{im\phi}\dlmfFer lm\left(\cos\theta\right)
@@ -319,8 +361,16 @@ where importantly, the Ferrers functions
 \begin_inset Formula $\dlmfFer lm$
 \end_inset
 
- defined as in [DLMF §14.3(i)] do already contain the Condon-Shortley phase
- 
+ defined as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "§14.3(i)"
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+ do already contain the Condon-Shortley phase 
 \begin_inset Formula $\left(-1\right)^{m}$
 \end_inset
 
@@ -418,7 +468,7 @@ The regular VSWFs
 \begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
 \end_inset
 
- constitute a basis for solutions of the Helmholtz equation 
+ would constitute a basis for solutions of the Helmholtz equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:Helmholtz eq"
@@ -429,16 +479,17 @@ noprefix "false"
 \end_inset
 
  inside a ball 
-\begin_inset Formula $\openball 0{R^{>}}$
+\begin_inset Formula $\openball{R^{>}}{\vect 0}$
 \end_inset
 
  with radius 
 \begin_inset Formula $R^{>}$
 \end_inset
 
- and center in the origin; however, if the equation is not guaranteed to
- hold inside a smaller ball 
-\begin_inset Formula $B_{0}\left(R\right)$
+ and center in the origin, were it filled with homogeneous isotropic medium;
+ however, if the equation is not guaranteed to hold inside a smaller ball
+ 
+\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
 \end_inset
 
  around the origin (typically due to presence of a scatterer), one has to
@@ -447,7 +498,7 @@ noprefix "false"
 \end_inset
 
  to have a complete basis of the solutions in the volume 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}=\openball{R^{>}}{\vect 0}\setminus\closedball{R^{<}}{\vect 0}$
 \end_inset
 
 .
@@ -469,11 +520,11 @@ The single-particle scattering problem at frequency
 \end_inset
 
  can be posed as follows: Let a scatterer be enclosed inside the ball 
-\begin_inset Formula $B_{0}\left(R\right)$
+\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
 \end_inset
 
  and let the whole volume 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
 \end_inset
 
  be filled with a homogeneous isotropic medium with wave number 
@@ -482,7 +533,7 @@ The single-particle scattering problem at frequency
 
 .
  Inside 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
 \end_inset
 
 , the electric field can be expanded as
@@ -504,7 +555,7 @@ doplnit frekvence a polohy
 \end_inset
 
 If there was no scatterer and 
-\begin_inset Formula $B_{0}\left(R_{<}\right)$
+\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
 \end_inset
 
  was filled with the same homogeneous medium, the part with the outgoing
@@ -513,7 +564,7 @@ If there was no scatterer and
 \end_inset
 
  due to sources outside 
-\begin_inset Formula $\openball 0R$
+\begin_inset Formula $\openball{R^{>}}{\vect 0}$
 \end_inset
 
  would remain.
@@ -670,7 +721,17 @@ literal "false"
 \end_inset
 
 -matrix results wrong; we found and fixed the bug and from upstream version
- xxx onwards, it should behave correctly.
+ xxx
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Not yet merged to upstream.
+\end_layout
+
+\end_inset
+
+ onwards, it should behave correctly.
  
 \end_layout
 
@@ -689,8 +750,25 @@ The magnitude of the
 \begin_inset Formula $T$
 \end_inset
 
--matrix of a bounded scatterer is a compact operator [REF???], so from certain
- multipole degree onwards, 
+-matrix of a bounded scatterer is a compact operator 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ganesh_convergence_2012"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO
+\end_layout
+
+\end_inset
+
+, so from certain multipole degree onwards, 
 \begin_inset Formula $l,l'>L$
 \end_inset
 
@@ -725,16 +803,6 @@ The magnitude of the
 \end_inset
 
  will also be negligible.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO when it will not be negligible
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -761,7 +829,7 @@ literal "false"
 \end_inset
 
  by requiring that 
-\begin_inset Formula $\delta\gtrsim\left(nR\right)^{L}/\left(2L+1\right)!!$
+\begin_inset Formula $\delta\gg\left(nR\right)^{L}/\left(2L+1\right)!!$
 \end_inset
 
 , where 
@@ -886,7 +954,7 @@ literal "true"
 
 .
  Let the field in 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
 \end_inset
 
  have expansion as in 
@@ -901,11 +969,11 @@ noprefix "false"
 
 .
  Then the net power transported from 
-\begin_inset Formula $B_{0}\left(R\right)$
+\begin_inset Formula $\openball{R^{<}}{\vect 0}$
 \end_inset
 
  to 
-\begin_inset Formula $\openball 0{R^{>}}\backslash B_{0}\left(R\right)$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
 \end_inset
 
  via by electromagnetic radiation is
@@ -917,7 +985,7 @@ P=\frac{1}{2k^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\ri
 \end_inset
 
 In realistic scattering setups, power is transferred by radiation into 
-\begin_inset Formula $B_{0}\left(R\right)$
+\begin_inset Formula $\openball{R^{<}}{\vect 0}$
 \end_inset
 
  and absorbed by the enclosed scatterer, so 
@@ -1087,25 +1155,15 @@ If the system consists of multiple scatterers, the EM fields around each
 \end_inset
 
  be an index set labeling the scatterers.
- We enclose each scatterer in a ball 
-\begin_inset Formula $B_{\vect r_{p}}\left(R_{p}\right)$
+ We enclose each scatterer in a closed ball 
+\begin_inset Formula $\closedball{R_{p}}{\vect r_{p}}$
 \end_inset
 
  such that the balls do not touch, 
-\begin_inset Formula $B_{\vect r_{p}}\left(R_{p}\right)\cap B_{\vect r_{q}}\left(R_{q}\right)=\emptyset;p,q\in\mathcal{P}$
+\begin_inset Formula $\closedball{R_{p}}{\vect r_{p}}\cap\closedball{R_{q}}{\vect r_{q}}=\emptyset;p,q\in\mathcal{P}$
 \end_inset
 
-, 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO bacha, musejí být uzavřené!
-\end_layout
-
-\end_inset
-
-so there is a non-empty volume
+, so there is a non-empty volume
 \begin_inset Note Note
 status open
 
@@ -1116,12 +1174,20 @@ jaksetometuje?
 \end_inset
 
  
-\begin_inset Formula $\openball{\vect r_{p}}{R_{p}^{>}}\backslash B_{\vect r_{p}}\left(R_{p}\right)$
+\begin_inset Formula $\mezikuli{R_{p}}{R_{p}^{>}}{\vect r_{p}}$
 \end_inset
 
- around each one that contains only the background medium without any scatterers.
- Then the EM field inside each such volume can be expanded in a way similar
- to 
+ around each one that contains only the background medium without any scatterers
+ (we assume that all the volume outside 
+\begin_inset Formula $\bigcap_{p\in\mathcal{P}}\closedball{R_{p}}{\vect r_{p}}$
+\end_inset
+
+ is filled with the same background medium).
+ Then the EM field inside each 
+\begin_inset Formula $\mezikuli{R_{p}}{R_{p}^{>}}{\vect r_{p}}$
+\end_inset
+
+ can be expanded in a way similar to 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:E field expansion"
@@ -1135,7 +1201,7 @@ noprefix "false"
 \begin_inset Formula 
 \begin{align}
 \vect E\left(\omega,\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)+\outcoeffptlm p{\tau}lm\vswfouttlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)\right),\label{eq:E field expansion multiparticle}\\
- & \vect r\in\openball{\vect r_{p}}{R_{p}^{>}}\backslash B_{\vect r_{p}}\left(R_{p}\right).\nonumber 
+ & \vect r\in\mezikuli{R_{p}}{R_{p}^{>}}{\vect r_{p}}.\nonumber 
 \end{align}
 
 \end_inset
@@ -1447,10 +1513,10 @@ reference "eq:translation operator"
  below.
  For singular (outgoing) waves, the form of the expansion differs inside
  and outside the ball 
-\begin_inset Formula $\openball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}:$
+\begin_inset Formula $\closedball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}$
 \end_inset
 
- 
+:
 \begin_inset Formula 
 \begin{eqnarray}
 \vswfouttlm{\tau}lm\left(k\left(\vect r-\vect r_{1}\right)\right) & = & \begin{cases}
@@ -1669,8 +1735,17 @@ and analogously the elements of the singular operator
 
 \end_inset
 
-where the constant factors in our convention read (TODO CHECK ONCE AGAIN
- CAREFULLY FOR POSSIBLE PHASE FACTORS FACTORS)
+where the constant factors in our convention read 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+TODO check once again carefully for possible phase factors.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Note Note
 status collapsed
 
@@ -1979,8 +2054,8 @@ literal "false"
  derives only the extinction cross section formula.
  Let us re-derive it together with the many-particle scattering and absorption
  cross sections.
- First, let us take a ball circumscribing all the scatterers at once, 
-\begin_inset Formula $\openball R{\vect r_{\square}}\supset\particle$
+ First, let us take a ball containing all the scatterers at once, 
+\begin_inset Formula $\openball R{\vect r_{\square}}\supset\bigcup_{p\in\mathcal{P}}\closedball{R_{p}}{\vect r_{p}}$
 \end_inset
 
 .
@@ -2010,8 +2085,7 @@ where
 \begin_inset Formula $\outcoeffp{\square}$
 \end_inset
 
- using the translation operators (REF!!!) and use the single-scatterer formulae
- 
+ using the translation operators and use the single-scatterer formulae 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:extincion CS single"
@@ -2113,8 +2187,18 @@ noprefix "false"
 
 where only the last expression is suitable for numerical evaluation with
  truncated matrices, because the previous ones contain a translation operator
- right next to an incident field coefficient vector (see Sec.
- TODO).
+ right next to an incident field coefficient vector
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(see Sec.
+ TODO)
+\end_layout
+
+\end_inset
+
+.
  Similarly, 
 \begin_inset Formula 
 \begin{align}
