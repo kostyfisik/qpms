@@ -544,16 +544,21 @@ Category: Methods and Algorithms for Scientific Computing?
 \begin_layout Abstract
 The (somewhat underrated) T-matrix multiple scattering method (TMMSM) can
  be used to solve the electromagnetic response of systems consisting of
- many compact scatterers.
- It largely surpasses other methods in the number of scatterers it can deal
- with, while retaining very good accuracy.
+ many compact scatterers, retaining a good level of accuracy while using
+ relatively few of degrees of freedom, largely surpassing other methods
+ in the number of scatterers it can deal with.
 \end_layout
 
 \begin_layout Abstract
-TODO REWRITE: We release a modern implementation of the method under GNU
- General Public Licence, with several theoretical advancements presented
- here, such as exploiting the system symmetries to further improve the efficienc
-y of the method, or extending it on infinite periodic systems.
+Here we extend the method to infinite periodic structures using Ewald-type
+ lattice summation, and we exploit the possible symmetries of the structure
+ to further improve its efficiency.
+ (SHOULD I MENTION ALSO THE CROSS SECTION FORMULAS IN THE ABSTRACT?)
+\end_layout
+
+\begin_layout Abstract
+We release a modern implementation of the method, including the theoretical
+ improvements presented here, under GNU General Public Licence.
 \end_layout
 
 \begin_layout Section
