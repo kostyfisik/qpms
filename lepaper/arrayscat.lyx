@@ -470,10 +470,18 @@ These are compatibility macros for the (...)-old files:
 \end_layout
 
 \begin_layout Title
-QPMS Photonic Multiple Scattering suite (TODO better title)
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations in finite and infinite systems of electromagnetic scatterers
+ (TODO better title)
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Excerpt from the SIAM Journal of Scientific Computing Editorial Policy:
 \end_layout
 
@@ -537,8 +545,13 @@ Due to space limitations, articles are normally limited to 20 journal pages.
  
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Category: Methods and Algorithms for Scientific Computing?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Abstract
@@ -560,6 +573,10 @@ Here we extend the method to infinite periodic structures using Ewald-type
 We release a modern implementation of the method, including the theoretical
  improvements presented here, under GNU General Public Licence.
 \end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
 
 \begin_layout Section
 Outline
@@ -708,6 +725,11 @@ My implementation.
 
 \begin_layout Itemize
 Maybe put the numerical results separately in the end.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
