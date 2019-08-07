@@ -318,14 +318,14 @@ noprefix "false"
 
  and the properties of the gradient operator under coordinate transforms,
  vector spherical harmonics 
-\begin_inset Formula $\vsh2lm,\vsh3lm$
+\begin_inset Formula $\vsh 2lm,\vsh 3lm$
 \end_inset
 
  transform in the same way,
 \begin_inset Formula 
 \begin{align*}
-\left(\groupop g\vsh2lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh2l{m'}\left(\uvec r\right),\\
-\left(\groupop g\vsh3lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh3l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh 2lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
+\left(\groupop g\vsh 3lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
 \end{align*}
 
 \end_inset
@@ -337,8 +337,8 @@ status open
 \begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
-\left(\groupop g\vsh2lm\right)\left(\uvec r\right) & =R_{g}\vsh2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh2l{m'}\left(\uvec r\right),\\
-\left(\groupop g\vsh3lm\right)\left(\uvec r\right) & =R_{g}\vsh2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh3l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh 2lm\right)\left(\uvec r\right) & =R_{g}\vsh 2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
+\left(\groupop g\vsh 3lm\right)\left(\uvec r\right) & =R_{g}\vsh 2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
 \end{align*}
 
 \end_inset
@@ -349,14 +349,14 @@ status open
 \end_inset
 
 but the remaining set 
-\begin_inset Formula $\vsh1lm$
+\begin_inset Formula $\vsh 1lm$
 \end_inset
 
  transforms differently due to their pseudovector nature stemming from the
  cross product in their definition:
 \begin_inset Formula 
 \[
-\left(\groupop g\vsh1lm\right)\left(\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh1l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh 1lm\right)\left(\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh 1l{m'}\left(\uvec r\right),
 \]
 
 \end_inset
@@ -411,8 +411,8 @@ noprefix "false"
 :
 \begin_inset Formula 
 \begin{align*}
-\left(\groupop g\vswfouttlm1lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm1l{m'}\left(\vect r\right),\\
-\left(\groupop g\vswfouttlm2lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm2l{m'}\left(\vect r\right),
+\left(\groupop g\vswfouttlm 1lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm 1l{m'}\left(\vect r\right),\\
+\left(\groupop g\vswfouttlm 2lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm 2l{m'}\left(\vect r\right),
 \end{align*}
 
 \end_inset
@@ -581,7 +581,18 @@ noprefix "false"
 
 \end_inset
 
-, we have (CHECK THIS CAREFULLY AND EXPLAIN)
+, we have
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Check this carefully.
+ Maybe explain in more detail?
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{multline}
 \left(\groupop g\vect E\right)\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\

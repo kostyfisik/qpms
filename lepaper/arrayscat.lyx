@@ -100,6 +100,12 @@
 
 \begin_layout Standard
 \begin_inset FormulaMacro
+\newcommand{\SI}[2]{}
+{#1\,\mathrm{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\uoft}[1]{\mathfrak{F}#1}
 \end_inset
 
@@ -747,8 +753,8 @@ Maybe put the numerical results separately in the end.
 
 \end_layout
 
-\begin_layout Section
-TODOs
+\begin_layout Section*
+TODO
 \end_layout
 
 \begin_layout Itemize

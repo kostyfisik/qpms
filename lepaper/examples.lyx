@@ -104,5 +104,214 @@ name "sec:Applications"
 
 \end_layout
 
+\begin_layout Standard
+Finally, we present some results obtained with the QPMS suite as well as
+ benchmarks with BEM.
+ Scripts to reproduce these results are available under the 
+\family typewriter
+examples
+\family default
+ directory of the QPMS source repository.
+ The benchmarks require SCUFF-EM of version xxx
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Add the version when possible.
+\end_layout
+
+\end_inset
+
+ or newer.
+\end_layout
+
+\begin_layout Subsection
+Response of a rectangular nanoplasmonic array
+\end_layout
+
+\begin_layout Standard
+Our first example deals with a plasmonic array made of golden nanoparticles
+ placed in a rectangular planar configuration.
+ The nanoparticles have shape of right circular cylinder with radius 50
+ nm and height 50 nm.
+ The particles are placed with periodicities 
+\begin_inset Formula $p_{x}=\SI{621}{nm}$
+\end_inset
+
+, 
+\begin_inset Formula $p_{y}=\SI{571}{nm}$
+\end_inset
+
+ into an isotropic medium with a constant refraction index 
+\begin_inset Formula $n=1.52$
+\end_inset
+
+.
+ For gold, we use the optical properties listed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "johnson_optical_1972"
+literal "false"
+
+\end_inset
+
+ interpolated with cubical splines.
+ The particles' cylindrical shape is approximated with a triangular mesh
+ with XXX boundary elements.
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Show the mesh as well?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We consider finite arrays with 
+\begin_inset Formula $N_{x}\times N_{y}=\ldots\times\ldots,\ldots\times\ldots,\ldots\times\ldots$
+\end_inset
+
+ particles and also the corresponding infinite array, and simulate their
+ absorption when irradiated by circularly polarised plane waves with energies
+ from xx to yy and incidence direction lying in the 
+\begin_inset Formula $xz$
+\end_inset
+
+ plane.
+ The results are shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Example rectangular absorption"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Mention lMax.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Absorption of rectangular arrays of golden nanoparticles with periodicities
+ 
+\begin_inset Formula $p_{x}=\SI{621}{nm}$
+\end_inset
+
+, 
+\begin_inset Formula $p_{y}=\SI{571}{nm}$
+\end_inset
+
+ with a) 
+\begin_inset Formula $\ldots\times\ldots$
+\end_inset
+
+, b) 
+\begin_inset Formula $\ldots\times\ldots$
+\end_inset
+
+, c) 
+\begin_inset Formula $\ldots\times\ldots$
+\end_inset
+
+ and d) infinitely many particles, irradiated by circularly polarised plane
+ waves.
+ e) Absoption profile of a single nanoparticle.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Example rectangular absorption"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+We compared the 
+\begin_inset Formula $\ldots\times\ldots$
+\end_inset
+
+ case with a purely BEM-based solution obtained using the 
+\family typewriter
+scuff-scatter
+\family default
+ utility.
+ TODO WHAT DO WE GET? 
+\end_layout
+
+\begin_layout Standard
+In the infinite case, we benchmarked against a pseudorandom selection of
+ 
+\begin_inset Formula $\left(\vect k,\omega\right)$
+\end_inset
+
+ pairs and the difference was TODO WHAT? We note that evaluating one 
+\begin_inset Formula $\left(\vect k,\omega\right)$
+\end_inset
+
+ pair took xxx miliseconds with MSTMM and truncation degree 
+\begin_inset Formula $L=?$
+\end_inset
+
+, the same took xxx hours with BEM.
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+TODO also details about the machines used.
+ More info about time also at least for the largest case.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Modes of a rectangular nanoplasmonic array
+\end_layout
+
+\begin_layout Standard
+Next, we study the eigenmode problem of the same rectangular arrays.
+ The system is lossy, therefore the eigenfrequencies are complex and we
+ need to have a model of the material optical properties also for complex
+ frequencies.
+ So in this case we use the Drude-Lorentz model for gold with parameters
+ as in [TODO REF].
+\end_layout
+
 \end_body
 \end_document
