@@ -1927,7 +1927,7 @@ m & -m' & m'-m
 
 
 \begin_inset Formula 
-\begin{multline*}
+\begin{multline}
 C_{lm;l'm'}^{\lambda}=\left(-1\right)^{\frac{l'-l+\lambda}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
 \times\begin{pmatrix}l & l' & \lambda\\
 0 & 0 & 0
@@ -1939,8 +1939,8 @@ D_{lm;l'm'}^{\lambda}=-i\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\sqrt{\frac{4\
 0 & 0 & 0
 \end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
 m & -m' & m'-m
-\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}.
-\end{multline*}
+\end{pmatrix}\sqrt{\lambda^{2}-\left(l-l'\right)^{2}}\sqrt{\left(l+l'+1\right)^{2}-\lambda^{2}}.\label{eq:translation operator constant factors}
+\end{multline}
 
 \end_inset
 

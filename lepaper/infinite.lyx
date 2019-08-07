@@ -139,15 +139,6 @@ Topology anoyne?
 \end_layout
 
 \begin_layout Subsection
-Notation
-\end_layout
-
-\begin_layout Standard
-TODO Fourier transforms, Delta comb, lattice bases, reciprocal lattices
- etc.
-\end_layout
-
-\begin_layout Subsection
 Formulation of the problem
 \end_layout
 
@@ -171,8 +162,8 @@ noprefix "false"
 \begin_inset Formula $d$
 \end_inset
 
- can be 1, 2 or 3) lattice embedded into the three-dimensional real space,
- with lattice vectors 
+ can be 1, 2 or 3) Bravais lattice embedded into the three-dimensional real
+ space, with lattice vectors 
 \begin_inset Formula $\left\{ \dlv_{i}\right\} _{i=1}^{d}$
 \end_inset
 
@@ -307,7 +298,7 @@ lattice Fourier transform
  of the translation operator,
 \begin_inset Formula 
 \begin{equation}
-W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\beta}\right)\tropsp{\vect 0,\alpha}{\vect m,\beta}e^{i\vect k\cdot\vect R_{\vect m}},\label{eq:W definition}
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\beta}\delta_{\vect m\vect 0}\right)\tropsp{\vect 0,\alpha}{\vect m,\beta}e^{i\vect k\cdot\vect R_{\vect m}},\label{eq:W definition}
 \end{equation}
 
 \end_inset
@@ -505,8 +496,8 @@ noprefix "false"
 \end_inset
 
 , which, for a given geometry, depends only on frequency).
- Therefore, a much more efficient approach to determine the photonic bands
- is to sample the 
+ Therefore, a much more efficient but not completely robust approach to
+ determine the photonic bands is to sample the 
 \begin_inset Formula $\vect k$
 \end_inset
 
@@ -579,6 +570,19 @@ noprefix "false"
 \end_inset
 
 .
+ Another, more robust approach is Beyn's contour integral algorithm 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "beyn_integral_2012"
+literal "false"
+
+\end_inset
+
+ which finds the roots of 
+\begin_inset Formula $M\left(\omega,\vect k\right)=0$
+\end_inset
+
+ in a given frequency contour.
 \end_layout
 
 \begin_layout Subsection
@@ -633,265 +637,69 @@ Note that
 
 \end_inset
 
- In electrostatics, this problem can be solved with Ewald summation [TODO
- REF].
- Its basic idea is that if what asymptoticaly decays poorly in the direct
- space, will perhaps decay fast in the Fourier space.
- We use the same idea here, but the technical details are more complicated
- than in electrostatics.
-\end_layout
+ The problem of poorly converging lattice sums has been originally solved
+ for electrostatic potentials with Ewald summation 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ewald_berechnung_1921"
+literal "false"
 
-\begin_layout Standard
-Let us re-express the sum in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:W definition"
-
-\end_inset
-
- in terms of integral with a delta comb
-\begin_inset FormulaMacro
-\renewcommand{\basis}[1]{\mathfrak{#1}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-W_{\alpha\beta}(\vect k)=\int\ud^{d}\vect r\dc{\basis u}(\vect r)S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})e^{i\vect k\cdot\vect r}.\label{eq:W integral}
-\end{equation}
-
-\end_inset
-
-The translation operator 
-\begin_inset Formula $S$
-\end_inset
-
- is now a function defined in the whole 3d space; 
-\begin_inset Formula $\vect r_{\alpha},\vect r_{\beta}$
-\end_inset
-
- are the displacements of scatterers 
-\begin_inset Formula $\alpha$
-\end_inset
-
- and 
-\begin_inset Formula $\beta$
-\end_inset
-
- in a unit cell.
- The arrow notation 
-\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})$
-\end_inset
-
- means 
-\begin_inset Quotes eld
-\end_inset
-
-translation operator for spherical waves originating in 
-\begin_inset Formula $\vect r+\vect r_{\beta}$
-\end_inset
-
- evaluated in 
-\begin_inset Formula $\vect r_{\alpha}$
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
- and obviously 
-\begin_inset Formula $S$
-\end_inset
-
- is in fact a function of a single 3d argument, 
-\begin_inset Formula $S(\vect r_{\alpha}\leftarrow\vect r+\vect r_{\beta})=S(\vect0\leftarrow\vect r+\vect r_{\beta}-\vect r_{\alpha})=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)=S(-\vect r-\vect r_{\beta}+\vect r_{\alpha})$
 \end_inset
 
 .
- Expression 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:W integral"
-
-\end_inset
-
- can be rewritten as
-\begin_inset Formula 
-\[
-W_{\alpha\beta}(\vect k)=\left(2\pi\right)^{\frac{d}{2}}\uaft{(\dc{\basis u}S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0))\left(\vect k\right)}
-\]
-
-\end_inset
-
-where changed the sign of 
-\begin_inset Formula $\vect r/\vect{\bullet}$
-\end_inset
-
- has been swapped under integration, utilising evenness of 
-\begin_inset Formula $\dc{\basis u}$
-\end_inset
-
-.
- Fourier transform of product is convolution of Fourier transforms, so (using
- formula 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:Dirac comb uaFt"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-(REF?) for the Fourier transform of Dirac comb)
-\begin_inset Formula 
-\begin{eqnarray}
-W_{\alpha\beta}(\vect k) & = & \left(\left(\uaft{\dc{\basis u}}\right)\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\right)(\vect k)\nonumber \\
- & = & \frac{\left|\det\recb{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\left(\dc{\recb{\basis u}}^{(d)}\ast\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\right)\left(\vect k\right)\nonumber \\
- & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\left(\vect k-\vect K\right)\label{eq:W sum in reciprocal space}\\
- & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}e^{i\left(\vect k-\vect K\right)\cdot\left(-\vect r_{\beta}+\vect r_{\alpha}\right)}\left(\uaft{S(\vect{\bullet}\leftarrow\vect0)}\right)\left(\vect k-\vect K\right)\nonumber 
-\end{eqnarray}
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Factor 
-\begin_inset Formula $\left(2\pi\right)^{\frac{d}{2}}$
-\end_inset
-
- cancels out with the 
-\begin_inset Formula $\left(2\pi\right)^{-\frac{d}{2}}$
-\end_inset
-
- factor appearing in the convolution/product formula in the unitary angular
- momentum convention.
- 
-\end_layout
-
-\end_inset
-
-As such, this is not extremely helpful because the the 
-\emph on
-whole
-\emph default
- translation operator 
-\begin_inset Formula $S$
-\end_inset
-
- has singularities in origin, hence its Fourier transform 
-\begin_inset Formula $\uaft S$
-\end_inset
-
- will decay poorly.
- 
+ Its basic idea is to decompose the divide the lattice-summed function in
+ two parts: a short-range part that decays fast and can be summed directly,
+ and a long-range part which decays poorly but is fairly smooth everywhere,
+ so that its Fourier transform decays fast enough, and to deal with the
+ long range part by Poisson summation over the reciprocal lattice.
+ The same idea can be used also in this case case of linear electrodynamic
+ problems, just the technical details are more complicated than in electrostatic
+s.
 \end_layout
 
 \begin_layout Standard
-However, Fourier transform is linear, so we can in principle separate 
-\begin_inset Formula $S$
-\end_inset
-
- in two parts, 
-\begin_inset Formula $S=S^{\textup{L}}+S^{\textup{S}}$
-\end_inset
-
-.
+In eq.
  
-\begin_inset Formula $S^{\textup{S}}$
-\end_inset
-
- is a short-range part that decays sufficiently fast with distance so that
- its direct-space lattice sum converges well; 
-\begin_inset Formula $S^{\textup{S}}$
-\end_inset
-
- must as well contain all the singularities of 
-\begin_inset Formula $S$
-\end_inset
-
- in the origin.
- The other part, 
-\begin_inset Formula $S^{\textup{L}}$
-\end_inset
-
-, will retain all the slowly decaying terms of 
-\begin_inset Formula $S$
-\end_inset
-
- but it also has to be smooth enough in the origin, so that its Fourier
- transform 
-\begin_inset Formula $\uaft{S^{\textup{L}}}$
-\end_inset
-
- decays fast enough.
- (The same idea lies behind the Ewald summation in electrostatics.) Using
- the linearity of Fourier transform and formulae 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:W definition"
-
-\end_inset
-
- and 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:W sum in reciprocal space"
-
-\end_inset
-
-, the operator 
-\begin_inset Formula $W_{\alpha\beta}$
-\end_inset
-
- can then be re-expressed as
-\begin_inset Formula 
-\begin{eqnarray}
-W_{\alpha\beta}\left(\vect k\right) & = & W_{\alpha\beta}^{\textup{S}}\left(\vect k\right)+W_{\alpha\beta}^{\textup{L}}\left(\vect k\right)\nonumber \\
-W_{\alpha\beta}^{\textup{S}}\left(\vect k\right) & = & \sum_{\vect R\in\basis u\ints^{d}}S^{\textup{S}}(\vect0\leftarrow\vect R+\vect r_{\beta}-\vect r_{\alpha})e^{i\vect k\cdot\vect R}\label{eq:W Short definition}\\
-W_{\alpha\beta}^{\textup{L}}\left(\vect k\right) & = & \frac{\left|\det\rec{\basis u}\right|}{\left(2\pi\right)^{\frac{d}{2}}}\sum_{\vect K\in\recb{\basis u}\ints^{d}}\left(\uaft{S^{\textup{L}}(\vect{\bullet}-\vect r_{\beta}+\vect r_{\alpha}\leftarrow\vect0)}\right)\left(\vect k-\vect K\right)\label{eq:W Long definition}
-\end{eqnarray}
-
-\end_inset
-
-where both sums expected to converge nicely.
- We note that the elements of the translation operators 
-\begin_inset Formula $\tropr,\trops$
-\end_inset
-
- in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:translation operator"
+reference "eq:translation operator singular"
 plural "false"
 caps "false"
 noprefix "false"
 
 \end_inset
 
- can be rewritten as linear combinations of expressions 
-\begin_inset Formula $\ush{\nu}{\mu}\left(\uvec d\right)j_{n}\left(d\right),\ush{\nu}{\mu}\left(\uvec d\right)h_{n}^{(1)}\left(d\right)$
+ we demonstratively expressed the translation operator elements as linear
+ combinations of (outgoing) scalar spherical wavefunctions 
+\begin_inset Formula $\sswfoutlm lm\left(\vect r\right)=h_{l}^{\left(1\right)}\left(r\right)\ush lm\left(\uvec r\right)$
 \end_inset
 
- (TODO WRITE THEM EXPLICITLY IN THIS FORM), respectively, hence if we are
- able evaluate the lattice sums sums
+, because for them, fortunately, exponentially convergent Ewald-type summation
+ formulae have been already developed 
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-CHECK THE FOLLOWING EXPRESSION FOR CORRECT FUNCTION ARGUMENTS
+add refs
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "moroz_quasi-periodic_2006,linton_one-_2009,linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+ and can be applied to our case.
+ If we formally label 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Check signs.
 \end_layout
 
 \end_inset
@@ -899,50 +707,132 @@ CHECK THE FOLLOWING EXPRESSION FOR CORRECT FUNCTION ARGUMENTS
 
 \begin_inset Formula 
 \begin{equation}
-\sigma_{\nu}^{\mu}\left(\vect k\right)=\sum_{\vect n\in\ints^{d}\backslash\left\{ \vect0\right\} }e^{i\vect{\vect k}\cdot\vect R_{\vect n}}\ush{\nu}{\mu}\left(\uvec{R_{n}}\right)h_{n}^{(1)}\left(R_{n}\right),\label{eq:sigma lattice sums}
+\sigma_{l,m}\left(\vect k,\vect s\right)=\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},\vect s}\right)e^{i\vect{\vect k}\cdot\left(\vect R_{\vect n}-\vect s\right)}\sswfoutlm lm\left(\vect{R_{n}}-\vect s\right),\label{eq:sigma lattice sums}
 \end{equation}
 
 \end_inset
 
-then by linearity, we can get the 
-\begin_inset Formula $W_{\alpha\beta}\left(\vect k\right)$
-\end_inset
-
- operator as well.
-\end_layout
-
-\begin_layout Standard
-TODO ADD MOROZ AND OTHER REFS HERE.
+we see from eqs.
  
-\begin_inset CommandInset citation
-LatexCommand cite
-key "linton_one-_2009"
-literal "true"
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator singular"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
- offers an exponentially convergent Ewald-type summation method for 
-\begin_inset Formula $\sigma_{\nu}^{\mu}\left(\vect k\right)=\sigma_{\nu}^{\mu(\mathrm{S})}\left(\vect k\right)+\sigma_{\nu}^{\mu(\mathrm{L})}\left(\vect k\right)$
+,
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+plural "false"
+caps "false"
+noprefix "false"
+
 \end_inset
 
-.
- Here we rewrite them in a form independent on the convention used for spherical
- harmonics (as long as they are complex
+ that the matrix elements of 
+\begin_inset Formula $W_{\alpha\beta}(\vect k)$
+\end_inset
+
+ read 
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-lepší formulace
+\begin_inset Formula 
+\[
+W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\beta}\right)\tropsp{\vect 0,\alpha}{\vect m,\beta}e^{i\vect k\cdot\vect R_{\vect m}},
+\]
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
 
-).
- The short-range part reads (UNIFY INDEX NOTATION)
+ 
+\begin_inset Formula 
+\begin{align*}
+W_{\alpha,\tau lm;\beta,\tau l'm'}(\vect k) & =\sum_{\lambda=\left|l-l'\right|}^{l+l'}C_{lm;l'm'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r_{\beta}-\vect r_{\alpha}\right),\\
+W_{\alpha,\tau lm;\beta,\tau'l'm'}(\vect k) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r_{\beta}-\vect r_{\alpha}\right),\quad\tau'\ne\tau,
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Check signs
+\end_layout
+
+\end_inset
+
+where the constant factors are exactly the same as in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator constant factors"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For reader's reference, we list the Ewald-type formulae for lattice sums
+ 
+\begin_inset Formula $\sigma_{l,m}\left(\vect k,\vect s\right)$
+\end_inset
+
+ from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+ rewritten in a way that is independent on particular phase or normalisation
+ conventions of vector spherical harmonics.
+\end_layout
+
+\begin_layout Standard
+In all three dimensionality cases, the lattice sums are divided into short-range
+ and long-range parts, 
+\begin_inset Formula $\sigma_{l,m}\left(\vect k,\vect s\right)=\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)$
+\end_inset
+
+ depending on a positive parameter 
+\begin_inset Formula $\eta$
+\end_inset
+
+.
+ The short-range part has in all three cases the same form:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check sign of s
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{multline}
-\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)=-\frac{2^{n+1}i}{k^{n+1}\sqrt{\pi}}\sum_{\vect R\in\Lambda}^{'}\left|\vect R\right|^{n}e^{i\vect{\beta}\cdot\vect R}Y_{n}^{m}\left(\vect R\right)\int_{\eta}^{\infty}e^{-\left|\vect R\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2n}\ud\xi\\
-+\frac{\delta_{n0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)Y_{n}^{m},\label{eq:Ewald in 3D short-range part}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{k^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2l}\ud\xi\\
++\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right),\label{eq:Ewald in 3D short-range part}
 \end{multline}
 
 \end_inset
@@ -961,65 +851,191 @@ NEPATŘÍ TAM NĚJAKÁ DELTA FUNKCE K PŮVODNÍMU
 
 \end_inset
 
-and the long-range part (FIXME, this is the 2D version; include the 1D and
- 3D lattice expressions as well)
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Poznámka ohledně zahození radiální části u kulových fcí?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+N.B.
+ here 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ is the Bloch vector while 
+\begin_inset Formula $k$
+\end_inset
+
+ is the wavenumber.
+ Relabel to make this distinction clear.
+\end_layout
+
+\end_inset
+
+The long-range part for cases 
+\begin_inset Formula $d=1,2$
+\end_inset
+
+ reads
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+check sign of 
+\begin_inset Formula $\vect k$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{multline}
-\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)=-\frac{i^{n+1}}{k^{2}\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\times\\
-\times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{\left[\left(n-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\beta_{pq}/k\right)^{n-2j}\Gamma_{j,pq}}{j!\left(\frac{1}{2}\left(n-m\right)-j\right)!\left(\frac{1}{2}\left(n+m\right)-j\right)!}\left(\gamma_{pq}\right)^{2j-1}\label{eq:Ewald in 3D long-range part}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{k^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/k\right)^{l-2j}\Gamma\left(-j,\frac{k^{2}\gamma\left(\left|\vect k+\vect K\right|/k\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\left(\gamma\left(\left|\vect k+\vect K\right|/k\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
 \end{multline}
 
 \end_inset
 
-where 
-\begin_inset Formula $\xi$
+and for 
+\begin_inset Formula $d=3$
 \end_inset
 
- is TODO, 
-\begin_inset Formula $\beta_{pq}$
+
+\begin_inset Formula 
+\begin{equation}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{k\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\frac{\left(\left|\vect k+\vect K\right|/k\right)^{l}}{k^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(k^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right).\label{eq:Ewald in 3D long-range part 3D}
+\end{equation}
+
 \end_inset
 
- is TODO, 
-\begin_inset Formula $\Gamma_{j,pq}$
+Here 
+\begin_inset Formula $\mathcal{A}$
 \end_inset
 
- is TODO and 
+ is the unit cell volume (or length/area in the 1D/2D lattice cases).
+ The sums are taken over the reciprocal lattice 
+\begin_inset Formula $\Lambda^{*}$
+\end_inset
+
+ with lattice vectors 
+\begin_inset Formula $\left\{ \vect b_{i}\right\} _{i=1}^{d}$
+\end_inset
+
+ satisfying 
+\begin_inset Formula $\vect a_{i}\cdot\vect b_{j}=\delta_{ij}$
+\end_inset
+
+.
+ The function 
+\begin_inset Formula $\gamma\left(z\right)$
+\end_inset
+
+ used in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D long-range part 1D 2D"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is defined as
+\begin_inset Formula 
+\[
+\gamma\left(z\right)=\left(z-1\right)^{\frac{1}{2}}\left(z+1\right)^{\frac{1}{2}},\quad-\frac{3\pi}{2}<\arg\left(z-1\right)<\frac{\pi}{2},-\frac{\pi}{2}<\arg\left(z+1\right)<\frac{3\pi}{2}.
+\]
+
+\end_inset
+
+The Ewald parameter 
 \begin_inset Formula $\eta$
 \end_inset
 
- is a real parameter that determines the pace of convergence of both parts.
+ determines the pace of convergence of both parts.
  The larger 
 \begin_inset Formula $\eta$
 \end_inset
 
  is, the faster 
-\begin_inset Formula $\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)$
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)$
 \end_inset
 
  converges but the slower 
-\begin_inset Formula $\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)$
+\begin_inset Formula $\sigma_{l,m}^{\left(L,\eta\right)}\left(\vect k,\vect s\right)$
 \end_inset
 
  converges.
  Therefore (based on the lattice geometry) it has to be adjusted in a way
  that a reasonable amount of terms needs to be evaluated numerically from
  both 
-\begin_inset Formula $\sigma_{n}^{m(\mathrm{S})}\left(\vect{\beta}\right)$
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)$
 \end_inset
 
  and 
-\begin_inset Formula $\sigma_{n}^{m(\mathrm{L})}\left(\vect{\beta}\right)$
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)$
 \end_inset
 
  .
- Generally, a good choice for 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+What would be a good choice?
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+I have some error estimates derived in my notes.
+ Should I include them?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Generally, a good choice for 
 \begin_inset Formula $\eta$
 \end_inset
 
  is TODO; in order to achieve accuracy TODO, one has to evaluate the terms
  on TODO lattice points.
- (I HAVE SOME DERIVATIONS OF THE ESTIMATES IN MY NOTES; SHOULD I INCLUDE
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(I HAVE SOME DERIVATIONS OF THE ESTIMATES IN MY NOTES; SHOULD I INCLUDE
  THEM?)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1037,7 +1053,15 @@ noprefix "false"
 \begin_inset Formula $\Gamma$
 \end_inset
 
--functions using the series TODO and TODO from DLMF.
+-functions using the series 8.7.3 from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+.
 \end_layout
 
 \end_body

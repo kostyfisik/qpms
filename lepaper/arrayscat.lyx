@@ -320,6 +320,11 @@ status open
 
 
 \begin_inset FormulaMacro
+\newcommand{\sswfoutlm}[2]{\psi_{#1,#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\outcoeff}{f}
 \end_inset
 
