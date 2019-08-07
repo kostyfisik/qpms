@@ -485,7 +485,17 @@ These are compatibility macros for the (...)-old files:
 \end_inset
 
 -matrix simulations in finite and infinite systems of electromagnetic scatterers
- (TODO better title)
+ 
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+(TODO better title)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -774,10 +784,6 @@ Truncation notation.
 
 \begin_layout Itemize
 Example results and benchmarks with BEM; figures!
-\end_layout
-
-\begin_layout Itemize
-Fix and unify notation (mainly indices) in infinite lattices section.
 \end_layout
 
 \begin_layout Itemize

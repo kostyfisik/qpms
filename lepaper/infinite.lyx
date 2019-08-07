@@ -605,7 +605,7 @@ reference "eq:W definition"
 \end_inset
 
  is the asymptotic behaviour of the translation operator, 
-\begin_inset Formula $\tropsp{\vect 0,\alpha}{\vect m,\beta}\sim\left|\vect R_{\vect b}\right|^{-1}e^{ik_{0}\left|\vect R_{\vect b}\right|}$
+\begin_inset Formula $\tropsp{\vect 0,\alpha}{\vect m,\beta}\sim\left|\vect R_{\vect m}\right|^{-1}e^{i\kappa\left|\vect R_{\vect m}\right|}$
 \end_inset
 
  that does not in the strict sense converge for any 
@@ -831,8 +831,8 @@ Check sign of s
 \begin_layout Standard
 \begin_inset Formula 
 \begin{multline}
-\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{k^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-k/4\xi^{2}}\xi^{2l}\ud\xi\\
-+\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{k}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right),\label{eq:Ewald in 3D short-range part}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{\kappa^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-\kappa/4\xi^{2}}\xi^{2l}\ud\xi\\
++\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right),\label{eq:Ewald in 3D short-range part}
 \end{multline}
 
 \end_inset
@@ -861,26 +861,6 @@ Poznámka ohledně zahození radiální části u kulových fcí?
 
 \end_inset
 
-
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-N.B.
- here 
-\begin_inset Formula $\vect k$
-\end_inset
-
- is the Bloch vector while 
-\begin_inset Formula $k$
-\end_inset
-
- is the wavenumber.
- Relabel to make this distinction clear.
-\end_layout
-
-\end_inset
-
 The long-range part for cases 
 \begin_inset Formula $d=1,2$
 \end_inset
@@ -902,8 +882,8 @@ check sign of
 
 \begin_inset Formula 
 \begin{multline}
-\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{k^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/k\right)^{l-2j}\Gamma\left(-j,\frac{k^{2}\gamma\left(\left|\vect k+\vect K\right|/k\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\left(\gamma\left(\left|\vect k+\vect K\right|/k\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(-j,\frac{k^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
 \end{multline}
 
 \end_inset
@@ -915,7 +895,7 @@ and for
 
 \begin_inset Formula 
 \begin{equation}
-\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{k\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\frac{\left(\left|\vect k+\vect K\right|/k\right)^{l}}{k^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(k^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right).\label{eq:Ewald in 3D long-range part 3D}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\frac{\left(\left|\vect k+\vect K\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right).\label{eq:Ewald in 3D long-range part 3D}
 \end{equation}
 
 \end_inset

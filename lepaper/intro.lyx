@@ -107,7 +107,16 @@ name "sec:Introduction"
 \begin_layout Standard
 The problem of electromagnetic response of a system consisting of many relativel
 y small, compact scatterers in various geometries, and its numerical solution,
- is relevant to many branches of nanophotonics (TODO refs).
+ is relevant to many branches of nanophotonics.
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Some refs here?
+\end_layout
+
+\end_inset
+
  The most commonly used general approaches used in computational electrodynamics
  are often unsuitable for simulating systems with larger number of scatterers
  due to their computational complexity: differential methods such as the
@@ -118,7 +127,7 @@ y small, compact scatterers in various geometries, and its numerical solution,
  with dense matrices containing couplings between each pair of DoF.
  Therefore, a common (frequency-domain) approach to get an approximate solution
  of the scattering problem for many small particles has been the coupled
- dipole approximation (CDA) where drastic reduction of the number of DoF
+ dipole approximation (CDA) where a drastic reduction of the number of DoF
  is achieved by approximating individual scatterers to electric dipoles
  (characterised by a polarisability tensor) coupled to each other through
  Green's functions.
@@ -133,8 +142,8 @@ CDA is easy to implement and demands relatively little computational resources
  to quantitative errors.
  The other one, more subtle, manifests itself in photonic crystal-like structure
 s used in nanophotonics: there are modes in which the particles' electric
- dipole moments completely vanish due to symmetry, regardless of how small
- the particles are, and the excitations have quadrupolar or higher-degree
+ dipole moments completely vanish due to symmetry, and regardless of how
+ small the particles are, the excitations have quadrupolar or higher-degree
  multipolar character.
  These modes typically appear at the band edges where interesting phenomena
  such as lasing or Bose-Einstein condensation have been observed 
@@ -152,13 +161,13 @@ literal "false"
 The natural way to overcome both limitations of CDA mentioned above is to
  include higher multipoles into account.
  Instead of polarisability tensor, the scattering properties of an individual
- particle are then described a more general 
+ particle are then described with more general 
 \begin_inset Formula $T$
 \end_inset
 
 -matrix, and different particles' multipole excitations are coupled together
- via translation operators, a generalisation of the Green's functions in
- CDA.
+ via translation operators, a generalisation of the Green's functions used
+ in CDA.
  This is the idea behind the 
 \emph on
 multiple-scattering 
@@ -227,8 +236,8 @@ literal "false"
  During the process, it became apparent that although the size of the arrays
  we were able to simulate with MSTMM was far larger than with other methods,
  sometimes we were unable to match the full size of our physical arrays
- (typically consisting of tens of thousands of metallic nanoparticles) due
- to memory constraints.
+ (typically consisting of tens of thousands of metallic nanoparticles) mainly
+ due to memory constraints.
  Moreover, to distinguish the effects attributable to the finite size of
  the arrays, it became desirable to simulate also 
 \emph on
@@ -247,7 +256,7 @@ Here we address both challenges: we extend the method on infinite periodic
  of the system to decompose the problem into several substantially smaller
  ones, which 1) reduces the demands on computational resources, hence speeds
  up the computations and allows for simulations of larger systems, and 2)
- provides better understanding of modes in periodic systems.
+ provides better understanding of modes, mainly in periodic systems.
 \end_layout
 
 \begin_layout Standard
@@ -273,8 +282,8 @@ TODO refs to the code repositories once it is published.
 s.
  Moreover, it includes the improvements covered in this paper, enabling
  to simulate even larger systems and also infinite structures with periodicity
- in one, two or three dimensions, which can be e.g.
- used for quickly evaluating dispersions of such structures
+ in one, two or three dimensions, which can be used e.g.
+ for quickly evaluating dispersions of such structures
 \begin_inset Marginal
 status open
 
@@ -327,7 +336,7 @@ reference "sec:Infinite"
 \end_inset
 
  we develop the theory for infinite periodic structures.
- In section 
+ In Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Symmetries"
@@ -339,7 +348,7 @@ noprefix "false"
 
  we apply group theory on MSTMM to utilise the symmetries of the simulated
  system.
- Finally, section 
+ Finally, Section 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Applications"

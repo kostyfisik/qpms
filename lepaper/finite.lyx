@@ -104,10 +104,6 @@ name "sec:Finite"
 
 \end_layout
 
-\begin_layout Subsection
-Motivation/intro
-\end_layout
-
 \begin_layout Standard
 The basic idea of MSTMM is quite simple: the driving electromagnetic field
  incident onto a scatterer is expanded into a vector spherical wavefunction
@@ -127,8 +123,8 @@ The expressions appearing in the re-expansions are fairly complicated, and
  the implementation of MSTMM is extremely error-prone also due to the various
  conventions used in the literature.
  Therefore although we do not re-derive from scratch the expressions that
- can be found elsewhere in literature, we always state them explicitly in
- our convention.
+ can be found elsewhere in literature, for reader's reference we always
+ state them explicitly in our convention.
 \end_layout
 
 \begin_layout Subsection
@@ -137,7 +133,7 @@ Single-particle scattering
 
 \begin_layout Standard
 In order to define the basic concepts, let us first consider the case of
- EM radiation scattered by a single particle.
+ electromagnetic (EM) radiation scattered by a single particle.
  We assume that the scatterer lies inside a closed ball 
 \begin_inset Formula $\closedball{R^{<}}{\vect 0}$
 \end_inset
@@ -156,17 +152,7 @@ In order to define the basic concepts, let us first consider the case of
 \begin_inset Formula $\openball{R^{>}}{\vect 0}$
 \end_inset
 
-, such that 
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-Is there a word for this?
-\end_layout
-
-\end_inset
-
- the (non-empty) volume 
+, such that the (non-empty) spherical shell 
 \begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}=\openball{R^{>}}{\vect 0}\setminus\closedball{R^{<}}{\vect 0}$
 \end_inset
 
@@ -187,14 +173,14 @@ ty
 \end_inset
 
  in 
-\begin_inset Formula $\medium$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
 \end_inset
 
  must satisfy the homogeneous vector Helmholtz equation together with the
  transversality condition 
 \begin_inset Formula 
 \begin{equation}
-\left(\nabla^{2}+k^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0,\quad\nabla\cdot\vect{\Psi}\left(\vect r,\vect{\omega}\right)=0\label{eq:Helmholtz eq}
+\left(\nabla^{2}+\kappa^{2}\right)\Psi\left(\vect r,\vect{\omega}\right)=0,\quad\nabla\cdot\vect{\Psi}\left(\vect r,\vect{\omega}\right)=0\label{eq:Helmholtz eq}
 \end{equation}
 
 \end_inset
@@ -233,19 +219,27 @@ todo define
 \end_inset
 
  with 
-\begin_inset Formula $k=k\left(\omega\right)=\omega\sqrt{\mubg(\omega)\epsbg(\omega)}/c_{0}$
+\begin_inset Formula $\kappa=\kappa\left(\omega\right)=\omega\sqrt{\mubg(\omega)\epsbg(\omega)}/c_{0}$
 \end_inset
 
-, as can be derived from the Maxwell's equations 
+, as can be derived from Maxwell's equations 
 \begin_inset CommandInset citation
 LatexCommand cite
-after "???"
 key "jackson_classical_1998"
 literal "false"
 
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO ref to the chapter.
+\end_layout
+
+\end_inset
+
  
 \end_layout
 
@@ -284,8 +278,8 @@ outgoing
 , respectively, defined as follows:
 \begin_inset Formula 
 \begin{align}
-\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krj_{l}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
+\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(\kappa r\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
+\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{\kappa r}\frac{\ud\left(\kappa rj_{l}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(\kappa r\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
 \end{align}
 
 \end_inset
@@ -294,7 +288,7 @@ outgoing
 \begin_inset Formula 
 \begin{align}
 \vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(kr\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(kr\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
+\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(\kappa r\right)}{\kappa r}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
  & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,\nonumber 
 \end{align}
 
@@ -494,7 +488,7 @@ noprefix "false"
 
  around the origin (typically due to presence of a scatterer), one has to
  add the outgoing VSWFs 
-\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(\kappa\vect r\right)$
 \end_inset
 
  to have a complete basis of the solutions in the volume 
@@ -528,7 +522,7 @@ The single-particle scattering problem at frequency
 \end_inset
 
  be filled with a homogeneous isotropic medium with wave number 
-\begin_inset Formula $k\left(\omega\right)$
+\begin_inset Formula $\kappa\left(\omega\right)$
 \end_inset
 
 .
@@ -549,16 +543,16 @@ doplnit frekvence a polohy
 
 \begin_inset Formula 
 \begin{equation}
-\vect E\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm\left(k\vect r\right)+\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm\left(k\vect r\right)\right).\label{eq:E field expansion}
+\vect E\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm\left(\kappa\vect r\right)+\outcoefftlm{\tau}lm\vswfouttlm{\tau}lm\left(\kappa\vect r\right)\right).\label{eq:E field expansion}
 \end{equation}
 
 \end_inset
 
-If there was no scatterer and 
+If there were no scatterer and 
 \begin_inset Formula $\closedball{R^{<}}{\vect 0}$
 \end_inset
 
- was filled with the same homogeneous medium, the part with the outgoing
+ were filled with the same homogeneous medium, the part with the outgoing
  VSWFs would vanish and only the part 
 \begin_inset Formula $\vect E_{\mathrm{inc}}=\sum_{\tau lm}\rcoefftlm{\tau}lm\vswfrtlm{\tau}lm$
 \end_inset
@@ -585,8 +579,8 @@ driving field
 \end_inset
 
 .
- We also assume that the scatterer is made of optically linear materials,
- and hence reacts on the incident field in a linear manner.
+ We also assume that the scatterer is made of optically linear materials
+ and hence reacts to the incident field in a linear manner.
  This gives a linearity constraint between the expansion coefficients
 \begin_inset Formula 
 \begin{equation}
@@ -614,8 +608,8 @@ transition matrix,
 \begin_inset Formula $T$
 \end_inset
 
--matrix, we can solve the single-patricle scatering prroblem simply by substitut
-ing appropriate expansion coefficients 
+-matrix we can solve the single-patricle scatering prroblem simply by substituti
+ng appropriate expansion coefficients 
 \begin_inset Formula $\rcoefftlm{\tau'}{l'}{m'}$
 \end_inset
 
@@ -643,8 +637,8 @@ noprefix "false"
 \end_inset
 
 ) multipole polarisation amplitudes of the scatterer, and this is why we
- sometimes refer to the corresponding VSWFs as the electric and magnetic
- VSWFs.
+ sometimes refer to the corresponding VSWFs as to the electric and magnetic
+ VSWFs, respectively.
  
 \begin_inset Note Note
 status open
@@ -705,8 +699,12 @@ literal "false"
 \end_inset
 
 , see below.
- We typically use the scuff-tmatrix tool from the free software SCUFF-EM
- suite 
+ For the numerical evaluation of 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices we typically use the scuff-tmatrix tool from the free software
+ SCUFF-EM suite 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "reid_efficient_2015,SCUFF2"
@@ -979,7 +977,7 @@ noprefix "false"
  via by electromagnetic radiation is
 \begin_inset Formula 
 \begin{equation}
-P=\frac{1}{2k^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)=\frac{1}{2k^{2}\eta_{0}\eta}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{}.\label{eq:Power transport}
+P=\frac{1}{2\kappa^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)=\frac{1}{2\kappa^{2}\eta_{0}\eta}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{}.\label{eq:Power transport}
 \end{equation}
 
 \end_inset
@@ -1001,9 +999,9 @@ Plane wave expansion
 
 \begin_layout Standard
 In many scattering problems considered in practice, the driving field is
- a plane wave.
+ at least approximately a plane wave.
  A transversal (
-\begin_inset Formula $\vect k\cdot\vect E_{0}=0$
+\begin_inset Formula $\uvec k\cdot\vect E_{0}=0$
 \end_inset
 
 ) plane wave propagating in direction 
@@ -1017,7 +1015,7 @@ In many scattering problems considered in practice, the driving field is
  can be expanded into regular VSWFs 
 \begin_inset CommandInset citation
 LatexCommand cite
-after "7.???"
+after "7.7.1"
 key "kristensson_scattering_2016"
 literal "false"
 
@@ -1026,7 +1024,7 @@ literal "false"
  as
 \begin_inset Formula 
 \[
-\vect E_{\mathrm{PW}}\left(\vect r,\omega\right)=\vect E_{0}e^{ik\uvec k\cdot\vect r}=\sum_{\tau,l,m}\rcoeffptlm{}{\tau}lm\left(\vect k,\vect E_{0}\right)\vswfrtlm{\tau}lm\left(k\vect r\right),
+\vect E_{\mathrm{PW}}\left(\vect r,\omega\right)=\vect E_{0}e^{i\kappa\uvec k\cdot\vect r}=\sum_{\tau,l,m}\rcoeffptlm{}{\tau}lm\left(\uvec k,\vect E_{0}\right)\vswfrtlm{\tau}lm\left(\kappa\vect r\right),
 \]
 
 \end_inset
@@ -1034,8 +1032,8 @@ literal "false"
 with expansion coefficients
 \begin_inset Formula 
 \begin{eqnarray}
-\rcoeffptlm{}1lm\left(\vect k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
-\rcoeffptlm{}2lm\left(\vect k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
+\rcoeffptlm{}1lm\left(\uvec k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
+\rcoeffptlm{}2lm\left(\uvec k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
 \end{eqnarray}
 
 \end_inset
@@ -1113,10 +1111,10 @@ literal "true"
 
 \begin_inset Formula 
 \begin{eqnarray}
-\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}+\Tp{}^{\dagger}\right)\rcoeffp{},\label{eq:extincion CS single}\\
-\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left\Vert \outcoeffp{}\right\Vert ^{2}=\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}\right)\rcoeffp{},\label{eq:scattering CS single}\\
-\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & \sigma_{\mathrm{ext}}\left(\uvec k\right)-\sigma_{\mathrm{scat}}\left(\uvec k\right)=-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)\nonumber \\
- &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{},\label{eq:absorption CS single}
+\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)=-\frac{1}{2\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}+\Tp{}^{\dagger}\right)\rcoeffp{},\label{eq:extincion CS single}\\
+\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left\Vert \outcoeffp{}\right\Vert ^{2}=\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}\right)\rcoeffp{},\label{eq:scattering CS single}\\
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & \sigma_{\mathrm{ext}}\left(\uvec k\right)-\sigma_{\mathrm{scat}}\left(\uvec k\right)=-\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)\nonumber \\
+ &  & =\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{},\label{eq:absorption CS single}
 \end{eqnarray}
 
 \end_inset
@@ -1163,7 +1161,7 @@ If the system consists of multiple scatterers, the EM fields around each
 \begin_inset Formula $\closedball{R_{p}}{\vect r_{p}}\cap\closedball{R_{q}}{\vect r_{q}}=\emptyset;p,q\in\mathcal{P}$
 \end_inset
 
-, so there is a non-empty volume
+, so there is a non-empty spherical shell
 \begin_inset Note Note
 status open
 
@@ -1178,11 +1176,11 @@ jaksetometuje?
 \end_inset
 
  around each one that contains only the background medium without any scatterers
- (we assume that all the volume outside 
+; we assume that all the relevant volume outside 
 \begin_inset Formula $\bigcap_{p\in\mathcal{P}}\closedball{R_{p}}{\vect r_{p}}$
 \end_inset
 
- is filled with the same background medium).
+ is filled with the same background medium.
  Then the EM field inside each 
 \begin_inset Formula $\mezikuli{R_{p}}{R_{p}^{>}}{\vect r_{p}}$
 \end_inset
@@ -1200,7 +1198,7 @@ noprefix "false"
 , using VSWFs with origins shifted to the centre of the volume:
 \begin_inset Formula 
 \begin{align}
-\vect E\left(\omega,\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)+\outcoeffptlm p{\tau}lm\vswfouttlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)\right),\label{eq:E field expansion multiparticle}\\
+\vect E\left(\omega,\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\left(\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(\kappa\left(\vect r-\vect r_{p}\right)\right)+\outcoeffptlm p{\tau}lm\vswfouttlm{\tau}lm\left(\kappa\left(\vect r-\vect r_{p}\right)\right)\right),\label{eq:E field expansion multiparticle}\\
  & \vect r\in\mezikuli{R_{p}}{R_{p}^{>}}{\vect r_{p}}.\nonumber 
 \end{align}
 
@@ -1362,7 +1360,7 @@ In practice, the multiple-scattering problem is solved in its truncated
 -multiindices left.
  The truncation degree can vary for different scatterers (e.g.
  due to different physical sizes), so the truncated block 
-\begin_inset Formula $\tropsp pq$
+\begin_inset Formula $\left[\tropsp pq\right]_{l_{q}\le L_{q};l_{p}\le L_{q}}$
 \end_inset
 
  has shape 
@@ -1493,7 +1491,7 @@ Let
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{1}\right)\right)=\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right),\label{eq:regular vswf translation}
+\vswfrtlm{\tau}lm\left(\kappa\left(\vect r-\vect r_{1}\right)\right)=\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(\kappa\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right),\label{eq:regular vswf translation}
 \end{equation}
 
 \end_inset
@@ -1519,9 +1517,9 @@ reference "eq:translation operator"
 :
 \begin_inset Formula 
 \begin{eqnarray}
-\vswfouttlm{\tau}lm\left(k\left(\vect r-\vect r_{1}\right)\right) & = & \begin{cases}
-\sum_{\tau'l'm'}\trops_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfouttlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right), & \vect r\in\openball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}\\
-\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\vect r-\vect r_{2}\right), & \vect r\notin\closedball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\left|\vect r_{1}\right|}
+\vswfouttlm{\tau}lm\left(\kappa\left(\vect r-\vect r_{1}\right)\right) & = & \begin{cases}
+\sum_{\tau'l'm'}\trops_{\tau lm;\tau'l'm'}\left(\kappa\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfouttlm{\tau'}{l'}{m'}\left(\kappa\left(\vect r-\vect r_{2}\right)\right), & \vect r\in\openball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\vect r_{1}}\\
+\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(\kappa\left(\vect r_{2}-\vect r_{1}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\kappa\left(\vect r-\vect r_{2}\right)\right), & \vect r\notin\closedball{\left\Vert \vect r_{2}-\vect r_{1}\right\Vert }{\left|\vect r_{1}\right|}
 \end{cases},\label{eq:singular vswf translation}
 \end{eqnarray}
 
@@ -1590,7 +1588,7 @@ they
 ,
 \begin_inset Formula 
 \[
-\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(k\left(\vect r-\vect r_{p}\right)\right)=\sum_{\tau',l',m'}\rcoeffptlm q{\tau'}{l'}{m'}\vswfrtlm{\tau}{'l'}{m'}\left(k\left(\vect r-\vect r_{q}\right)\right).
+\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\vswfrtlm{\tau}lm\left(\kappa\left(\vect r-\vect r_{p}\right)\right)=\sum_{\tau',l',m'}\rcoeffptlm q{\tau'}{l'}{m'}\vswfrtlm{\tau}{'l'}{m'}\left(\kappa\left(\vect r-\vect r_{q}\right)\right).
 \]
 
 \end_inset
@@ -1613,7 +1611,7 @@ reference "eq:regular vswf translation"
 , 
 \begin_inset Formula 
 \[
-\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(k\left(\vect r-\vect r_{q}\right)\right)
+\vect E\left(\vect r,\omega\right)=\sum_{\tau,l,m}\rcoeffptlm p{\tau}lm\sum_{\tau'l'm'}\tropr_{\tau lm;\tau'l'm'}\left(\kappa\left(\vect r_{q}-\vect r_{p}\right)\right)\vswfrtlm{\tau'}{l'}{m'}\left(\kappa\left(\vect r-\vect r_{q}\right)\right)
 \]
 
 \end_inset
@@ -1625,7 +1623,7 @@ and comparing to the original expansion around
 , we obtain
 \begin_inset Formula 
 \begin{equation}
-\rcoeffptlm q{\tau'}{l'}{m'}=\sum_{\tau,l,m}\tropr_{\tau lm;\tau'l'm'}\left(k\left(\vect r_{q}-\vect r_{p}\right)\right)\rcoeffptlm p{\tau}lm.\label{eq:regular vswf coefficient translation}
+\rcoeffptlm q{\tau'}{l'}{m'}=\sum_{\tau,l,m}\tropr_{\tau lm;\tau'l'm'}\left(\kappa\left(\vect r_{q}-\vect r_{p}\right)\right)\rcoeffptlm p{\tau}lm.\label{eq:regular vswf coefficient translation}
 \end{equation}
 
 \end_inset
@@ -2066,7 +2064,7 @@ literal "false"
 , we can describe the EM fields as if there was only a single scatterer,
 \begin_inset Formula 
 \[
-\vect E\left(\vect r\right)=\sum_{\tau,l,m}\left(\rcoeffptlm{\square}{\tau}lm\vswfrtlm{\tau}lm\left(\vect r-\vect r_{\square}\right)+\outcoeffptlm{\square}{\tau}lm\vswfouttlm{\tau}lm\left(\vect r-\vect r_{\square}\right)\right),
+\vect E\left(\vect r\right)=\sum_{\tau,l,m}\left(\rcoeffptlm{\square}{\tau}lm\vswfrtlm{\tau}lm\left(\kappa\left(\vect r-\vect r_{\square}\right)\right)+\outcoeffptlm{\square}{\tau}lm\vswfouttlm{\tau}lm\left(\kappa\left(\vect r-\vect r_{\square}\right)\right)\right),
 \]
 
 \end_inset
@@ -2252,10 +2250,10 @@ noprefix "false"
  cross sections suitable for numerical evaluation: 
 \begin_inset Formula 
 \begin{eqnarray}
-\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\outcoeffp p=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\left(\Tp p+\Tp p^{\dagger}\right)\rcoeffp p,\label{eq:extincion CS multi}\\
-\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q\nonumber \\
- &  & =\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\rcoeffp p^{\dagger}\Tp p^{\dagger}\troprp pq\Tp q\rcoeffp q,\label{eq:scattering CS multi}\\
-\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & -\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}}\troprp pq\outcoeffp q\right)\right).\nonumber \\
+\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\outcoeffp p=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\left(\Tp p+\Tp p^{\dagger}\right)\rcoeffp p,\label{eq:extincion CS multi}\\
+\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q\nonumber \\
+ &  & =\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\rcoeffp p^{\dagger}\Tp p^{\dagger}\troprp pq\Tp q\rcoeffp q,\label{eq:scattering CS multi}\\
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & -\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}}\troprp pq\outcoeffp q\right)\right).\nonumber \\
 \label{eq:absorption CS multi}
 \end{eqnarray}
 
@@ -2321,7 +2319,7 @@ noprefix "false"
  particle-wise gives
 \begin_inset Formula 
 \begin{equation}
-\sigma_{\mathrm{abs}}\left(\uvec k\right)=-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\left(\Re\left(\rcoeffp p^{\dagger}\outcoeffp p\right)+\left\Vert \outcoeffp p\right\Vert ^{2}\right)\label{eq:absorption CS multi alternative}
+\sigma_{\mathrm{abs}}\left(\uvec k\right)=-\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\left(\Re\left(\rcoeffp p^{\dagger}\outcoeffp p\right)+\left\Vert \outcoeffp p\right\Vert ^{2}\right)\label{eq:absorption CS multi alternative}
 \end{equation}
 
 \end_inset
@@ -2349,8 +2347,8 @@ noprefix "false"
 , we can rewrite it as
 \begin_inset Formula 
 \begin{align*}
-\sigma_{\mathrm{abs}}\left(\uvec k\right) & =-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffp p+\outcoeffp p\right)\right)\\
- & =-\frac{1}{k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q+\outcoeffp p\right)\right).
+\sigma_{\mathrm{abs}}\left(\uvec k\right) & =-\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffp p+\outcoeffp p\right)\right)\\
+ & =-\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}\backslash\left\{ p\right\} }\tropsp pq\outcoeffp q+\outcoeffp p\right)\right).
 \end{align*}
 
 \end_inset

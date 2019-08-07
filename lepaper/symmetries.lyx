@@ -473,7 +473,7 @@ noprefix "false"
  of the electric field around origin in a rotated/reflected system,
 \begin_inset Formula 
 \[
-\left(\groupop g\vect E\right)\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\vect r\right)+\outcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\vect r\right)\right),
+\left(\groupop g\vect E\right)\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(\kappa\vect r\right)+\outcoefftlm{\tau}lmD_{m,m'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\vect r\right)\right),
 \]
 
 \end_inset
@@ -595,8 +595,8 @@ Check this carefully.
 
 \begin_inset Formula 
 \begin{multline}
-\left(\groupop g\vect E\right)\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
-+\left.\outcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right).\label{eq:rotated E field expansion around outside origin}
+\left(\groupop g\vect E\right)\left(\omega,\vect r\right)=\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(\kappa\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
++\left.\outcoeffptlm p{\tau}lmD_{m',\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\left(\vect r-R_{g}\vect r_{p}\right)\right)\right).\label{eq:rotated E field expansion around outside origin}
 \end{multline}
 
 \end_inset
@@ -750,12 +750,12 @@ With these transformation properties in hand, we can proceed to the effects
 
 \begin_inset Formula 
 \begin{align*}
-\left(\groupop g\vect E\right)\left(\omega,\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
- & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-R_{g}\vect r_{p}\right)\right)\right)\\
- & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right.\\
- & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right)\\
- & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{q}\right)\right)\right.\\
- & \quad+\left.\outcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(k\left(\vect r-\vect r_{q}\right)\right)\right)
+\left(\groupop g\vect E\right)\left(\omega,\vect r\right) & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(\kappa\left(\vect r-R_{g}\vect r_{p}\right)\right)\right.+\\
+ & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\left(\vect r-R_{g}\vect r_{p}\right)\right)\right)\\
+ & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right.\\
+ & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right)\\
+ & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{q}\right)\right)\right.\\
+ & \quad+\left.\outcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{q}\right)\right)\right)
 \end{align*}
 
 \end_inset
