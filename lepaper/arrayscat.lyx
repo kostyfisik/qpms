@@ -790,13 +790,22 @@ noprefix "false"
 \end_layout
 
 \begin_layout Itemize
+Check whether everything written is correct also for non-symmorphic space
+ groups.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 The text about symmetries is pretty dense.
  Make it more explanatory and human-readable.
 \end_layout
 
-\begin_layout Itemize
-Check whether everything written is correct also for non-symmorphic space
- groups.
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

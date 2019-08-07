@@ -318,14 +318,14 @@ noprefix "false"
 
  and the properties of the gradient operator under coordinate transforms,
  vector spherical harmonics 
-\begin_inset Formula $\vsh 2lm,\vsh 3lm$
+\begin_inset Formula $\vsh2lm,\vsh3lm$
 \end_inset
 
  transform in the same way,
 \begin_inset Formula 
 \begin{align*}
-\left(\groupop g\vsh 2lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
-\left(\groupop g\vsh 3lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh2lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh2l{m'}\left(\uvec r\right),\\
+\left(\groupop g\vsh3lm\right)\left(\uvec r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh3l{m'}\left(\uvec r\right),
 \end{align*}
 
 \end_inset
@@ -337,8 +337,8 @@ status open
 \begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
-\left(\groupop g\vsh 2lm\right)\left(\uvec r\right) & =R_{g}\vsh 2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 2l{m'}\left(\uvec r\right),\\
-\left(\groupop g\vsh 3lm\right)\left(\uvec r\right) & =R_{g}\vsh 2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh 3l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh2lm\right)\left(\uvec r\right) & =R_{g}\vsh2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh2l{m'}\left(\uvec r\right),\\
+\left(\groupop g\vsh3lm\right)\left(\uvec r\right) & =R_{g}\vsh2lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vsh3l{m'}\left(\uvec r\right),
 \end{align*}
 
 \end_inset
@@ -349,14 +349,14 @@ status open
 \end_inset
 
 but the remaining set 
-\begin_inset Formula $\vsh 1lm$
+\begin_inset Formula $\vsh1lm$
 \end_inset
 
  transforms differently due to their pseudovector nature stemming from the
  cross product in their definition:
 \begin_inset Formula 
 \[
-\left(\groupop g\vsh 1lm\right)\left(\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh 1l{m'}\left(\uvec r\right),
+\left(\groupop g\vsh1lm\right)\left(\uvec r\right)=\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vsh1l{m'}\left(\uvec r\right),
 \]
 
 \end_inset
@@ -411,8 +411,8 @@ noprefix "false"
 :
 \begin_inset Formula 
 \begin{align*}
-\left(\groupop g\vswfouttlm 1lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm 1l{m'}\left(\vect r\right),\\
-\left(\groupop g\vswfouttlm 2lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm 2l{m'}\left(\vect r\right),
+\left(\groupop g\vswfouttlm1lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}\widetilde{D_{m,m'}^{l}}\left(g\right)\vswfouttlm1l{m'}\left(\vect r\right),\\
+\left(\groupop g\vswfouttlm2lm\right)\left(\vect r\right) & =\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\vswfouttlm2l{m'}\left(\vect r\right),
 \end{align*}
 
 \end_inset
@@ -1328,8 +1328,8 @@ horizontal
  the same unit cell, e.g.
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect0A} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect0E},\\
-\outcoeff_{\vect0C} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect0C},
+\outcoeffp{\vect 0A} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect 0E},\\
+\outcoeff_{\vect 0C} & \overset{\sigma_{xz}}{\longmapsto}\tilde{J}\left(\sigma_{xz}\right)\outcoeffp{\vect 0C},
 \end{align*}
 
 \end_inset
@@ -1374,8 +1374,8 @@ vertical
 ,
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect0A} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(0,1\right)E},\\
-\outcoeff_{\vect0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(1,0\right)C},
+\outcoeffp{\vect 0A} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(0,1\right)E},\\
+\outcoeff_{\vect 0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\left(1,0\right)C},
 \end{align*}
 
 \end_inset
@@ -1385,22 +1385,22 @@ but we want
 \end_inset
 
  to operate only inside one unit cell, so we use the Bloch condition 
-\begin_inset Formula $\outcoeffp{\vect n,\alpha}=\outcoeffp{\vect0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
+\begin_inset Formula $\outcoeffp{\vect n,\alpha}=\outcoeffp{\vect 0,\alpha}\left(\vect k\right)e^{i\vect k\cdot\vect R_{\vect n}}$
 \end_inset
 
 : in this case, we have 
-\begin_inset Formula $\outcoeffp{\left(0,1\right)\alpha}=\outcoeffp{\vect0\alpha}e^{i\vect M_{1}\cdot\vect a_{2}}=\outcoeffp{\vect0\alpha}e^{i0}=\outcoeffp{\vect0\alpha}$
+\begin_inset Formula $\outcoeffp{\left(0,1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect M_{1}\cdot\vect a_{2}}=\outcoeffp{\vect 0\alpha}e^{i0}=\outcoeffp{\vect 0\alpha}$
 \end_inset
 
 , 
-\begin_inset Formula $\outcoeffp{\left(1,0\right)\alpha}=e^{i\vect M_{1}\cdot\vect a_{2}}\outcoeffp{\vect0\alpha}=e^{i\pi}\outcoeffp{\vect0\alpha}=-\outcoeffp{\vect0\alpha},$
+\begin_inset Formula $\outcoeffp{\left(1,0\right)\alpha}=e^{i\vect M_{1}\cdot\vect a_{2}}\outcoeffp{\vect 0\alpha}=e^{i\pi}\outcoeffp{\vect 0\alpha}=-\outcoeffp{\vect 0\alpha},$
 \end_inset
 
 so 
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect0A} & \overset{\sigma_{yz}}{\longmapsto}-\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect0E},\\
-\outcoeff_{\vect0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect0C}.
+\outcoeffp{\vect 0A} & \overset{\sigma_{yz}}{\longmapsto}-\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect 0E},\\
+\outcoeff_{\vect 0C} & \overset{\sigma_{yz}}{\longmapsto}\tilde{J}\left(\sigma_{yz}\right)\outcoeffp{\vect 0C}.
 \end{align*}
 
 \end_inset
@@ -1439,19 +1439,19 @@ the original
  rotation, as an example we have
 \begin_inset Formula 
 \begin{align*}
-\outcoeffp{\vect0A} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(0,-1\right)E}=e^{2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect0E},\\
-\outcoeff_{\vect0C} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)A}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect0A},\\
-\outcoeff_{\vect0B} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)B}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect0B},
+\outcoeffp{\vect 0A} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(0,-1\right)E}=e^{2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0E},\\
+\outcoeff_{\vect 0C} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)A}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0A},\\
+\outcoeff_{\vect 0B} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(1,-1\right)B}=e^{-2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0B},
 \end{align*}
 
 \end_inset
 
 because in this case, the Bloch condition gives 
-\begin_inset Formula $\outcoeffp{\left(0,-1\right)\alpha}=\outcoeffp{\vect0\alpha}e^{i\vect K\cdot\left(-\vect a_{2}\right)}=\outcoeffp{\vect0\alpha}e^{-4\pi i/3}=\outcoeffp{\vect0\alpha}e^{2\pi i/3}=\outcoeffp{\vect0\alpha}$
+\begin_inset Formula $\outcoeffp{\left(0,-1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect K\cdot\left(-\vect a_{2}\right)}=\outcoeffp{\vect 0\alpha}e^{-4\pi i/3}=\outcoeffp{\vect 0\alpha}e^{2\pi i/3}=\outcoeffp{\vect 0\alpha}$
 \end_inset
 
 , 
-\begin_inset Formula $\outcoeffp{\left(1,-1\right)\alpha}=\outcoeffp{\vect0\alpha}e^{i\vect K\cdot\left(\vect a_{1}-\vect a_{2}\right)}=e^{-2\pi i/3}\outcoeffp{\vect0\alpha}.$
+\begin_inset Formula $\outcoeffp{\left(1,-1\right)\alpha}=\outcoeffp{\vect 0\alpha}e^{i\vect K\cdot\left(\vect a_{1}-\vect a_{2}\right)}=e^{-2\pi i/3}\outcoeffp{\vect 0\alpha}.$
 \end_inset
 
 
@@ -1463,12 +1463,13 @@ placement document
 alignment document
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
 	filename p6m_mpoint.png
+	lyxscale 20
 	width 100col%
 
 \end_inset
@@ -1477,8 +1478,10 @@ status collapsed
 \end_layout
 
 \begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename p6m_kpoint.png
+	lyxscale 20
 	width 100col%
 
 \end_inset
@@ -1490,6 +1493,20 @@ status collapsed
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+Representing symmetry action on electromagnetic Bloch waves in a lattice
+ with
+\begin_inset Formula $p6m$
+\end_inset
+
+ wallpaper group symmetry for 
+\begin_inset Formula $M$
+\end_inset
+
+ (top) and 
+\begin_inset Formula $K$
+\end_inset
+
+ (bottom) points.
 \begin_inset CommandInset label
 LatexCommand label
 name "Phase factor illustration"
