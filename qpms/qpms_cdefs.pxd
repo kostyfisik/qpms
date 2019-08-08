@@ -366,6 +366,8 @@ cdef extern from "tmatrices.h":
             cdouble epsilon_fg, cdouble epsilon_bg)
     qpms_tmatrix_t *qpms_tmatrix_spherical_mu0(const qpms_vswf_set_spec_t *bspec, double a,
             double omega, cdouble epsilon_fg, cdouble epsilon_bg)
+
+cdef extern from "materials.h":
     qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(const size_t incount,
             cdouble *wavelength_m, cdouble *n, cdouble *k, const gsl_interp_type *iptype)
     qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(const char *path,
@@ -374,6 +376,7 @@ cdef extern from "tmatrices.h":
     double qpms_permittivity_interpolator_omega_max(const qpms_permittivity_interpolator_t *interp)
     double qpms_permittivity_interpolator_omega_min(const qpms_permittivity_interpolator_t *interp)
     void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp)
+
 
 cdef extern from "pointgroups.h":
     bint qpms_pg_is_finite_axial(qpms_pointgroup_class cls)

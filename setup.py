@@ -72,6 +72,7 @@ qpms_c = Extension('qpms_c',
             'qpms/vswf.c', # FIXME many things from vswf.c are not required by this module, but they have many dependencies (following in this list); maybe I want to move all the  "basespec stuff"
             'qpms/legendre.c',
             'qpms/tmatrices.c',
+            'qpms/materials.c',
             'qpms/error.c',
             'qpms/bessel.c',
             'qpms/own_zgemm.c',

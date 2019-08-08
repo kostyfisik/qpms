@@ -399,6 +399,12 @@ typedef struct qpms_abstract_tmatrix_t {
 } qpms_abstract_tmatrix_t;
 
 
+/// A type holding electric permittivity and magnetic permeability of a material.
+typedef struct qpms_epsmu_t {
+	complex double eps; ///< Relative permittivity.
+	complex double mu; ///< Relative permeability.
+} qpms_epsmu_t;
+
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES
