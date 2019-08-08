@@ -128,6 +128,19 @@ complex double qpms_permittivity_interpolator_eps_at_omega(
   return epsilon;
 }
 
+qpms_epsmu_t qpms_permittivity_interpolator_epsmu_g(
+    complex double omega, const void *p) 
+{
+  const qpms_permittivity_interpolator_t *interp = p;
+  static bool imag_already_bitched = false;
+  if(cimag(omega) && !imag_already_bitched) 
+    QPMS_WARN("Complex frequencies not supported by qpms_permittivity_interpolator_t. Imaginary parts will be discarded!");
+  qpms_epsmu_t em;
+  em.eps = qpms_permittivity_interpolator_eps_at_omega(interp, omega);
+  em.mu = 1;
+  return em;
+}
+
 double qpms_permittivity_interpolator_omega_max(
     const qpms_permittivity_interpolator_t *ip)
 {
@@ -140,7 +153,8 @@ double qpms_permittivity_interpolator_omega_min(
   return 2*M_PI*SPEED_OF_LIGHT / ip->wavelength_m[ip->size-1];
 }
 
-complex double qpms_lorentzdrude_eps(const qpms_ldparams_t *p, complex double omega) {
+complex double qpms_lorentzdrude_eps(complex double omega, const qpms_ldparams_t *p) 
+{
   complex double eps = 0;
   for(size_t j = 0; j < p->n; ++j) {
     const qpms_ldparams_triple_t d = p->data[j];
@@ -149,10 +163,20 @@ complex double qpms_lorentzdrude_eps(const qpms_ldparams_t *p, complex double om
   return eps;
 }
 
-qpms_epsmu_t qpms_lorentzdrude_epsmu(const qpms_ldparams_t *p, complex double omega) {
+qpms_epsmu_t qpms_lorentzdrude_epsmu(complex double omega, const qpms_ldparams_t *p) 
+{
   qpms_epsmu_t em;
-  em.eps = qpms_lorentzdrude_eps(p, omega);
+  em.eps = qpms_lorentzdrude_eps(omega, p);
   em.mu = 1;
   return em;
 }
 
+qpms_epsmu_t qpms_lorentzdrude_epsmu_g(complex double omega, const void *p) 
+{
+  return qpms_lorentzdrude_epsmu(omega, (const qpms_ldparams_t *)p);
+}
+
+qpms_epsmu_t qpms_epsmu_const_g(complex double omega, const void *p)
+{
+  return *(const qpms_epsmu_t *)p;
+}

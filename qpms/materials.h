@@ -12,6 +12,23 @@
 #endif
 
 
+/// Prototype for general optical property generator for isotropic materials.
+typedef struct qpms_epsmu_generator_t {
+	/// Generator function.
+	/** Implemented by:
+	 *  qpms_epsmu_const_g(),
+	 *  qpms_permittivity_interpolator_epsmu_g(),
+	 *  qpms_lorentzdrude_epsmu_g().
+	 */
+	qpms_epsmu_t (*function) (complex double omega, const void *params);
+	const void *params;
+} qpms_epsmu_generator_t;
+
+/// Constant optical property "generator" for qpms_epsmu_generator_t.
+qpms_epsmu_t qpms_epsmu_const_g(complex double omega, ///< Frequency ignored.
+	const void *epsmu ///< Points to the qpms_epsmu_t to be returned.
+	);
+
 /// Gets refractive index of a material from its permeability and permittivity.
 /** \f[ n = \sqrt{\mu_r \varepsilon_r} \f] */
 static inline complex double qpms_refindex(qpms_epsmu_t em) {
@@ -30,7 +47,7 @@ static inline complex double qpms_waveimpedance(qpms_epsmu_t em) {
 	return csqrt(em.mu / em.eps);
 }
 
-/// A \f$ (f_j, \omega_j, \gamma_j) \f for qpms_ldparams_t.
+/// A \f$ (f_j, \omega_j, \gamma_j) \f$ triple for qpms_ldparams_t.
 typedef struct qpms_ldparams_triple_t {
 	double f;
 	double omega;
@@ -54,10 +71,16 @@ extern const qpms_ldparams_t *const QPMS_LDPARAMS_AG; ///< Lorentz-Drude paramet
 extern const qpms_ldparams_t *const QPMS_LDPARAMS_AU; ///< Lorentz-Drude parameters for gold.
 
 /// Lorentz-Drude permittivity.
-complex double qpms_lorentzdrude_eps(const qpms_ldparams_t *, complex double omega);
+complex double qpms_lorentzdrude_eps(complex double omega, const qpms_ldparams_t *);
 
 /// Lorentz-Drude optical properties, with relative permeability set always to one.
-qpms_epsmu_t qpms_lorentzdrude_epsmu(const qpms_ldparams_t *, complex double omega);
+qpms_epsmu_t qpms_lorentzdrude_epsmu(complex double omega, const qpms_ldparams_t *);
+
+/// Lorentz-Drude optical properties, with relative permeability set always to one, compatible with qpms_epsmu_generator_t.
+qpms_epsmu_t qpms_lorentzdrude_epsmu_g(
+		complex double omega, 
+		const void *ldparams ///< Lorentz-Drude parameters, in reality const qpms_ldparams_t *.
+		);
 
 
 /// Interpolator of tabulated optical properties.
@@ -89,6 +112,14 @@ qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(
 /// Evaluates interpolated material permittivity at a given angular frequency.
 complex double qpms_permittivity_interpolator_eps_at_omega(
                 const qpms_permittivity_interpolator_t *interp, double omega_SI);
+
+/// Evaluates interpolated material permittivity at a given angular frequency, qpms_epsmu_generator_t compatible version.
+/** Permeability is always set to one. Imaginary part of omega is discarded.
+ */
+qpms_epsmu_t qpms_permittivity_interpolator_epsmu_g(
+		complex double omega, ///< Angular frequency. The imaginary part is ignored!
+                const void * interpolator ///< Interpolator of type qpms_permittivity_interpolator_t
+		);
 
 /// Returns the minimum angular frequency supported by the interpolator.
 double qpms_permittivity_interpolator_omega_min(
