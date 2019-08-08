@@ -345,7 +345,71 @@ static inline qpms_tmatrix_t *qpms_tmatrix_spherical_mu0(
 		) {
 	qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
 	qpms_tmatrix_spherical_mu0_fill(t, a, omega, epsilon_fg, epsilon_bg);
+	return t;
 };
+
+/// Return value type for qpms_arc_function_t.
+typedef struct qpms_arc_function_retval_t {
+	double r; ///< Distance from the origin.
+	double beta; ///< Angle between surface normal and radial direction.
+} qpms_arc_function_retval_t;
+
+/// Prototype for general parametrisation of \f$ C_\infty \f$-symmetric particle's surface.
+typedef struct qpms_arc_function_t {
+	/// Arc parametrisation function.
+	/** TODO link to notes.
+	 *
+	 * Implemented by:
+	 * qpms_arc_cylinder(),
+	 * qpms_arc_sphere().
+	 */
+	qpms_arc_function_retval_t (*function) (
+			double theta, ///< Polar angle from interval \f$ [0, \pi] \f$. 
+			const void *params ///< Pointer to implementation specific parameters.
+			);
+	const void *params;
+} qpms_arc_function_t;
+
+/// Parameter structure for qpms_arc_cylinder().
+typedef struct qpms_arc_cylinder_params_t {
+	double R; ///< Cylinder radius.
+	double h; ///< Cylinder height.
+} qpms_arc_cylinder_params_t;
+
+/// Arc parametrisation of cylindrical particle; for qpms_arc_function_t.
+qpms_arc_function_retval_t qpms_arc_cylinder(double theta,
+		const void *params; ///< Points to qpms_arc_cylinder_params_t
+		);
+
+/// Arc parametrisation of spherical particle; for qpms_arc_function_t.
+/** Useful mostly only for benchmarks, as one can use the Mie-Lorentz solution. */
+qpms_arc_function_retval_t qpms_arc_sphere(double theta,
+		const void *R; ///< Points to double containing particle's radius.
+		);
+
+
+/// Replaces T-matrix contents with those of a particle with \f$ C_\infty \f$ symmetry.
+qpms_errno_t qpms_tmatrix_axialsym_fill(
+		qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
+		complex double omega, ///< Angular frequency.
+		qpms_epsmu_generator_t outside, ///< Optical properties of the outside medium.
+		qpms_epsmu_generator_t inside, ///< Optical properties of the particle's material.
+		qpms_arc_function_t shape ///< Particle surface parametrisation.
+		);
+
+/// Creates a new T-matrix of a particle with \f$ C_\infty \f$ symmetry.
+static inline qpms_tmatrix_t *qpms_tmatrix_axialsym(
+		const qpms_vswf_set_spec_t *bspec,
+		complex double omega, ///< Angular frequency.
+		qpms_epsmu_generator_t outside, ///< Optical properties of the outside medium.
+		qpms_epsmu_generator_t inside, ///< Optical properties of the particle's material.
+		qpms_arc_function_t shape ///< Particle surface parametrisation.
+		) {
+	qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
+	qpms_tmatrix_axialsym_fill(t, omega, outside, inside, shape);
+	return t;
+}
+
 
 
 #if 0

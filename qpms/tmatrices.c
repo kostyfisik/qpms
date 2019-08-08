@@ -582,4 +582,40 @@ complex double *qpms_apply_tmatrix(
   return f;
 }
 
+qpms_arc_function_retval_t qpms_arc_sphere(double theta, const void *R) {
+  qpms_arc_function_retval_t retval = {*(const double*)R, 0};
+  return retval;
+}
 
+qpms_arc_function_retval_t qpms_arc_cylinder(double theta, const void *param) {
+  const qpms_arc_cylinder_params_t *p = param;
+  double thresh = atan(2 * p->R / p->h);
+  QPMS_ENSURE(theta >= 0 && theta <= M_PI, 
+      "theta = %g, but it must lie in interval [0, M_PI]", theta);
+  qpms_arc_function_retval_t res;
+  if (theta < thresh) {
+    // Upper base
+    res.r = 0.5 * p->h / cos(theta);
+    res.beta = -theta;
+  } else if (theta <= M_PI - thresh) {
+    // Side
+    res.r = p->R / cos(theta - M_PI_2);
+    res.beta = -theta + M_PI_2;
+  } else {
+    // Lower base
+    res.r = 0.5 * p->h / cos(theta - M_PI);
+    res.beta = -theta + M_PI;
+  }
+  return res;
+}
+
+#if 0
+qpms_errno_t qpms_tmatrix_axialsym_fill(
+		qpms_tmatrix_t *t, complex double omega, qpms_epsmu_generator_t outside,
+		qpms_epsmu_generator_t inside,qpms_arc_function_t shape)
+{
+
+
+}
+
+#endif
