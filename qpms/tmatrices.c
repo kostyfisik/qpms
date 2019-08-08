@@ -609,7 +609,24 @@ qpms_arc_function_retval_t qpms_arc_cylinder(double theta, const void *param) {
   return res;
 }
 
+
+struct tmatrix_axialsym_integral_param_t {
+  const qpms_vswf_set_spec_t *bspec;
+  qpms_l_t l1, l2; 
+  qpms_m_t m1; // m2 = -m1
+  qpms_vswf_type_t t1; // t2 = 2 - t1
+  qpms_arc_function_t f;
+  complex double k_in, k, z_in, z;
+  bool realpart; // Otherwise imaginary part
+  bool Q; // Otherwise R
+};
+
 #if 0
+static double tmatrix_axialsym_integrand(double theta, void *param) {
+  struct tmatrix_axialsym_integral_param_t *p = param;
+
+}
+
 qpms_errno_t qpms_tmatrix_axialsym_fill(
 		qpms_tmatrix_t *t, complex double omega, qpms_epsmu_generator_t outside,
 		qpms_epsmu_generator_t inside,qpms_arc_function_t shape)

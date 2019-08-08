@@ -111,8 +111,8 @@ literal "false"
 :
 \begin_inset Formula 
 \begin{align*}
-R_{nn'} & =ik^{2}\iint_{S_{s}}\left(\frac{\eta}{\eta_{1}}\wfkcreg_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k\vect r\right)+\wfkcreg_{\overline{n'}}\left(k\vect r\right)\times\wfkcreg_{n}\left(k\vect r\right)\right)\cdot\uvec{\nu}\,\ud S,\\
-Q_{nn'} & =ik^{2}\iint_{S_{s}}\left(\frac{\eta}{\eta_{1}}\wfkcout_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k\vect r\right)+\wfkcout_{\overline{n'}}\left(k\vect r\right)\times\wfkcreg_{n}\left(k\vect r\right)\right)\cdot\uvec{\nu}\,\ud S,
+R_{nn'} & =ik^{2}\iint_{S_{s}}\left(\frac{\eta}{\eta_{1}}\wfkcreg_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k_{1}\vect r\right)+\wfkcreg_{\overline{n}}\left(k\vect r\right)\times\wfkcreg_{n'}\left(k_{1}\vect r\right)\right)\cdot\uvec{\nu}\,\ud S,\\
+Q_{nn'} & =ik^{2}\iint_{S_{s}}\left(\frac{\eta}{\eta_{1}}\wfkcout_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k_{1}\vect r\right)+\wfkcout_{\overline{n}}\left(k\vect r\right)\times\wfkcreg_{n'}\left(k_{1}\vect r\right)\right)\cdot\uvec{\nu}\,\ud S,
 \end{align*}
 
 \end_inset
@@ -121,11 +121,15 @@ where
 \begin_inset Formula $S_{s}$
 \end_inset
 
- is the scatterer surface and 
+ is the scatterer surface, 
 \begin_inset Formula $\uvec{\nu}$
 \end_inset
 
- is the outwards pointing unit normal to it; then
+ is the outwards pointing unit normal to it, and the subscript
+\begin_inset Formula $_{1}$
+\end_inset
+
+ refers to the particle inside; then
 \begin_inset Formula 
 \[
 T_{nn'}=-\sum_{n''}R_{nn''}Q_{n''n}^{-1}.
