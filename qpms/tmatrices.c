@@ -21,7 +21,6 @@
 
 #define HBAR (1.05457162825e-34)
 #define ELECTRONVOLT (1.602176487e-19)
-#define SPEED_OF_LIGHT (2.99792458e8)
 #define SCUFF_OMEGAUNIT (3e14)
 
 #define SQ(x) ((x)*(x))

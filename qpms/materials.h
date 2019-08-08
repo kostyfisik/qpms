@@ -6,6 +6,60 @@
 #include "qpms_types.h"
 #include <gsl/gsl_spline.h>
 
+#ifndef SPEED_OF_LIGHT
+/// Speed of light in m/s.
+#define SPEED_OF_LIGHT (2.99792458e8)
+#endif
+
+
+/// Gets refractive index of a material from its permeability and permittivity.
+/** \f[ n = \sqrt{\mu_r \varepsilon_r} \f] */
+static inline complex double qpms_refindex(qpms_epsmu_t em) {
+	return csqrt(em.eps * em.mu);
+}
+
+/// Gets wave number \a k from angular frequency and material permeability and permittivity.
+/** \f[ k = \frac{n\omega}{c_0}  = \frac{\omega\sqrt{\mu_r \varepsilon_r}}{c_0} \f] */
+static inline complex double qpms_wavenumber(complex double omega, qpms_epsmu_t em) {
+	return qpms_refindex(em)*omega/SPEED_OF_LIGHT;
+}
+
+/// Gets (relative) wave impedance \f$ \eta_r \f$ from material permeability and permittivity.
+/** \eta_r = \sqrt{\mu_r  / \varepsilon_r} \f] */
+static inline complex double qpms_waveimpedance(qpms_epsmu_t em) {
+	return csqrt(em.mu / em.eps);
+}
+
+/// A \f$ (f_j, \omega_j, \gamma_j) \f for qpms_ldparams_t.
+typedef struct qpms_ldparams_triple_t {
+	double f;
+	double omega;
+	double gamma;
+} qpms_ldparams_triple_t;
+
+/// Structure holding Lorentz-Drude model parameters of a material.
+/** \f[
+ * \varepsilon = \varepsilon_\infty + \sum_j=0^{n-1}
+ *    \frac{f_j \omega_p^2}{\omega_j^2-\omega^2+i\omega\gamma_j} 
+ *  \f]
+ */
+typedef struct qpms_ldparams_t {
+	complex double eps_inf; ///< Permittivity at infinity.
+	double omega_p; ///< Plasma frequency.
+	size_t n; ///< Number of "oscillators".
+	qpms_ldparams_triple_t data[]; ///< "Oscillator" parameters.
+} qpms_ldparams_t;
+
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_AG; ///< Lorentz-Drude parameters for silver.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_AU; ///< Lorentz-Drude parameters for gold.
+
+/// Lorentz-Drude permittivity.
+complex double qpms_lorentzdrude_eps(const qpms_ldparams_t *, complex double omega);
+
+/// Lorentz-Drude optical properties, with relative permeability set always to one.
+qpms_epsmu_t qpms_lorentzdrude_epsmu(const qpms_ldparams_t *, complex double omega);
+
+
 /// Interpolator of tabulated optical properties.
 // TODO use gsl_interp instead of gsl_spline.
 typedef struct qpms_permittivity_interpolator_t {

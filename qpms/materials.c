@@ -6,7 +6,7 @@
 #include "materials.h"
 #include "qpms_error.h"
 
-#define SPEED_OF_LIGHT (2.99792458e8)
+#define SQ(x) ((x)*(x))
 
 qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(
     const size_t incount, const double *wavelen_m, const double *n, const double *k,
@@ -138,5 +138,21 @@ double qpms_permittivity_interpolator_omega_min(
     const qpms_permittivity_interpolator_t *ip)
 {
   return 2*M_PI*SPEED_OF_LIGHT / ip->wavelength_m[ip->size-1];
+}
+
+complex double qpms_lorentzdrude_eps(const qpms_ldparams_t *p, complex double omega) {
+  complex double eps = 0;
+  for(size_t j = 0; j < p->n; ++j) {
+    const qpms_ldparams_triple_t d = p->data[j];
+    eps += d.f * SQ(p->omega_p) / (SQ(d.omega) - SQ(omega) + I*omega*d.gamma );
+  }
+  return eps;
+}
+
+qpms_epsmu_t qpms_lorentzdrude_epsmu(const qpms_ldparams_t *p, complex double omega) {
+  qpms_epsmu_t em;
+  em.eps = qpms_lorentzdrude_eps(p, omega);
+  em.mu = 1;
+  return em;
 }
 
