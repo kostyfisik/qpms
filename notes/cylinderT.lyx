@@ -1,0 +1,323 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 584
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "makrot.lyx"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+T-matrix of an axially symmetric particle
+\end_layout
+
+\begin_layout Standard
+So we have 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(9.12)"
+key "kristensson_scattering_2016"
+literal "false"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+R_{nn'} & =ik^{2}\iint_{S_{s}}\left(\frac{\eta}{\eta_{1}}\wfkcreg_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k\vect r\right)+\wfkcreg_{\overline{n'}}\left(k\vect r\right)\times\wfkcreg_{n}\left(k\vect r\right)\right)\cdot\uvec{\nu}\,\ud S,\\
+Q_{nn'} & =ik^{2}\iint_{S_{s}}\left(\frac{\eta}{\eta_{1}}\wfkcout_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k\vect r\right)+\wfkcout_{\overline{n'}}\left(k\vect r\right)\times\wfkcreg_{n}\left(k\vect r\right)\right)\cdot\uvec{\nu}\,\ud S,
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $S_{s}$
+\end_inset
+
+ is the scatterer surface and 
+\begin_inset Formula $\uvec{\nu}$
+\end_inset
+
+ is the outwards pointing unit normal to it; then
+\begin_inset Formula 
+\[
+T_{nn'}=-\sum_{n''}R_{nn''}Q_{n''n}^{-1}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us consider the case with full rotational symmetry around the 
+\begin_inset Formula $z$
+\end_inset
+
+ axis and parametrise the integral in terms of polar angle 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\beta$
+\end_inset
+
+ be the angle between the surface normal 
+\begin_inset Formula $\uvec{\nu}$
+\end_inset
+
+ and the coordinate radial direction 
+\begin_inset Formula $\uvec r$
+\end_inset
+
+.
+ The infinitesimal surface area element is then
+\begin_inset Formula 
+\[
+\ud S\left(\theta\right)=\frac{\left(r\left(\theta\right)\right)^{2}\sin\theta}{\cos\beta\left(\theta\right)}\ud\theta\,\ud\phi
+\]
+
+\end_inset
+
+and the surface normal in local coordinates 
+\begin_inset Formula 
+\[
+\uvec{\nu}\left(\theta\right)=\uvec r\cos\beta\left(\theta\right)+\uvec{\theta}\sin\beta\left(\theta\right),
+\]
+
+\end_inset
+
+which also sets a convention for the sign of 
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For fully axially symmetric particles the integrals vanish for 
+\begin_inset Formula $m\ne-m'$
+\end_inset
+
+ due to the 
+\begin_inset Formula $e^{i\left(m+m'\right)}$
+\end_inset
+
+ asimuthal factor in the integrand.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename cylinder.png
+	lyxscale 30
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Parametrisation of cylindrical particle surface.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For cylindrical particle of radius 
+\begin_inset Formula $R$
+\end_inset
+
+ and height 
+\begin_inset Formula $h$
+\end_inset
+
+, we can divide the parametrisation into three intervals 
+\begin_inset Formula $\left(0,\theta_{1}\right),\left(\theta_{1},\theta_{2}\right),\left(\theta_{2},\pi\right)$
+\end_inset
+
+ where 
+\begin_inset Formula $\theta_{1}=\tan^{-1}\left(2R/h\right),\theta_{2}=\pi-\tan^{-1}\left(2R/h\right)$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Enumerate
+In the first section, 
+\begin_inset Formula $0<\theta<\theta_{1}$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{align*}
+r & =\frac{h}{2\cos\theta},\\
+\beta & =-\theta.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+In the second section, 
+\begin_inset Formula $\theta_{1}<\theta<\theta_{2}$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{align*}
+r & =\frac{R}{\cos\left(\theta-\pi/2\right)}=\frac{R}{\sin\theta},\\
+\beta & =-\theta+\pi/2.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+In the third section, 
+\begin_inset Formula $\theta_{2}<\theta<\pi$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{align*}
+r & =\frac{h}{2\cos\left(\theta-\pi\right)}=-\frac{h}{2\cos\theta},\\
+\beta & =-\theta+\pi.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "Electrodynamics"
+options "plain"
+encoding "default"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
