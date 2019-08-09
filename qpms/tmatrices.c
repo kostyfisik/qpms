@@ -1,4 +1,9 @@
 #define _POSIX_C_SOURCE 200809L // for getline()
+#define lapack_int int
+#define lapack_complex_double complex double
+#define lapack_complex_double_real(z) (creal(z))
+#define lapack_complex_double_imag(z) (cimag(z))
+#include <lapacke.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cblas.h>
@@ -18,12 +23,19 @@
 #include "qpms_specfunc.h"
 #include "normalisation.h"
 #include <errno.h>
+#include <gsl/gsl_integration.h>
+
+// These are quite arbitrarily chosen constants for the quadrature in qpms_tmatrix_axialsym_fill()
+#define TMATRIX_AXIALSYM_INTEGRAL_EPSREL (1e-6)
+#define TMATRIX_AXIALSYM_INTEGRAL_EPSABS (1e-10)
 
 #define HBAR (1.05457162825e-34)
 #define ELECTRONVOLT (1.602176487e-19)
 #define SCUFF_OMEGAUNIT (3e14)
 
 #define SQ(x) ((x)*(x))
+#define MAX(x,y) ((x) < (y) ? (y) : (x))
+
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
   qpms_tmatrix_t *t = malloc(sizeof(qpms_tmatrix_t));
   if (!t) abort();
@@ -612,27 +624,148 @@ qpms_arc_function_retval_t qpms_arc_cylinder(double theta, const void *param) {
 
 struct tmatrix_axialsym_integral_param_t {
   const qpms_vswf_set_spec_t *bspec;
-  qpms_l_t l1, l2; 
-  qpms_m_t m1; // m2 = -m1
-  qpms_vswf_type_t t1; // t2 = 2 - t1
+  qpms_l_t l, l_in; 
+  qpms_m_t m; // m_in = -m
+  qpms_vswf_type_t t, t_in;
   qpms_arc_function_t f;
   complex double k_in, k, z_in, z;
   bool realpart; // Otherwise imaginary part
-  bool Q; // Otherwise R
+  qpms_bessel_t btype; // For Q QPMS_HANKEL_PLUS, for R QPMS_BESSEL_REGULAR
 };
 
-#if 0
 static double tmatrix_axialsym_integrand(double theta, void *param) {
+  // Pretty inefficient; either real or imaginary part is thrown away etc.
   struct tmatrix_axialsym_integral_param_t *p = param;
+  qpms_arc_function_retval_t rb = p->f.function(theta, p->f.params);
+  csph_t kr = {rb.r * p->k,    theta, 0},
+         kr_in = {rb.r * p->k_in, theta, 0};
 
+  csphvec_t y_el = qpms_vswf_single_el_csph(p->m, p->l, kr, p->btype, p->bspec->norm);
+  csphvec_t y_mg = qpms_vswf_single_mg_csph(p->m, p->l, kr, p->btype, p->bspec->norm);
+  csphvec_t v_in_el = qpms_vswf_single_el_csph(-p->m, p->l_in, kr_in, QPMS_BESSEL_REGULAR, p->bspec->norm);
+  csphvec_t v_in_mg = qpms_vswf_single_mg_csph(-p->m, p->l_in, kr_in, QPMS_BESSEL_REGULAR, p->bspec->norm);
+  csphvec_t y1, y2, v_in1, v_in2;
+  switch(p->t) {
+    case QPMS_VSWF_ELECTRIC:  y1 = y_el; y2 = y_mg;  break;
+    case QPMS_VSWF_MAGNETIC:  y1 = y_mg; y2 = y_el;  break;
+    default: QPMS_WTF;
+  }
+  switch(p->t_in) {
+    case QPMS_VSWF_ELECTRIC:  v_in1 = v_in_mg; v_in2 = v_in_el; break;
+    case QPMS_VSWF_MAGNETIC:  v_in1 = v_in_el; v_in2 = v_in_mg; break;
+    default: QPMS_WTF;
+  }
+  // Normal vector components
+  double nrc = cos(rb.beta), nthetac = sin(rb.beta);
+  // First triple product
+  complex double tp1 = nrc * (y1.thetac * v_in1.phic - y1.phic * v_in1.thetac)
+                 + nthetac * (y1.phic   * v_in1.rc   - y1.rc   * v_in1.phic);
+  // Second thiple product
+  complex double tp2 = nrc * (y2.thetac * v_in2.phic - y2.phic * v_in2.thetac)
+                 + nthetac * (y2.phic   * v_in2.rc   - y2.rc   * v_in2.phic);
+  double jac = SQ(rb.r) * sin(theta) / nrc; // Jacobian
+  complex double res = p->z/p->z_in * tp1 + tp2;
+  return p->realpart ? creal(res) : cimag(res);
 }
 
 qpms_errno_t qpms_tmatrix_axialsym_fill(
-		qpms_tmatrix_t *t, complex double omega, qpms_epsmu_generator_t outside,
-		qpms_epsmu_generator_t inside,qpms_arc_function_t shape)
+		qpms_tmatrix_t *t, complex double omega, qpms_epsmu_t outside,
+		qpms_epsmu_t inside,qpms_arc_function_t shape, qpms_l_t lMaxQR)
 {
+  QPMS_UNTESTED;
+  const qpms_vswf_set_spec_t *bspec = t->spec;
+  struct tmatrix_axialsym_integral_param_t p;
+  p.k = qpms_wavenumber(omega, outside);
+  p.k_in = qpms_wavenumber(omega, inside);
+  p.z = qpms_waveimpedance(outside);
+  p.z_in = qpms_waveimpedance(inside);
+  p.f = shape;
+  const gsl_function f = {tmatrix_axialsym_integrand, (void *) &p};
 
+  if (lMaxQR < bspec->lMax) lMaxQR = bspec->lMax;
+  qpms_vswf_set_spec_t *bspecQR = qpms_vswf_set_spec_from_lMax(lMaxQR, bspec->norm);
+  size_t *reindex = qpms_vswf_set_reindex(bspec, bspecQR);
 
+  // Q' and R' matrices
+  complex double *Q, *R;
+  QPMS_CRASHING_MALLOC(Q, sizeof(complex double) * SQ(bspecQR->n));
+  QPMS_CRASHING_MALLOC(R, sizeof(complex double) * SQ(bspecQR->n));
+
+  // Not sure what the size should be, but this should be more than enough.
+  const size_t intlimit = 1024;
+  const double epsrel = TMATRIX_AXIALSYM_INTEGRAL_EPSREL;
+  const double epsabs = TMATRIX_AXIALSYM_INTEGRAL_EPSABS;
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(intlimit);
+  for(size_t i1 = 0; i1 < bspecQR->n; ++i1)
+    for(size_t i2 = 0; i2 < bspecQR->n; ++i2) {
+      // NOTE that the Q', R' matrices are !TRANSPOSED! here because of zgetrs
+      const size_t iQR = i1 + i2 * bspecQR->n;
+      qpms_m_t m1, m2;
+      qpms_l_t l1, l2;
+      qpms_vswf_type_t t1, t2;
+      const qpms_uvswfi_t u1 = bspecQR->ilist[i1], u2 = bspecQR->ilist[i2];
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u1, &t1, &m1, &l1));
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u2, &t2, &m2, &l2));
+      if (m1 + m2) {
+        Q[iQR] = 0;
+        R[iQR] = 0;
+      } else {
+        p.m = m1;
+        p.l = l1; p.l_in = l2;
+        p.t = t1; p.t_in = t2;
+
+        double result; // We throw the quadrature error estimate away.
+        // Re(R')
+        p.btype = QPMS_BESSEL_REGULAR;
+        p.realpart = true;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
+              intlimit, 2, w, &result, NULL));
+        R[iQR] = result;
+        
+        // Im(R')
+        p.realpart = false;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
+              intlimit, 2, w, &result, NULL));
+        R[iQR] += I*result;
+
+        // Re(Q')
+        p.btype = QPMS_HANKEL_PLUS;
+        p.realpart = true;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
+              intlimit, 2, w, &result, NULL));
+        Q[iQR] = result;
+
+        // Im(Q')
+        p.realpart = false;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
+              intlimit, 2, w, &result, NULL));
+        Q[iQR] += I*result;
+      }
+    }
+  gsl_integration_workspace_free(w);
+
+  // Compute T-matrix; maybe it would be better solved with some sparse matrix mechanism,
+  // but fukkit.
+  const size_t n = bspecQR->n;
+  lapack_int *pivot;
+  QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * n);
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR, n, n, Q, n, pivot));
+  // Solve Q'^T X = R'^T where X will be -T^T
+  // Note that Q'^T, R'^T are already (transposed) in Q, R.
+  const complex double minus1 = -1;
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N', n, n /*nrhs*/,
+        Q, n, pivot, R, n));
+  // R now contains -T^T.
+  for(size_t i1 = 0; i1 < bspec->n; ++i1) 
+    for(size_t i2 = 0; i2 < bspec->n; ++i2) {
+      if (reindex[i1] == ~(size_t) 0 && reindex[i2] == ~(size_t) 0) QPMS_WTF;
+      const size_t it = i1 * bspec->n + i2;
+      const size_t iQR = reindex[i1] + reindex[i2] * bspecQR->n;
+      t->m[it] = -R[iQR];
+    }
+
+  free(pivot); free(R); free(Q); free(reindex);
+  qpms_vswf_set_spec_free(bspecQR);
+  return QPMS_SUCCESS;
 }
 
-#endif

@@ -131,9 +131,9 @@ where
 
  refers to the particle inside; then
 \begin_inset Formula 
-\[
-T_{nn'}=-\sum_{n''}R_{nn''}Q_{n''n}^{-1}.
-\]
+\begin{equation}
+T_{nn'}=-\sum_{n''}R_{nn''}Q_{n''n}^{-1}.\label{eq:T matrix from R and Q}
+\end{equation}
 
 \end_inset
 
@@ -196,6 +196,52 @@ For fully axially symmetric particles the integrals vanish for
 \end_inset
 
  asimuthal factor in the integrand.
+ One then has 
+\begin_inset Formula 
+\begin{equation}
+T_{nn'}=-\sum_{n''}R'_{nn''}Q'_{n''n}^{-1}\label{eq:T-matrix from reduced R and Q}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula 
+\begin{align*}
+R'_{nn'} & =\int_{0}^{\pi}\left(\frac{\eta}{\eta_{1}}\wfkcreg_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k_{1}\vect r\right)+\wfkcreg_{\overline{n}}\left(k\vect r\right)\times\wfkcreg_{n'}\left(k_{1}\vect r\right)\right)\cdot\left(\uvec r\cos\beta\left(\theta\right)+\uvec{\theta}\sin\beta\left(\theta\right)\right)\frac{\left(r\left(\theta\right)\right)^{2}\sin\theta}{\cos\beta\left(\theta\right)}\ud\theta,\\
+Q'_{nn'} & =\int_{0}^{\pi}\left(\frac{\eta}{\eta_{1}}\wfkcreg_{n}\left(k\vect r\right)\times\wfkcreg_{\overline{n'}}\left(k_{1}\vect r\right)+\wfkcreg_{\overline{n}}\left(k\vect r\right)\times\wfkcreg_{n'}\left(k_{1}\vect r\right)\right)\cdot\left(\uvec r\cos\beta\left(\theta\right)+\uvec{\theta}\sin\beta\left(\theta\right)\right)\frac{\left(r\left(\theta\right)\right)^{2}\sin\theta}{\cos\beta\left(\theta\right)}\ud\theta
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $\vect r=\vect r\left(\theta\right)=\left(r\left(\theta\right),\theta,0\right)$
+\end_inset
+
+.
+ Matrices 
+\begin_inset Formula $Q',R'$
+\end_inset
+
+ differ from the original 
+\begin_inset Formula $R,Q$
+\end_inset
+
+ matrices in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:T matrix from R and Q"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ by a factor of 
+\begin_inset Formula $2\pi ik^{2}$
+\end_inset
+
+, but this cancels out in the matrix product.
+ 
 \end_layout
 
 \begin_layout Standard

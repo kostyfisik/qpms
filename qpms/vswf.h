@@ -23,7 +23,7 @@ typedef qpms_errno_t (*qpms_incfield_t)(
         bool add ///< If true, add to target; rewrite target if false.
 );
 
-// ---------------Methods for qpms_vswf_spec_t-----------------------
+// ---------------Methods for qpms_vswf_set_spec_t-----------------------
 //
 /// Creates a qpms_vswf_set_spec_t structure with an empty list of wave indices.
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_init(void);
@@ -54,6 +54,19 @@ static inline ssize_t qpms_vswf_set_spec_find_uvswfi(const qpms_vswf_set_spec_t 
 			return i;
 	return -1;
 }
+
+/// Creates an index mapping between two bspecs.
+/** 
+ * Creates an array r such that small->ilist[i] == big->ilist[r[i]].
+ * It's not lossless if the two bspecs contain different combinations of waves.
+ *
+ * Preferably, big->ilist contains everything small->ilist does. 
+ * If small->ilist[i] is not found in big->ilist, r[i] will be set to ~(size_t)0.
+ *
+ * Discard with free() after use.
+ */
+size_t *qpms_vswf_set_reindex(const qpms_vswf_set_spec_t *small, const qpms_vswf_set_spec_t *big);
+
 
 /// Evaluates a set of VSWF basis functions at a given point.
 /** The list of basis wave indices is specified in \a setspec; 
@@ -119,6 +132,12 @@ csphvec_t qpms_vswf_single_el(int m, int n, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 /// Magnetic wave M.
 csphvec_t qpms_vswf_single_mg(int m, int n, sph_t kdlj,
+		qpms_bessel_t btyp, qpms_normalisation_t norm);
+/// Electric wave N, complex wave number version.
+csphvec_t qpms_vswf_single_el_csph(int m, int n, csph_t kdlj,
+		qpms_bessel_t btyp, qpms_normalisation_t norm);
+/// Magnetic wave M, complex wave number version..
+csphvec_t qpms_vswf_single_mg_csph(int m, int n, csph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 /// Set of electric and magnetic VSWF values in spherical coordinate basis.

@@ -392,21 +392,32 @@ qpms_arc_function_retval_t qpms_arc_sphere(double theta,
 qpms_errno_t qpms_tmatrix_axialsym_fill(
 		qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
 		complex double omega, ///< Angular frequency.
-		qpms_epsmu_generator_t outside, ///< Optical properties of the outside medium.
-		qpms_epsmu_generator_t inside, ///< Optical properties of the particle's material.
-		qpms_arc_function_t shape ///< Particle surface parametrisation.
+		qpms_epsmu_t outside, ///< Optical properties of the outside medium.
+		qpms_epsmu_t inside, ///< Optical properties of the particle's material.
+		qpms_arc_function_t shape, ///< Particle surface parametrisation.
+		/** If `lMax_extend > t->bspec->lMax`, then the internal \a Q, \a R matrices will be 
+		 * trimmed at this larger lMax; the final T-matrix will then be trimmed
+		 * according to bspec.
+		 */
+		qpms_l_t lMax_extend 
 		);
 
 /// Creates a new T-matrix of a particle with \f$ C_\infty \f$ symmetry.
 static inline qpms_tmatrix_t *qpms_tmatrix_axialsym(
 		const qpms_vswf_set_spec_t *bspec,
 		complex double omega, ///< Angular frequency.
-		qpms_epsmu_generator_t outside, ///< Optical properties of the outside medium.
-		qpms_epsmu_generator_t inside, ///< Optical properties of the particle's material.
-		qpms_arc_function_t shape ///< Particle surface parametrisation.
+		qpms_epsmu_t outside, ///< Optical properties of the outside medium.
+		qpms_epsmu_t inside, ///< Optical properties of the particle's material.
+		qpms_arc_function_t shape, ///< Particle surface parametrisation.
+		/// Internal lMax to improve precision of the result.
+		/** If `lMax_extend > bspec->lMax`, then the internal \a Q, \a R matrices will be 
+		 * trimmed at this larger lMax; the final T-matrix will then be trimmed
+		 * according to bspec.
+		 */
+		qpms_l_t lMax_extend 
 		) {
 	qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
-	qpms_tmatrix_axialsym_fill(t, omega, outside, inside, shape);
+	qpms_tmatrix_axialsym_fill(t, omega, outside, inside, shape, lMax_extend);
 	return t;
 }
 

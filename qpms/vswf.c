@@ -95,7 +95,52 @@ void qpms_vswf_set_spec_free(qpms_vswf_set_spec_t *s) {
   free(s);
 }
 
-csphvec_t qpms_vswf_single_el(qpms_m_t m, qpms_l_t l, sph_t kdlj,
+struct bspec_reindex_pair {
+  qpms_uvswfi_t ui;
+  size_t i_orig;
+};
+
+static int cmp_bspec_reindex_pair(const void *aa, const void *bb) {
+  const struct bspec_reindex_pair *a = aa, *b = bb;
+  if (a->ui < b->ui) return -1;
+  else if (a->ui == b->ui) return 0;
+  else return 1;
+}
+
+size_t *qpms_vswf_set_reindex(const qpms_vswf_set_spec_t *small, const qpms_vswf_set_spec_t *big) {
+  QPMS_UNTESTED;
+  struct bspec_reindex_pair *small_pairs, *big_pairs;
+  size_t *r;
+  QPMS_CRASHING_MALLOC(small_pairs, sizeof(struct bspec_reindex_pair) * small->n);
+  QPMS_CRASHING_MALLOC(big_pairs, sizeof(struct bspec_reindex_pair) * big->n);
+  QPMS_CRASHING_MALLOC(r, sizeof(size_t) * small->n);
+  for(size_t i = 0; i < small->n; ++i) {
+    small_pairs[i].ui = small->ilist[i];
+    small_pairs[i].i_orig = i;
+  }
+  for(size_t i = 0 ; i < big->n; ++i) {
+    big_pairs[i].ui = big->ilist[i];
+    big_pairs[i].i_orig = i;
+  }
+  qsort(small_pairs, small->n, sizeof(struct bspec_reindex_pair), cmp_bspec_reindex_pair);
+  qsort(big_pairs, big->n, sizeof(struct bspec_reindex_pair), cmp_bspec_reindex_pair);
+
+  size_t bi = 0;
+  for(size_t si = 0; si < small->n; ++si) {
+    while(big_pairs[bi].ui < small_pairs[si].ui) 
+      ++bi;
+    if(big_pairs[bi].ui == small_pairs[si].ui)
+      r[small_pairs[si].i_orig] = big_pairs[si].i_orig;
+    else
+      r[small_pairs[si].i_orig] = ~(size_t)0;
+  }
+
+  free(small_pairs);
+  free(big_pairs);
+  return r;
+}
+
+csphvec_t qpms_vswf_single_el_csph(qpms_m_t m, qpms_l_t l, csph_t kdlj,
     qpms_bessel_t btyp, qpms_normalisation_t norm) {
   lmcheck(l,m);
   csphvec_t N;
@@ -120,7 +165,7 @@ csphvec_t qpms_vswf_single_el(qpms_m_t m, qpms_l_t l, sph_t kdlj,
   return N;
 }
 
-csphvec_t qpms_vswf_single_mg(qpms_m_t m, qpms_l_t l, sph_t kdlj,
+csphvec_t qpms_vswf_single_mg_csph(qpms_m_t m, qpms_l_t l, csph_t kdlj,
     qpms_bessel_t btyp, qpms_normalisation_t norm) {
   lmcheck(l,m);
   csphvec_t M;
@@ -141,6 +186,16 @@ csphvec_t qpms_vswf_single_mg(qpms_m_t m, qpms_l_t l, sph_t kdlj,
   qpms_pitau_free(pt);
   free(bessel);
   return M;
+}
+
+csphvec_t qpms_vswf_single_el(qpms_m_t m, qpms_l_t l, sph_t kdlj,
+    qpms_bessel_t btyp, qpms_normalisation_t norm) {
+  return qpms_vswf_single_el_csph(m, l, sph2csph(kdlj), btyp, norm);
+}
+
+csphvec_t qpms_vswf_single_mg(qpms_m_t m, qpms_l_t l, sph_t kdlj,
+    qpms_bessel_t btyp, qpms_normalisation_t norm) {
+  return qpms_vswf_single_mg_csph(m, l, sph2csph(kdlj), btyp, norm);
 }
 
 qpms_vswfset_sph_t *qpms_vswfset_make(qpms_l_t lMax, sph_t kdlj, 
