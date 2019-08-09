@@ -343,6 +343,13 @@ qpms_errno_t qpms_tmatrix_interpolator_eval_fill(qpms_tmatrix_t *t,
   return QPMS_SUCCESS;
 }
 
+qpms_errno_t qpms_tmatrix_generator_interpolator(qpms_tmatrix_t *t,
+    complex double omega, const void *interp)
+{
+  return qpms_tmatrix_interpolator_eval_fill(t, 
+      (const qpms_tmatrix_interpolator_t *) interp, omega);
+}
+
 double qpms_SU2eV(double e_SU) {
   return e_SU * SCUFF_OMEGAUNIT / (ELECTRONVOLT / HBAR);
 }
@@ -567,6 +574,19 @@ qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, ///< T-matrix whose 
   return QPMS_SUCCESS;
 }
 
+qpms_errno_t qpms_tmatrix_generator_sphere(qpms_tmatrix_t *t,
+    complex double omega, const void *params) 
+{
+  const qpms_tmatrix_generator_sphere_param_t *p = params;
+  qpms_epsmu_t out = p->outside.function(omega, p->outside.params);
+  qpms_epsmu_t in = p->inside.function(omega, p->inside.params);
+  return qpms_tmatrix_spherical_fill(t, 
+      p->radius,
+      qpms_wavenumber(omega, in),
+      qpms_wavenumber(omega, out),
+      in.mu, out.mu);
+}
+
 /// Convenience function to calculate T-matrix of a non-magnetic spherical \
 particle using the permittivity values, replacing existing T-matrix data.
 qpms_errno_t qpms_tmatrix_spherical_mu0_fill(
@@ -769,3 +789,11 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
   return QPMS_SUCCESS;
 }
 
+qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, complex double omega, const void *param) {
+  const qpms_tmatrix_generator_axialsym_param_t *p = param;
+  return qpms_tmatrix_axialsym_fill(t, omega, 
+      p->outside.function(omega, p->outside.params),
+      p->inside.function(omega, p->inside.params),
+      p->shape,
+      p->lMax_extend);
+}

@@ -236,6 +236,19 @@ complex double *qpms_apply_tmatrix(
 		const qpms_tmatrix_t *T
 		);
 
+/// Generic T-matrix generator function that fills a pre-initialised qpms_tmatrix_t given a frequency.
+/** Implemented by: 
+ * qpms_tmatrix_generator_axialsym()
+ * qpms_tmatrix_generator_interpolator()
+ * qpms_tmatrix_generator_sphere()
+ */
+typedef struct qpms_tmatrix_generator_t {
+	qpms_errno_t (*function) (qpms_tmatrix_t *t, ///< T-matrix to fill.
+			complex double omega, ///< Angular frequency.
+			const void *params ///< Implementation dependent parameters.
+			);
+	const void *params; ///< Parameter pointer passed to the function.
+} qpms_tmatrix_generator_t;
 
 /* Fuck this, include the whole <gsl/gsl_spline.h>
 typedef struct gsl_spline gsl_spline; // Forward declaration for the interpolator struct
@@ -277,6 +290,15 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, ///< Num
 	       //, bool copy_bspec ///< if true, copies its own copy of basis spec from the first T-matrix.
        	       /*, ...? */);
 
+
+/// qpms_tmatrix_interpolator for qpms_tmatrix_generator_t.
+/** As in qpms_tmatrix_interpolator_eval(), the imaginary part of frequency is discarded!
+ */
+qpms_errno_t qpms_tmatrix_generator_interpolator(qpms_tmatrix_t *t, ///< T-matrix to fill.
+			complex double omega, ///< Angular frequency.
+			const void *interpolator ///< Parameter of type qpms_tmatrix_interpolator_t *.
+);
+
 /// Calculates the reflection Mie-Lorentz coefficients for a spherical particle.
 /**
  * This function is based on the previous python implementation mie_coefficients() from qpms_p.py,
@@ -309,6 +331,19 @@ qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, ///< T-matrix whose 
 		complex double k_e, ///< Wave number of the surrounding medium.
 		complex double mu_i, ///< Relative permeability of the sphere material.
 		complex double mu_e ///< Relative permeability of the surrounding medium.
+		);
+
+/// Parameter structure for qpms_tmatrix_generator_sphere().
+typedef struct qpms_tmatrix_generator_sphere_param_t {
+	qpms_epsmu_generator_t outside;
+	qpms_epsmu_generator_t inside;
+	double radius;
+} qpms_tmatrix_generator_sphere_param_t;
+
+/// T-matrix generator for spherical particles using Lorentz-Mie solution.
+qpms_errno_t qpms_tmatrix_generator_sphere(qpms_tmatrix_t *t,
+		complex double omega,
+		const void *params ///< Of type qpms_tmatrix_generator_sphere_param_t.
 		);
 
 /// Creates a new T-matrix of a spherical particle using the Lorentz-Mie theory.
@@ -421,6 +456,20 @@ static inline qpms_tmatrix_t *qpms_tmatrix_axialsym(
 	return t;
 }
 
+/// Parameter structure for qpms_tmatrix_generator_axialsym.
+typedef struct qpms_tmatrix_generator_axialsym_param_t {
+	qpms_epsmu_generator_t outside;
+	qpms_epsmu_generator_t inside;
+	qpms_arc_function_t shape;
+	qpms_l_t lMax_extend;
+} qpms_tmatrix_generator_axialsym_param_t;
+
+
+/// qpms_tmatrix_axialsym for qpms_tmatrix_generator_t
+qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, ///< T-matrix to fill.
+			complex double omega, ///< Angular frequency.
+			const void *params ///< Parameters of type qpms_tmatrix_generator_axialsym_param_t.
+);
 
 
 #if 0
