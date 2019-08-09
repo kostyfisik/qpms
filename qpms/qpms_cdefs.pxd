@@ -129,6 +129,9 @@ cdef extern from "qpms_types.h":
         qpms_pointgroup_class c
         qpms_gmi_t n
         qpms_irot3_t orientation
+    struct qpms_epsmu_t:
+        cdouble eps
+        cdouble mu
     # maybe more if needed
 
 cdef extern from "qpms_error.h":
@@ -317,12 +320,59 @@ cdef extern from "gsl/gsl_interp.h":
     const gsl_interp_type *gsl_interp_cspline
     # ^^^ These are probably the only relevant ones.
 
-cdef extern from "tmatrices.h":
-    bint qpms_load_scuff_tmatrix_crash_on_failure
-    struct qpms_tmatrix_interpolator_t:
-        const qpms_vswf_set_spec_t *bspec
+cdef extern from "materials.h":
+    struct qpms_epsmu_generator_t:
+        qpms_epsmu_t (*function)(cdouble omega, const void *params)
+        const void *params
+    qpms_epsmu_t qpms_epsmu_const_g(cdouble omega, const void *params)
+    qpms_epsmu_t qpms_permittivity_interpolator_epsmu_g(cdouble omega, const void *epsmu)
+    qpms_epsmu_t qpms_lorentzdrude_epsmu_g(cdouble omega, const void *ldparams)
+
     struct qpms_permittivity_interpolator_t:
         pass
+    qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(const size_t incount,
+            cdouble *wavelength_m, cdouble *n, cdouble *k, const gsl_interp_type *iptype)
+    qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(const char *path,
+            const gsl_interp_type *iptype)
+    cdouble qpms_permittivity_interpolator_eps_at_omega(const qpms_permittivity_interpolator_t *interp, double omega_SI)
+    double qpms_permittivity_interpolator_omega_max(const qpms_permittivity_interpolator_t *interp)
+    double qpms_permittivity_interpolator_omega_min(const qpms_permittivity_interpolator_t *interp)
+    void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp)
+    struct qpms_ldparams_t:
+        pass
+    const qpms_ldparams_t *const QPMS_LDPARAMS_AG
+    const qpms_ldparams_t *const QPMS_LDPARAMS_AU
+
+cdef extern from "tmatrices.h":
+    bint qpms_load_scuff_tmatrix_crash_on_failure
+    struct qpms_tmatrix_generator_t:
+        qpms_errno_t (*function)(qpms_tmatrix_t *t, cdouble omega, const void *params)
+        const void *params
+    qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, cdouble omega, const void *params)
+    qpms_errno_t qpms_tmatrix_generator_interpolator(qpms_tmatrix_t *t, cdouble omega, const void *params)
+    qpms_errno_t qpms_tmatrix_generator_sphere(qpms_tmatrix_t *t, cdouble omega, const void *params)
+    struct qpms_tmatrix_generator_sphere_param_t:
+        qpms_epsmu_generator_t outside
+        qpms_epsmu_generator_t inside
+        double radius
+    struct qpms_arc_function_retval_t:
+        double r
+        double beta
+    struct qpms_arc_function_t:
+        qpms_arc_function_retval_t (*function)(double theta, const void *params)
+        const void *params
+    struct qpms_tmatrix_generator_axialsym_param_t:
+        qpms_epsmu_generator_t outside
+        qpms_epsmu_generator_t inside
+        qpms_arc_function_t shape
+        qpms_l_t lMax_extend
+    struct qpms_arc_cylinder_params_t:
+        double R
+        double h
+    qpms_arc_function_retval_t qpms_arc_cylinder(double theta, const void *params)
+    qpms_arc_function_retval_t qpms_arc_sphere(double theta, const void *params)
+    struct qpms_tmatrix_interpolator_t:
+        const qpms_vswf_set_spec_t *bspec
     void qpms_tmatrix_interpolator_free(qpms_tmatrix_interpolator_t *interp)
     qpms_tmatrix_t *qpms_tmatrix_interpolator_eval(const qpms_tmatrix_interpolator_t *interp, double freq)
     qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(size_t n, double *freqs, 
@@ -366,17 +416,6 @@ cdef extern from "tmatrices.h":
             cdouble epsilon_fg, cdouble epsilon_bg)
     qpms_tmatrix_t *qpms_tmatrix_spherical_mu0(const qpms_vswf_set_spec_t *bspec, double a,
             double omega, cdouble epsilon_fg, cdouble epsilon_bg)
-
-cdef extern from "materials.h":
-    qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_create(const size_t incount,
-            cdouble *wavelength_m, cdouble *n, cdouble *k, const gsl_interp_type *iptype)
-    qpms_permittivity_interpolator_t *qpms_permittivity_interpolator_from_yml(const char *path,
-            const gsl_interp_type *iptype)
-    cdouble qpms_permittivity_interpolator_eps_at_omega(const qpms_permittivity_interpolator_t *interp, double omega_SI)
-    double qpms_permittivity_interpolator_omega_max(const qpms_permittivity_interpolator_t *interp)
-    double qpms_permittivity_interpolator_omega_min(const qpms_permittivity_interpolator_t *interp)
-    void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp)
-
 
 cdef extern from "pointgroups.h":
     bint qpms_pg_is_finite_axial(qpms_pointgroup_class cls)
