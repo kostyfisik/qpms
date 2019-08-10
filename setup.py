@@ -84,12 +84,22 @@ libqpms_sources = [
 
 cycommon = Extension('qpms.cycommon',
         sources = ['qpms/cycommon.pyx'],
-        extra_link_args=['amos/libamos.a', 'qpms/libqpms.a'],
+        extra_link_args=['qpms/libqpms.a'],
+        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        )
+cytranslations = Extension('qpms.cytranslations',
+        sources = ['qpms/cytranslations.pyx',
+            'qpms/translations_python.c',
+            ],
+        extra_compile_args=['-std=c99',
+            '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # This is needed to enable it in translations.h
+            ],
+        extra_link_args=['qpms/libqpms.a', 'amos/libamos.a'],
         libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 cybspec = Extension('qpms.cybspec',
         sources = ['qpms/cybspec.pyx'],
-        extra_link_args=['amos/libamos.a', 'qpms/libqpms.a'],
+        extra_link_args=['qpms/libqpms.a'],
         libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 cyquaternions = Extension('qpms.cyquaternions',
@@ -101,11 +111,7 @@ cyquaternions = Extension('qpms.cyquaternions',
 qpms_c = Extension('qpms.qpms_c',
         sources = [
             'qpms/qpms_c.pyx',
-            'qpms/translations_python.c',
         ],
-        extra_compile_args=['-std=c99',
-            '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # This is needed to enable it in translations.h
-            ],
         libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread', #'omp'
             #('amos', dict(sources=amos_sources) ),
 	],
@@ -124,7 +130,7 @@ setup(name='qpms',
             #'quaternion','spherical_functions',
             'scipy>=0.18.0', 'sympy>=1.2'],
         #dependency_links=['https://github.com/moble/quaternion/archive/v2.0.tar.gz','https://github.com/moble/spherical_functions/archive/master.zip'],
-        ext_modules=cythonize([qpms_c, cycommon, cyquaternions, cybspec], include_path=['qpms', 'amos'], gdb_debug=True),
+        ext_modules=cythonize([qpms_c, cytranslations, cycommon, cyquaternions, cybspec], include_path=['qpms', 'amos'], gdb_debug=True),
         cmdclass = {'build_ext': build_ext},
         zip_safe=False
         )
