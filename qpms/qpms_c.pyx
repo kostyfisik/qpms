@@ -8,20 +8,14 @@ to make them available in Python.
 # -----------------------------
 
 import numpy as np
-import cmath
 from qpms_cdefs cimport *
-from cyquaternions cimport *
-#from cyquaternions import *
-from cybspec cimport *
-#from cybspec import *
-from cycommon import *
+from cyquaternions cimport IRot3, CQuat
+from cybspec cimport BaseSpec
 from cycommon cimport make_c_string
+from cycommon import string_c2py, PointGroupClass
+#import cycommon # Just to link make_c_string
 from cytmatrices cimport CTMatrix
-cimport cython
-import enum
-import warnings
-import os
-from libc.stdlib cimport malloc, free, calloc, abort
+from libc.stdlib cimport malloc, free, calloc
 
 cdef class PointGroup:
     cdef readonly qpms_pointgroup_t G
