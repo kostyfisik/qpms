@@ -1,5 +1,6 @@
 import numpy as np
 from qpms_cdefs cimport *
+from libc.stdlib cimport malloc
 cimport cython
 import enum
 
@@ -179,4 +180,24 @@ def uvswfi2tlm(u):
             la.append(l)
             ma.append(m)
         return (ta, la, ma)
+
+cdef char *make_c_string(pythonstring):
+    '''
+    Copies contents of a python string into a char[]
+    (allocating the memory with malloc())
+    '''
+    bytestring = pythonstring.encode('UTF-8')
+    cdef Py_ssize_t n = len(bytestring)
+    cdef Py_ssize_t i
+    cdef char *s
+    s = <char *>malloc(n+1)
+    if not s:
+        raise MemoryError
+    #s[:n] = bytestring # This segfaults; why?
+    for i in range(n): s[i] = bytestring[i]
+    s[n] = <char>0
+    return s
+
+def string_c2py(const char* cstring):
+    return cstring.decode('UTF-8')
 

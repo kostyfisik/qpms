@@ -6,6 +6,7 @@ from .qpms_p import *
 from .cyquaternions import CQuat, IRot3
 from .cybspec import VSWFNorm, BaseSpec
 from .cytranslations import trans_calculator
+from .cymaterials import MaterialInterpolator
 from .lattices2d import *
 from .hexpoints import *
 from .tmatrices import *

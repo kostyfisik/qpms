@@ -15,43 +15,12 @@ from cyquaternions cimport *
 from cybspec cimport *
 #from cybspec import *
 from cycommon import *
+from cycommon cimport make_c_string
 cimport cython
 import enum
 import warnings
 import os
 from libc.stdlib cimport malloc, free, calloc, abort
-
-
-cdef class MaterialInterpolator:
-    '''
-    Wrapper over the qpms_permittivity_interpolator_t structure.
-    '''
-    cdef qpms_permittivity_interpolator_t *interp
-    cdef readonly double omegamin
-    cdef readonly double omegamax
-
-    def __cinit__(self, filename, *args, **kwargs):
-        '''Creates a permittivity interpolator.'''
-        cdef char *cpath = make_c_string(filename)
-        self.interp = qpms_permittivity_interpolator_from_yml(cpath, gsl_interp_cspline)
-        if not self.interp: 
-            raise IOError("Could not load permittivity data from %s" % filename)
-        self.omegamin = qpms_permittivity_interpolator_omega_min(self.interp)
-        self.omegamax = qpms_permittivity_interpolator_omega_max(self.interp)
-
-    def __dealloc__(self):
-        qpms_permittivity_interpolator_free(self.interp)
-
-    def __call__(self, double freq):
-        '''Returns interpolated permittivity, corresponding to a given angular frequency.'''
-        if freq < self.omegamin or freq > self.omegamax:
-            raise ValueError("Input frequency %g is outside the interpolator domain (%g, %g)."
-                    % (freq, self.minomega, self.freqs[self.maxomega]))
-        return qpms_permittivity_interpolator_eps_at_omega(self.interp, freq)
-
-    property freq_interval:
-        def __get__(self):
-            return [self.omegamin, self.omegamax]
 
 cdef class TMatrixInterpolator:
     '''
@@ -176,26 +145,6 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
         tm = CTMatrix(spec, 0)
         tm.spherical_perm_fill(radius, freq, epsilon_int, epsilon_ext)
         return tm
-
-cdef char *make_c_string(pythonstring):
-    '''
-    Copies contents of a python string into a char[]
-    (allocating the memory with malloc())
-    '''
-    bytestring = pythonstring.encode('UTF-8')
-    cdef Py_ssize_t n = len(bytestring)
-    cdef Py_ssize_t i
-    cdef char *s 
-    s = <char *>malloc(n+1)
-    if not s:
-        raise MemoryError
-    #s[:n] = bytestring # This segfaults; why?
-    for i in range(n): s[i] = bytestring[i]
-    s[n] = <char>0
-    return s
-
-def string_c2py(const char* cstring):
-    return cstring.decode('UTF-8')
 
 cdef class PointGroup:
     cdef readonly qpms_pointgroup_t G
