@@ -10,7 +10,8 @@ add_definitions(-DQPMS_VECTORS_NICE_TRANSFORMATIONS)
 set (DIRS ${GSL_INCLUDE_DIRS} ${GSLCBLAS_INCLUDE_DIRS})
 include_directories(${DIRS})
 
-add_library (qpms translations.c tmatrices.c vecprint.c vswf.c wigner.c
+add_library (qpms translations.c tmatrices.c vecprint.c vswf.c wigner.c ewald.c
+	ewaldsf.c pointgroups.c latticegens.c
 	lattices2d.c gaunt.c error.c legendre.c symmetries.c vecprint.c
 	bessel.c own_zgemm.c parsing.c scatsystem.c materials.c drudeparam_data.c)
 use_c99()

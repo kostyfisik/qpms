@@ -11,9 +11,9 @@ import numpy as np
 import cmath
 #from qpms_cdefs cimport *
 from cyquaternions cimport *
-from cyquaternions import *
+#from cyquaternions import *
 from cybspec cimport *
-from cybspec import *
+#from cybspec import *
 from cycommon import *
 cimport cython
 from cython.parallel cimport parallel, prange

@@ -9,7 +9,8 @@ except ImportError:
 import re
 from scipy import interpolate
 from scipy.constants import hbar, e as eV, pi, c
-from qpms_c import get_mn_y, get_nelem, CQuat
+from .cycommon import get_mn_y, get_nelem
+from .cyquaternions import CQuat
 ň = np.newaxis
 from .types import NormalizationT, TMatrixSpec
 

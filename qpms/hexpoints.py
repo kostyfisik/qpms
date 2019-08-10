@@ -169,7 +169,8 @@ def generate_trianglepoints_hexcomplement(maxlayer, v3d = True, circular = True,
                }
 
 
-from qpms_c import get_mn_y, trans_calculator
+from .cycommon import get_mn_y
+from .qpms_c import trans_calculator
 from .qpms_p import cart2sph
 
 def hexlattice_precalc_AB_save(file, lMax, k_hexside, maxlayer, circular=True, savepointinfo = False, J_scat=3):
