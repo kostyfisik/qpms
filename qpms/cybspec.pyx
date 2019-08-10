@@ -1,6 +1,6 @@
 import numpy as np
 import enum
-import cycommon
+from .cycommon import get_mn_y, tlm2uvswfi
 
 class VSWFNorm(enum.IntEnum):
     # TODO try to make this an enum.IntFlag if supported
@@ -30,12 +30,12 @@ cdef class BaseSpec:
         if len(args) == 0:
             if 'lMax' in kwargs.keys(): # if only lMax is specified, create the 'usual' definition in ('E','M') order
                 lMax = kwargs['lMax']
-                my, ny = cycommon.get_mn_y(lMax)
+                my, ny = get_mn_y(lMax)
                 nelem = len(my)
                 tlist = nelem * (QPMS_VSWF_ELECTRIC,) + nelem * (QPMS_VSWF_MAGNETIC,)
                 mlist = 2*list(my)
                 llist = 2*list(ny)
-                ilist = cycommon.tlm2uvswfi(tlist,llist,mlist)
+                ilist = tlm2uvswfi(tlist,llist,mlist)
             else:
                 raise ValueError
         else: # len(args) > 0:

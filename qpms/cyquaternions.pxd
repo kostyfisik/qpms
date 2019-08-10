@@ -1,4 +1,4 @@
-from qpms_cdefs cimport *
+from .qpms_cdefs cimport qpms_quat_t, qpms_irot3_t
 
 cdef class CQuat:
     cdef readonly qpms_quat_t q

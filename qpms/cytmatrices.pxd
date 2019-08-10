@@ -1,6 +1,6 @@
 cimport numpy as np
-from qpms_cdefs cimport qpms_tmatrix_t, cdouble, qpms_tmatrix_interpolator_t
-from cybspec cimport BaseSpec
+from .qpms_cdefs cimport qpms_tmatrix_t, cdouble, qpms_tmatrix_interpolator_t
+from .cybspec cimport BaseSpec
 
 cdef class TMatrixInterpolator:
     #cdef readonly np.ndarray m # Numpy array holding the matrix data

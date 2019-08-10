@@ -1,4 +1,4 @@
-from qpms_cdefs cimport *
+from .qpms_cdefs cimport *
 
 cimport numpy as np
 

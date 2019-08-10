@@ -1,4 +1,5 @@
-from cybspec cimport BaseSpec
+from .cybspec cimport BaseSpec
+from .qpms_cdefs cimport *
 import cmath
 import math
 

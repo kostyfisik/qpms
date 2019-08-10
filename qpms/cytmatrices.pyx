@@ -1,9 +1,9 @@
 import numpy as np
-from qpms_cdefs cimport *
-from cybspec cimport BaseSpec
-from cycommon import *
-from cycommon cimport make_c_string
-from qpms_c cimport FinitePointGroup
+from .qpms_cdefs cimport *
+from .cybspec cimport BaseSpec
+from .cycommon import *
+from .cycommon cimport make_c_string
+from .qpms_c cimport FinitePointGroup
 import warnings
 import os
 from libc.stdlib cimport free

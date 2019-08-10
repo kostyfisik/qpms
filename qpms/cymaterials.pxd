@@ -1,4 +1,4 @@
-from qpms_cdefs cimport qpms_permittivity_interpolator_t
+from .qpms_cdefs cimport qpms_permittivity_interpolator_t
 
 cdef class MaterialInterpolator:
     cdef qpms_permittivity_interpolator_t *interp

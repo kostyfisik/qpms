@@ -1,6 +1,6 @@
 import numpy as np
 import cmath
-from qpms_cdefs cimport *
+from .qpms_cdefs cimport *
 from .cycommon import *
 from .cybspec cimport *
 cimport cython

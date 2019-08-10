@@ -1,5 +1,5 @@
 import numpy as np
-from qpms_cdefs cimport *
+from .qpms_cdefs cimport *
 from libc.stdlib cimport malloc
 cimport cython
 import enum

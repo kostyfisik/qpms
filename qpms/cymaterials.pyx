@@ -3,10 +3,8 @@
 
 import numpy as np
 import cmath
-from qpms_cdefs cimport *
-from cybspec cimport *
-from cycommon import *
-from cycommon cimport make_c_string
+from .qpms_cdefs cimport qpms_permittivity_interpolator_from_yml, qpms_permittivity_interpolator_free, qpms_permittivity_interpolator_omega_min, qpms_permittivity_interpolator_omega_max, gsl_interp_type, qpms_permittivity_interpolator_t, gsl_interp_cspline, qpms_permittivity_interpolator_eps_at_omega
+from .cycommon cimport make_c_string
 cimport cython
 import enum
 import warnings

@@ -1,4 +1,4 @@
-from qpms_cdefs cimport qpms_finite_group_t
+from .qpms_cdefs cimport qpms_finite_group_t
 
 cdef class FinitePointGroup:
     cdef readonly bint owns_data
