@@ -12,10 +12,11 @@ import os
 from scipy.constants import e as eV, hbar
 from libc.stdlib cimport malloc, free, calloc, abort
 
-class EpsMuGeneratorType(enum.IntEnum):
+class EpsMuGeneratorType(enum.Enum):
     CONSTANT = 1
     PERMITTIVITY_INTERPOLATOR = 2
     LORENTZ_DRUDE = 3
+    PYTHON_CALLABLE = 4
 
 cdef class EpsMu:
     def __init__(self, *args ,**kwargs):
@@ -74,6 +75,12 @@ lorentz_drude = {
                     (0.053*eh, 3.886*eh, 0.452*eh,0.065*eh, 0.916*eh, 2.419*eh)),
 }
 
+cdef qpms_epsmu_t python_epsmu_generator(cdouble omega, const void *params):
+    object fun = <object> params
+    cdef qpms_epsmu_t em
+    em.eps, em.mu = fun(omega)
+    return em
+
 cdef class EpsMuGenerator:
     def __init__(self, what):
         if isinstance(what, EpsMu):
@@ -88,8 +95,16 @@ cdef class EpsMuGenerator:
             self.holder = what
             self.g.function = qpms_permittivity_interpolator_epsmu_g
             self.g.params = (<MaterialInterpolator?>self.holder).rawpointer()
+        elif isinstance(what, EpsMuGenerator): # Copy constructor
+            self.holder = what.holder
+            self.g = what.g
+        elif callable(what):
+            warnings.warn("Custom python (eps,mu) generators are an experimental feature")
+            self.holder = what
+            self.g.function = python_epsmu_generator
+            self.g.params = <const void *> what
         else:
-            raise ValueError("Must be constructed from EpsMu, LorentzDrudeModel or MaterialInterpolator")
+            raise ValueError("Must be constructed from EpsMu, LorentzDrudeModel or MaterialInterpolator, or a python callable object that returns an (epsilon, mu) tuple.")
 
     property typ:
         def __get__(self):
@@ -99,6 +114,8 @@ cdef class EpsMuGenerator:
                 return EpsMuGeneratorType.LORENTZ_DRUDE
             elif(self.g.function == qpms_permittivity_interpolator_epsmu_g):
                 return EpsMuGeneratorType.PERMITTIVITY_INTERPOLATOR
+            elif(self.g.function == python_epsmu_generator):
+                return EpsMuGeneratorType.PYTHON_CALLABLE
             else:
                 raise ValueError("Damn, this is a bug.")
 
@@ -109,7 +126,8 @@ cdef class EpsMuGenerator:
             if(omega < i[0] or omega > i[1]):
                 raise ValueError("Input frequency %g is outside the interpolator domain (%g, %g)."
                     % (omega, i[0], i[1]))
-        em = self.g.function(omega, self.g.params)
+        with nogil:
+            em = self.g.function(omega, self.g.params)
         return EpsMu(em.eps, em.mu)
 
     cdef qpms_epsmu_generator_t raw(self):
