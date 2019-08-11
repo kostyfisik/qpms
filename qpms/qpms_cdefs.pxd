@@ -338,10 +338,18 @@ cdef extern from "materials.h":
     double qpms_permittivity_interpolator_omega_max(const qpms_permittivity_interpolator_t *interp)
     double qpms_permittivity_interpolator_omega_min(const qpms_permittivity_interpolator_t *interp)
     void qpms_permittivity_interpolator_free(qpms_permittivity_interpolator_t *interp)
+    struct qpms_ldparams_triple_t:
+        double f
+        double omega
+        double gamma
     struct qpms_ldparams_t:
-        pass
+        cdouble eps_inf
+        double omega_p
+        size_t n
+        qpms_ldparams_triple_t data[0]
     const qpms_ldparams_t *const QPMS_LDPARAMS_AG
     const qpms_ldparams_t *const QPMS_LDPARAMS_AU
+    cdouble qpms_lorentzdrude_eps(cdouble, const qpms_ldparams_t *)
 
 cdef extern from "tmatrices.h":
     bint qpms_load_scuff_tmatrix_crash_on_failure

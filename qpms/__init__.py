@@ -7,7 +7,7 @@ from .cyquaternions import CQuat, IRot3
 from .cybspec import VSWFNorm, BaseSpec
 from .cytmatrices import CTMatrix, TMatrixInterpolator
 from .cytranslations import trans_calculator
-from .cymaterials import MaterialInterpolator
+from .cymaterials import MaterialInterpolator, EpsMu, LorentzDrudeModel, lorentz_drude, EpsMuGenerator
 from .cycommon import dbgmsg_enable, dbgmsg_disable, dbgmsg_active, BesselType
 from .lattices2d import *
 from .hexpoints import *
