@@ -3,7 +3,7 @@
 
 import numpy as np
 import cmath
-from .qpms_cdefs cimport qpms_permittivity_interpolator_from_yml, qpms_permittivity_interpolator_free, qpms_permittivity_interpolator_omega_min, qpms_permittivity_interpolator_omega_max, gsl_interp_type, qpms_permittivity_interpolator_t, gsl_interp_cspline, qpms_permittivity_interpolator_eps_at_omega, qpms_epsmu_const_g, qpms_permittivity_interpolator_epsmu_g, qpms_epsmu_const_g, qpms_lorentzdrude_epsmu_g, qpms_ldparams_triple_t, qpms_lorentzdrude_eps
+from .qpms_cdefs cimport qpms_permittivity_interpolator_from_yml, qpms_permittivity_interpolator_free, qpms_permittivity_interpolator_omega_min, qpms_permittivity_interpolator_omega_max, gsl_interp_type, qpms_permittivity_interpolator_t, gsl_interp_cspline, qpms_permittivity_interpolator_eps_at_omega, qpms_epsmu_const_g, qpms_permittivity_interpolator_epsmu_g, qpms_epsmu_const_g, qpms_lorentzdrude_epsmu_g, qpms_ldparams_triple_t, qpms_lorentzdrude_eps, cdouble
 from .cycommon cimport make_c_string
 cimport cython
 import enum
@@ -76,7 +76,7 @@ lorentz_drude = {
 }
 
 cdef qpms_epsmu_t python_epsmu_generator(cdouble omega, const void *params):
-    object fun = <object> params
+    cdef object fun = <object> params
     cdef qpms_epsmu_t em
     em.eps, em.mu = fun(omega)
     return em
@@ -97,7 +97,7 @@ cdef class EpsMuGenerator:
             self.g.params = (<MaterialInterpolator?>self.holder).rawpointer()
         elif isinstance(what, EpsMuGenerator): # Copy constructor
             self.holder = what.holder
-            self.g = what.g
+            self.g = (<EpsMuGenerator?>what).g
         elif callable(what):
             warnings.warn("Custom python (eps,mu) generators are an experimental feature")
             self.holder = what
@@ -126,8 +126,7 @@ cdef class EpsMuGenerator:
             if(omega < i[0] or omega > i[1]):
                 raise ValueError("Input frequency %g is outside the interpolator domain (%g, %g)."
                     % (omega, i[0], i[1]))
-        with nogil:
-            em = self.g.function(omega, self.g.params)
+        em = self.g.function(omega, self.g.params)
         return EpsMu(em.eps, em.mu)
 
     cdef qpms_epsmu_generator_t raw(self):
