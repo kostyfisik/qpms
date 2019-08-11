@@ -16,7 +16,7 @@ cdef class LorentzDrudeModel:
     cdef const qpms_ldparams_t *params
     #cdef bint owns_params
     cdef inline void *rawpointer(self):
-        return <void *>&(self.params)
+        return <void *>(self.params)
 
 cdef class EpsMuGenerator:
     cdef qpms_epsmu_generator_t g
