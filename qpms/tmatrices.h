@@ -241,6 +241,7 @@ complex double *qpms_apply_tmatrix(
  * qpms_tmatrix_generator_axialsym()
  * qpms_tmatrix_generator_interpolator()
  * qpms_tmatrix_generator_sphere()
+ * qpms_tmatrix_generator_constant()
  */
 typedef struct qpms_tmatrix_generator_t {
 	qpms_errno_t (*function) (qpms_tmatrix_t *t, ///< T-matrix to fill.
@@ -249,6 +250,16 @@ typedef struct qpms_tmatrix_generator_t {
 			);
 	const void *params; ///< Parameter pointer passed to the function.
 } qpms_tmatrix_generator_t;
+
+/// Implementation of qpms_matrix_generator_t that just copies a constant matrix.
+/** N.B. this does almost no checks at all, so use it only for t-matrices with
+ * the same base spec.
+ */
+qpms_errno_t qpms_tmatrix_generator_constant(qpms_tmatrix_t *t,
+		complex double omega,
+		/// Source T-matrix, real type is (const qpms_tmatrix_t*).
+		const void *tmatrix_orig
+		);
 
 /* Fuck this, include the whole <gsl/gsl_spline.h>
 typedef struct gsl_spline gsl_spline; // Forward declaration for the interpolator struct

@@ -3,6 +3,7 @@ from .qpms_cdefs cimport *
 from .cybspec cimport BaseSpec
 from .cycommon import *
 from .cycommon cimport make_c_string
+from .cymaterials cimport EpsMuGenerator
 from .qpms_c cimport FinitePointGroup
 import warnings
 import os
@@ -114,3 +115,107 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
         tm = CTMatrix(spec, 0)
         tm.spherical_perm_fill(radius, freq, epsilon_int, epsilon_ext)
         return tm
+
+cdef class __MieParams:
+    # Not directly callable right now, serves just to be used by TMatrixGenerator.
+    cdef qpms_tmatrix_generator_sphere_param_t cparam
+    cdef EpsMuGenerator outside
+    cdef EpsMuGenerator inside
+    cdef inline  void *rawpointer(self):
+        return <void *>&(self.cparam)
+    
+    def __init__(self, outside, inside, r):
+        self.inside = inside
+        self.outside = outside
+        self.cparam.inside = self.inside.raw();
+        self.cparam.outside = self.outside.raw();
+        self.cparam.radius = r
+
+    property r:
+        def __get__(self):
+            return self.cparam.radius
+        def __set__(self, val):
+            self.cparam.radius = val
+
+cdef class __ArcCylinder:
+    cdef qpms_arc_cylinder_params_t p
+    cdef inline void *rawpointer(self):
+        return <void *> &(self.p)
+
+cdef class __ArcSphere:
+    cdef double r
+    cdef inline void *rawpointer(self):
+        return <void *> &(self.r)
+
+cdef qpms_arc_function_retval_t userarc(double theta, const void *params):
+    cdef object fun = <object> params
+    cdef qpms_arc_function_retval_t retval
+    retval.r, retval.beta = fun(theta)
+    return retval
+
+
+cdef class ArcFunction:
+    cdef qpms_arc_function_t g
+    cdef object holder
+    def __init__(self, what):
+        if isinstance(what, __ArcCylinder):
+            self.holder = what
+            self.g.function = qpms_arc_cylinder
+            self.g.params = (<__ArcCylinder?>self.holder).rawpointer()
+        elif isinstance(what, __ArcSphere):
+            self.holder = what
+            self.g.function = qpms_arc_sphere
+            self.g.params = (<__ArcSphere?>self.holder).rawpointer()
+        elif callable(what):
+            warnings.warn("Custom python (r, beta) arc functions are an experimental feature. Also expect it to be slow.")
+            self.holder = what
+            self.g.function = userarc
+            self.g.params = <const void *> self.holder
+        elif isinstance(what, ArcFunction): #Copy constructor
+            self.holder = what.holder
+            self.g = (<ArcFunction?>what).g
+            self.holder.rawpointer()
+
+cdef class __AxialSymParams:
+    cdef qpms_tmatrix_generator_axialsym_param_t p
+    cdef EpsMuGenerator outside
+    cdef EpsMuGenerator inside
+    cdef ArcFunction shape
+    cdef void * rawpointer(self):
+        return <void *> &(self.p)
+    property lMax_extend:
+        def __get__(self):
+            return self.p.lMax_extend
+        def __set__(self, val):
+            self.p.lMax_extend = val
+    def __init__(self, outside, inside, shape, *args, **kwargs):
+        self.outside = outside
+        self.p.outside = self.outside.g
+        self.inside = inside
+        self.p.inside = self.inside.g
+        self.shape = shape
+        self.p.shape = self.shape.g
+        if len(args)>0:
+            self.lMax_extend = args[0]
+        if 'lMax_extend' in kwargs.keys():
+            self.lMax_extend = kwargs['lMax_extend']
+
+cdef class TMatrixGenerator:
+    cdef qpms_tmatrix_generator_t g
+    cdef object holder
+    cdef qpms_tmatrix_generator_t raw(self):
+        return self.g
+    def __init__(self, what):
+        if isinstance(what, __MieParams):
+            self.holder = what
+            self.g.function = qpms_tmatrix_generator_sphere
+            self.g.params = (<__MieParams?>self.holder).rawpointer()
+        elif isinstance(what,__AxialSymParams):
+            self.holder = what
+            self.g.function = qpms_tmatrix_generator_axialsym
+            self.g.params = (<__AxialSymParams?>self.holder).rawpointer()
+        else:
+            raise ValueError("Can't construct TMatrixGenerator from that")
+
+
+

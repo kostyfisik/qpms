@@ -35,6 +35,7 @@
 
 #define SQ(x) ((x)*(x))
 #define MAX(x,y) ((x) < (y) ? (y) : (x))
+#define MIN(x,y) ((x) > (y) ? (y) : (x))
 
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
   qpms_tmatrix_t *t = malloc(sizeof(qpms_tmatrix_t));
@@ -692,7 +693,7 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
 		qpms_tmatrix_t *t, complex double omega, qpms_epsmu_t outside,
 		qpms_epsmu_t inside,qpms_arc_function_t shape, qpms_l_t lMaxQR)
 {
-  QPMS_UNTESTED;
+  QPMS_UNTESTED; // TODO also check whether this is valid for all norms.
   const qpms_vswf_set_spec_t *bspec = t->spec;
   struct tmatrix_axialsym_integral_param_t p;
   p.k = qpms_wavenumber(omega, outside);
@@ -797,3 +798,16 @@ qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, complex double o
       p->shape,
       p->lMax_extend);
 }
+
+qpms_errno_t qpms_tmatrix_generator_constant(qpms_tmatrix_t *t,
+    complex double omega, const void *tmorig) {
+  QPMS_UNTESTED;
+  // TODO more thorough check on bspec!
+  const qpms_tmatrix_t *orig = tmorig;
+  const size_t tocopy = SQ(MIN(t->spec->n, orig->spec->n));
+  memcpy(t->m, orig->m, tocopy*sizeof(complex double));
+  memset(t->m+tocopy, 0, (SQ(t->spec->n)-tocopy)*sizeof(complex double));
+  return QPMS_SUCCESS;
+}
+
+

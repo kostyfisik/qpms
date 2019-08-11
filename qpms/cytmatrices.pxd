@@ -11,6 +11,8 @@ cdef class TMatrixInterpolator:
     cdef double *freqs_su
     cdef size_t nfreqs
     cdef qpms_tmatrix_interpolator_t *interp
+    cdef inline qpms_tmatrix_interpolator_t *rawpointer(self):
+        return self.interp
 
 cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py!
     cdef readonly np.ndarray m # Numpy array holding the matrix data
@@ -23,3 +25,7 @@ cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py
         Don't forget to reference the BaseSpec object itself when storing the pointer anywhere!!!
         '''
         return &(self.t)
+
+
+
+
