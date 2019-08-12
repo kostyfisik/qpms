@@ -141,11 +141,16 @@ cdef class __ArcCylinder:
     cdef qpms_arc_cylinder_params_t p
     cdef inline void *rawpointer(self):
         return <void *> &(self.p)
+    def __init__(self, R, h):
+        self.p.R = R
+        self.p.h = h
 
 cdef class __ArcSphere:
     cdef double r
     cdef inline void *rawpointer(self):
         return <void *> &(self.r)
+    def __init__(self, r):
+        self.r = r
 
 cdef qpms_arc_function_retval_t userarc(double theta, const void *params):
     cdef object fun = <object> params
@@ -214,8 +219,36 @@ cdef class TMatrixGenerator:
             self.holder = what
             self.g.function = qpms_tmatrix_generator_axialsym
             self.g.params = (<__AxialSymParams?>self.holder).rawpointer()
+        # TODO INTERPOLATOR
         else:
             raise ValueError("Can't construct TMatrixGenerator from that")
 
+    def __call__(self, arg, cdouble omega):
+        cdef CTMatrix tm
+        if isinstance(arg, CTMatrix): # fill the matrix
+            tm = arg
+            if self.g.function(tm.rawpointer(), omega, self.g.params) != 0:
+                raise ValueError("Something went wrong")
+            return
+        elif isinstance(arg, BaseSpec): # Make a new CTMatrix
+            tm = CTMatrix(bspec, None)
+            if self.g.function(tm.rawpointer(), omega, self.g.params) != 0:
+                raise ValueError("Something went wrong")
+            return tm
+        else:
+            raise ValueError("Must specify CTMatrix or BaseSpec")
 
+    # Better "constructors":
+    @staticmethod
+    def sphere(outside, inside, r):
+        return TMatrixGenerator(__MieParams(EpsMuGenerator(outside),
+                    EpsMuGenerator(inside), r))
+    def cylinder(outside, inside, r, h, *args, **kwargs):
+        return TMatrixGenerator(__AxialSymParams(
+            EpsMuGenerator(outside), EpsMuGenerator(inside),
+            ArcFunction(__ArcCylinder(r, h)), *args, **kwargs))
+    def sphere_asarc(outside, inside, r, h, *args, **kwargs):
+        return TMatrixGenerator(__AxialSymParams(
+            EpsMuGenerator(outside), EpsMuGenerator(inside),
+            ArcFunction(__ArcSphere(r)), *args, **kwargs))
 
