@@ -47,20 +47,22 @@ you can [get the source and compile it yourself][GSL].
 
 You also need a fresh enough version of [cmake][].
 
-After GSL is installed, you can install qpms to your local python library using::
+After GSL is installed, you can install qpms to your local python library using
 
 ```{.sh}
-  cmake .
-  make amos
+  cmake -DCMAKE_INSTALL_PREFIX=${YOUR_PREFIX} .
+  make install
   python3 setup.py install --user
 ```
+Above, replace `${YOUR_PREFIX}` with the path to where you want to install the shared library;
+you will also need to make sure that the linker can find it;
+on Linux, this means the path `${YOUR_PREFIX}/lib` is included in your
+`LIBRARY_PATH` and `LD_LIBRARY_PATH` environment variables. The same applies
+to the GSL and OpenBLAS dependencies: they must be installed where the
+installation scripts and linker can find them (setting the `C_INCLUDE_PATH` environment
+variable might be necessary as well).
 
-If GSL is not installed the standard library path on your system, you might 
-need to pass it to the installation script using the
-`LIBRARY_PATH` and `LD_LIBRARY_PATH` environment
-variables.
-
-Special care has often be taken when installing QPMS in cluster environments.
+Special care might need to be taken when installing QPMS in cluster environments.
 Specific installation instructions for Aalto University's Triton cluster
 can be found in a [separate document][TRITON-README].
 

@@ -10,7 +10,7 @@ add_definitions(-DQPMS_VECTORS_NICE_TRANSFORMATIONS)
 set (DIRS ${GSL_INCLUDE_DIRS} ${GSLCBLAS_INCLUDE_DIRS})
 include_directories(${DIRS})
 
-add_library (qpms translations.c tmatrices.c vecprint.c vswf.c wigner.c ewald.c
+add_library (qpms SHARED translations.c tmatrices.c vecprint.c vswf.c wigner.c ewald.c
 	ewaldsf.c pointgroups.c latticegens.c
 	lattices2d.c gaunt.c error.c legendre.c symmetries.c vecprint.c
 	bessel.c own_zgemm.c parsing.c scatsystem.c materials.c drudeparam_data.c)
@@ -25,3 +25,7 @@ target_link_libraries (qpms
 	amos
 	)
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+install(TARGETS qpms
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

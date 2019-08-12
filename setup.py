@@ -84,13 +84,13 @@ libqpms_sources = [
 
 cycommon = Extension('qpms.cycommon',
         sources = ['qpms/cycommon.pyx'],
-        extra_link_args=['qpms/libqpms.a'],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        #extra_link_args=['qpms/libqpms.a'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 cytmatrices = Extension('qpms.cytmatrices',
         sources = ['qpms/cytmatrices.pyx'],
-        extra_link_args=['qpms/libqpms.a', 'amos/libamos.a'],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        #extra_link_args=['qpms/libqpms.a', 'amos/libamos.a'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 cytranslations = Extension('qpms.cytranslations',
         sources = ['qpms/cytranslations.pyx',
@@ -99,34 +99,34 @@ cytranslations = Extension('qpms.cytranslations',
         extra_compile_args=['-std=c99',
             '-DQPMS_COMPILE_PYTHON_EXTENSIONS', # This is needed to enable it in translations.h
             ],
-        extra_link_args=['qpms/libqpms.a', 'amos/libamos.a'],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        #extra_link_args=['qpms/libqpms.a', 'amos/libamos.a'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 cybspec = Extension('qpms.cybspec',
         sources = ['qpms/cybspec.pyx'],
-        extra_link_args=['qpms/libqpms.a'],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        #extra_link_args=['qpms/libqpms.a'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 cymaterials = Extension('qpms.cymaterials',
         sources = ['qpms/cymaterials.pyx'],
-        extra_link_args=['qpms/libqpms.a'],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        #extra_link_args=['qpms/libqpms.a'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 cyquaternions = Extension('qpms.cyquaternions',
         sources = ['qpms/cyquaternions.pyx'],
-        extra_link_args=['amos/libamos.a', 'qpms/libqpms.a'],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        #extra_link_args=['amos/libamos.a', 'qpms/libqpms.a'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
 
 qpms_c = Extension('qpms.qpms_c',
         sources = [
             'qpms/qpms_c.pyx',
         ],
-        libraries=['gsl', 'lapacke', 'blas', 'gslcblas', 'pthread', #'omp'
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread', #'omp'
             #('amos', dict(sources=amos_sources) ),
 	],
         include_dirs=['amos', 'qpms'],
-        extra_link_args=[ 'qpms/libqpms.a','amos/libamos.a', ],
+        #extra_link_args=[ 'qpms/libqpms.a','amos/libamos.a', ],
         #runtime_library_dirs=os.environ['LD_LIBRARY_PATH'].split(':') if 'LD_LIBRARY_PATH' in os.environ else [],
         #extra_objects = ['amos/libamos.a'], # FIXME apparently, I would like to eliminate the need to cmake/make first
         )
