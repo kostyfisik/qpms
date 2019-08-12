@@ -5,7 +5,7 @@ from .qpms_c import PointGroup, FinitePointGroup, FinitePointGroupElement, Parti
 from .qpms_p import *
 from .cyquaternions import CQuat, IRot3
 from .cybspec import VSWFNorm, BaseSpec
-from .cytmatrices import CTMatrix, TMatrixInterpolator
+from .cytmatrices import CTMatrix, TMatrixInterpolator, TMatrixGenerator
 from .cytranslations import trans_calculator
 from .cymaterials import MaterialInterpolator, EpsMu, LorentzDrudeModel, lorentz_drude, EpsMuGenerator
 from .cycommon import dbgmsg_enable, dbgmsg_disable, dbgmsg_active, BesselType

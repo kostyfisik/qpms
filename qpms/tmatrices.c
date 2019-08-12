@@ -26,8 +26,8 @@
 #include <gsl/gsl_integration.h>
 
 // These are quite arbitrarily chosen constants for the quadrature in qpms_tmatrix_axialsym_fill()
-#define TMATRIX_AXIALSYM_INTEGRAL_EPSREL (1e-6)
-#define TMATRIX_AXIALSYM_INTEGRAL_EPSABS (1e-10)
+#define TMATRIX_AXIALSYM_INTEGRAL_EPSREL (1e-5)
+#define TMATRIX_AXIALSYM_INTEGRAL_EPSABS (1e-8)
 
 #define HBAR (1.05457162825e-34)
 #define ELECTRONVOLT (1.602176487e-19)
@@ -511,6 +511,8 @@ complex double *qpms_mie_coefficients_reflection(
   /*
    *  This implementation pretty much copies mie_coefficients() from qpms_p.py, so 
    *  any bugs there should affect this function as well and perhaps vice versa.
+   *
+   *  Compared to mie_coefficients() from qpms_p.py, this has opposite sign.
    */
   QPMS_ENSURE(J_ext != J_scat, "J_ext and J_scat must not be equal. Perhaps you want J_ext = 1 and J_scat = 3 anyways.");
   if (!target) QPMS_CRASHING_MALLOC(target, bspec->n * sizeof(complex double));
@@ -536,8 +538,8 @@ complex double *qpms_mie_coefficients_reflection(
     complex double fi = zi[l]/x_i+dzi;
     complex double fs = zs[l]/x_e+dzs;
     complex double fe = ze[l]/x_e+dze;
-    RV[l] = -((-eta_inv_i * fe * zi[l] + eta_inv_e * ze[l] * fi)/(-eta_inv_e * fi * zs[l] + eta_inv_i * zi[l] * fs));
-    RH[l] = -((-eta_inv_e * fe * zi[l] + eta_inv_i * ze[l] * fi)/(-eta_inv_i * fi * zs[l] + eta_inv_e * zi[l] * fs));
+    RV[l] = (-eta_inv_i * fe * zi[l] + eta_inv_e * ze[l] * fi)/(-eta_inv_e * fi * zs[l] + eta_inv_i * zi[l] * fs);
+    RH[l] = (-eta_inv_e * fe * zi[l] + eta_inv_i * ze[l] * fi)/(-eta_inv_i * fi * zs[l] + eta_inv_e * zi[l] * fs);
   }
 
   for (size_t i = 0; i < bspec->n; ++i) {
@@ -701,6 +703,7 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
   p.z = qpms_waveimpedance(outside);
   p.z_in = qpms_waveimpedance(inside);
   p.f = shape;
+  p.bspec = bspec;
   const gsl_function f = {tmatrix_axialsym_integrand, (void *) &p};
 
   if (lMaxQR < bspec->lMax) lMaxQR = bspec->lMax;
@@ -721,6 +724,7 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
     for(size_t i2 = 0; i2 < bspecQR->n; ++i2) {
       // NOTE that the Q', R' matrices are !TRANSPOSED! here because of zgetrs
       const size_t iQR = i1 + i2 * bspecQR->n;
+      double abserr; // gsl_integration_qag() needs this; thrown away for now
       qpms_m_t m1, m2;
       qpms_l_t l1, l2;
       qpms_vswf_type_t t1, t2;
@@ -740,26 +744,26 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
         p.btype = QPMS_BESSEL_REGULAR;
         p.realpart = true;
         QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, NULL));
+              intlimit, 2, w, &result, &abserr));
         R[iQR] = result;
         
         // Im(R')
         p.realpart = false;
         QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, NULL));
+              intlimit, 2, w, &result, &abserr));
         R[iQR] += I*result;
 
         // Re(Q')
         p.btype = QPMS_HANKEL_PLUS;
         p.realpart = true;
         QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, NULL));
+              intlimit, 2, w, &result, &abserr));
         Q[iQR] = result;
 
         // Im(Q')
         p.realpart = false;
         QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, NULL));
+              intlimit, 2, w, &result, &abserr));
         Q[iQR] += I*result;
       }
     }

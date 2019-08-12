@@ -231,7 +231,7 @@ cdef class TMatrixGenerator:
                 raise ValueError("Something went wrong")
             return
         elif isinstance(arg, BaseSpec): # Make a new CTMatrix
-            tm = CTMatrix(bspec, None)
+            tm = CTMatrix(arg, None)
             if self.g.function(tm.rawpointer(), omega, self.g.params) != 0:
                 raise ValueError("Something went wrong")
             return tm
@@ -243,12 +243,14 @@ cdef class TMatrixGenerator:
     def sphere(outside, inside, r):
         return TMatrixGenerator(__MieParams(EpsMuGenerator(outside),
                     EpsMuGenerator(inside), r))
+    @staticmethod
+    def sphere_asarc(outside, inside, r, *args, **kwargs):
+        return TMatrixGenerator(__AxialSymParams(
+            EpsMuGenerator(outside), EpsMuGenerator(inside),
+            ArcFunction(__ArcSphere(r)), *args, **kwargs))
+    @staticmethod
     def cylinder(outside, inside, r, h, *args, **kwargs):
         return TMatrixGenerator(__AxialSymParams(
             EpsMuGenerator(outside), EpsMuGenerator(inside),
             ArcFunction(__ArcCylinder(r, h)), *args, **kwargs))
-    def sphere_asarc(outside, inside, r, h, *args, **kwargs):
-        return TMatrixGenerator(__AxialSymParams(
-            EpsMuGenerator(outside), EpsMuGenerator(inside),
-            ArcFunction(__ArcSphere(r)), *args, **kwargs))
 

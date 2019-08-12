@@ -435,6 +435,11 @@ qpms_arc_function_retval_t qpms_arc_sphere(double theta,
 
 
 /// Replaces T-matrix contents with those of a particle with \f$ C_\infty \f$ symmetry.
+/** 
+ * N.B. currently, this might crash for higher values of lMax (lMax > 5).
+ * Also, it seems that I am doing something wrong, as the result is accurate for sphere
+ * with lMax = 1 and for higher l the accuracy decreases.
+ */
 qpms_errno_t qpms_tmatrix_axialsym_fill(
 		qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
 		complex double omega, ///< Angular frequency.
