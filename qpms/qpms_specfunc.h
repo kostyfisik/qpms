@@ -57,6 +57,8 @@ double *qpms_legendre_minus1d_y_get(qpms_l_t lMax, qpms_normalisation_t norm); /
 
 /// Array of Legendre and and auxillary \f$\pi_{lm}, \tau_{lm} \f$ functions.
 /**
+ * See qpms_pitau_get() for definitions.
+ *
  * The leg, pi, tau arrays are indexed using the standard qpms_mn2y() VSWF indexing.
  */
 typedef struct {
@@ -73,7 +75,7 @@ typedef struct {
  * 	\Fer[norm.]{l}{m} = \csphase^{-1} 
  * 		\sqrt{\frac{1}{l(l+1)}\frac{(l-m)!(2l+1)}{4\pi(l+m)!}},
  * \f] i.e. obtained using `gsl_sf_legendre_array_e()` with 
- * `norm = GSL_SF_LEGENDRE_SPHARM` and multiplied by \f$ \sqrt{l(l+1)} \f$.
+ * `norm = GSL_SF_LEGENDRE_SPHARM` and divided by \f$ \sqrt{l(l+1)} \f$.
  *
  * The auxillary functions are defined as
  * \f[
