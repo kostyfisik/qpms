@@ -488,6 +488,22 @@ qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, ///< T-matrix to
 );
 
 
+/// Computes the (reduced) transposed R or Q matrix for axially symmetric particle (useful for debugging).
+qpms_errno_t qpms_tmatrix_generator_axialsym_RQ_transposed_fill(complex double *target,
+		complex double omega,
+		const qpms_tmatrix_generator_axialsym_param_t *param,
+		qpms_normalisation_t norm,
+		qpms_bessel_t J
+		);
+
+/// Computes the (reduced) transposed R or Q matrix for axially symmetric particle (useful mostly for debugging).
+qpms_errno_t qpms_tmatrix_axialsym_RQ_transposed_fill(complex double *target,
+		complex double omega, qpms_epsmu_t outside, qpms_epsmu_t inside,
+		qpms_arc_function_t shape, qpms_l_t lMaxQR, qpms_normalisation_t norm,
+		qpms_bessel_t J ///< Use QPMS_BESSEL_REGULAR to calculate \f$ R^T\f$ or QPMS_HANKEL_PLUS to calculate \f$ Q^T\f$.
+		);
+
+
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries
 // To be implemented later. See also the thoughts in the beginning of groups.h.

@@ -204,6 +204,22 @@ cdef class __AxialSymParams:
             self.lMax_extend = args[0]
         if 'lMax_extend' in kwargs.keys():
             self.lMax_extend = kwargs['lMax_extend']
+        if self.lMax_extend == 0:
+            self.lMax_extend = 1
+    def Q_transposed(self, cdouble omega, norm):
+        cdef size_t n = 2*(self.p.lMax_extend*(self.p.lMax_extend +2))
+        cdef np.ndarray[np.complex_t, ndim=2] arr = np.empty((n,n), dtype=complex, order='C')
+        cdef cdouble[:,::1] arrview = arr
+        qpms_tmatrix_generator_axialsym_RQ_transposed_fill(&arrview[0][0], omega, &self.p, norm, QPMS_HANKEL_PLUS)
+        return arr
+    def R_transposed(self, cdouble omega, norm):
+        cdef size_t n = 2*(self.p.lMax_extend*(self.p.lMax_extend +2))
+        cdef np.ndarray[np.complex_t, ndim=2] arr = np.empty((n,n), dtype=complex, order='C')
+        cdef cdouble[:,::1] arrview = arr
+        qpms_tmatrix_generator_axialsym_RQ_transposed_fill(&arrview[0][0], omega, &self.p, norm, QPMS_BESSEL_REGULAR)
+        return arr
+
+
 
 cdef class TMatrixGenerator:
     cdef qpms_tmatrix_generator_t g
@@ -221,7 +237,7 @@ cdef class TMatrixGenerator:
             self.g.params = (<__AxialSymParams?>self.holder).rawpointer()
         # TODO INTERPOLATOR
         else:
-            raise ValueError("Can't construct TMatrixGenerator from that")
+            raise TypeError("Can't construct TMatrixGenerator from that")
 
     def __call__(self, arg, cdouble omega):
         cdef CTMatrix tm
@@ -237,6 +253,15 @@ cdef class TMatrixGenerator:
             return tm
         else:
             raise ValueError("Must specify CTMatrix or BaseSpec")
+
+    def Q_transposed(self, cdouble omega, norm):
+        if self.g.function != qpms_tmatrix_generator_axialsym:
+            raise TypeError("Applicable only for axialsym generators")
+        return self.holder.Q_transposed(omega, norm)
+    def R_transposed(self, cdouble omega, norm):
+        if self.g.function != qpms_tmatrix_generator_axialsym:
+            raise TypeError("Applicable only for axialsym generators")
+        return self.holder.R_transposed(omega, norm)
 
     # Better "constructors":
     @staticmethod

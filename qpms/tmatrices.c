@@ -724,7 +724,6 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
     for(size_t i2 = 0; i2 < bspecQR->n; ++i2) {
       // NOTE that the Q', R' matrices are !TRANSPOSED! here because of zgetrs
       const size_t iQR = i1 + i2 * bspecQR->n;
-      double abserr; // gsl_integration_qag() needs this; thrown away for now
       qpms_m_t m1, m2;
       qpms_l_t l1, l2;
       qpms_vswf_type_t t1, t2;
@@ -739,7 +738,8 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
         p.l = l1; p.l_in = l2;
         p.t = t1; p.t_in = t2;
 
-        double result; // We throw the quadrature error estimate away.
+        double result; 
+        double abserr; // gsl_integration_qag() needs this; thrown away for now
         // Re(R')
         p.btype = QPMS_BESSEL_REGULAR;
         p.realpart = true;
@@ -794,7 +794,82 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
   return QPMS_SUCCESS;
 }
 
-qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, complex double omega, const void *param) {
+qpms_errno_t qpms_tmatrix_axialsym_RQ_transposed_fill(complex double *target,
+    complex double omega, qpms_epsmu_t outside, qpms_epsmu_t inside,
+    qpms_arc_function_t shape, qpms_l_t lMaxQR, qpms_normalisation_t norm,qpms_bessel_t J)
+{
+  QPMS_UNTESTED; // TODO also check whether this is valid for all norms.
+  struct tmatrix_axialsym_integral_param_t p;
+  
+  qpms_vswf_set_spec_t *bspecQR = qpms_vswf_set_spec_from_lMax(lMaxQR, norm);
+  
+  p.k = qpms_wavenumber(omega, outside);
+  p.k_in = qpms_wavenumber(omega, inside);
+  p.z = qpms_waveimpedance(outside);
+  p.z_in = qpms_waveimpedance(inside);
+  p.f = shape;
+  p.bspec = bspecQR;
+  p.btype = J;
+  const gsl_function f = {tmatrix_axialsym_integrand, (void *) &p};
+
+
+  // Not sure what the size should be, but this should be more than enough.
+  const size_t intlimit = 1024;
+  const double epsrel = TMATRIX_AXIALSYM_INTEGRAL_EPSREL;
+  const double epsabs = TMATRIX_AXIALSYM_INTEGRAL_EPSABS;
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(intlimit);
+  for(size_t i1 = 0; i1 < bspecQR->n; ++i1)
+    for(size_t i2 = 0; i2 < bspecQR->n; ++i2) {
+      // NOTE that the Q', R' matrices are !TRANSPOSED! here because of zgetrs
+      const size_t iQR = i1 + i2 * bspecQR->n;
+      qpms_m_t m1, m2;
+      qpms_l_t l1, l2;
+      qpms_vswf_type_t t1, t2;
+      const qpms_uvswfi_t u1 = bspecQR->ilist[i1], u2 = bspecQR->ilist[i2];
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u1, &t1, &m1, &l1));
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u2, &t2, &m2, &l2));
+      if (m1 + m2) {
+        target[iQR] = 0;
+      } else {
+        p.m = m1;
+        p.l = l1; p.l_in = l2;
+        p.t = t1; p.t_in = t2;
+
+        double result; 
+        double abserr; // gsl_integration_qag() needs this; thrown away for now
+        // Re(R' or Q')
+        p.realpart = true;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
+              intlimit, 2, w, &result, &abserr));
+        target[iQR] = result;
+        
+        // Im(R' or Q')
+        p.realpart = false;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
+              intlimit, 2, w, &result, &abserr));
+        target[iQR] += I*result;
+      }
+    }
+  gsl_integration_workspace_free(w);
+
+  qpms_vswf_set_spec_free(bspecQR);
+  return QPMS_SUCCESS;
+}
+
+qpms_errno_t qpms_tmatrix_generator_axialsym_RQ_transposed_fill(complex double *target,
+    complex double omega, const qpms_tmatrix_generator_axialsym_param_t *param,
+    qpms_normalisation_t norm, qpms_bessel_t J)
+{
+  const qpms_tmatrix_generator_axialsym_param_t *p = param;
+  return qpms_tmatrix_axialsym_RQ_transposed_fill(target, omega, 
+      p->outside.function(omega, p->outside.params),
+      p->inside.function(omega, p->inside.params),
+      p->shape,
+      p->lMax_extend, norm, J);
+}
+
+qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, complex double omega, const void *param) 
+{
   const qpms_tmatrix_generator_axialsym_param_t *p = param;
   return qpms_tmatrix_axialsym_fill(t, omega, 
       p->outside.function(omega, p->outside.params),
@@ -813,5 +888,4 @@ qpms_errno_t qpms_tmatrix_generator_constant(qpms_tmatrix_t *t,
   memset(t->m+tocopy, 0, (SQ(t->spec->n)-tocopy)*sizeof(complex double));
   return QPMS_SUCCESS;
 }
-
 

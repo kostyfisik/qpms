@@ -424,6 +424,8 @@ cdef extern from "tmatrices.h":
             cdouble epsilon_fg, cdouble epsilon_bg)
     qpms_tmatrix_t *qpms_tmatrix_spherical_mu0(const qpms_vswf_set_spec_t *bspec, double a,
             double omega, cdouble epsilon_fg, cdouble epsilon_bg)
+    qpms_errno_t qpms_tmatrix_generator_axialsym_RQ_transposed_fill(cdouble *target, cdouble omega,
+            const qpms_tmatrix_generator_axialsym_param_t *param, qpms_normalisation_t norm, qpms_bessel_t J)
 
 cdef extern from "pointgroups.h":
     bint qpms_pg_is_finite_axial(qpms_pointgroup_class cls)
