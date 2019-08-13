@@ -53,50 +53,67 @@ qpms_errno_t qpms_legendre_deriv_y_get(double **target, double **dtarget, double
 
 qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, const double csphase)
 {
-  QPMS_ENSURE(fabs(csphase) == 1, "The csphase argument must be either 1 or -1, not %g.", csphase);
   qpms_pitau_t res;
   const qpms_y_t nelem = qpms_lMax2nelem(lMax);
   QPMS_CRASHING_MALLOC(res.leg, nelem * sizeof(double));
   QPMS_CRASHING_MALLOC(res.pi, nelem * sizeof(double));
   QPMS_CRASHING_MALLOC(res.tau, nelem * sizeof(double));
+  qpms_pitau_fill(res.leg, res.pi, res.tau, theta, lMax, csphase);
+  return res;
+}
+
+qpms_errno_t qpms_pitau_fill(double *target_leg, double *pi, double *tau, double theta, qpms_l_t lMax, double csphase)
+{
+  QPMS_ENSURE(fabs(csphase) == 1, "The csphase argument must be either 1 or -1, not %g.", csphase);
+  const qpms_y_t nelem = qpms_lMax2nelem(lMax);
+ 
   double ct = cos(theta), st = sin(theta);
   if (1 == fabs(ct)) { // singular case, use DLMF 14.8.2
-    memset(res.pi, 0, nelem * sizeof(double));
-    memset(res.tau, 0, nelem * sizeof(double));
-    memset(res.leg, 0, nelem * sizeof(double));
+    if(pi) memset(pi, 0, nelem * sizeof(double));
+    if(tau) memset(tau, 0, nelem * sizeof(double));
+    if(target_leg) memset(target_leg, 0, nelem * sizeof(double));
     for (qpms_l_t l = 1; l <= lMax; ++l) {
-      res.leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)/(4*M_PI *l*(l+1)));
+      if(target_leg) target_leg[qpms_mn2y(0, l)] = ((l%2)?ct:1.)*sqrt((2*l+1)/(4*M_PI *l*(l+1)));
       double fl = 0.25 * sqrt((2*l+1)*M_1_PI);
       int lpar = (l%2)?-1:1;
-      res.pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
-      res.pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
-      res.tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl * csphase;
-      res.tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * fl * csphase;
+      if(pi) {
+        pi [qpms_mn2y(+1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
+        pi [qpms_mn2y(-1, l)] = -((ct>0) ? -1 : lpar) * fl * csphase;
+      }
+      if(tau) {
+        tau[qpms_mn2y(+1, l)] = ((ct>0) ? +1 : lpar) * fl * csphase;
+        tau[qpms_mn2y(-1, l)] = -((ct>0) ? +1 : lpar) * fl * csphase;
+      }
     }
   }
   else { // cos(theta) in (-1,1), use normal calculation
-    double *legder;
+    double *leg, *legder;
+    if (target_leg)
+      leg = target_leg;
+    else
+      QPMS_CRASHING_MALLOC(leg, nelem*sizeof(double));
     QPMS_CRASHING_MALLOC(legder, nelem * sizeof(double));
-    QPMS_ENSURE_SUCCESS(qpms_legendre_deriv_y_fill(res.leg, legder, ct, lMax,
+    QPMS_ENSURE_SUCCESS(qpms_legendre_deriv_y_fill(leg, legder, ct, lMax,
           GSL_SF_LEGENDRE_SPHARM, csphase));
     // Multiply by the "power normalisation" factor
     for (qpms_l_t l = 1; l <= lMax; ++l) {
       double prefac = 1./sqrt(l*(l+1));
       for (qpms_m_t m = -l; m <= l; ++m) {
-        res.leg[qpms_mn2y(m,l)] *= prefac;
+        leg[qpms_mn2y(m,l)] *= prefac;
         legder[qpms_mn2y(m,l)] *= prefac;
       }
     }
     for (qpms_l_t l = 1; l <= lMax; ++l) {
       for (qpms_m_t m = -l; m <= l; ++m) {
-        res.pi [qpms_mn2y(m,l)] = m / st * res.leg[qpms_mn2y(m,l)];
-        res.tau[qpms_mn2y(m,l)] = - st * legder[qpms_mn2y(m,l)];
+        if(pi)  pi [qpms_mn2y(m,l)] = m / st * leg[qpms_mn2y(m,l)];
+        if(tau) tau[qpms_mn2y(m,l)] = - st * legder[qpms_mn2y(m,l)];
       }
     }
     free(legder);
+    if(!target_leg)
+      free(leg);
   }
-  res.lMax = lMax;
-  return res;
+  return QPMS_SUCCESS;
 }
 
 void qpms_pitau_free(qpms_pitau_t x) {

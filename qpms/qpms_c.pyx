@@ -488,4 +488,15 @@ cdef class ScatteringMatrix:
         qpms_scatsys_scatter_solve(&f_view[0], &a_view[0], self.lu)
         return f
 
-
+def pitau(double theta, qpms_l_t lMax, double csphase = 1):
+    if(abs(csphase) != 1):
+        raise ValueError("csphase must be 1 or -1, is %g" % csphase)
+    cdef size_t nelem = qpms_lMax2nelem(lMax)
+    cdef np.ndarray[np.float_t, ndim=1] lega = np.empty((nelem,), dtype=float)
+    cdef np.ndarray[np.float_t, ndim=1] pia = np.empty((nelem,), dtype=float)
+    cdef np.ndarray[np.float_t, ndim=1] taua = np.empty((nelem,), dtype=float)
+    cdef double[::1] leg = lega
+    cdef double[::1] pi = pia
+    cdef double[::1] tau = taua
+    qpms_pitau_fill(&leg[0], &pi[0], &tau[0], theta, lMax, csphase)
+    return (lega, pia, taua)

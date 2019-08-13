@@ -68,7 +68,7 @@ typedef struct {
 	double *leg, *pi, *tau;
 } qpms_pitau_t;
 
-/// Returns an array of normalised Legendre and and auxillary \f$\pi_{lm}, \tau_{lm} \f$ functions.
+/// Returns an array of normalised Legendre and auxillary \f$\pi_{lm}, \tau_{lm} \f$ functions.
 /**
  * The normalised Legendre function here is defined as
  * \f[ 
@@ -88,8 +88,18 @@ typedef struct {
  *
  */
 qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, double csphase);
+
+/// Directly fills (pre-allocated) arrays of normalised Legendre and auxillary \f$\pi_{lm}, \tau_{lm} \f$ functions.
+/**
+ * Arrays must be preallocated for `lMax * (lMax + 2)` elements. `NULL` targets are skipped. 
+ * For details, see qpms_pitau_get().
+ */
+qpms_errno_t qpms_pitau_fill(double *target_leg, double *target_pi, double *target_tau,
+		double theta, qpms_l_t lMax, double csphase);
+
 /// Frees the dynamically allocated arrays from qpms_pitau_t.
 void qpms_pitau_free(qpms_pitau_t);
+
 //void qpms_pitau_pfree(qpms_pitau_t*);//NI
 
 // Associated Legendre polynomial at zero argument (DLMF 14.5.1) DEPRECATED?

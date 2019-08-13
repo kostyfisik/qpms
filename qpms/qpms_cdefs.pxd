@@ -65,6 +65,7 @@ cdef extern from "qpms_types.h":
     ctypedef int qpms_lm_t
     ctypedef int qpms_l_t
     ctypedef int qpms_m_t
+    ctypedef size_t qpms_y_t
     struct qpms_quat_t:
         cdouble a
         cdouble b
@@ -161,6 +162,7 @@ cdef extern from "vswf.h":
             const cart3_t evalpoint, const void *args, bint add)
 
 cdef extern from "indexing.h":
+    qpms_y_t qpms_lMax2nelem(qpms_l_t lMax)
     qpms_uvswfi_t qpms_tmn2uvswfi(qpms_vswf_type_t t, qpms_m_t m, qpms_l_t n)
     qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u, qpms_vswf_type_t* t, qpms_m_t* m, qpms_l_t* n)
     qpms_m_t qpms_uvswfi2m(qpms_uvswfi_t u)
@@ -312,6 +314,17 @@ cdef extern from "translations.h":
                 double k, cart3_t destpos, cart3_t srcpos,
                 qpms_bessel_t J
                 );
+
+cdef extern from "qpms_specfunc.h":
+    struct qpms_pitau_t:
+        qpms_l_t lMax
+        double *leg
+        double *pi
+        double *tau
+    qpms_pitau_t qpms_pitau_get(double theta, qpms_l_t lMax, double csphase)
+    qpms_errno_t qpms_pitau_fill(double *leg, double *pi, double *tau, double theta, qpms_l_t lMax, double csphase)
+    void qpms_pitau_free(qpms_pitau_t pitau)
+
 
 cdef extern from "gsl/gsl_interp.h":
     struct gsl_interp_type:
