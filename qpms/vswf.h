@@ -128,16 +128,16 @@ qpms_errno_t qpms_incfield_planewave(
 // -----------------------------------------------------------------------
 
 /// Electric wave N.
-csphvec_t qpms_vswf_single_el(int m, int n, sph_t kdlj,
+csphvec_t qpms_vswf_single_el(qpms_m_t m, qpms_l_t n, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 /// Magnetic wave M.
-csphvec_t qpms_vswf_single_mg(int m, int n, sph_t kdlj,
+csphvec_t qpms_vswf_single_mg(qpms_m_t m, qpms_l_t n, sph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 /// Electric wave N, complex wave number version.
-csphvec_t qpms_vswf_single_el_csph(int m, int n, csph_t kdlj,
+csphvec_t qpms_vswf_single_el_csph(qpms_m_t m, qpms_l_t n, csph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 /// Magnetic wave M, complex wave number version..
-csphvec_t qpms_vswf_single_mg_csph(int m, int n, csph_t kdlj,
+csphvec_t qpms_vswf_single_mg_csph(qpms_m_t m, qpms_l_t n, csph_t kdlj,
 		qpms_bessel_t btyp, qpms_normalisation_t norm);
 
 /// Set of electric and magnetic VSWF values in spherical coordinate basis.

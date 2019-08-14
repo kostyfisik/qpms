@@ -160,6 +160,8 @@ cdef extern from "vswf.h":
         qpms_incfield_planewave_params_E E
     qpms_errno_t qpms_incfield_planewave(cdouble target, const qpms_vswf_set_spec_t *bspec,
             const cart3_t evalpoint, const void *args, bint add)
+    csphvec_t qpms_vswf_single_el_csph(qpms_m_t m, qpms_l_t n, csph_t kdlj, qpms_bessel_t btyp, qpms_normalisation_t norm)
+    csphvec_t qpms_vswf_single_mg_csph(qpms_m_t m, qpms_l_t n, csph_t kdlj, qpms_bessel_t btyp, qpms_normalisation_t norm)
 
 cdef extern from "indexing.h":
     qpms_y_t qpms_lMax2nelem(qpms_l_t lMax)

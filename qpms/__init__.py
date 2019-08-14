@@ -18,11 +18,12 @@ except ImportError as ex:
     raise ex
 from .qpms_p import *
 from .cyquaternions import CQuat, IRot3
-from .cybspec import VSWFNorm, BaseSpec
+from .cybspec import VSWFNorm, BaseSpec, default_bspec
 from .cytmatrices import CTMatrix, TMatrixInterpolator, TMatrixGenerator
 from .cytranslations import trans_calculator
 from .cymaterials import MaterialInterpolator, EpsMu, LorentzDrudeModel, lorentz_drude, EpsMuGenerator
-from .cycommon import dbgmsg_enable, dbgmsg_disable, dbgmsg_active, BesselType
+from .cycommon import dbgmsg_enable, dbgmsg_disable, dbgmsg_active, BesselType, VSWFType
+from .cywaves import vswf_single
 from .lattices2d import *
 from .hexpoints import *
 from .tmatrices import *

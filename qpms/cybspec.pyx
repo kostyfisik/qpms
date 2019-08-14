@@ -119,3 +119,4 @@ cdef class BaseSpec:
         def __get__(self):
             return VSWFNorm(self.s.norm)
 
+default_bspec = BaseSpec(lMax=2)

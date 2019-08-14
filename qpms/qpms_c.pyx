@@ -488,7 +488,7 @@ cdef class ScatteringMatrix:
         qpms_scatsys_scatter_solve(&f_view[0], &a_view[0], self.lu)
         return f
 
-def pitau(double theta, qpms_l_t lMax, double csphase = 1):
+def pitau(double theta, qpms_l_t lMax, double csphase = -1):
     if(abs(csphase) != 1):
         raise ValueError("csphase must be 1 or -1, is %g" % csphase)
     cdef size_t nelem = qpms_lMax2nelem(lMax)
