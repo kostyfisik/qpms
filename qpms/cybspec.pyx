@@ -1,17 +1,31 @@
 import numpy as np
 import enum
 from .cycommon import get_mn_y, tlm2uvswfi
+__VSWF_norm_dict = {
+    'INVERSE' : QPMS_NORMALISATION_INVERSE,
+    'REVERSE_AZIMUTHAL_PHASE' : QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE,
+    'SPHARM_REAL' : QPMS_NORMALISATION_SPHARM_REAL,
+    'M_I' : QPMS_NORMALISATION_M_I,
+    'M_MINUS' : QPMS_NORMALISATION_M_MINUS,
+    'N_I' : QPMS_NORMALISATION_N_I,
+    'N_MINUS' : QPMS_NORMALISATION_N_MINUS,
+    'L_I' : QPMS_NORMALISATION_L_I,
+    'L_MINUS' : QPMS_NORMALISATION_L_MINUS,
+    'CSPHASE' : QPMS_NORMALISATION_CSPHASE,
+    'UNNORM' : QPMS_NORMALISATION_NORM_NONE,
+    'UNNORM_CS' : QPMS_NORMALISATION_NORM_NONE | QPMS_NORMALISATION_CSPHASE,
+    'POWERNORM' : QPMS_NORMALISATION_NORM_POWER,
+    'POWERNORM_CS' : QPMS_NORMALISATION_NORM_POWER | QPMS_NORMALISATION_CSPHASE,
+    'SPHARMNORM' : QPMS_NORMALISATION_NORM_SPHARM,
+    'SPHARMNORM_CS' : QPMS_NORMALISATION_NORM_SPHARM | QPMS_NORMALISATION_CSPHASE,
+    'UNDEF' : QPMS_NORMALISATION_UNDEF,
+    'DEFAULT' : QPMS_NORMALISATION_DEFAULT,
+}
 
-class VSWFNorm(enum.IntEnum):
-    # TODO try to make this an enum.IntFlag if supported
-    # TODO add the other flags from qpms_normalisation_t as well
-    UNNORM = QPMS_NORMALISATION_NORM_NONE
-    UNNORM_CS = QPMS_NORMALISATION_NORM_NONE | QPMS_NORMALISATION_CSPHASE
-    POWERNORM = QPMS_NORMALISATION_NORM_POWER
-    POWERNORM_CS = QPMS_NORMALISATION_NORM_POWER | QPMS_NORMALISATION_CSPHASE
-    SPHARMNORM = QPMS_NORMALISATION_NORM_SPHARM
-    SPHARMNORM_CS = QPMS_NORMALISATION_NORM_SPHARM | QPMS_NORMALISATION_CSPHASE
-    UNDEF = QPMS_NORMALISATION_UNDEF
+try:
+    VSWFNorm = enum.IntFlag('VSWFNorm', names=__VSWF_norm_dict, module=__name__)
+except AttributeError: # For older Python versions, use IntEnum instead
+    VSWFNorm = enum.IntEnum('VSWFNorm', names=__VSWF_norm_dict, module=__name__)
 
 cdef class BaseSpec:
     '''Cython wrapper over qpms_vswf_set_spec_t.
@@ -50,7 +64,7 @@ cdef class BaseSpec:
         if 'norm' in kwargs.keys():
             self.s.norm = kwargs['norm']
         else:
-            self.s.norm = <qpms_normalisation_t>(QPMS_NORMALISATION_NORM_POWER | QPMS_NORMALISATION_CSPHASE)
+            self.s.norm = <qpms_normalisation_t>(QPMS_NORMALISATION_DEFAULT)
         # set the other metadata
         cdef qpms_l_t l
         self.s.lMax_L = -1

@@ -158,7 +158,9 @@ typedef enum {
 	/// VSWF convention used in SCUFF-EM \cite reid_electromagnetism_2016
 	QPMS_NORMALISATION_CONVENTION_SCUFF = QPMS_NORMALISATION_NORM_POWER
 		| QPMS_NORMALISATION_CSPHASE | QPMS_NORMALISATION_M_I
-		| QPMS_NORMALISATION_N_MINUS
+		| QPMS_NORMALISATION_N_MINUS,
+	/// Default VSWF convention. We might encourage the compiler to expect this one.
+	QPMS_NORMALISATION_DEFAULT = QPMS_NORMALISATION_CONVENTION_KRISTENSSON
 } qpms_normalisation_t;
 
 /// Determine whether the convention includes Condon-Shortley phase (-1) or not (+1).
