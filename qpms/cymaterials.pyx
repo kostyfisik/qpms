@@ -9,7 +9,7 @@ cimport cython
 import enum
 import warnings
 import os
-from scipy.constants import e as eV, hbar
+from scipy.constants import e as eV, hbar, c
 from libc.stdlib cimport malloc, free, calloc, abort
 
 class EpsMuGeneratorType(enum.Enum):
@@ -34,6 +34,15 @@ cdef class EpsMu:
 
     def __repr__(self):
         return 'EpsMu(' + repr(self.em.eps) + ', ' + repr(self.em.mu) + ')'
+
+    def k(self, omega):
+        return self.n * omega / c
+    property n:
+        def __get__(self):
+            return (self.em.eps * self.em.mu)**.5
+    property Z:
+        def __get__(self):
+            return (self.em.mu / self.em.eps)**.5
 
 cdef class LorentzDrudeModel:
     def __cinit__(self, eps_inf, omega_p, f_arr, omega_arr, gamma_arr):
@@ -128,6 +137,13 @@ cdef class EpsMuGenerator:
                     % (omega, i[0], i[1]))
         em = self.g.function(omega, self.g.params)
         return EpsMu(em.eps, em.mu)
+
+    def n(self, omega):
+        return self(omega).n
+    def Z(self, omega):
+        return self(omega).Z
+    def k(self, omega):
+        return self(omega).k(omega)
 
     cdef qpms_epsmu_generator_t raw(self):
         return self.g
