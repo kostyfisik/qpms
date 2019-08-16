@@ -357,6 +357,53 @@ r & =\frac{h}{2\cos\left(\theta-\pi\right)}=-\frac{h}{2\cos\theta},\\
 \end_layout
 
 \begin_layout Standard
+Let's write VSWFs in terms of the power-normalised 
+\begin_inset Formula $p,\pi,\tau$
+\end_inset
+
+ funs:
+\begin_inset Formula 
+\begin{align*}
+\vsh_{1lm} & =\left(\uvec{\theta}\pi_{lm}-\uvec{\phi}\tau_{lm}\right)e^{im\phi}\\
+\vsh_{2lm} & =\left(\uvec{\theta}\tau_{lm}+\uvec{\phi}\pi_{lm}\right)e^{im\phi}\\
+\vsh_{3lm} & =\sqrt{l\left(l+1\right)}p_{lm}e^{im\theta}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\vect y_{\kappa1lm} & =\underbrace{h_{l}^{\kappa}e^{im\phi}}_{c_{\kappa lm}^{1}}\left(\uvec{\theta}\pi_{lm}-\uvec{\phi}\tau_{lm}\right)\\
+\vect y_{\kappa2lm} & =\frac{1}{kr}e^{im\phi}\left(\frac{\ud\left(krh_{l}^{\kappa}\right)}{\ud\left(kr\right)}\left(\uvec{\theta}\tau_{lm}+\uvec{\phi}\pi_{lm}\right)+h_{l}^{\kappa}l\left(l+1\right)\uvec rp_{lm}\right)\\
+ & =c_{\kappa lm}^{2}\left(\uvec{\theta}\tau_{lm}+\uvec{\phi}\pi_{lm}\right)+c_{\kappa lm}^{3}\uvec rp_{lm}
+\end{align*}
+
+\end_inset
+
+The triple products than are (reminder: 
+\begin_inset Formula $\uvec{\nu}\left(\theta\right)=\uvec r\cos\beta\left(\theta\right)+\uvec{\theta}\sin\beta\left(\theta\right))$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+\left(\vect y_{\kappa1lm}\times\vect v_{1l'm'}\right)\cdot\uvec{\nu} & =\cos\beta c_{\kappa lm}^{1}c_{\mathrm{R}l'm'}^{1}\left(-\pi_{lm}\tau_{l'm'}+\tau_{lm}\pi_{l'm'}\right)\\
+\left(\vect y_{\kappa1lm}\times\vect v_{2l'm'}\right)\cdot\uvec{\nu} & =\cos\beta c_{\kappa lm}^{1}c_{\mathrm{R}l'm'}^{2}\left(\pi_{lm}\pi_{l'm'}+\tau_{lm}\tau_{l'm'}\right)\\
+ & +\sin\beta c_{\kappa lm}^{1}c_{\mathrm{R}l'm'}^{3}\left(-\tau_{lm}p_{l'm'}\right)\\
+\left(\vect y_{\kappa2lm}\times\vect v_{1l'm'}\right)\cdot\uvec{\nu} & =\cos\beta c_{\kappa lm}^{2}c_{\mathrm{R}l'm'}^{1}\left(-\pi_{lm}\pi_{l'm'}-\tau_{lm}\tau_{l'm'}\right)\\
+ & +\sin\beta c_{\kappa lm}^{3}c_{\mathrm{R}l'm'}^{1}\left(p_{lm}\tau_{l'm'}\right)\\
+\left(\vect y_{\kappa2lm}\times\vect v_{2l'm'}\right)\cdot\uvec{\nu} & =\cos\beta c_{\kappa lm}^{2}c_{\mathrm{R}l'm'}^{2}\left(\tau_{lm}\pi_{l'm'}-\pi_{lm}\tau_{l'm'}\right)\\
+ & -\sin\beta c_{\kappa lm}^{3}c_{\mathrm{R}l'm'}^{2}p_{lm}\pi_{l'm'}\\
+ & +\sin\beta c_{\kappa lm}^{2}c_{\mathrm{R}l'm'}^{3}\pi_{lm}p_{l'm'}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 btprint "btPrintCited"
