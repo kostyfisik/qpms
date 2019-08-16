@@ -530,7 +530,7 @@ static inline cart2_t anycoord2cart2(anycoord_point_t p, qpms_coord_system_t t) 
 /** See @ref coord_conversions for the conversion definitions.
  */ 
 static inline double anycoord2cart1(anycoord_point_t p, qpms_coord_system_t t) {
-	if (t & QPMS_COORDS_BITRANGE == QPMS_COORDS_CART1) 
+	if ((t & QPMS_COORDS_BITRANGE) == QPMS_COORDS_CART1) 
 			return p.z;
 	else
 		QPMS_PR_ERROR("Implicit conversion from nD (n > 1)"

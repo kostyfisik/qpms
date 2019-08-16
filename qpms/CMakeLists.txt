@@ -26,6 +26,8 @@ target_link_libraries (qpms
 	)
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+target_compile_options(qpms PRIVATE -Wall -Wno-return-type)
+
 install(TARGETS qpms
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

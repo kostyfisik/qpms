@@ -1,4 +1,4 @@
-/* \file tmatrices.h
+/*! \file tmatrices.h
  * \brief T-matrices for scattering systems.
  */
 #ifndef TMATRICES_H
@@ -371,8 +371,7 @@ static inline qpms_tmatrix_t *qpms_tmatrix_spherical(
 	return t;
 }
 
-/// Convenience function to calculate T-matrix of a non-magnetic spherical \
-particle using the permittivity values, replacing existing T-matrix data.
+/// Convenience function to calculate T-matrix of a non-magnetic spherical particle using the permittivity values, replacing existing T-matrix data.
 qpms_errno_t qpms_tmatrix_spherical_mu0_fill(
 		qpms_tmatrix_t *t, ///< T-matrix whose contents are to be replaced. Not NULL.
 		double a, ///< Radius of the sphere.
