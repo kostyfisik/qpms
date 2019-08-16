@@ -1,5 +1,4 @@
 """@package qpms_c
-            self.s.norm = <qpms_normalisation_t>(QPMS_NORMALISATION_NORM_POWER | QPMS_NORMALISATION_CSPHASE)
 Cythonized parts of QPMS; mostly wrappers over the C data structures
 to make them available in Python.
 """

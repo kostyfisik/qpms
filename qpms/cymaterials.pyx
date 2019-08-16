@@ -105,7 +105,7 @@ cdef class EpsMuGenerator:
             self.g.function = qpms_permittivity_interpolator_epsmu_g
             self.g.params = (<MaterialInterpolator?>self.holder).rawpointer()
         elif isinstance(what, EpsMuGenerator): # Copy constructor
-            self.holder = what.holder
+            self.holder = (<EpsMuGenerator?>what).holder
             self.g = (<EpsMuGenerator?>what).g
         elif callable(what):
             warnings.warn("Custom python (eps,mu) generators are an experimental feature")

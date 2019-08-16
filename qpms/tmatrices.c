@@ -687,7 +687,7 @@ static double tmatrix_axialsym_integrand(double theta, void *param) {
   complex double tp2 = nrc * (y2.thetac * v_in2.phic - y2.phic * v_in2.thetac)
                  + nthetac * (y2.phic   * v_in2.rc   - y2.rc   * v_in2.phic);
   double jac = SQ(rb.r) * sin(theta) / nrc; // Jacobian
-  complex double res = p->z/p->z_in * tp1 + tp2;
+  complex double res = jac * (p->z/p->z_in * tp1 + tp2);
   return p->realpart ? creal(res) : cimag(res);
 }
 
