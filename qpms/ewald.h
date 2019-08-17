@@ -35,15 +35,21 @@
 #include "qpms_types.h"
 #include "lattices.h"
 
-// Use this handler to ignore underflows of incomplete gamma.
+/// Use this handler to ignore underflows of incomplete gamma.
 gsl_error_handler_t IgnoreUnderflowsGSLErrorHandler;
 
 
-/* Object holding the constant factors from [1, (4.5)] */ 
+/// Object holding the Ewald sum constant factors.
+/**
+ * Used internally by qpms_translation_calculator_t. 
+ * Initialised by qpms_ewald3_constants_init() and freed by qpms_ewald3_constants_free().
+ */
 typedef struct { 
 	qpms_l_t lMax;
 	qpms_y_t nelem_sc;
+	/// The values of maximum \a j's in the long-range part summation, `[(l-|m|/2)]`.
 	qpms_l_t *s1_jMaxes;
+	/// The constant factors for the long range part of a 2D Ewald sum.
 	complex double **s1_constfacs; // indices [y][j] where j is same as in [1, (4.5)]
 	/* These are the actual numbers now: (in the EWALD32_CONSTANTS_AGNOSTIC version)
 	 * for m + n EVEN:
@@ -58,17 +64,22 @@ typedef struct {
 	 *
 	 * s1_constfacs[y(m,n)][j] = 0
 	 */
-	complex double *s1_constfacs_base; // internal pointer holding the memory for the constants
+	complex double *s1_constfacs_base; ///< Internal pointer holding memory for the 2D Ewald sum constant factors.
 	// similarly for the 1D z-axis aligned case; now the indices are [n][j] (as m == 0)
+	/// The constant factors for the long range part of a 1D Ewald sum along the \a z axis.
+	/** If the summation points lie along a different direction, use the formula for
+	 * 2D sum with additional factor of 
+	 * \f$ \sqrt{pi} \kappa \gamma(\abs{\vect{k}+\vect{K}}/\kappa) \f$.
+	 */
 	complex double **s1_constfacs_1Dz; 
 	/* These are the actual numbers now:
-	 * s1_consstfacs_1Dz[n][j] =
+	 * s1_constfacs_1Dz[n][j] =
 	 *   
 	 *     -I**(n+1) (-1)**j * n!
 	 *   --------------------------
 	 *   j! * 2**(2*j) * (n - 2*j)!
 	 */
-	complex double *s1_constfacs_1Dz_base;
+	complex double *s1_constfacs_1Dz_base; ///<Internal pointer holding memory for the 1D Ewald sum constant factors.
 
 	double *legendre0; /* now with GSL_SF_LEGENDRE_NONE normalisation, because this is what is
 			    * what the multipliers from translations.c count with.
