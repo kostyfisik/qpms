@@ -11,11 +11,12 @@
 #include <math.h>
 #include <complex.h>
 #include "indexing.h"
+#include "optim.h"
 
 /// Returns the (real positive) common norm factor of a given normalisation compared to the reference convention.
 /** Does NOT perform the inversion if QPMS_NORMALISATION_INVERSE is set. */
 static inline double qpms_normalisation_normfactor(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
-	switch (norm & QPMS_NORMALISATION_NORM_BITS) {
+	switch (QPMS_EXPECT(norm & QPMS_NORMALISATION_NORM_BITS, norm & QPMS_NORMALISATION_DEFAULT)) {
 		case QPMS_NORMALISATION_NORM_POWER:
 			return 1;
 		case QPMS_NORMALISATION_NORM_SPHARM:
@@ -37,9 +38,9 @@ static inline double qpms_normalisation_normfactor(qpms_normalisation_t norm, qp
  */
 static inline complex double qpms_normalisation_factor_M_noCS(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
 	complex double fac = qpms_normalisation_normfactor(norm, l, m);
-	if (norm & QPMS_NORMALISATION_M_MINUS) fac *= -1;
-	if (norm & QPMS_NORMALISATION_M_I) fac *= I;
-	if (norm & QPMS_NORMALISATION_INVERSE) fac = 1/fac;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_M_MINUS)) fac *= -1;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_M_I)) fac *= I;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_INVERSE)) fac = 1/fac;
 	return fac;
 }
 
@@ -63,9 +64,9 @@ static inline complex double qpms_normalisation_factor_M(qpms_normalisation_t no
  */
 static inline complex double qpms_normalisation_factor_N_noCS(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
 	complex double fac = qpms_normalisation_normfactor(norm, l, m);
-	if (norm & QPMS_NORMALISATION_N_MINUS) fac *= -1;
-	if (norm & QPMS_NORMALISATION_N_I) fac *= I;
-	if (norm & QPMS_NORMALISATION_INVERSE) fac = 1/fac;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_N_MINUS)) fac *= -1;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_N_I)) fac *= I;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_INVERSE)) fac = 1/fac;
 	return fac;
 }
 
@@ -96,9 +97,9 @@ static inline complex double qpms_normalisation_factor_N_M(qpms_normalisation_t 
  */
 static inline complex double qpms_normalisation_factor_L_noCS(qpms_normalisation_t norm, qpms_l_t l, qpms_m_t m) {
 	complex double fac = qpms_normalisation_normfactor(norm, l, m);
-	if (norm & QPMS_NORMALISATION_L_MINUS) fac *= -1;
-	if (norm & QPMS_NORMALISATION_L_I) fac *= I;
-	if (norm & QPMS_NORMALISATION_INVERSE) fac = 1/fac;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_L_MINUS)) fac *= -1;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_L_I)) fac *= I;
+	if (QPMS_UNLIKELY(norm & QPMS_NORMALISATION_INVERSE)) fac = 1/fac;
 	return fac;
 }
 
@@ -156,7 +157,8 @@ static inline qpms_normalisation_t qpms_normalisation_dual(qpms_normalisation_t 
  * \f]
  */
 static inline complex double qpms_spharm_azimuthal_part(qpms_normalisation_t norm, qpms_m_t m, double phi) {
-	switch(norm & (QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE | QPMS_NORMALISATION_SPHARM_REAL)) {
+	switch(QPMS_EXPECT(norm, QPMS_NORMALISATION_DEFAULT) 
+			& (QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE | QPMS_NORMALISATION_SPHARM_REAL)) {
 		case 0:
 			return cexp(I*m*phi);
 		case QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE:
@@ -194,7 +196,8 @@ static inline complex double qpms_spharm_azimuthal_part(qpms_normalisation_t nor
  */
 static inline complex double qpms_spharm_azimuthal_part_derivative_div_m(qpms_normalisation_t norm, qpms_m_t m, double phi) {
 	if(m==0) return 0;
-	switch(norm & (QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE | QPMS_NORMALISATION_SPHARM_REAL)) {
+	switch(QPMS_EXPECT(norm, QPMS_NORMALISATION_DEFAULT) 
+			& (QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE | QPMS_NORMALISATION_SPHARM_REAL)) {
 		case 0:
 			return I*cexp(I*m*phi);
 		case QPMS_NORMALISATION_REVERSE_AZIMUTHAL_PHASE:

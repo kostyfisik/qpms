@@ -6,6 +6,7 @@
 
 #include "qpms_types.h"
 #include <math.h>
+#include "optim.h"
 
 
 
@@ -72,8 +73,8 @@ static inline qpms_errno_t qpms_uvswfi2tmn(qpms_uvswfi_t u,
 	qpms_y_sc_t y_sc = u / 4;
 	qpms_y2mn_sc_p(y_sc, m, n);
 	// Test validity
-	if (*t == 3) return QPMS_ERROR; // VSWF type code invalid, TODO WARN
-	if (*t && !y_sc) return QPMS_ERROR; // l == 0 for transversal wave, TODO WARN
+	if (QPMS_UNLIKELY(*t == 3)) return QPMS_ERROR; // VSWF type code invalid, TODO WARN
+	if (QPMS_UNLIKELY(*t && !y_sc)) return QPMS_ERROR; // l == 0 for transversal wave, TODO WARN
 	return QPMS_SUCCESS;
 }
 
@@ -83,8 +84,8 @@ static inline qpms_errno_t qpms_uvswfi2ty(qpms_uvswfi_t u,
 		qpms_vswf_type_t *t, qpms_y_t *y) {
 	*t = u & 3;
 	*y = u / 4 - 1;
-	if (*t == 0 || *t == 3) return QPMS_ERROR;
-	if (*y < 0) return QPMS_ERROR;
+	if (QPMS_UNLIKELY(*t == 0 || *t == 3)) return QPMS_ERROR;
+	if (QPMS_UNLIKELY(*y < 0)) return QPMS_ERROR;
 	return QPMS_SUCCESS;
 }
 
@@ -96,8 +97,8 @@ static inline qpms_errno_t qpms_uvswfi2ty_l(qpms_uvswfi_t u,
 		qpms_vswf_type_t *t, qpms_y_t *y) {
 	*t = u & 3;
 	*y = u / 4 - 1;
-	if (*t == 3) return QPMS_ERROR;
-	if (*y < 0) return QPMS_ERROR;
+	if (QPMS_UNLIKELY(*t == 3)) return QPMS_ERROR;
+	if (QPMS_UNLIKELY(*y < 0)) return QPMS_ERROR;
 	return QPMS_SUCCESS;
 }
 
