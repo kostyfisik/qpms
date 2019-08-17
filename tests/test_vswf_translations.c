@@ -1,14 +1,14 @@
-//c99 -o test_vswf_translations -ggdb -I ../../amos -I .. test_vswf_translations.c ../translations.c ../gaunt.c -lgsl -lm -lblas ../vecprint.c ../vswf.c ../legendre.c ../error.c ../bessel.c ../../amos/libamos.a -lgfortran
-#include "translations.h"
-#include "vswf.h"
+//c99 -o test_vswf_translations -ggdb -I .. test_vswf_translations.c -lqpms -lgsl -lm -lblas
+#include <qpms/translations.h>
+#include <qpms/vswf.h>
 #include <stdio.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_randist.h>
 #include <assert.h>
-#include "vectors.h"
-#include "string.h"
-#include "indexing.h"
+#include <qpms/vectors.h>
+#include <string.h>
+#include <qpms/indexing.h>
 
 char *normstr(qpms_normalisation_t norm) {
 	//int csphase = qpms_normalisation_t_csphase(norm);

@@ -29,4 +29,7 @@ cmake_add_fortran_subdirectory (amos
 	LIBRARIES amos
 	NO_EXTERNAL_INSTALL)
 add_subdirectory (qpms)
+
+add_subdirectory (tests)
+
 #add_subdirectory (apps/transop-ewald)
