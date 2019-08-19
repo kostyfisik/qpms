@@ -254,7 +254,7 @@ int ewald3_21_xy_sigma_long (
 
     const double rbeta_pq = beta_pq_sph.r;
     const double arg_pq = beta_pq_sph.phi;
-    const double beta_pq_theta = beta_pq_sph.theta;
+    //const double beta_pq_theta = beta_pq_sph.theta; //unused
 
   // CHOOSE POINT END
 

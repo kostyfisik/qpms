@@ -128,10 +128,6 @@ static inline complex double clilgamma(complex double z) {
 	return a1 * a2;
 }
 
-
- 
-
-
 /// Incomplete Gamma function as series.
 /** DLMF 8.7.3 (latter expression) for complex second argument */
 int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
@@ -197,95 +193,4 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		const cart3_t particle_shift
 		);
 		
-#ifdef EWALD_LEGACY // moved to ewald_legacy.c, not even everything implemented
-
-int ewald32_sigma0(complex double *result, double *err, // actually, this should be only alias for ewald3_sigma0
-		const qpms_ewald3_constants_t *c,
-		double eta, double k
-);
-
-// TODO make "compressed versions" where the (m+n)-odd terms (which are zero)
-// are not included.
-
-int ewald32_sigma_long_shiftedpoints ( 
-		complex double *target_sigmalr_y, // must be c->nelem_sc long
-		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c,
-		double eta, double k, double unitcell_area,
-		size_t npoints, const point2d *Kpoints_plus_beta,
-		point2d beta,
-		point2d particle_shift
-);
-int ewald32_sigma_long_points_and_shift (
-		complex double *target_sigmalr_y, // must be c->nelem_sc long
-		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c,
-		double eta, double k, double unitcell_area,
-		size_t npoints, const point2d *Kpoints,
-		point2d beta,
-		point2d particle_shift
-		);
-int ewald32_sigma_long_shiftedpoints_rordered(//NI
-		complex double *target_sigmalr_y, // must be c->nelem_sc long
-		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c,
-		double eta, double k, double unitcell_area,
-		const points2d_rordered_t *Kpoints_plus_beta_rordered,
-		point2d particle_shift
-		);
-
-int ewald32_sigma_short_shiftedpoints(
-		complex double *target_sigmasr_y, // must be c->nelem_sc long
-		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c, // N.B. not too useful here
-		double eta, double k,
-		size_t npoints, const point2d *Rpoints_plus_particle_shift,
-		point2d beta,
-		point2d particle_shift           // used only in the very end to multiply it by the phase
-		);
-int ewald32_sigma_short_points_and_shift(
-		complex double *target_sigmasr_y, // must be c->nelem_sc long
-		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c, // N.B. not too useful here
-		double eta, double k,
-		size_t npoints, const point2d *Rpoints, 
-		point2d beta,
-		point2d particle_shift
-		);
-int ewald32_sigma_short_points_rordered(//NI
-		complex double *target_sigmasr_y, // must be c->nelem_sc long
-		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c, // N.B. not too useful here
-		double eta, double k,
-		const points2d_rordered_t *Rpoints_plus_particle_shift_rordered,
-		point2d particle_shift    // used only in the very end to multiply it by the phase
-		);
-
-
-// 1D sums aligned along z-axis
-int ewald31z_sigma_long_points_and_shift (
-		complex double *target_sigmalr_y, // must be c->nelem_sc long
-		double *target_sigmalr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c,
-		double eta, double k, double unitcell_area,
-		size_t npoints, const double *Kpoints,
-		double beta,
-		double particle_shift
-		);
-int ewald31z_sigma_short_points_and_shift(
-		complex double *target_sigmasr_y, // must be c->nelem_sc long
-		double *target_sigmasr_y_err, // must be c->nelem_sc long or NULL
-		const qpms_ewald3_constants_t *c, // N.B. not too useful here
-		double eta, double k,
-		size_t npoints, const double *Rpoints, 
-		double beta,
-		double particle_shift
-		);
-int ewald31z_sigma0(complex double *result, double *err, 
-		const qpms_ewald3_constants_t *c,
-		double eta, double k
-		); // exactly the same as ewald32_sigma0
-
-#endif // EWALD_LEGACY
-
 #endif //EWALD_H
