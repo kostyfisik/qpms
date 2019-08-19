@@ -32,10 +32,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#ifdef LATTICESUMS_OLD
-#include "bessels.h"
-#endif
-
 #if defined LATTICESUMS32 || defined LATTICESUMS31
 #include "ewald.h"
 #endif
@@ -83,9 +79,6 @@ typedef struct qpms_trans_calculator {
 
 #if defined LATTICESUMS32 || defined LATTICESUMS31
 	qpms_ewald3_constants_t *e3c;
-#endif
-#ifdef LATTICESUMS_OLD
-	complex double *hct; // Hankel function coefficient table 
 #endif
 	double *legendre0; // Zero-argument Legendre functions – this might go outside #ifdef in the end...
 } qpms_trans_calculator;

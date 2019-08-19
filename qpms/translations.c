@@ -290,6 +290,18 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
   return presum * sum;
 }
 
+void qpms_trans_calculator_free(qpms_trans_calculator *c) {
+  free(c->A_multipliers[0]);
+  free(c->A_multipliers);
+  free(c->B_multipliers[0]);
+  free(c->B_multipliers);
+#ifdef LATTICESUMS
+  qpms_ewald3_constants_free(e3c);
+#endif
+  free(c->legendre0);
+  free(c);
+}
+
 static inline size_t qpms_trans_calculator_index_mnmunu(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu){
   return c->nelem * qpms_mn2y(m,n) + qpms_mn2y(mu,nu);
@@ -379,8 +391,6 @@ void qpms_trans_calculator_multipliers_B(
     complex double *dest, int m, int n, int mu, int nu, int Qmax){
   // This is according to the Cruzan-type formula [Xu](59)
   assert(Qmax == gauntB_Q_max(-m,n,mu,nu));
-
-
 
   double normlogfac= qpms_trans_normlogfac(norm,m,n,mu,nu);
   double normfac = qpms_trans_normfac(norm,m,n,mu,nu);
@@ -495,9 +505,6 @@ qpms_trans_calculator
     }
 
   free(qmaxes);
-#ifdef LATTICESUMS_OLD
-  c->hct = hankelcoefftable_init(2*lMax+1);
-#endif
 #ifdef LATTICESUMS32
   c->e3c = qpms_ewald3_constants_init(2 * lMax + 1, /*csphase*/ qpms_normalisation_t_csphase(normalisation));
 #endif
