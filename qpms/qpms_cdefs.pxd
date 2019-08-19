@@ -265,10 +265,6 @@ cdef extern from "symmetries.h":
 
 
 cdef extern from "translations.h":
-    cdouble qpms_trans_single_A_Taylor_ext(int m, int n, int mu, int nu,
-        double r, double th, double ph, int r_ge_d, int J) nogil
-    cdouble qpms_trans_single_B_Taylor_ext(int m, int n, int mu, int nu,
-        double r, double th, double ph, int r_ge_d, int J) nogil
     struct qpms_trans_calculator:
         int lMax
         size_t nelem

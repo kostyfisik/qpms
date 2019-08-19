@@ -40,19 +40,6 @@
 #include "ewald.h"
 #endif
 
-// TODO replace the xplicit "Taylor" functions with general,
-// taking qpms_normalisation_t argument.
-complex double qpms_trans_single_A_Taylor(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
-		bool r_ge_d, qpms_bessel_t J);
-
-complex double qpms_trans_single_B_Taylor(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
-		bool r_ge_d, qpms_bessel_t J);
-
-complex double qpms_trans_single_A_Taylor_ext(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, double kdlj_r,
-		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
-
-complex double qpms_trans_single_B_Taylor_ext(qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, double kdlj_r,
-		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
 complex double qpms_trans_single_A(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
@@ -167,34 +154,6 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p(
 		qpms_bessel_t J
 		/// Workspace has to be at least 2 * c->neleme**2 long
 		);
-
-#ifdef LATTICESUMS_OLD 
-// Short-range parts of the translation coefficients
-int qpms_trans_calculator_get_shortrange_AB_p(const qpms_trans_calculator *c,
-		complex double *Adest, complex double *Bdest,
-		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
-		qpms_bessel_t J /* Only J=3 valid for now */,
-		qpms_l_t longrange_order_cutoff, unsigned kappa, double cc);
-int qpms_trans_calculator_get_shortrange_AB_arrays(const qpms_trans_calculator *c,
-		complex double *Adest, complex double *Bdest,
-		size_t deststride, size_t srcstride,
-		sph_t kdlj, qpms_bessel_t J /* Only J=3 valid for now */,
-		qpms_l_t longrange_order_cutoff, unsigned kappa, double cc); 
-
-// Fourier transforms of the long-range parts of the translation coefficients
-int qpms_trans_calculator_get_2DFT_longrange_AB_p(const qpms_trans_calculator *c,
-		complex double *Adest, complex double *Bdest,
-		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t k_sph,
-		qpms_bessel_t J /* Only J=3 valid for now */,
-		qpms_l_t longrange_order_cutoff, unsigned kappa, double cv, double k0);
-
-int qpms_trans_calculator_get_2DFT_longrange_AB_arrays(const qpms_trans_calculator *c,
-		complex double *Adest, complex double *Bdest,
-		size_t deststride, size_t srcstride,
-		sph_t k_sph, qpms_bessel_t J /* Only J=3 valid for now */,
-		qpms_l_t longrange_order_cutoff, unsigned kappa, double cv, double k0);
-#endif // LATTICESUMS_OLD
-
 
 #ifdef LATTICESUMS32
 // for the time being there are only those relatively low-level quick&dirty functions

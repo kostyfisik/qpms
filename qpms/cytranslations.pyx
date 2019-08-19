@@ -43,7 +43,7 @@ In simple words, it works like this:
 #-------------------------------------
 
 
-
+# This one is probably not used anymore an can perhaps be removed:
 cdef void loop_D_iiiidddii_As_D_lllldddbl(char **args, np.npy_intp *dims, np.npy_intp *steps, void *data) nogil:
     cdef np.npy_intp i, n = dims[0]
     cdef void *func = (<void**>data)#[0]
@@ -99,11 +99,6 @@ np.import_ufunc()
 
 # BTW, aren't there anonymous arrays in cython?
 
-cdef np.PyUFuncGenericFunction trans_X_taylor_loop_func[1]
-cdef void *trans_A_taylor_elementwise_funcs[1]
-cdef void *trans_B_taylor_elementwise_funcs[1]
-
-trans_X_taylor_loop_func[0] = loop_D_iiiidddii_As_D_lllldddbl
 
 # types to be used for all of the single-type translation 
 # coefficient retrieval ufuncs called like
@@ -139,38 +134,6 @@ ufunc__get_both_coeff_types[9] = np.NPY_CDOUBLE
 ufunc__get_both_coeff_types[10] = np.NPY_CDOUBLE
 
 
-trans_A_taylor_elementwise_funcs[0] = <void*> qpms_trans_single_A_Taylor_ext
-trans_B_taylor_elementwise_funcs[0] = <void*> qpms_trans_single_B_Taylor_ext
-
-trans_A_Taylor = np.PyUFunc_FromFuncAndData(
-        trans_X_taylor_loop_func, # func
-        trans_A_taylor_elementwise_funcs, #data 
-        ufunc__get_either_trans_coeff_types, # types
-        1, # ntypes: number of supported input types
-        9, # nin: number of input args
-        1, # nout: number of output args
-        0, # identity element, unused
-        "trans_A_Taylor", # name
-        """
-        TODO computes the E-E or M-M translation coefficient in Taylor's normalisation
-        """, # doc
-        0 # unused, for backward compatibility of numpy c api
-        )
-
-trans_B_Taylor = np.PyUFunc_FromFuncAndData(
-        trans_X_taylor_loop_func,
-        trans_B_taylor_elementwise_funcs,
-        ufunc__get_either_trans_coeff_types,
-        1, # number of supported input types
-        9, # number of input args
-        1, # number of output args
-        0, # identity element, unused
-        "trans_B_Taylor",
-        """
-        TODO computes the E-E or M-M translation coefficient in Taylor's normalisation
-        """,
-        0 # unused
-        )
 
 # ---------------------------------------------
 # Wrapper for the qpms_trans_calculator "class"
