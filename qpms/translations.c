@@ -857,7 +857,6 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
 
 #ifdef LATTICESUMS32
 
-
 // N.B. alternative point generation strategy toggled by macro GEN_RSHIFTEDPOINTS
 // and GEN_KSHIFTEDPOINTS.
 // The results should be the same. The performance can slightly differ (especially
@@ -867,7 +866,7 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
     complex double * const Bdest, double * const Berr,
     const ptrdiff_t deststride, const ptrdiff_t srcstride,
     /* qpms_bessel_t J*/ // assume QPMS_HANKEL_PLUS
-    const double eta, const double k,
+    const double eta, const complex double k,
     const cart2_t b1, const cart2_t b2,
     const cart2_t beta,
     const cart2_t particle_shift,

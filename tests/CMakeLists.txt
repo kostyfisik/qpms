@@ -11,6 +11,20 @@ add_executable( test_single_translations_vs_calc single_translations_vs_calc.c )
 target_link_libraries( test_single_translations_vs_calc qpms gsl lapacke amos m )
 target_include_directories( test_single_translations_vs_calc PRIVATE .. )
 
+add_executable( test_scalar_ewald32 test_scalar_ewald32.c )
+target_link_libraries( test_scalar_ewald32 qpms gsl lapacke amos m )
+target_include_directories( test_scalar_ewald32 PRIVATE .. )
+
 add_custom_target( mytests DEPENDS test_single_translations_vs_calc test_vswf_translations test_vswf_translations_array )
 
 add_test( NAME single_vs_array_translation_coeffs COMMAND test_single_translations_vs_calc )
+
+add_test( NAME scalar_ewald32_realk1 COMMAND test_scalar_ewald32 
+#	lMax b1.x b1.y b2.x b2.y wavenum.real wavenum.imag k.x k.y particle_shift.x particle_shift.y csphase rtol atol maxR maxK eta1 ...
+	3    1    0    0    1    2.3          0            2.7   1              0.5           0.1325      -1 1e-8 1e-10  20  160  1.5   1.6 2.5 2.6
+	)
+
+add_test( NAME scalar_ewald32_cplxk1 COMMAND test_scalar_ewald32 
+#	lMax b1.x b1.y b2.x b2.y wavenum.real wavenum.imag k.x k.y particle_shift.x particle_shift.y csphase rtol atol maxR maxK eta1 ...
+	3    1    0    0    1    2.3          0.1          2.7   1              0.5           0.1325      -1 1e-8 1e-10  20  160  1.5   1.6 2.5 2.6
+	)

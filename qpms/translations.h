@@ -154,43 +154,12 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p(
 // TODO more high-level functions with more advanced lattice generators etc. (after
 // the prerequisities from lattices2d.h are implememted)
 
-#if 0 // NI
-int qpms_trans_calculator_e32_long_points_and_shift(const qpms_trans_calculator *c,
-		complex double *Adest_long, double *Aerr_long,
-		complex double *Bdest_long, double *Berr_long,
-		double eta, double k, double unitcell_area,
-		size_t npoints, const cart2_t *Kpoints,
-		cart2_t beta,
-		cart2_t particle_shift
-		);
-
-int qpms_trans_calculator_e32_short_points_and_shift(const qpms_trans_calculator *c,
-		complex double *Adest_short, double *Aerr_short,
-		complex double *Bdest_short, double *Berr_short,
-		double eta, double k,
-		size_t npoints, const cart2_t *Rpoints,
-		cart2_t beta,
-		cart2_t particle_shift
-		);
-#endif 
-
-int qpms_trans_calculator_get_AB_arrays_e32_both_points_and_shift(const qpms_trans_calculator *c,
-		complex double *Adest, double *Aerr,
-		complex double *Bdest, double *Berr,
-		const ptrdiff_t deststride, const ptrdiff_t srcstride,
-		const double eta, const double k,
-		const double unitcell_area,
-		const size_t nRpoints, const cart2_t *Rpoints,
-		const size_t nKpoints, const cart2_t *Kpoints,
-		const cart2_t beta,
-		const cart2_t particle_shift
-		);
 
 int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 		complex double *Adest, double *Aerr,
 		complex double *Bdest, double *Berr,
 		const ptrdiff_t deststride, const ptrdiff_t srcstride,
-		const double eta, const double k,
+		const double eta, const complex double k,
 		cart2_t b1, cart2_t b2,
 		const cart2_t beta,
 		const cart2_t particle_shift,

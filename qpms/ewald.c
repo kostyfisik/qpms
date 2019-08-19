@@ -6,6 +6,7 @@
 #include <string.h>
 #include <complex.h>
 #include "tiny_inlines.h"
+#include "qpms_error.h"
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_sf_legendre.h>
@@ -171,7 +172,6 @@ void qpms_ewald3_constants_free(qpms_ewald3_constants_t *c) {
   free(c->s1_jMaxes);
   free(c);
 }
-
 
 
 int ewald3_sigma0(complex double *result, double *err,
@@ -467,7 +467,7 @@ int ewald3_sigma_long (
     return ewald3_1_z_sigma_long(target, err, c, eta, k, unitcell_volume,
         latdim, pgen_K, pgen_generates_shifted_points, beta, particle_shift);
   // TODO 3D case and general 2D case
-  else abort(); // NOT IMPLEMENTED
+  else QPMS_NOT_IMPLEMENTED("3D or general 2D (outside XY plane) Ewald sum.");
 } 
 
 struct sigma2_integrand_params {
