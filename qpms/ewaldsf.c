@@ -1,7 +1,9 @@
 #include "ewald.h"
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_sf_expint.h>
+#include <gsl/gsl_sf_exp.h>
 #include <gsl/gsl_sf_result.h>
+#include <gsl/gsl_errno.h>
 #include <gsl/gsl_machine.h> // Maybe I should rather use DBL_EPSILON instead of GSL_DBL_EPSILON.
 #include "kahansum.h"
 #include <math.h>
@@ -32,7 +34,6 @@ void IgnoreUnderflowsGSLErrorHandler (const char * reason,
 
   abort();
 }
-
 
 // DLMF 8.7.3 (latter expression) for complex second argument
 // BTW if a is large negative, it might take a while to evaluate.
@@ -85,6 +86,77 @@ int cx_gamma_inc_series_e(const double a, const complex double z, qpms_csf_resul
   else GSL_ERROR("Overflow; the absolute value of the z argument is probably too large.", GSL_ETOL); // maybe different error code...
 }
 
+/* Continued fraction which occurs in evaluation
+ * of Q(a,z) or Gamma(a,z).
+ * Borrowed from GSL and adapted for complex z.
+ *
+ *              1   (1-a)/z  1/z  (2-a)/z   2/z  (3-a)/z
+ *   F(a,z) =  ---- ------- ----- -------- ----- -------- ...
+ *             1 +   1 +     1 +   1 +      1 +   1 +
+ *
+ */
+static int
+cx_gamma_inc_F_CF(const double a, const complex double z, qpms_csf_result * result)
+{
+  const int    nmax  =  5000;
+  const double small =  DBL_EPSILON * DBL_EPSILON * DBL_EPSILON;
+
+  double hn = 1.0;           /* convergent */
+  complex double Cn = 1.0 / small;
+  complex double Dn = 1.0;
+  int n;
+
+  /* n == 1 has a_1, b_1, b_0 independent of a,z,
+     so that has been done by hand                */
+  for ( n = 2 ; n < nmax ; n++ )
+  {
+    complex double an;
+    complex double delta;
+
+    if(n % 2)
+      an = 0.5*(n-1)/z;
+    else
+      an = (0.5*n-a)/z;
+
+    Dn = 1.0 + an * Dn;
+    if ( cabs(Dn) < small )
+      Dn = small;
+    Cn = 1.0 + an/Cn;
+    if ( cabs(Cn) < small )
+      Cn = small;
+    Dn = 1.0 / Dn;
+    delta = Cn * Dn;
+    hn *= delta;
+    if(cabs(delta-1.0) < DBL_EPSILON) break;
+  }
+
+  result->val = hn;
+  result->err = 2.0*GSL_DBL_EPSILON * cabs(hn);
+  result->err += GSL_DBL_EPSILON * (2.0 + 0.5*n) * cabs(result->val);
+
+  if(n == nmax)
+    GSL_ERROR ("error in CF for F(a,x)", GSL_EMAXITER);
+  else
+    return GSL_SUCCESS;
+}
+
+// Incomplete gamma fuction with complex second argument as continued fraction.
+int cx_gamma_inc_CF_e(const double a, const complex double z, qpms_csf_result *result) 
+{
+  qpms_csf_result F;
+  gsl_sf_result pre;
+  const complex double am1lgz = (a-1.0)*clog(z); // TODO check branches
+  const int stat_F = cx_gamma_inc_F_CF(a, z, &F);
+  const int stat_E = gsl_sf_exp_err_e(creal(am1lgz - z), GSL_DBL_EPSILON*cabs(am1lgz), &pre);
+  pre.val *= cexp(I * cimag(am1lgz - z)); // TODO add the error estimate for this
+
+  result->val = F.val * pre.val;
+  result->err = fabs(F.err * pre.val) + fabs(F.val * pre.err);
+  result->err += 2.0 * GSL_DBL_EPSILON * fabs(result->val);
+
+  return GSL_ERROR_SELECT_2(stat_F, stat_E);
+}
+
 
 // incomplete gamma for complex second argument
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
@@ -96,8 +168,11 @@ int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
     result->val = real_gamma_inc_result.val;
     result->err = real_gamma_inc_result.err;
     return retval;
-  } else 
+  } else if (creal(x) >= 0 && cabs(x) > 0.5)
+    return cx_gamma_inc_CF_e(a, x, result);
+  else
     return cx_gamma_inc_series_e(a, x, result);
+  
 }
 
 // Exponential integral for complex argument; !UNTESTED! and probably not needed, as I expressed everything in terms of inc. gammas anyways.
