@@ -30,6 +30,8 @@ cmake_add_fortran_subdirectory (amos
 	NO_EXTERNAL_INSTALL)
 add_subdirectory (qpms)
 
-add_subdirectory (tests)
+
+enable_testing()
+add_subdirectory (tests EXCLUDE_FROM_ALL)
 
 #add_subdirectory (apps/transop-ewald)
