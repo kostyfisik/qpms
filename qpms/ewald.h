@@ -101,7 +101,7 @@ void qpms_ewald3_constants_free(qpms_ewald3_constants_t *);
 
 /// Structure for holding complex-valued result of computation and an error estimate.
 /** Similar to gsl_sf_result, but with complex val. */
-typedef struct { 
+typedef struct qpms_csf_result { 
   complex double val; ///< Calculation result.
   double err; ///< Error estimate.
 } qpms_csf_result;
@@ -135,6 +135,9 @@ static inline complex double clilgamma(complex double z) {
 /// Incomplete Gamma function as a series.
 /** DLMF 8.7.3 (latter expression) for complex second argument */
 int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
+
+/// Incomplete Gamma function as continued fractions.
+int cx_gamma_inc_CF_e(double a, complex z, qpms_csf_result * result);
 
 /// Incomplete gamma for complex second argument.
 /** if x is (almost) real, it just uses gsl_sf_gamma_inc_e(). */

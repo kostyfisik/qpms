@@ -14,6 +14,98 @@ from .cycommon cimport make_c_string
 from .cycommon import string_c2py, PointGroupClass
 from .cytmatrices cimport CTMatrix
 from libc.stdlib cimport malloc, free, calloc
+import warnings
+
+
+# Set custom GSL error handler. N.B. this is obviously not thread-safe.
+cdef char *pgsl_err_reason
+cdef char *pgsl_err_file
+cdef int pgsl_err_line
+cdef int pgsl_errno = 0
+cdef int *pgsl_errno_ignorelist = NULL # list of ignored error codes, terminated by zero
+
+# This error handler only sets the variables above
+cdef void pgsl_error_handler(const char *reason, const char *_file, const int line, const int gsl_errno):
+    global pgsl_err_reason, pgsl_err_file, pgsl_err_line, pgsl_errno, pgsl_errno_ignorelist
+    cdef size_t i
+    if(pgsl_errno_ignorelist):
+        i = 0
+        while pgsl_errno_ignorelist[i] != 0:
+            if gsl_errno == pgsl_errno_ignorelist[i]:
+                return
+            i += 1
+    pgsl_err_file = _file
+    pgsl_err_reason = reason
+    pgsl_errno = gsl_errno
+    pgsl_err_line = line
+    return
+
+cdef const int* pgsl_set_ignorelist(const int *new_ignorelist):
+    global pgsl_errno_ignorelist
+    cdef const int *oldlist = pgsl_errno_ignorelist
+    pgsl_errno_ignorelist = new_ignorelist
+    return oldlist
+
+cdef class pgsl_ignore_error():
+    '''Context manager for setting a temporary list of errnos ignored by pgsl_error_handler.
+    Always sets pgsl_error_handler.
+
+    Performs pgsl_check_err() on exit unless 
+    '''
+    cdef const int *ignorelist_old
+    cdef gsl_error_handler_t *old_handler
+    cdef bint final_check
+    cdef object ignorelist_python
+
+    cdef int *ignorelist
+    def __cinit__(self, *ignorelist, **kwargs):
+        self.ignorelist = <int*>calloc((len(ignorelist)+1), sizeof(int))
+        self.ignorelist_python = ignorelist
+        for i in range(len(ignorelist)):
+            self.ignorelist[i] = ignorelist[i]
+        if "final_check" in kwargs.keys() and not kwargs["final_check"]:
+            final_check = True
+        final_check = False
+    
+    def __enter__(self):
+        global pgsl_error_handler
+        self.ignorelist_old = pgsl_set_ignorelist(self.ignorelist)
+        self.old_handler = gsl_set_error_handler(pgsl_error_handler)
+        return
+
+    def __exit__(self, type, value, traceback):
+        global pgsl_errno_ignorelist, pgsl_error_handler
+        pgsl_set_ignorelist(self.ignorelist_old)
+        gsl_set_error_handler(self.old_handler)
+        if self.final_check:
+            pgsl_check_err(retval = None, ignore = self.ignorelist_python)
+
+    def __dealloc__(self):
+        free(self.ignorelist)
+
+def pgsl_check_err(retval = None, ignorelist = None):
+    global pgsl_err_reason, pgsl_err_file, pgsl_err_line, pgsl_errno
+    '''Check for possible errors encountered by pgsl_error_handler.
+    Takes return value of a function as an optional argument, which is now ignored.
+    '''
+    cdef int errno_was
+    if (pgsl_errno != 0):
+        errno_was = pgsl_errno
+        pgsl_errno = 0
+        raise RuntimeError("Error %d in GSL calculation in %s:%d: %s" % (errno_was,
+            string_c2py(pgsl_err_file), pgsl_err_line, string_c2py(pgsl_err_reason)))
+    if (retval is not None and retval != 0 and ignorelist is not None and retval not in ignorelist):
+        warnings.warn("Got non-zero return value %d" % retval)
+    if retval is not None:
+        return retval
+    else:
+        return 0
+
+def set_gsl_pythonic_error_handling():
+    '''
+    Sets pgsl_error_handler as the GSL error handler to avoid crashing.
+    '''
+    gsl_set_error_handler(pgsl_error_handler)
 
 cdef class PointGroup:
     cdef readonly qpms_pointgroup_t G
@@ -499,3 +591,21 @@ def pitau(double theta, qpms_l_t lMax, double csphase = -1):
     cdef double[::1] tau = taua
     qpms_pitau_fill(&leg[0], &pi[0], &tau[0], theta, lMax, csphase)
     return (lega, pia, taua)
+
+def gamma_inc(double a, cdouble x):
+    cdef qpms_csf_result res
+    with pgsl_ignore_error(15): #15 is underflow
+        complex_gamma_inc_e(a, x, &res)
+    return (res.val, res.err)
+
+def gamma_inc_series(double a, cdouble x):
+    cdef qpms_csf_result res
+    with pgsl_ignore_error(15): #15 is underflow
+        cx_gamma_inc_series_e(a, x, &res)
+    return (res.val, res.err)
+
+def gamma_inc_CF(double a, cdouble x):
+    cdef qpms_csf_result res
+    with pgsl_ignore_error(15): #15 is underflow
+        cx_gamma_inc_CF_e(a, x, &res)
+    return (res.val, res.err)

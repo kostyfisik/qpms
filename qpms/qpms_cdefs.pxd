@@ -4,6 +4,12 @@ ctypedef double complex cdouble
 
 from libc.stdint cimport *
 
+cdef extern from "gsl/gsl_errno.h":
+    ctypedef void gsl_error_handler_t (const char *reason, const char *file,
+            int line, int gsl_errno)
+    gsl_error_handler_t *gsl_set_error_handler(gsl_error_handler_t *new_handler)
+    gsl_error_handler_t *gsl_set_error_handler_off();
+
 cdef extern from "qpms_types.h":
     cdef struct cart3_t:
         double x
@@ -519,4 +525,13 @@ cdef extern from "scatsystem.h":
             int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri)
     cdouble *qpms_scatsys_scatter_solve(cdouble *target_f, const cdouble *a_inc, qpms_ss_LU ludata)
 
+cdef extern from "ewald.h":
+    struct qpms_csf_result:
+        cdouble val
+        double err
+    cdouble lilgamma(double t)
+    cdouble clilgamma(cdouble z)
+    int cx_gamma_inc_series_e(double a, cdouble x, qpms_csf_result *result)
+    int cx_gamma_inc_CF_e(double a, cdouble x, qpms_csf_result *result)
+    int complex_gamma_inc_e(double a, cdouble x, qpms_csf_result *result)
 
