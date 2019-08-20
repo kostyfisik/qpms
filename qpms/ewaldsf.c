@@ -101,7 +101,7 @@ cx_gamma_inc_F_CF(const double a, const complex double z, qpms_csf_result * resu
   const int    nmax  =  5000;
   const double small =  DBL_EPSILON * DBL_EPSILON * DBL_EPSILON;
 
-  double hn = 1.0;           /* convergent */
+  complex double hn = 1.0;           /* convergent */
   complex double Cn = 1.0 / small;
   complex double Dn = 1.0;
   int n;
@@ -148,9 +148,11 @@ int cx_gamma_inc_CF_e(const double a, const complex double z, qpms_csf_result *r
   const complex double am1lgz = (a-1.0)*clog(z); // TODO check branches
   const int stat_F = cx_gamma_inc_F_CF(a, z, &F);
   const int stat_E = gsl_sf_exp_err_e(creal(am1lgz - z), GSL_DBL_EPSILON*cabs(am1lgz), &pre);
-  pre.val *= cexp(I * cimag(am1lgz - z)); // TODO add the error estimate for this
+  complex double cpre = pre.val * cexp(I*cimag(am1lgz - z));// TODO add the error estimate for this
+  //complex double cpre = cpow(z, a-1) * cexp(-z);
 
-  result->val = F.val * pre.val;
+
+  result->val = F.val * cpre;
   result->err = fabs(F.err * pre.val) + fabs(F.val * pre.err);
   result->err += 2.0 * GSL_DBL_EPSILON * fabs(result->val);
 
