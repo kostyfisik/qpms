@@ -14,6 +14,7 @@
 #include <qpms/indexing.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <float.h>
 #include <gsl/gsl_sf_legendre.h>
 typedef struct ewaldtest2d_params {
@@ -127,17 +128,24 @@ int main(int argc, char **argv) {
       }
     }
   }
-  for (size_t i = 0; i < netas; ++i) {
-    for (size_t j = i+1; j < netas; ++j){ 
-      for (qpms_l_t n = 0; n <= plist[i].lMax; ++n) {
-        for (qpms_m_t m = -n; m <= n; ++m){
-          if ((m+n)%2) continue;
-          qpms_y_t y = qpms_mn2y_sc(m,n);
-          qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
-          if (!isclose_cmplx(r[i]->sigmas_total[y], r[j]->sigmas_total[y], rtol, atol)) {
-            ++fails;
-            printf("with eta = %.16g:\n", plist[i].eta);
-            printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n"
+
+  bool toprint[netas];
+
+  for (qpms_l_t n = 0; n <= plist[0].lMax; ++n) {
+    for (qpms_m_t m = -n; m <= n; ++m){
+      memset(toprint, 0, netas*sizeof(bool));
+      if ((m+n)%2) continue;
+      qpms_y_t y = qpms_mn2y_sc(m,n);
+      qpms_y_t y_conj = qpms_mn2y_sc(-m,n);
+      for (size_t i = 0; i < netas; ++i) {
+        for (size_t j = i+1; j < netas; ++j){ 
+          if (!isclose_cmplx(r[i]->sigmas_total[y], r[j]->sigmas_total[y], rtol, atol)) 
+            toprint[i] = toprint[j] = true;
+        }
+        if (toprint[i]) {
+          ++fails;
+          printf("with eta = %.16g:\n", plist[i].eta);
+          printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n"
               //"| predict %.16g%+.16gj \n| actual  %.16g%+.16gj\n"
               ,
               y, n, m, creal(san(r[i]->sigmas_total[y])), san(cimag(r[i]->sigmas_total[y])),
@@ -150,28 +158,15 @@ int main(int argc, char **argv) {
               //san(creal(r[i]->regsigmas_416[y])), san(cimag(r[i]->regsigmas_416[y])),
               //san(creal(r[i]->sigmas_total[y]) + creal(r[i]->sigmas_total[y_conj])),
               //san(cimag(r[i]->sigmas_total[y]) - cimag(r[i]->sigmas_total[y_conj]))
-            );
-            printf("with eta = %.16g:\n", plist[j].eta);
-            printf("%zd %d %d: T:%.16g%+.16gj(%.3g) L:%.16g%+.16gj(%.3g) S:%.16g%+.16gj(%.3g) \n"
-              //"| predict %.16g%+.16gj \n| actual  %.16g%+.16gj\n"
-              ,
-              y, n, m, creal(san(r[j]->sigmas_total[y])), san(cimag(r[j]->sigmas_total[y])),
-              r[j]->err_sigmas_total[y],
-              san(creal(r[j]->sigmas_long[y])), san(cimag(r[j]->sigmas_long[y])),
-              r[j]->err_sigmas_long[y],
-              san(creal(r[j]->sigmas_short[y])), san(cimag(r[j]->sigmas_short[y])),
-              r[j]->err_sigmas_short[y]
-              // TODO and count big differences as failures.
-              //san(creal(r[j]->regsigmas_416[y])), san(cimag(r[j]->regsigmas_416[y])),
-              //san(creal(r[j]->sigmas_total[y]) + creal(r[j]->sigmas_total[y_conj])),
-              //san(cimag(r[j]->sigmas_total[y]) - cimag(r[j]->sigmas_total[y_conj]))
-            );
-          }
+              );
+          //if(!y) printf("0:%.16g%+.16g\n", san(creal(r[i]->sigma0)), san(cimag(r[i]->sigma0)));
         }
       }
     }
-    ewaldtest2d_results_free(r[i]);
   }
+
+  for (size_t i = 0; i < netas; ++i) 
+    ewaldtest2d_results_free(r[i]);
 
   return fails;
 }
