@@ -223,8 +223,10 @@ ewaldtest2d_results *ewaldtest2d(const ewaldtest2d_params p) {
     results->sigmas_total[y] = results->sigmas_short[y] + results->sigmas_long[y];
     results->err_sigmas_total[y] = results->err_sigmas_short[y] + results->err_sigmas_long[y];
   }
-  results->sigmas_total[0] += results->sigma0;
-  results->err_sigmas_total[0] += results->err_sigma0;
+  if(!include_origin) { // "Renormalised" contribution of origin point
+    results->sigmas_total[0] += results->sigma0;
+    results->err_sigmas_total[0] += results->err_sigma0;
+  }
 
   // Now calculate the reference values [LT(4.16)]
   results->regsigmas_416 = calloc(nelem_sc, sizeof(complex double));
