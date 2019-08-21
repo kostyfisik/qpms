@@ -31,10 +31,6 @@
 
 #include <complex.h>
 
-
-//#include <libhrutil.h>
-//#include <libhmat.h>
-
 // Maybe GSL works?
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_complex_math.h>
@@ -42,15 +38,13 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_eigen.h>
 
-#include <libBeyn.h>
-
-//#define II cdouble(0.0,1.0)
+#include <beyn.h>
 
 // Uniformly random number between -2 and 2
-double complex zrandN(){ 
+gsl_complex zrandN(){
     double a = (rand()*4.0/RAND_MAX) - 2;
     double b = (rand()*4.0/RAND_MAX) - 2;
-    return  a + b*I; 
+    return gsl_complex_rect(a, b);
 }
 
 /***************************************************************/
@@ -79,7 +73,7 @@ BeynSolver *CreateBeynSolver(int M, int L)
   Solver->A1Coarse     = gsl_matrix_complex_calloc(M,L);
   Solver->MInvVHat     = gsl_matrix_complex_calloc(M,L);
   Solver->VHat         = gsl_matrix_complex_calloc(M,L);
-  Solver->Sigma        = gsl_vector_complex_calloc(MLMin);
+  Solver->Sigma        = gsl_vector_calloc(MLMin);
   ReRandomize(Solver,(unsigned)time(NULL));
 
   // internal workspace: need storage for 2 MxL matrices
@@ -109,7 +103,7 @@ void DestroyBeynSolver(BeynSolver *Solver)
   gsl_matrix_complex_free(Solver->A0Coarse);
   gsl_matrix_complex_free(Solver->A1Coarse);
   gsl_matrix_complex_free(Solver->MInvVHat);
-  gsl_vector_complex_free(Solver->Sigma);
+  gsl_vector_free(Solver->Sigma);
   gsl_matrix_complex_free(Solver->VHat);
 
   free(Solver->Workspace);
@@ -129,7 +123,7 @@ void ReRandomize(BeynSolver *Solver, unsigned int RandSeed)
   gsl_matrix_complex *VHat=Solver->VHat;
   for(int nr=0; nr<VHat->size1; nr++)
    for(int nc=0; nc<VHat->size2; nc++)
-    gsl_matrix_set(VHat,nr,nc,zrandN());
+    gsl_matrix_complex_set(VHat,nr,nc,zrandN());
 
 }
 
@@ -147,7 +141,7 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 {
   int M = Solver->M;
   int L = Solver->L;
-  gsl_vector_complex *Sigma = Solver->Sigma;
+  gsl_vector *Sigma = Solver->Sigma;
 
 
   int Verbose = 0;//CheckEnv("SCUFF_BEYN_VERBOSE");
@@ -157,13 +151,14 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
   // A0 -> V0Full * Sigma * W0TFull' 
   printf(" Beyn: computing SVD...\n");
   gsl_matrix_complex* V0Full = gsl_matrix_complex_calloc(M,L);
-  gsl_matrix_memcpy(V0Full,A0);
+  gsl_matrix_complex_memcpy(V0Full,A0);
 
   gsl_matrix_complex* W0TFull = gsl_matrix_complex_calloc(L,L);
   //A0->SVD(Sigma, &V0Full, &W0TFull);
   gsl_vector_complex *work = gsl_vector_complex_alloc(M);
-  
-  gsl_linalg_SV_decomp(V0Full, W0TFull, Sigma, work);
+ 
+  // FIXME not supported by GSL; use LAPACKE_zgesdd 
+  gsl_linalg_complex_SV_decomp(V0Full, W0TFull, Sigma, work);
 
   
   // compute effective rank K (number of eigenvalue candidates)
@@ -188,17 +183,17 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
   gsl_vector_complex *TempL = gsl_vector_complex_calloc(L);
   for(int k=0; k<K; k++){
       // It should be rows and cols like this, right..?
-      gsl_matrix_get_row(TempM, V0Full,k);
-      gsl_matrix_set_row(V0, k, TempM);
-      gsl_matrix_get_col(TempL,W0TFull,k);
-      gsl_matrix_set_col(W0T,k, TempL);
+      gsl_matrix_complex_get_row(TempM, V0Full,k);
+      gsl_matrix_complex_set_row(V0, k, TempM);
+      gsl_matrix_complex_get_col(TempL,W0TFull,k);
+      gsl_matrix_complex_set_col(W0T,k, TempL);
    }
 
-  gsl_matrix_free(V0Full);
-  gsl_matrix_free(W0TFull);
-  gsl_vector_free(work);
-  gsl_vector_free(TempM);
-  gsl_vector_free(TempL);
+  gsl_matrix_complex_free(V0Full);
+  gsl_matrix_complex_free(W0TFull);
+  gsl_vector_complex_free(work);
+  gsl_vector_complex_free(TempM);
+  gsl_vector_complex_free(TempL);
   
 
   // B <- V0' * A1 * W0 * Sigma^-1
@@ -218,15 +213,15 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
   gsl_blas_zgemm(CblasNoTrans, CblasTrans, one,
           TM2, W0T, zero, B);
 
-  gsl_matrix_free(W0T);
-  gsl_matrix_free(TM2);
+  gsl_matrix_complex_free(W0T);
+  gsl_matrix_complex_free(TM2);
 
   printf(" Scaling B <- B*Sigma^{-1}\n");
   gsl_vector_complex *tmp = gsl_vector_complex_calloc(K);
   for(int i = 0; i < K; i++){
-      gsl_matrix_get_col(tmp, B, i);
-      gsl_vector_scale(tmp, 1.0/gsl_vector_get(Sigma,i));
-      gsl_matrix_set_col(B,i,tmp);
+      gsl_matrix_complex_get_col(tmp, B, i);
+      gsl_vector_complex_scale(tmp, gsl_complex_rect(1.0/gsl_vector_get(Sigma,i), 0));
+      gsl_matrix_complex_set_col(B,i,tmp);
   }
   gsl_vector_complex_free(tmp);
 
@@ -246,8 +241,9 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
   gsl_vector_complex *alph = gsl_vector_complex_calloc(K);
   gsl_vector_complex *beta = gsl_vector_complex_calloc(K);
 
-  gsl_matrix_set_identity(Eye);
+  gsl_matrix_complex_set_identity(Eye);
 
+  // FIXME general complex eigensystems not supported by GSL (use LAPACKE_zgee?)
   gsl_eigen_genv_workspace * W = gsl_eigen_genv_alloc(K);
   gsl_eigen_genv(B, Eye, alph, beta, S,W);
   gsl_eigen_genv_free(W);
@@ -270,7 +266,7 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 
   gsl_vector_complex_free(alph);
   gsl_vector_complex_free(beta);
-  gsl_matrix_free(Eye);
+  gsl_matrix_complex_free(Eye);
  
   //B.NSEig(&Lambda, &S);
 
@@ -283,14 +279,14 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 
   printf("Evaluating retained values \n");
   int KRetained=0;
-  gsl_vector_complex * om = gsl_vector_alloc(1);
+  gsl_vector_complex * om = gsl_vector_complex_alloc(1);
   for(int k=0; k<K; k++)
    { 
      if(gsl_complex_abs(gsl_vector_complex_get(Lambda,k))){
          gsl_complex tmp_c = gsl_vector_complex_get(Lambda, k);
          double complex  z = z0 + GSL_REAL(tmp_c) + GSL_IMAG(tmp_c)*I;
          //gsl_matrix_get_col(V, V0S, k);
-         gsl_matrix_get_col(s, S, k);
+         gsl_matrix_complex_get_col(s, S, k);
          gsl_blas_zgemv(CblasNoTrans, one, V0, s, zero, V);
 
  
@@ -302,7 +298,7 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
         Residual=VecNorm(MVk.ZM, M);
         */
         gsl_vector_complex_set(om,1,tmp_c);
-        Residual = min_sing(om,Params);
+        Residual = min_sing(om,Params); // in unitcell.c
         if (1) printf("Beyn: Residual(%i)=%e\n",k,Residual);
       }
      if (ResTol>0.0 && Residual>ResTol) continue;
@@ -322,9 +318,9 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 
   printf("%d eigenvalues found \n",KRetained);
 
-  gsl_matrix_free(S);
-  gsl_matrix_free(V0);
-  gsl_vector_free(Lambda);
+  gsl_matrix_complex_free(S);
+  gsl_matrix_complex_free(V0);
+  gsl_vector_complex_free(Lambda);
   gsl_vector_complex_free(om);
   return KRetained;
 }
@@ -349,8 +345,8 @@ int BeynSolve(BeynSolver *Solver,
   else
    printf("Applying Beyn method with z0=%s,Rx=%e,Ry=%e,N=%i...\n",z2s(z0),Rx,Ry,N);
 */
-  int M = Solver->M;
-  int L = Solver->L;
+  //int M = Solver->M;
+  //int L = Solver->L;
   gsl_matrix_complex *A0           = Solver->A0;
   gsl_matrix_complex *A1           = Solver->A1;
   gsl_matrix_complex *A0Coarse     = Solver->A0Coarse;
@@ -363,10 +359,10 @@ int BeynSolve(BeynSolver *Solver,
   /* A0 and A1 matrices                                          */
   /***************************************************************/
   
-  gsl_matrix_set_zero(A0);
-  gsl_matrix_set_zero(A1);
-  gsl_matrix_set_zero(A0Coarse);
-  gsl_matrix_set_zero(A1Coarse);
+  gsl_matrix_complex_set_zero(A0);
+  gsl_matrix_complex_set_zero(A1);
+  gsl_matrix_complex_set_zero(A0Coarse);
+  gsl_matrix_complex_set_zero(A1Coarse);
   double DeltaTheta = 2.0*M_PI / ((double)N);
   printf(" Evaluating contour integral (%i points)...\n",N);
   for(int n=0; n<N; n++)
@@ -379,7 +375,7 @@ int BeynSolve(BeynSolver *Solver,
      double complex zz = Rx*CT + Ry*ST*I;
 
      //MInvVHat->Copy(VHat);
-     gsl_matrix_memcpy(MInvVHat, VHat);
+     gsl_matrix_complex_memcpy(MInvVHat, VHat);
 
      // Tän pitäis kutsua eval_WT
      // Output ilmeisesti tallentuun neljänteen parametriin
@@ -402,7 +398,7 @@ int BeynSolve(BeynSolver *Solver,
    }
 
   gsl_vector_complex *Eigenvalues  = Solver->Eigenvalues;
-  gsl_vector_complex *EVErrors     = Solver->EVErrors;
+  //gsl_vector_complex *EVErrors     = Solver->EVErrors;
   gsl_matrix_complex *Eigenvectors = Solver->Eigenvectors;
   
   int K = ProcessAMatrices(Solver, UserFunc, Params, A0, A1, z0, Eigenvalues, Eigenvectors);

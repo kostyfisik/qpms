@@ -28,8 +28,8 @@
  */
 
 
-#ifndef LIBBEYN_H
-#define LIBBEYN_H
+#ifndef BEYN_H
+#define BEYN_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,7 +62,7 @@ typedef struct BeynSolver
    gsl_matrix_complex *Eigenvectors;
    gsl_matrix_complex *A0, *A1, *A0Coarse, *A1Coarse, *MInvVHat;
    gsl_matrix_complex *VHat;
-   gsl_vector_complex *Sigma;
+   gsl_vector *Sigma;
    double complex *Workspace;
 
  } BeynSolver;
@@ -92,4 +92,4 @@ int BeynSolve(BeynSolver *Solver,
               BeynFunction UserFunction, void *Params,
               double complex z0, double Rx, double Ry, int N);
 
-#endif
+#endif // BEYN_H
