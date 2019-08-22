@@ -31,24 +31,15 @@
 #ifndef BEYN_H
 #define BEYN_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdarg.h>
-#include <fenv.h>
-
 #include <complex.h>
-
-// Needs to be changed to gsl or something
-//#include <libhmat.h>
-
 #include <gsl/gsl_matrix.h>
-/***************************************************************/
-/* prototype for user-supplied function passed to BeynMethod.  */
-/* The user's function should replace VHat with                */
-/*  Inverse[ M(z) ] * VHat.                                    */
-/***************************************************************/
-typedef void (*BeynFunction)(double complex z, void *Params, gsl_matrix_complex *VHat, gsl_matrix_complex *MVHat);
+
+/// User-supplied function that provides the operator M(z) whose "roots" are to be found.
+typedef int (*beyn_function_M_t)(gsl_matrix_complex *target_M, complex double z, void *params);
+
+/// (optional) User-supplied function that, given \f$ \hat V \f$, calculates \f$ M(z)^{-1} \hat V \f$.
+typedef int (*beyn_function_M_inv_Vhat_t)(gsl_matrix_complex *target_M_inv_Vhat,
+	       	const gsl_matrix_complex *Vhat, complex double z, void *params); 
 
 /***************************************************************/
 /***************************************************************/
@@ -58,11 +49,11 @@ typedef struct BeynSolver
    int M;   // dimension of matrices
    int L;   // number of columns of VHat matrix
 
-   gsl_vector_complex *Eigenvalues, *EVErrors, *Residuals;
+   gsl_vector_complex *Eigenvalues, *EVErrors;
    gsl_matrix_complex *Eigenvectors;
    gsl_matrix_complex *A0, *A1, *A0Coarse, *A1Coarse, *MInvVHat;
    gsl_matrix_complex *VHat;
-   gsl_vector *Sigma;
+   gsl_vector *Sigma, *Residuals;
    double complex *Workspace;
 
  } BeynSolver;
@@ -89,7 +80,7 @@ void ReRandomize(BeynSolver *Solver, unsigned int RandSeed);
 // Beyn method for elliptical contour of horizontal, vertical
 // radii Rx, Ry, centered at z0, using N quadrature points
 int BeynSolve(BeynSolver *Solver,
-              BeynFunction UserFunction, void *Params,
+              beyn_function_M_t M_function, beyn_function_M_inv_Vhat_t M_inv_Vhat_function, void *params,
               double complex z0, double Rx, double Ry, int N);
 
 #endif // BEYN_H

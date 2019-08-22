@@ -1,6 +1,6 @@
-/* Copyright (C) 2005-2011 M. T. Homer Reid
- *
- * This file is part of SCUFF-EM.
+/* 
+ * This file was originally part of SCUFF-EM by M. T. Homer Reid.
+ * Modified by Kristian Arjas and Marek Nečada to work without libhmat and libhrutil.
  *
  * SCUFF-EM is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- * libBeyn.cc      -- implementation of Beyn's method for
- *                 -- nonlinear eigenvalue problems
- *
- * Homer Reid      -- 6/2016
- *
- */
+#define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
+
+#include <complex.h>
+#include <lapacke.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-
-#include <complex.h>
+#include "qpms_error.h"
 
 // Maybe GSL works?
 #include <gsl/gsl_matrix.h>
@@ -39,6 +35,8 @@
 #include <gsl/gsl_eigen.h>
 
 #include <beyn.h>
+
+STATIC_ASSERT((sizeof(lapack_complex_double) == sizeof(gsl_complex)), lapack_and_gsl_complex_must_be_consistent);
 
 // Uniformly random number between -2 and 2
 gsl_complex zrandN(){
@@ -56,14 +54,17 @@ BeynSolver *CreateBeynSolver(int M, int L)
 
   Solver->M = M;
   Solver->L = L;
+  QPMS_ENSURE(L <= M, "We expect L <= M, but we got L = %d, M = %d ", L, M);
 
+#if 0
   int MLMax = (M>L) ? M : L;
+#endif
   int MLMin = (M<L) ? M : L;
 
   // storage for eigenvalues and eigenvectors
   Solver->Eigenvalues  = gsl_vector_complex_calloc(L);
   Solver->EVErrors     = gsl_vector_complex_calloc(L);
-  Solver->Residuals    = gsl_vector_complex_calloc(L);
+  Solver->Residuals    = gsl_vector_calloc(L);
   Solver->Eigenvectors = gsl_matrix_complex_calloc(M, L);
 
   // storage for singular values, random VHat matrix, etc. used in algorithm
@@ -76,15 +77,14 @@ BeynSolver *CreateBeynSolver(int M, int L)
   Solver->Sigma        = gsl_vector_calloc(MLMin);
   ReRandomize(Solver,(unsigned)time(NULL));
 
+#if 0
   // internal workspace: need storage for 2 MxL matrices
   // plus 3 LxL matrices
   #define MLBUFFERS 2
   #define LLBUFFERS 3
   size_t ML = MLMax*L, LL = L*L;
-  size_t WorkspaceSize = (MLBUFFERS*ML + LLBUFFERS*LL)*sizeof(double complex);
+#endif
  
-  Solver->Workspace = (double complex*)malloc( WorkspaceSize );
-
   return Solver;
   
 }
@@ -104,9 +104,8 @@ void DestroyBeynSolver(BeynSolver *Solver)
   gsl_matrix_complex_free(Solver->A1Coarse);
   gsl_matrix_complex_free(Solver->MInvVHat);
   gsl_vector_free(Solver->Sigma);
+  gsl_vector_free(Solver->Residuals);
   gsl_matrix_complex_free(Solver->VHat);
-
-  free(Solver->Workspace);
 
   free(Solver);
 }
@@ -134,7 +133,7 @@ void ReRandomize(BeynSolver *Solver, unsigned int RandSeed)
 /* eigenvalues and eigenvectors                                */
 /***************************************************************/
 
-int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc, 
+int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function, 
     void *Params,
     gsl_matrix_complex *A0, gsl_matrix_complex *A1, double complex z0,
     gsl_vector_complex *Eigenvalues, gsl_matrix_complex *Eigenvectors)
@@ -155,15 +154,27 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 
   gsl_matrix_complex* W0TFull = gsl_matrix_complex_calloc(L,L);
   //A0->SVD(Sigma, &V0Full, &W0TFull);
-  gsl_vector_complex *work = gsl_vector_complex_alloc(M);
  
+  QPMS_ENSURE(Sigma->stride == 1, "Sigma vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
   // FIXME not supported by GSL; use LAPACKE_zgesdd 
-  gsl_linalg_complex_SV_decomp(V0Full, W0TFull, Sigma, work);
+  //gsl_linalg_complex_SV_decomp(V0Full, W0TFull, Sigma, work);
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgesdd(LAPACK_ROW_MAJOR, // A = U*Σ*conjg(V') 
+      'O' /*jobz, 'O' overwrites a with U and saves conjg(V') in vt if m >= n, i.e. if M >= L, which holds*/,
+      V0Full->size1 /* m, number of rows */,
+      V0Full->size2 /* n, number of columns */,
+      (lapack_complex_double *)(V0Full->data) /*a*/,
+      V0Full->tda /*lda*/,
+      Sigma->data /*s*/, 
+      NULL /*u; not used*/, 
+      0 /*ldu; not used*/,
+      (lapack_complex_double *)W0TFull->data /*vt*/,
+      W0TFull->tda /*ldvt*/
+      ));
 
   
   // compute effective rank K (number of eigenvalue candidates)
   int K=0;
-  for(int k=0; k<Sigma->size; k++)
+  for(int k=0; k<Sigma->size /* this is L, actually */; k++)
    { if (Verbose) printf("Beyn: SV(%i)=%e",k,gsl_vector_get(Sigma, k));
      if (gsl_vector_get(Sigma, k) > RankTol )
       K++;
@@ -191,7 +202,6 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 
   gsl_matrix_complex_free(V0Full);
   gsl_matrix_complex_free(W0TFull);
-  gsl_vector_complex_free(work);
   gsl_vector_complex_free(TempM);
   gsl_vector_complex_free(TempL);
   
@@ -202,8 +212,8 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 
   printf(" Multiplying V0*A1->TM...\n");
   //V0.Multiply(A1, &TM2, "--transA C");   // TM2 <- V0' * A1
-  gsl_complex one = gsl_complex_rect(1,0);
-  gsl_complex zero = gsl_complex_rect(0,0);
+  const gsl_complex one = gsl_complex_rect(1,0);
+  const gsl_complex zero = gsl_complex_rect(0,0);
   gsl_blas_zgemm(CblasConjTrans, CblasNoTrans, one,
           V0, A1, zero, TM2);
   
@@ -234,94 +244,72 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
   // B -> S*Lambda*S'
   printf(" Eigensolving (%i,%i)\n",K,K);
 
-  gsl_vector_complex *Lambda = gsl_vector_complex_calloc(K); // Eigenvalues
-  gsl_matrix_complex *S = gsl_matrix_complex_calloc(K,K); // Eigenvectors
-  gsl_matrix_complex *Eye = gsl_matrix_complex_alloc(K,K);
-
-  gsl_vector_complex *alph = gsl_vector_complex_calloc(K);
-  gsl_vector_complex *beta = gsl_vector_complex_calloc(K);
-
-  gsl_matrix_complex_set_identity(Eye);
+  gsl_vector_complex *Lambda = gsl_vector_complex_alloc(K); // Eigenvalues
+  gsl_matrix_complex *S = gsl_matrix_complex_alloc(K,K); // Eigenvectors
 
   // FIXME general complex eigensystems not supported by GSL (use LAPACKE_zgee?)
-  gsl_eigen_genv_workspace * W = gsl_eigen_genv_alloc(K);
-  gsl_eigen_genv(B, Eye, alph, beta, S,W);
-  gsl_eigen_genv_free(W);
+  //gsl_eigen_genv_workspace * W = gsl_eigen_genv_alloc(K);
+  //gsl_eigen_genv(B, Eye, alph, beta, S,W);
+  //gsl_eigen_genv_free(W);
+  QPMS_ENSURE(Sigma->stride == 1, "Sigma vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
+  QPMS_ENSURE(Lambda->stride == 1, "Lambda vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgeev(
+        LAPACK_ROW_MAJOR,
+        'N' /* jobvl; don't compute left eigenvectors */,
+        'V' /* jobvr; do compute right eigenvectors */,
+        K   /* n */,
+        (lapack_complex_double *)(S->data) /* a */,
+        S->tda  /* lda */,
+        (lapack_complex_double *) Lambda->data /* w */,
+        NULL /* vl */,
+        0 /* ldvl */,
+        (lapack_complex_double *)(B->data)/* vr */,
+        B->tda/* ldvr */
+        ));
 
-  gsl_complex tmpa;
-  gsl_complex tmpb;
-  for(int i = 0; i < K; i++){
-      tmpb = gsl_vector_complex_get(beta,i);
-      tmpa = gsl_vector_complex_get(alph,i);
-      if(gsl_complex_abs(tmpb)){
-          gsl_vector_complex_set(Lambda, i, gsl_complex_div(tmpa,tmpb));
-          printf("Eigenvalue %e + %e i found\n",GSL_REAL(gsl_complex_div(tmpa,tmpb)), GSL_IMAG(gsl_complex_div(tmpa,tmpb)));
-      } else{
-          printf("Beta %d is zero \n",i);
-      }
-      if(!gsl_complex_abs(tmpa)){
-          printf("Alpha %d is zero \n",i);
-      }
-  }
 
-  gsl_vector_complex_free(alph);
-  gsl_vector_complex_free(beta);
-  gsl_matrix_complex_free(Eye);
  
-  //B.NSEig(&Lambda, &S);
+  //B.NSEig(&Lambda, &S); 
 
-  
   // V0S <- V0*S
   printf("Multiplying V0*S...\n");
+  gsl_matrix_complex *V0S = gsl_matrix_complex_alloc(M, K);
+  QPMS_ENSURE_SUCCESS(gsl_blas_zgemm(CblasNoTrans, CblasNoTrans,
+        one, V0, S, zero, V0S));
 
-  gsl_vector_complex *V = gsl_vector_complex_alloc(K);
-  gsl_vector_complex *s = gsl_vector_complex_alloc(K);
 
-  printf("Evaluating retained values \n");
-  int KRetained=0;
-  gsl_vector_complex * om = gsl_vector_complex_alloc(1);
-  for(int k=0; k<K; k++)
-   { 
-     if(gsl_complex_abs(gsl_vector_complex_get(Lambda,k))){
-         gsl_complex tmp_c = gsl_vector_complex_get(Lambda, k);
-         double complex  z = z0 + GSL_REAL(tmp_c) + GSL_IMAG(tmp_c)*I;
-         //gsl_matrix_get_col(V, V0S, k);
-         gsl_matrix_complex_get_col(s, S, k);
-         gsl_blas_zgemv(CblasNoTrans, one, V0, s, zero, V);
 
- 
-     double Residual=0.0;
-     if (ResTol>0.0)
-      { /*gsl_matrix_complex Vk(M,1,V);
-        gsl_matrix_complex MVk(M,1,MLBuffers[0]);
-        UserFunc(z, Params, &Vk, &MVk);
-        Residual=VecNorm(MVk.ZM, M);
-        */
-        gsl_vector_complex_set(om,1,tmp_c);
-        Residual = min_sing(om,Params); // in unitcell.c
-        if (1) printf("Beyn: Residual(%i)=%e\n",k,Residual);
-      }
-     if (ResTol>0.0 && Residual>ResTol) continue;
-    
-    //Eigenvalues->SetEntry(KRetained, z);
-    gsl_vector_complex_set(Eigenvalues, KRetained, tmp_c);
-    gsl_matrix_complex_set_col(Eigenvectors, KRetained, V);
-    /*if (Eigenvectors) 
-     { 
-         //Eigenvectors->SetEntries(":", KRetained, V);
-       //Solver->Residuals->SetEntry(KRetained,Residual);
-     }
-     */
-    KRetained++;
+  int KRetained = 0;
+  gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,L);
+  gsl_vector_complex *MVk = gsl_vector_complex_alloc(M);
+  for (int k = 0; k < K; ++k) {
+    const gsl_complex zgsl = gsl_complex_add(gsl_complex_rect(creal(z0), cimag(z0)), gsl_vector_complex_get(Lambda, k));
+    const complex double z = GSL_REAL(zgsl) + I*GSL_IMAG(zgsl);
+    gsl_vector_complex_const_view Vk = gsl_matrix_complex_const_column(V0S, k);
+
+    double residual = 0;
+    if(ResTol > 0) {
+      QPMS_ENSURE_SUCCESS(M_function(Mmat, z, Params));
+      QPMS_ENSURE_SUCCESS(gsl_blas_zgemv(CblasNoTrans, one, Mmat, &(Vk.vector), zero, MVk));
+      residual = gsl_blas_dznrm2(MVk);
+      if (Verbose) printf("Beyn: Residual(%i)=%e\n",k,residual);
     }
-   }
+    if (ResTol > 0 && residual > ResTol) continue;
 
-  printf("%d eigenvalues found \n",KRetained);
+    gsl_vector_complex_set(Eigenvalues, KRetained, zgsl);
+    if(Eigenvectors) {
+      gsl_matrix_complex_set_col(Eigenvectors, KRetained, &(Vk.vector));
+      gsl_vector_set(Solver->Residuals, KRetained, residual);
+    }
+    ++KRetained;
+  }
 
+  gsl_matrix_complex_free(V0S);
+  gsl_matrix_complex_free(Mmat);
+  gsl_vector_complex_free(MVk);
   gsl_matrix_complex_free(S);
-  gsl_matrix_complex_free(V0);
   gsl_vector_complex_free(Lambda);
-  gsl_vector_complex_free(om);
+
   return KRetained;
 }
 
@@ -329,8 +317,8 @@ int ProcessAMatrices(BeynSolver *Solver, BeynFunction UserFunc,
 /***************************************************************/
 /***************************************************************/
 
-int BeynSolve(BeynSolver *Solver,
-              BeynFunction UserFunc, void *Params,
+int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
+   beyn_function_M_inv_Vhat_t M_inv_Vhat_function, void *Params,
               double complex z0, double Rx, double Ry, int N)
 {  
   /***************************************************************/
@@ -380,7 +368,12 @@ int BeynSolve(BeynSolver *Solver,
      // Tän pitäis kutsua eval_WT
      // Output ilmeisesti tallentuun neljänteen parametriin
      
-     UserFunc(z0+zz, Params, VHat, MInvVHat);
+     if(M_inv_Vhat_function) {
+       QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z0+zz, Params));
+     } else {
+       QPMS_NOT_IMPLEMENTED("TODO");
+     }
+     //UserFunc(z0+zz, Params, VHat, MInvVHat);
 
      gsl_matrix_complex_scale(MInvVHat, dz);
      gsl_matrix_complex_add(A0, MInvVHat);
@@ -401,7 +394,7 @@ int BeynSolve(BeynSolver *Solver,
   //gsl_vector_complex *EVErrors     = Solver->EVErrors;
   gsl_matrix_complex *Eigenvectors = Solver->Eigenvectors;
   
-  int K = ProcessAMatrices(Solver, UserFunc, Params, A0, A1, z0, Eigenvalues, Eigenvectors);
+  int K = ProcessAMatrices(Solver, M_function, Params, A0, A1, z0, Eigenvalues, Eigenvectors);
   //int KCoarse = ProcessAMatrices(Solver, UserFunc, Params, A0Coarse, A1Coarse, z0, EVErrors, Eigenvectors);
 //  Log("{K,KCoarse}={%i,%i}",K,KCoarse);
     /*
