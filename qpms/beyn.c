@@ -166,10 +166,10 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
  
   // A0 -> V0Full * Sigma * W0TFull' 
   printf(" Beyn: computing SVD...\n");
-  gsl_matrix_complex* V0Full = gsl_matrix_complex_calloc(M,L);
+  gsl_matrix_complex* V0Full = gsl_matrix_complex_alloc(M,L);
   gsl_matrix_complex_memcpy(V0Full,A0);
 
-  gsl_matrix_complex* W0TFull = gsl_matrix_complex_calloc(L,L);
+  gsl_matrix_complex* W0TFull = gsl_matrix_complex_alloc(L,L);
   //A0->SVD(Sigma, &V0Full, &W0TFull);
  
   QPMS_ENSURE(Sigma->stride == 1, "Sigma vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
@@ -368,8 +368,7 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
   gsl_matrix_complex_set_zero(A1Coarse);
   double DeltaTheta = 2.0*M_PI / ((double)N);
   printf(" Evaluating contour integral (%i points)...\n",N);
-  for(int n=0; n<N; n++)
-   { 
+  for(int n=0; n<N; n++) { 
      double Theta = ((double)n)*DeltaTheta;
      double CT    = cos(Theta), ST=sin(Theta);
      complex double z1 = Rx*CT + I*Ry*ST;
@@ -381,19 +380,48 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
 
      // Tän pitäis kutsua eval_WT
      // Output ilmeisesti tallentuun neljänteen parametriin
+#ifndef NDEBUG
+     complex double vhat_copy[M][L]; //dbg
+     for(int i = 0; i < M; ++i) for(int j = 0; j < L; ++j) //dbg
+       vhat_copy[i][j] = cg2s(gsl_matrix_complex_get(VHat, i, j)); //dbg
+#endif
      
      if(M_inv_Vhat_function) {
        QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z0+z1, Params));
      } else {
+       const complex double zero = 0, one = 1;
        lapack_int *pivot;
        gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
        QPMS_ENSURE_SUCCESS(M_function(Mmat, z0+z1, Params));
+#ifndef NDEBUG
+       complex double Mmat_check[M][M]; //dbg
+       for(int i = 0; i < M; ++i) for(int j = 0; j < M; ++j) //dbg
+         Mmat_check[i][j] = cg2s(gsl_matrix_complex_get(Mmat, i, j)); //dbg
+#endif
        QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * M);
        QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR,
              M /*m*/, M /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
+       QPMS_ENSURE(MInvVHat->tda == L, "wut?");
        QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,
              M /*n*/, L/*nrhs*/, (lapack_complex_double *)Mmat->data /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
              (lapack_complex_double *)MInvVHat->data /*b*/, MInvVHat->tda/*ldb*/));
+
+#ifndef NDEBUG
+       // Check the inversion result
+       complex double minvhat_check[M][L];
+       for(int i = 0; i < M; ++i) for(int j = 0; j < L; ++j)
+         minvhat_check[i][j] = cg2s(gsl_matrix_complex_get(MInvVHat, i, j));
+       complex double vhat_recon[M][L];
+
+       cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+             M, L, M, &one, Mmat_check[0], M, minvhat_check[0], L, &zero, vhat_recon[0], L);
+
+       for(int i = 0; i < M; ++i) for(int j = 0; j < L; ++j)
+         if (cabs(vhat_recon[i][j] - vhat_copy[i][j]) > 1e-8*(1+cabs(vhat_recon[i][j] + vhat_copy[i][j])))
+           QPMS_WTF;
+#endif
+
+
        free(pivot);
        gsl_matrix_complex_free(Mmat);
      }
@@ -412,7 +440,7 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
          gsl_matrix_complex_add(A1Coarse, MInvVHat);
          gsl_matrix_complex_add(A1Coarse, MInvVHat);
      }
-   }
+  }
 
   gsl_vector_complex *Eigenvalues  = Solver->Eigenvalues;
   //gsl_vector_complex *EVErrors     = Solver->EVErrors;
