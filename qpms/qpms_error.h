@@ -72,15 +72,16 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 #define QPMS_WTF qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error.")
 
 #define QPMS_UNTESTED {\
-	static bool already_bitched = false; \
+	static _Bool already_bitched = 0; \
 	if (!already_bitched) {\
 		qpms_warn_at_flf(__FILE__,__LINE__,__func__,"Warning: untested function/feature!");\
-		already_bitched = true;\
+		already_bitched = 1;\
 	}\
 }
 
 #define QPMS_PR_ERROR(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__)
 
+// TODO replace this macro with an inline function?
 #define QPMS_ENSURE_SUCCESS(x) {if(x) QPMS_WTF;}
 
 #define QPMS_ENSURE(x, msg, ...) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
@@ -95,10 +96,10 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 		"Not implemented:" msg, ##__VA_ARGS__)
 
 #define QPMS_INCOMPLETE_IMPLEMENTATION(msg, ...) {\
-	static bool already_bitched = false; \
+	static _Bool already_bitched = 0; \
 	if (!already_bitched) {\
 		qpms_warn_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__);\
-		already_bitched = true;\
+		already_bitched = 1;\
 	}\
 }
 
