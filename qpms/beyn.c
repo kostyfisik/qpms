@@ -19,6 +19,9 @@
 
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 
+#define cg2s(x) gsl_complex_tostd(x)
+#define cs2g(x) gsl_complex_fromstd(x)
+
 #include <complex.h>
 #include <lapacke.h>
 #include <stdio.h>
@@ -38,12 +41,26 @@
 
 STATIC_ASSERT((sizeof(lapack_complex_double) == sizeof(gsl_complex)), lapack_and_gsl_complex_must_be_consistent);
 
+double randU(double A, double B) { return A + (B-A) * random() * (1. / RAND_MAX); }
+double randN(double Sigma, double Mu) {
+  double u1 = randU(0, 1);
+  double u2 = randU(0, 1);
+  return Mu + Sigma*sqrt(-2*log(u1))*cos(2.*M_PI*u2);
+}
+
+#if 0
 // Uniformly random number between -2 and 2
 gsl_complex zrandN(){
     double a = (rand()*4.0/RAND_MAX) - 2;
     double b = (rand()*4.0/RAND_MAX) - 2;
     return gsl_complex_rect(a, b);
 }
+#endif
+
+complex double zrandN(double sigma, double mu){
+  return randN(sigma, mu) + I*randN(sigma, mu);
+}
+
 
 /***************************************************************/
 /***************************************************************/
@@ -122,7 +139,7 @@ void ReRandomize(BeynSolver *Solver, unsigned int RandSeed)
   gsl_matrix_complex *VHat=Solver->VHat;
   for(int nr=0; nr<VHat->size1; nr++)
    for(int nc=0; nc<VHat->size2; nc++)
-    gsl_matrix_complex_set(VHat,nr,nc,zrandN());
+    gsl_matrix_complex_set(VHat,nr,nc,cs2g(zrandN(1, 0)));
 
 }
 
@@ -355,10 +372,8 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
    { 
      double Theta = ((double)n)*DeltaTheta;
      double CT    = cos(Theta), ST=sin(Theta);
-     gsl_complex z1   = gsl_complex_rect(Rx*CT, Ry*ST);
-     gsl_complex dz   = gsl_complex_rect(Ry*CT/((double)N),(Rx*ST/((double)N)));
-     
-     double complex zz = Rx*CT + Ry*ST*I;
+     complex double z1 = Rx*CT + I*Ry*ST;
+     complex double dz = (I*Rx*ST + Ry*CT) / N;
 
      //MInvVHat->Copy(VHat);
      // Mitä varten tämä kopiointi on?
@@ -368,11 +383,11 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
      // Output ilmeisesti tallentuun neljänteen parametriin
      
      if(M_inv_Vhat_function) {
-       QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z0+zz, Params));
+       QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z0+z1, Params));
      } else {
        lapack_int *pivot;
        gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
-       QPMS_ENSURE_SUCCESS(M_function(Mmat, z0+zz, Params));
+       QPMS_ENSURE_SUCCESS(M_function(Mmat, z0+z1, Params));
        QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * M);
        QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR,
              M /*m*/, M /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
@@ -384,14 +399,14 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
      }
      //UserFunc(z0+zz, Params, VHat, MInvVHat);
 
-     gsl_matrix_complex_scale(MInvVHat, dz);
+     gsl_matrix_complex_scale(MInvVHat, cs2g(dz));
      gsl_matrix_complex_add(A0, MInvVHat);
      if((n%2)==0) {
          gsl_matrix_complex_add(A0Coarse, MInvVHat);
          gsl_matrix_complex_add(A0Coarse, MInvVHat);
      }
      
-     gsl_matrix_complex_scale(MInvVHat, z1);
+     gsl_matrix_complex_scale(MInvVHat, cs2g(z1));
      gsl_matrix_complex_add(A1, MInvVHat);
      if((n%2)==0) {
          gsl_matrix_complex_add(A1Coarse, MInvVHat);
