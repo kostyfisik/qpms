@@ -280,7 +280,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
 
 
   int KRetained = 0;
-  gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,L);
+  gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
   gsl_vector_complex *MVk = gsl_vector_complex_alloc(M);
   for (int k = 0; k < K; ++k) {
     const gsl_complex zgsl = gsl_complex_add(gsl_complex_rect(creal(z0), cimag(z0)), gsl_vector_complex_get(Lambda, k));
@@ -333,8 +333,8 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
   else
    printf("Applying Beyn method with z0=%s,Rx=%e,Ry=%e,N=%i...\n",z2s(z0),Rx,Ry,N);
 */
-  //int M = Solver->M;
-  //int L = Solver->L;
+  const int M = Solver->M;
+  const int L = Solver->L;
   gsl_matrix_complex *A0           = Solver->A0;
   gsl_matrix_complex *A1           = Solver->A1;
   gsl_matrix_complex *A0Coarse     = Solver->A0Coarse;
@@ -363,6 +363,7 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
      double complex zz = Rx*CT + Ry*ST*I;
 
      //MInvVHat->Copy(VHat);
+     // Mitä varten tämä kopiointi on?
      gsl_matrix_complex_memcpy(MInvVHat, VHat);
 
      // Tän pitäis kutsua eval_WT
@@ -371,7 +372,17 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
      if(M_inv_Vhat_function) {
        QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z0+zz, Params));
      } else {
-       QPMS_NOT_IMPLEMENTED("TODO");
+       lapack_int *pivot;
+       gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
+       QPMS_ENSURE_SUCCESS(M_function(Mmat, z0+zz, Params));
+       QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * M);
+       QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR,
+             M /*m*/, M /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
+       QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,
+             M /*n*/, L/*nrhs*/, (lapack_complex_double *)Mmat->data /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
+             (lapack_complex_double *)VHat->data /*b*/, VHat->tda/*ldb*/));
+       free(pivot);
+       gsl_matrix_complex_free(Mmat);
      }
      //UserFunc(z0+zz, Params, VHat, MInvVHat);
 
