@@ -82,7 +82,12 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 #define QPMS_PR_ERROR(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__)
 
 // TODO replace this macro with an inline function?
-#define QPMS_ENSURE_SUCCESS(x) {if(x) QPMS_WTF;}
+#define QPMS_ENSURE_SUCCESS(x) { \
+	int errorcode = (x); \
+	if(errorcode) \
+		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error (%d)", errorcode); \
+}
+
 
 #define QPMS_ENSURE(x, msg, ...) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
 
