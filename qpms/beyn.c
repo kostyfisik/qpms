@@ -156,8 +156,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   //A0->SVD(Sigma, &V0Full, &W0TFull);
  
   QPMS_ENSURE(Sigma->stride == 1, "Sigma vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
-  // FIXME not supported by GSL; use LAPACKE_zgesdd 
-  //gsl_linalg_complex_SV_decomp(V0Full, W0TFull, Sigma, work);
+  QPMS_ENSURE(V0Full->size1 >= V0Full->size2, "m = %zd, l = %zd, what the hell?");
   QPMS_ENSURE_SUCCESS(LAPACKE_zgesdd(LAPACK_ROW_MAJOR, // A = U*Σ*conjg(V') 
       'O' /*jobz, 'O' overwrites a with U and saves conjg(V') in vt if m >= n, i.e. if M >= L, which holds*/,
       V0Full->size1 /* m, number of rows */,
@@ -166,7 +165,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
       V0Full->tda /*lda*/,
       Sigma->data /*s*/, 
       NULL /*u; not used*/, 
-      0 /*ldu; not used*/,
+      M /*ldu; should not be really used but lapacke requires it for some obscure reason*/,
       (lapack_complex_double *)W0TFull->data /*vt*/,
       W0TFull->tda /*ldvt*/
       ));
@@ -186,24 +185,21 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
    }
 
   
+
   // set V0, W0T = matrices of first K right, left singular vectors
   gsl_matrix_complex *V0 = gsl_matrix_complex_alloc(M,K);
   gsl_matrix_complex *W0T= gsl_matrix_complex_alloc(K,L);
-  
-  gsl_vector_complex *TempM = gsl_vector_complex_calloc(M);
-  gsl_vector_complex *TempL = gsl_vector_complex_calloc(L);
-  for(int k=0; k<K; k++){
-      // It should be rows and cols like this, right..?
-      gsl_matrix_complex_get_row(TempM, V0Full,k);
-      gsl_matrix_complex_set_row(V0, k, TempM);
-      gsl_matrix_complex_get_col(TempL,W0TFull,k);
-      gsl_matrix_complex_set_col(W0T,k, TempL);
-   }
+
+  for (int k = 0; k < K; ++k) {
+    gsl_vector_complex_view tmp;
+    tmp = gsl_matrix_complex_column(V0Full, k);
+    gsl_matrix_complex_set_col(V0, k, &(tmp.vector));
+    tmp = gsl_matrix_complex_row(W0TFull, k);
+    gsl_matrix_complex_set_row(W0T, k, &(tmp.vector));
+  }
 
   gsl_matrix_complex_free(V0Full);
   gsl_matrix_complex_free(W0TFull);
-  gsl_vector_complex_free(TempM);
-  gsl_vector_complex_free(TempL);
   
 
   // B <- V0' * A1 * W0 * Sigma^-1
@@ -262,7 +258,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
         S->tda  /* lda */,
         (lapack_complex_double *) Lambda->data /* w */,
         NULL /* vl */,
-        0 /* ldvl */,
+        M /* ldvl, not used by for some reason needed */,
         (lapack_complex_double *)(B->data)/* vr */,
         B->tda/* ldvr */
         ));
