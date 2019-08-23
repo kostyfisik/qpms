@@ -143,7 +143,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   gsl_vector *Sigma = Solver->Sigma;
 
 
-  int Verbose = 0;//CheckEnv("SCUFF_BEYN_VERBOSE");
+  int Verbose = 1;//CheckEnv("SCUFF_BEYN_VERBOSE");
   double RankTol=1.0e-4; //CheckEnv("SCUFF_BEYN_RANK_TOL",&RankTol);
   double ResTol=0.0;    // CheckEnv("SCUFF_BEYN_RES_TOL",&ResTol);
  
@@ -378,7 +378,7 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
              M /*m*/, M /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
        QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,
              M /*n*/, L/*nrhs*/, (lapack_complex_double *)Mmat->data /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
-             (lapack_complex_double *)VHat->data /*b*/, VHat->tda/*ldb*/));
+             (lapack_complex_double *)MInvVHat->data /*b*/, MInvVHat->tda/*ldb*/));
        free(pivot);
        gsl_matrix_complex_free(Mmat);
      }
