@@ -212,6 +212,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   const gsl_complex zero = gsl_complex_rect(0,0);
   gsl_blas_zgemm(CblasConjTrans, CblasNoTrans, one,
           V0, A1, zero, TM2);
+
   
   printf(" Multiplying TM*W0T->B...\n");
   //TM2.Multiply(&W0T, &B, "--transB C");   //  B <- TM2 * W0
@@ -254,16 +255,16 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
         'N' /* jobvl; don't compute left eigenvectors */,
         'V' /* jobvr; do compute right eigenvectors */,
         K   /* n */,
-        (lapack_complex_double *)(S->data) /* a */,
-        S->tda  /* lda */,
+        (lapack_complex_double *)(B->data) /* a */,
+        B->tda  /* lda */,
         (lapack_complex_double *) Lambda->data /* w */,
         NULL /* vl */,
         M /* ldvl, not used by for some reason needed */,
-        (lapack_complex_double *)(B->data)/* vr */,
-        B->tda/* ldvr */
+        (lapack_complex_double *)(S->data)/* vr */,
+        S->tda/* ldvr */
         ));
 
-
+  gsl_matrix_complex_free(B);
  
   //B.NSEig(&Lambda, &S); 
 
@@ -273,6 +274,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   QPMS_ENSURE_SUCCESS(gsl_blas_zgemm(CblasNoTrans, CblasNoTrans,
         one, V0, S, zero, V0S));
 
+  gsl_matrix_complex_free(V0);
 
 
   int KRetained = 0;
