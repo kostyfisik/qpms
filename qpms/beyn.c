@@ -417,7 +417,7 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
    }
 
 */
-  return 0;
+  return K;
 }
 
 /***************************************************************/

@@ -33,6 +33,7 @@
 
 #include <complex.h>
 #include <gsl/gsl_matrix.h>
+#include <gsl/gsl_complex_math.h>
 
 /// User-supplied function that provides the operator M(z) whose "roots" are to be found.
 typedef int (*beyn_function_M_t)(gsl_matrix_complex *target_M, complex double z, void *params);
@@ -82,5 +83,9 @@ void ReRandomize(BeynSolver *Solver, unsigned int RandSeed);
 int BeynSolve(BeynSolver *Solver,
               beyn_function_M_t M_function, beyn_function_M_inv_Vhat_t M_inv_Vhat_function, void *params,
               double complex z0, double Rx, double Ry, int N);
+
+
+static inline complex double gsl_complex_tostd(gsl_complex z) { return GSL_REAL(z) + I*GSL_IMAG(z); }
+static inline gsl_complex gsl_complex_fromstd(complex double z) { return gsl_complex_rect(creal(z), cimag(z)); }
 
 #endif // BEYN_H
