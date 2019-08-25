@@ -72,7 +72,8 @@ static inline point2d point2d_fromxy(const double x, const double y) {
  */
 int qpms_reduce_lattice_basis(double *b, ///< Array of dimension [bsize][ndim].
 		const size_t bsize, ///< Number of the basis vectors (dimensionality of the lattice).
-		const size_t ndim ///< Dimension of the space into which the lattice is embedded.
+		const size_t ndim, ///< Dimension of the space into which the lattice is embedded.
+		double delta
 		);
 
 /// Generic lattice point generator type.

@@ -38,7 +38,8 @@ static void gram_schmidt(
 static inline double fsq(double x) { return x * x; };
 
 // A naïve implementation of Lenstra-Lenstra-Lovász algorithm.
-int qpms_reduce_lattice_basis(double *b, const size_t bsize, const size_t ndim)
+int qpms_reduce_lattice_basis(double *b, const size_t bsize, const size_t ndim, 
+    double delta)
 {
   QPMS_ENSURE(bsize <= ndim, 
       "The basis must have less elements (%zd) than the space dimension (%zd).",
@@ -59,7 +60,7 @@ int qpms_reduce_lattice_basis(double *b, const size_t bsize, const size_t ndim)
     }
     // Step 2
     if (k > 0 && // Case 1
-        bstar_sqnorm[k] < (0.75 - fsq(mu[mu_index(k, k-1)])) * bstar_sqnorm[k-1]) {
+        bstar_sqnorm[k] < (delta - fsq(mu[mu_index(k, k-1)])) * bstar_sqnorm[k-1]) {
       // swap b(k) and b(k-1)
       cblas_dswap(ndim, &b[k*ndim], 1, &b[(k-1)*ndim], 1);
       double B_k = bstar_sqnorm[k];

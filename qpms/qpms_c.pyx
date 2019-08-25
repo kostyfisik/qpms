@@ -610,7 +610,7 @@ def gamma_inc_CF(double a, cdouble x):
         cx_gamma_inc_CF_e(a, x, &res)
     return (res.val, res.err)
 
-def lll_reduce(basis):
+def lll_reduce(basis, double delta=0.75):
     """
     Lattice basis reduction with the Lenstra-Lenstra-Lovász algorithm.
 
@@ -630,7 +630,7 @@ def lll_reduce(basis):
                 "the dimensionality of the lattice (%d) embedded into it."
                 % (d, n))
     cdef double [:,:] basis_view = basis
-    if 0 != qpms_reduce_lattice_basis(&basis_view[0,0], n, d):
+    if 0 != qpms_reduce_lattice_basis(&basis_view[0,0], n, d, delta):
         raise RuntimeError("Something weird happened")
     return basis
 
