@@ -609,3 +609,30 @@ def gamma_inc_CF(double a, cdouble x):
     with pgsl_ignore_error(15): #15 is underflow
         cx_gamma_inc_CF_e(a, x, &res)
     return (res.val, res.err)
+
+def lll_reduce(basis):
+    """
+    Lattice basis reduction with the Lenstra-Lenstra-Lovász algorithm.
+
+    basis is array_like with dimensions (n, d), where
+    n is the size of the basis (dimensionality of the lattice)
+    and d is the dimensionality of the space into which the lattice
+    is embedded.
+    """
+    basis = np.array(basis, copy=True, order='C')
+    if len(basis.shape) != 2:
+        raise ValueError("Expected two-dimensional array (got %d-dimensional)"
+                % len(basis.shape))
+    cdef size_t n, d
+    n, d = basis.shape
+    if n > d:
+        raise ValueError("Real space dimensionality (%d) cannot be smaller than"
+                "the dimensionality of the lattice (%d) embedded into it."
+                % (d, n))
+    cdef double [:,:] basis_view = basis
+    if 0 != qpms_reduce_lattice_basis(&basis_view[0,0], n, d):
+        raise RuntimeError("Something weird happened")
+    return basis
+
+
+

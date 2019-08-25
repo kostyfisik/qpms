@@ -209,6 +209,7 @@ cdef extern from "lattices.h":
         PGEN_1D_INC_TOWARDS_ORIGIN
     PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bint inc_minR,
             double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
+    int qpms_reduce_lattice_basis(double *b, size_t bsize, size_t ndim)
 
 
 cdef extern from "quaternions.h":

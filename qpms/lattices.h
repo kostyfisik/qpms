@@ -63,6 +63,18 @@ static inline point2d point2d_fromxy(const double x, const double y) {
 	return p;
 }
 
+/// Lattice basis reduction.
+/** This is currenty a bit naïve implementation of
+ * Lenstra-Lenstra-Lovász algorithm.
+ *
+ * The reduction happens in-place, i.e. the basis vectors in \a b are
+ * replaced with the reduced basis.
+ */
+int qpms_reduce_lattice_basis(double *b, ///< Array of dimension [bsize][ndim].
+		const size_t bsize, ///< Number of the basis vectors (dimensionality of the lattice).
+		const size_t ndim ///< Dimension of the space into which the lattice is embedded.
+		);
+
 /// Generic lattice point generator type.
 /**
  * A bit of OOP-in-C brainfuck here.

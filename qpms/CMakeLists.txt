@@ -13,7 +13,9 @@ include_directories(${DIRS})
 add_library (qpms SHARED translations.c tmatrices.c vecprint.c vswf.c wigner.c ewald.c
 	ewaldsf.c pointgroups.c latticegens.c
 	lattices2d.c gaunt.c error.c legendre.c symmetries.c vecprint.c
-	bessel.c own_zgemm.c parsing.c scatsystem.c materials.c drudeparam_data.c)
+	bessel.c own_zgemm.c parsing.c scatsystem.c materials.c drudeparam_data.c
+	lll.c
+	)
 use_c99()
 
 set(LIBS ${LIBS} ${GSL_LIBRARIES} ${GSLCBLAS_LIBRARIES})
