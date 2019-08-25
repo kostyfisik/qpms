@@ -619,7 +619,7 @@ def lll_reduce(basis):
     and d is the dimensionality of the space into which the lattice
     is embedded.
     """
-    basis = np.array(basis, copy=True, order='C')
+    basis = np.array(basis, copy=True, order='C', dtype=np.double)
     if len(basis.shape) != 2:
         raise ValueError("Expected two-dimensional array (got %d-dimensional)"
                 % len(basis.shape))
