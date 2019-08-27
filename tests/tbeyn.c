@@ -11,10 +11,11 @@ int M_function(gsl_matrix_complex *target, complex double z, void *no_params) {
 
   gsl_matrix_complex_set_zero(target);
   for (int i = 0; i < m; ++i) {
-    gsl_matrix_complex_set(target, i, i, (gsl_complex) d);
-    if(i > 0) gsl_matrix_complex_set(target, i, i-1, (gsl_complex) od);
-    if(i < m - 1) gsl_matrix_complex_set(target, i, i+1, (gsl_complex) od);
+    gsl_matrix_complex_set(target, i, i, d);
+    if(i > 0) gsl_matrix_complex_set(target, i, i-1, od);
+    if(i < m - 1) gsl_matrix_complex_set(target, i, i+1, od);
   }
+  gsl_matrix_complex_set(target, m-1, m-1, gsl_complex_fromstd(gsl_complex_tostd(d)/2 + z/(z-1)));
 
   return 0;
 }
@@ -24,6 +25,7 @@ int main() {
   double Rx = 148, Ry = 148;
   int L = 10, N = 50, dim = 400;
   BeynSolver * solver = CreateBeynSolver(dim, L);
+  ReRandomize(solver, 666);
 
   int K = BeynSolve(solver, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
       z0, Rx, Ry, N);
