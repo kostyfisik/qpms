@@ -191,7 +191,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   // compute effective rank K (number of eigenvalue candidates)
   int K=0;
   for(int k=0; k<Sigma->size /* this is L, actually */; k++)
-   { if (Verbose) printf("Beyn: SV(%i)=%e",k,gsl_vector_get(Sigma, k));
+   { if (Verbose) printf("Beyn: SV(%i)=%e\n",k,gsl_vector_get(Sigma, k));
      if (gsl_vector_get(Sigma, k) > RankTol )
       K++;
    }
@@ -234,7 +234,7 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   printf(" Multiplying TM*W0T->B...\n");
   //TM2.Multiply(&W0T, &B, "--transB C");   //  B <- TM2 * W0
   
-  gsl_blas_zgemm(CblasNoTrans, CblasTrans, one,
+  gsl_blas_zgemm(CblasNoTrans, CblasConjTrans, one,
           TM2, W0T, zero, B);
 
   gsl_matrix_complex_free(W0T);
@@ -380,46 +380,20 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
 
      // Tän pitäis kutsua eval_WT
      // Output ilmeisesti tallentuun neljänteen parametriin
-#ifndef NDEBUG
-     complex double vhat_copy[M][L]; //dbg
-     for(int i = 0; i < M; ++i) for(int j = 0; j < L; ++j) //dbg
-       vhat_copy[i][j] = cg2s(gsl_matrix_complex_get(VHat, i, j)); //dbg
-#endif
      
      if(M_inv_Vhat_function) {
        QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z0+z1, Params));
      } else {
-       const complex double zero = 0, one = 1;
        lapack_int *pivot;
        gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
        QPMS_ENSURE_SUCCESS(M_function(Mmat, z0+z1, Params));
-#ifndef NDEBUG
-       complex double Mmat_check[M][M]; //dbg
-       for(int i = 0; i < M; ++i) for(int j = 0; j < M; ++j) //dbg
-         Mmat_check[i][j] = cg2s(gsl_matrix_complex_get(Mmat, i, j)); //dbg
-#endif
        QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * M);
        QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR,
              M /*m*/, M /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
        QPMS_ENSURE(MInvVHat->tda == L, "wut?");
        QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,
-             M /*n*/, L/*nrhs*/, (lapack_complex_double *)Mmat->data /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
-             (lapack_complex_double *)MInvVHat->data /*b*/, MInvVHat->tda/*ldb*/));
-
-#ifndef NDEBUG
-       // Check the inversion result
-       complex double minvhat_check[M][L];
-       for(int i = 0; i < M; ++i) for(int j = 0; j < L; ++j)
-         minvhat_check[i][j] = cg2s(gsl_matrix_complex_get(MInvVHat, i, j));
-       complex double vhat_recon[M][L];
-
-       cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-             M, L, M, &one, Mmat_check[0], M, minvhat_check[0], L, &zero, vhat_recon[0], L);
-
-       for(int i = 0; i < M; ++i) for(int j = 0; j < L; ++j)
-         if (cabs(vhat_recon[i][j] - vhat_copy[i][j]) > 1e-8*(1+cabs(vhat_recon[i][j] + vhat_copy[i][j])))
-           QPMS_WTF;
-#endif
+             M /*n*/, L/*nrhs*/, (lapack_complex_double *)(Mmat->data) /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
+             (lapack_complex_double *)(MInvVHat->data) /*b*/, MInvVHat->tda/*ldb*/));
 
 
        free(pivot);
