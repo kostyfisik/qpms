@@ -1,33 +1,3 @@
-/* Copyright (C) 2005-2011 M. T. Homer Reid
- *
- * This file is part of SCUFF-EM.
- *
- * SCUFF-EM is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * SCUFF-EM is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-/*
- * libBeyn.h -- header file for libBeyn, a simple implementation of
- *           -- Beyn's algorithm for nonlinear eigenproblems
- *           -- 
- *           -- This is packaged together with SCUFF-EM, but
- *           -- it is really a standalone independent entity
- *           -- for general-purpose use in solving nonlinear
- *           -- eigenproblems.
- */
-
-
 #ifndef BEYN_H
 #define BEYN_H
 
@@ -36,54 +6,43 @@
 #include <gsl/gsl_complex_math.h>
 
 /// User-supplied function that provides the operator M(z) whose "roots" are to be found.
-typedef int (*beyn_function_M_t)(gsl_matrix_complex *target_M, complex double z, void *params);
+typedef int (*beyn_function_M_gsl_t)(gsl_matrix_complex *target_M, complex double z, void *params);
 
 /// (optional) User-supplied function that, given \f$ \hat V \f$, calculates \f$ M(z)^{-1} \hat V \f$.
-typedef int (*beyn_function_M_inv_Vhat_t)(gsl_matrix_complex *target_M_inv_Vhat,
+typedef int (*beyn_function_M_inv_Vhat_gsl_t)(gsl_matrix_complex *target_M_inv_Vhat,
 	       	const gsl_matrix_complex *Vhat, complex double z, void *params); 
 
-/***************************************************************/
-/***************************************************************/
-/***************************************************************/
-typedef struct BeynSolver
-{
-   int M;   // dimension of matrices
-   int L;   // number of columns of VHat matrix
 
-   gsl_vector_complex *Eigenvalues, *EVErrors;
-   gsl_matrix_complex *Eigenvectors;
-   gsl_matrix_complex *A0, *A1, *A0Coarse, *A1Coarse, *MInvVHat;
-   gsl_matrix_complex *VHat;
-   gsl_vector *Sigma, *Residuals;
-   double complex *Workspace;
+/// Complex plane integration contour structure.
+typedef struct beyn_contour_t {
+	size_t n; ///< Number of discretisation points.
+	complex double z_dz[][2]; ///< Pairs of contour points and derivatives in that points.
+} beyn_contour_t;
 
- } BeynSolver;
+/// Complex plane elliptic integration contour with axes parallel to the real, imaginary axes.
+/** Free using free(). */
+beyn_contour_t *beyn_contour_ellipse(complex double centre, double halfax_re, double halfax_im, size_t npoints);
 
-// constructor, destructor
-BeynSolver *CreateBeynSolver(int M, int L);
-void DestroyBeynSolver(BeynSolver *Solver);
+typedef struct beyn_result_gsl_t {
+	size_t neig; ///< Number of eigenvalues found
+	gsl_vector_complex *eigval;
+	gsl_vector_complex *eigval_err;
+	gsl_vector *residuals;
+	gsl_matrix_complex *eigvec;
+} beyn_result_gsl_t;
 
-// reset the random matrix VHat used in the Beyn algorithm
-// 
-void ReRandomize(BeynSolver *Solver, unsigned int RandSeed);
+void beyn_result_gsl_free(beyn_result_gsl_t *result);
 
-// for both of the following routines,
-// the return value is the number of eigenvalues found,
-// and the eigenvalues and eigenvectors are stored in the
-// Lambda and Eigenvectors fields of the BeynSolver structure
-
-// Beyn method for circular contour of radius R,
-// centered at z0, using N quadrature points
-//int BeynSolve(BeynSolver *Solver,
-//              BeynFunction UserFunction, void *Params,
-//              double complex z0, double R, int N);
-
-// Beyn method for elliptical contour of horizontal, vertical
-// radii Rx, Ry, centered at z0, using N quadrature points
-int BeynSolve(BeynSolver *Solver,
-              beyn_function_M_t M_function, beyn_function_M_inv_Vhat_t M_inv_Vhat_function, void *params,
-              double complex z0, double Rx, double Ry, int N);
-
+int beyn_solve_gsl(beyn_result_gsl_t **result,
+		size_t m, ///< Dimension of the matrix \a M.
+		size_t l, ///< Number of columns of the random matrix  \f$ \hat V \f$ (larger than the expected number of solutions).
+		beyn_function_M_gsl_t M, ///< Function providing the matrix \f$ M(z) \f$.
+		beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat, ///< Fuction providing the matrix \f$ M^{-1}(z) \hat V \f$ (optional).
+		void *params, ///< Parameter pointer passed to M() and M_inv_Vhat().
+		const beyn_contour_t *contour, ///< Integration contour.
+		double rank_tol, ///< (default: `1e-4`) TODO DOC.
+		double res_tol ///< (default: `0.0`) TODO DOC.
+	      );
 
 static inline complex double gsl_complex_tostd(gsl_complex z) { return GSL_REAL(z) + I*GSL_IMAG(z); }
 static inline gsl_complex gsl_complex_fromstd(complex double z) { return gsl_complex_rect(creal(z), cimag(z)); }

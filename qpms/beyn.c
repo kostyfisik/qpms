@@ -1,22 +1,3 @@
-/* 
- * This file was originally part of SCUFF-EM by M. T. Homer Reid.
- * Modified by Kristian Arjas and Marek Nečada to work without libhmat and libhrutil.
- *
- * SCUFF-EM is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * SCUFF-EM is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 
 #define cg2s(x) gsl_complex_tostd(x)
@@ -41,26 +22,84 @@
 
 STATIC_ASSERT((sizeof(lapack_complex_double) == sizeof(gsl_complex)), lapack_and_gsl_complex_must_be_consistent);
 
-double randU(double A, double B) { return A + (B-A) * random() * (1. / RAND_MAX); }
-double randN(double Sigma, double Mu) {
+
+typedef struct BeynSolver
+{
+	int M;   // dimension of matrices
+	int L;   // number of columns of VHat matrix
+
+	gsl_vector_complex *Eigenvalues, *EVErrors;
+	gsl_matrix_complex *Eigenvectors;
+	gsl_matrix_complex *A0, *A1, *A0Coarse, *A1Coarse, *MInvVHat;
+	gsl_matrix_complex *VHat;
+	gsl_vector *Sigma, *Residuals;
+	double complex *Workspace;
+} BeynSolver;
+
+// constructor, destructor
+BeynSolver *CreateBeynSolver(int M, int L);
+void DestroyBeynSolver(BeynSolver *Solver);
+
+// reset the random matrix VHat used in the Beyn algorithm
+//
+void ReRandomize(BeynSolver *Solver, unsigned int RandSeed);
+
+// for both of the following routines,
+// the return value is the number of eigenvalues found,
+// and the eigenvalues and eigenvectors are stored in the
+// Lambda and Eigenvectors fields of the BeynSolver structure
+
+// Beyn method for circular contour of radius R,
+// centered at z0, using N quadrature points
+//int BeynSolve(BeynSolver *Solver,
+//              BeynFunction UserFunction, void *Params,
+//              double complex z0, double R, int N);
+
+// Beyn method for elliptical contour of horizontal, vertical
+// radii Rx, Ry, centered at z0, using N quadrature points
+int BeynSolve(BeynSolver *Solver,
+		beyn_function_M_t M_function, beyn_function_M_inv_Vhat_t M_inv_Vhat_function, void *params,
+		double complex z0, double Rx, double Ry, int N);
+
+
+
+
+static double randU(double A, double B) { return A + (B-A) * random() * (1. / RAND_MAX); }
+
+static double randN(double Sigma, double Mu) {
   double u1 = randU(0, 1);
   double u2 = randU(0, 1);
   return Mu + Sigma*sqrt(-2*log(u1))*cos(2.*M_PI*u2);
 }
 
-#if 0
-// Uniformly random number between -2 and 2
-gsl_complex zrandN(){
-  double a = (rand()*4.0/RAND_MAX) - 2;
-  double b = (rand()*4.0/RAND_MAX) - 2;
-  return gsl_complex_rect(a, b);
-}
-#endif
-
-complex double zrandN(double sigma, double mu){
+static complex double zrandN(double sigma, double mu){
   return randN(sigma, mu) + I*randN(sigma, mu);
 }
 
+
+beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double rIm, size_t n) 
+{
+  beyn_contour_t *c;
+  QPMS_CRASHING_MALLOC(c, sizeof(beyn_contour_t) + n*sizeof(c->z_dz[0]));
+  c->n = n;
+  for(size_t i = 0; i < n; ++i) {
+    double t = i*2*M_PI/n;
+    double st = sin(t), ct = cos(t);
+    c->z_zd[i][0] = centre + ct*rRe + st*rIm;
+    c->z_zd[i][1] = (I*rRe*st + rIm*ct) / n;
+  }
+  return c;
+}
+
+void beyn_result_gsl_free(beyn_result_gsl_t *r) {
+  if(r) {
+    gsl_vector_complex_free(r->eigval);
+    gsl_vector_complex_free(r->eigval_err);
+    gsl_vector_free(r->residuals);
+    gsl_matrix_complex_free(r->eigvec);
+    free(r);
+  }
+}
 
 /***************************************************************/
 /***************************************************************/
@@ -72,11 +111,6 @@ BeynSolver *CreateBeynSolver(int M, int L)
   Solver->M = M;
   Solver->L = L;
   QPMS_ENSURE(L <= M, "We expect L <= M, but we got L = %d, M = %d ", L, M);
-
-#if 0
-  int MLMax = (M>L) ? M : L;
-#endif
-  int MLMin = (M<L) ? M : L;
 
   // storage for eigenvalues and eigenvectors
   Solver->Eigenvalues  = gsl_vector_complex_calloc(L);
@@ -91,7 +125,7 @@ BeynSolver *CreateBeynSolver(int M, int L)
   Solver->A1Coarse     = gsl_matrix_complex_calloc(M,L);
   Solver->MInvVHat     = gsl_matrix_complex_calloc(M,L);
   Solver->VHat         = gsl_matrix_complex_calloc(M,L);
-  Solver->Sigma        = gsl_vector_calloc(MLMin);
+  Solver->Sigma        = gsl_vector_calloc(L);
   ReRandomize(Solver,(unsigned)time(NULL));
 
 #if 0
@@ -126,6 +160,20 @@ void DestroyBeynSolver(BeynSolver *Solver)
 
   free(Solver);
 }
+
+void DestroyBeynSolverPartial(BeynSolver *solver) 
+{
+  gsl_matrix_complex_free(Solver->A0);
+  gsl_matrix_complex_free(Solver->A1);
+  gsl_matrix_complex_free(Solver->A0Coarse);
+  gsl_matrix_complex_free(Solver->A1Coarse);
+  gsl_matrix_complex_free(Solver->MInvVHat);
+  gsl_vector_free(Solver->Sigma);
+  gsl_matrix_complex_free(Solver->VHat);
+
+  free(Solver);
+}
+
 
 /***************************************************************/
 /***************************************************************/
@@ -261,10 +309,6 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   gsl_vector_complex *Lambda = gsl_vector_complex_alloc(K); // Eigenvalues
   gsl_matrix_complex *S = gsl_matrix_complex_alloc(K,K); // Eigenvectors
 
-  // FIXME general complex eigensystems not supported by GSL (use LAPACKE_zgee?)
-  //gsl_eigen_genv_workspace * W = gsl_eigen_genv_alloc(K);
-  //gsl_eigen_genv(B, Eye, alph, beta, S,W);
-  //gsl_eigen_genv_free(W);
   QPMS_ENSURE(Sigma->stride == 1, "Sigma vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
   QPMS_ENSURE(Lambda->stride == 1, "Lambda vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
   QPMS_ENSURE_SUCCESS(LAPACKE_zgeev(
@@ -282,8 +326,6 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
         ));
 
   gsl_matrix_complex_free(B);
-
-  //B.NSEig(&Lambda, &S); 
 
   // V0S <- V0*S
   printf("Multiplying V0*S...\n");
@@ -436,12 +478,15 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
   return K;
 }
 
-/***************************************************************/
-/***************************************************************/
-/***************************************************************/
-/*
-int BeynSolve(BeynSolver *Solver,
-              BeynFunction UserFunction, void *Params,
-              cdouble z0, double R, int N)
-{ return BeynSolve(Solver, UserFunction, Params, z0, R, R, N); }
-*/
+// This is currently just a wrapper over the old mess that is to be rewritten gradually.
+int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l, 
+    beyn_function_M_gsl_t M, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat, void *params,
+    const beyn_contour_t *contour, double rank_tol, double res_tol)
+{
+  
+
+  return 0;
+}
+
+
+
