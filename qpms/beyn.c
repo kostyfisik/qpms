@@ -58,7 +58,7 @@ void ReRandomize(BeynSolver *Solver, unsigned int RandSeed);
 // Beyn method for elliptical contour of horizontal, vertical
 // radii Rx, Ry, centered at z0, using N quadrature points
 int BeynSolve(BeynSolver *Solver,
-		beyn_function_M_t M_function, beyn_function_M_inv_Vhat_t M_inv_Vhat_function, void *params,
+		beyn_function_M_gsl_t M_function, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat_function, void *params,
 		double complex z0, double Rx, double Ry, int N);
 
 
@@ -81,12 +81,13 @@ beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double r
 {
   beyn_contour_t *c;
   QPMS_CRASHING_MALLOC(c, sizeof(beyn_contour_t) + n*sizeof(c->z_dz[0]));
+  c->centre = centre;
   c->n = n;
   for(size_t i = 0; i < n; ++i) {
     double t = i*2*M_PI/n;
     double st = sin(t), ct = cos(t);
-    c->z_zd[i][0] = centre + ct*rRe + st*rIm;
-    c->z_zd[i][1] = (I*rRe*st + rIm*ct) / n;
+    c->z_dz[i][0] = centre + ct*rRe + I*st*rIm;
+    c->z_dz[i][1] = (I*rRe*st + rIm*ct) / n;
   }
   return c;
 }
@@ -161,7 +162,7 @@ void DestroyBeynSolver(BeynSolver *Solver)
   free(Solver);
 }
 
-void DestroyBeynSolverPartial(BeynSolver *solver) 
+void DestroyBeynSolverPartial(BeynSolver *Solver) 
 {
   gsl_matrix_complex_free(Solver->A0);
   gsl_matrix_complex_free(Solver->A1);
@@ -198,10 +199,10 @@ void ReRandomize(BeynSolver *Solver, unsigned int RandSeed)
 /* eigenvalues and eigenvectors                                */
 /***************************************************************/
 
-int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function, 
+int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_gsl_t M_function, 
     void *Params,
     gsl_matrix_complex *A0, gsl_matrix_complex *A1, double complex z0,
-    gsl_vector_complex *Eigenvalues, gsl_matrix_complex *Eigenvectors)
+    gsl_vector_complex *Eigenvalues, gsl_matrix_complex *Eigenvectors, const double RankTol, const double ResTol)
 {
   int M = Solver->M;
   int L = Solver->L;
@@ -209,8 +210,8 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
 
 
   int Verbose = 1;//CheckEnv("SCUFF_BEYN_VERBOSE");
-  double RankTol=1.0e-4; //CheckEnv("SCUFF_BEYN_RANK_TOL",&RankTol);
-  double ResTol=0.0;    // CheckEnv("SCUFF_BEYN_RES_TOL",&ResTol);
+  //double RankTol=1.0e-4; //CheckEnv("SCUFF_BEYN_RANK_TOL",&RankTol);
+  //double ResTol=0.0;    // CheckEnv("SCUFF_BEYN_RES_TOL",&ResTol);
 
   // A0 -> V0Full * Sigma * W0TFull' 
   printf(" Beyn: computing SVD...\n");
@@ -249,8 +250,6 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
     return 0;
   }
 
-
-
   // set V0, W0T = matrices of first K right, left singular vectors
   gsl_matrix_complex *V0 = gsl_matrix_complex_alloc(M,K);
   gsl_matrix_complex *W0T= gsl_matrix_complex_alloc(K,L);
@@ -266,7 +265,6 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   gsl_matrix_complex_free(V0Full);
   gsl_matrix_complex_free(W0TFull);
 
-
   // B <- V0' * A1 * W0 * Sigma^-1
   gsl_matrix_complex *TM2 = gsl_matrix_complex_calloc(K,L);
   gsl_matrix_complex *B = gsl_matrix_complex_calloc(K,K);
@@ -277,7 +275,6 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
   const gsl_complex zero = gsl_complex_rect(0,0);
   gsl_blas_zgemm(CblasConjTrans, CblasNoTrans, one,
       V0, A1, zero, TM2);
-
 
   printf(" Multiplying TM*W0T->B...\n");
   //TM2.Multiply(&W0T, &B, "--transB C");   //  B <- TM2 * W0
@@ -301,7 +298,6 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
 
   // for(int n=0; n<K; n++)
   //  B.ScaleEntry(m,n,1.0/Sigma->GetEntry(n));
-
 
   // B -> S*Lambda*S'
   printf(" Eigensolving (%i,%i)\n",K,K);
@@ -334,7 +330,6 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
         one, V0, S, zero, V0S));
 
   gsl_matrix_complex_free(V0);
-
 
   int KRetained = 0;
   gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
@@ -373,17 +368,25 @@ int ProcessAMatrices(BeynSolver *Solver, beyn_function_M_t M_function,
 /***************************************************************/
 /***************************************************************/
 /***************************************************************/
-
+#if 0
 int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
     beyn_function_M_inv_Vhat_t M_inv_Vhat_function, void *Params,
     double complex z0, double Rx, double Ry, int N)
+#endif
+
+int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l,
+    beyn_function_M_gsl_t M_function, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat_function,
+    void *params, const beyn_contour_t *contour,
+    double rank_tol, double res_tol)
 {  
+  BeynSolver *Solver = CreateBeynSolver(m, l);
+
   /***************************************************************/
   /* force N to be even so we can simultaneously evaluate        */
   /* the integral with N/2 quadrature points                     */
   /***************************************************************/
 
-  if ( (N%2)==1 ) N++;
+  // if ( (N%2)==1 ) N++;
 
   /*if (Rx==Ry)
     printf("Applying Beyn method with z0=%s,R=%e,N=%i...\n",z2s(z0),Rx,N);
@@ -408,13 +411,13 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
   gsl_matrix_complex_set_zero(A1);
   gsl_matrix_complex_set_zero(A0Coarse);
   gsl_matrix_complex_set_zero(A1Coarse);
+  size_t N = contour->n;
   double DeltaTheta = 2.0*M_PI / ((double)N);
-  printf(" Evaluating contour integral (%i points)...\n",N);
+  printf(" Evaluating contour integral (%zd points)...\n",N);
+  const complex double z0 = contour->centre;
   for(int n=0; n<N; n++) { 
-    double Theta = ((double)n)*DeltaTheta;
-    double CT    = cos(Theta), ST=sin(Theta);
-    complex double z1 = Rx*CT + I*Ry*ST;
-    complex double dz = (I*Rx*ST + Ry*CT) / N;
+    const complex double z = contour->z_dz[n][0];
+    const complex double dz = contour->z_dz[n][1];
 
     //MInvVHat->Copy(VHat);
     // Mitä varten tämä kopiointi on?
@@ -424,11 +427,11 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
     // Output ilmeisesti tallentuun neljänteen parametriin
 
     if(M_inv_Vhat_function) {
-      QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z0+z1, Params));
+      QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z, params));
     } else {
       lapack_int *pivot;
       gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
-      QPMS_ENSURE_SUCCESS(M_function(Mmat, z0+z1, Params));
+      QPMS_ENSURE_SUCCESS(M_function(Mmat, z, params));
       QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * M);
       QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR,
             M /*m*/, M /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
@@ -437,11 +440,10 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
             M /*n*/, L/*nrhs*/, (lapack_complex_double *)(Mmat->data) /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
             (lapack_complex_double *)(MInvVHat->data) /*b*/, MInvVHat->tda/*ldb*/));
 
-
       free(pivot);
       gsl_matrix_complex_free(Mmat);
     }
-    //UserFunc(z0+zz, Params, VHat, MInvVHat);
+    //UserFunc(z0+zz, params, VHat, MInvVHat);
 
     gsl_matrix_complex_scale(MInvVHat, cs2g(dz));
     gsl_matrix_complex_add(A0, MInvVHat);
@@ -450,7 +452,7 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
       gsl_matrix_complex_add(A0Coarse, MInvVHat);
     }
 
-    gsl_matrix_complex_scale(MInvVHat, cs2g(z1));
+    gsl_matrix_complex_scale(MInvVHat, cs2g(z - z0));
     gsl_matrix_complex_add(A1, MInvVHat);
     if((n%2)==0) {
       gsl_matrix_complex_add(A1Coarse, MInvVHat);
@@ -462,31 +464,21 @@ int BeynSolve(BeynSolver *Solver, beyn_function_M_t M_function,
   gsl_vector_complex *EVErrors     = Solver->EVErrors;
   gsl_matrix_complex *Eigenvectors = Solver->Eigenvectors;
   
-  int K = ProcessAMatrices(Solver, M_function, Params, A0, A1, z0, Eigenvalues, Eigenvectors);
-  int KCoarse = ProcessAMatrices(Solver, M_function, Params, A0Coarse, A1Coarse, z0, EVErrors, Eigenvectors);
+  int K = ProcessAMatrices(Solver, M_function, params, A0, A1, z0, Eigenvalues, Eigenvectors, rank_tol, res_tol);
+  int KCoarse = ProcessAMatrices(Solver, M_function, params, A0Coarse, A1Coarse, z0, EVErrors, Eigenvectors, rank_tol, res_tol);
   //  Log("{K,KCoarse}={%i,%i}",K,KCoarse);
+  
   gsl_blas_zaxpy(gsl_complex_rect(-1,0), Eigenvalues, EVErrors);
-#if 0
-  for(size_t k = 0; k < EVErrors->size && k < Eigenvalues->size; ++k) { 
+  // TODO Original did also fabs on the complex and real parts ^^^.
 
-    EVErrors->ZV[k] -= Eigenvalues->ZV[k];
-    EVErrors->ZV[k] = cdouble( fabs(real(EVErrors->ZV[k])),
-        fabs(imag(EVErrors->ZV[k]))
-        );
-  }
-#endif
+  QPMS_CRASHING_MALLOC(*result, sizeof(beyn_result_gsl_t));
+  (*result)->eigval = Solver->Eigenvalues;
+  (*result)->eigval_err = Solver->EVErrors;
+  (*result)->residuals = Solver->Residuals;
+  (*result)->eigvec = Solver->Eigenvectors;
+  
+  DestroyBeynSolverPartial(Solver);
+
   return K;
 }
-
-// This is currently just a wrapper over the old mess that is to be rewritten gradually.
-int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l, 
-    beyn_function_M_gsl_t M, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat, void *params,
-    const beyn_contour_t *contour, double rank_tol, double res_tol)
-{
-  
-
-  return 0;
-}
-
-
 

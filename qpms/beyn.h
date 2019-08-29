@@ -16,6 +16,7 @@ typedef int (*beyn_function_M_inv_Vhat_gsl_t)(gsl_matrix_complex *target_M_inv_V
 /// Complex plane integration contour structure.
 typedef struct beyn_contour_t {
 	size_t n; ///< Number of discretisation points.
+	complex double centre; ///< TODO what is the exact purpose of this?
 	complex double z_dz[][2]; ///< Pairs of contour points and derivatives in that points.
 } beyn_contour_t;
 

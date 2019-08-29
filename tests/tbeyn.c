@@ -24,17 +24,18 @@ int main() {
   complex double z0 = 150+2*I;
   double Rx = 148, Ry = 148;
   int L = 10, N = 50, dim = 400;
-  BeynSolver * solver = CreateBeynSolver(dim, L);
-  ReRandomize(solver, 666);
+  beyn_contour_t *contour = beyn_contour_ellipse(z0, Rx, Ry, N);
 
-  int K = BeynSolve(solver, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
-      z0, Rx, Ry, N);
+  beyn_result_gsl_t *result;
+  int K = beyn_solve_gsl(&result, dim, L, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
+      contour, 1e-4, 0);
   printf("Found %d eigenvalues:\n", K);
   for (int i = 0; i < K; ++i) {
-    gsl_complex eig = gsl_vector_complex_get(solver->Eigenvalues, i);
+    gsl_complex eig = gsl_vector_complex_get(result->eigval, i);
     printf("%d: %g%+gj\n", i, GSL_REAL(eig), GSL_IMAG(eig));
   }
-  DestroyBeynSolver(solver);
+  free(contour);
+  beyn_result_gsl_free(result);
   return 0;
 }
 
