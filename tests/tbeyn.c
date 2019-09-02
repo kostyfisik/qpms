@@ -1,21 +1,19 @@
 #include <qpms/beyn.h>
 #include <stdio.h>
-
+#include <string.h>
 
 // Matrix as in Beyn, section 4.11
-int M_function(gsl_matrix_complex *target, complex double z, void *no_params) {
-  int m = target->size1;
+int M_function(complex double *target, const size_t m, const complex double z, void *no_params) {
+  complex double d =  2*m - 4*z / (6*m);
+  complex double od =  -((double)m) - z / (6*m);
 
-  gsl_complex d = gsl_complex_fromstd(  2*m - 4*z / (6*m) );
-  gsl_complex od =  gsl_complex_fromstd( -m - z / (6*m) );
-
-  gsl_matrix_complex_set_zero(target);
+  memset(target, 0, m*m*sizeof(complex double));
   for (int i = 0; i < m; ++i) {
-    gsl_matrix_complex_set(target, i, i, d);
-    if(i > 0) gsl_matrix_complex_set(target, i, i-1, od);
-    if(i < m - 1) gsl_matrix_complex_set(target, i, i+1, od);
+    target[i*m + i] = d;
+    if(i > 0) target[i*m + i-1] = od;
+    if(i < m - 1) target[i*m + i+1] = od;
   }
-  gsl_matrix_complex_set(target, m-1, m-1, gsl_complex_fromstd(gsl_complex_tostd(d)/2 + z/(z-1)));
+  target[m*(m-1) + m-1] = d/2 + z/(z-1);
 
   return 0;
 }
@@ -26,16 +24,16 @@ int main() {
   int L = 10, N = 50, dim = 400;
   beyn_contour_t *contour = beyn_contour_ellipse(z0, Rx, Ry, N);
 
-  beyn_result_gsl_t *result;
-  int K = beyn_solve_gsl(&result, dim, L, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
+  beyn_result_t *result;
+  int K = beyn_solve(&result, dim, L, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
       contour, 1e-4, 0);
   printf("Found %d eigenvalues:\n", K);
   for (int i = 0; i < K; ++i) {
-    gsl_complex eig = gsl_vector_complex_get(result->eigval, i);
-    printf("%d: %g%+gj\n", i, GSL_REAL(eig), GSL_IMAG(eig));
+    complex double eig = result->eigval[i];
+    printf("%d: %g%+gj\n", i, creal(eig), cimag(eig));
   }
   free(contour);
-  beyn_result_gsl_free(result);
+  beyn_result_free(result);
   return 0;
 }
 

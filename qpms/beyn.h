@@ -24,7 +24,7 @@ typedef int (*beyn_function_M_t)(complex double *target_M, size_t m, complex dou
 /// (optional) User-supplied function that, given \f$ \hat V \f$, calculates \f$ M(z)^{-1} \hat V \f$.
 /** Pure C array version */
 typedef int (*beyn_function_M_inv_Vhat_t)(complex double *target_M_inv_Vhat, size_t m, size_t l,
-	       	const gsl_matrix_complex *Vhat, complex double z, void *params); 
+	       	const complex double *Vhat, complex double z, void *params); 
 
 /// Complex plane integration contour structure.
 typedef struct beyn_contour_t {
@@ -55,6 +55,10 @@ typedef struct beyn_result_t {
 	complex double *eigval_err;
 	double *residuals;
 	complex double *eigvec;
+
+	/// Private, we wrap it around beyn_result_gsl_t for now.
+	beyn_result_gsl_t *gsl;
+	
 } beyn_result_t;
 
 void beyn_result_free(beyn_result_t *result);

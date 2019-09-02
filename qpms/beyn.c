@@ -18,7 +18,7 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_eigen.h>
 
-#include <beyn.h>
+#include "beyn.h"
 
 STATIC_ASSERT((sizeof(lapack_complex_double) == sizeof(gsl_complex)), lapack_and_gsl_complex_must_be_consistent);
 
@@ -412,7 +412,7 @@ int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l,
   gsl_matrix_complex_set_zero(A0Coarse);
   gsl_matrix_complex_set_zero(A1Coarse);
   size_t N = contour->n;
-  double DeltaTheta = 2.0*M_PI / ((double)N);
+  //double DeltaTheta = 2.0*M_PI / ((double)N);
   printf(" Evaluating contour integral (%zd points)...\n",N);
   const complex double z0 = contour->centre;
   for(int n=0; n<N; n++) { 
@@ -480,5 +480,56 @@ int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l,
   DestroyBeynSolverPartial(Solver);
 
   return K;
+}
+
+// Wrapper of pure C array M-matrix function to GSL.
+
+struct beyn_function_M_carr2gsl_param {
+  beyn_function_M_t M_function;
+  beyn_function_M_inv_Vhat_t M_inv_Vhat_function;
+  void *param;
+};
+
+static int beyn_function_M_carr2gsl(gsl_matrix_complex *target_M, complex double z, void *params) 
+{
+  struct beyn_function_M_carr2gsl_param *p = params;
+  // These could rather be asserts.
+  QPMS_ENSURE(target_M->size2 == target_M->tda, "Target GSL matrix is not a C-contiguous array. This is a bug, please report!");
+  QPMS_ENSURE(target_M->size1 == target_M->size2, "Target is not a square matrix. This is a bug, please report!");
+  return p->M_function((complex double *) target_M->data, target_M->size1, z, p->param);
+}
+
+static int beyn_function_M_inv_Vhat_carr2gsl(gsl_matrix_complex *target,
+    const gsl_matrix_complex *Vhat, complex double z, void *params) 
+{
+  QPMS_UNTESTED;
+  struct beyn_function_M_carr2gsl_param *p = params;
+  // These could rather be asserts.
+  QPMS_ENSURE(target->size2 == target->tda, "Target GSL matrix is not a C-contiguous array. This is a bug, please report!");
+  QPMS_ENSURE(Vhat->size2 == Vhat->tda, "Source GSL matrix is not a C-contiguous array. This is a bug, please report!");
+  // TODO here I could also check whether Vhat and target have compatible sizes.
+  return p->M_inv_Vhat_function((complex double *) target->data, target->size1, target->size2, 
+      (complex double *) Vhat->data, z, p->param);
+}
+
+int beyn_solve(beyn_result_t **result, size_t m, size_t l, beyn_function_M_t M, beyn_function_M_inv_Vhat_t M_inv_Vhat,
+    void *params, const beyn_contour_t *contour, double rank_tol, double res_tol) {
+  struct beyn_function_M_carr2gsl_param p = {M, M_inv_Vhat, params};
+  QPMS_CRASHING_MALLOC(*result, sizeof(beyn_result_t));
+  int retval = beyn_solve_gsl(&((*result)->gsl), m, l, beyn_function_M_carr2gsl,
+      (p.M_inv_Vhat_function) ? beyn_function_M_inv_Vhat_carr2gsl : NULL, 
+      (void *) &p, contour, rank_tol, res_tol);
+  (*result)->neig = (*result)->gsl->neig;
+  (*result)->eigval = (complex double *) (*result)->gsl->eigval->data;
+  (*result)->eigval_err = (complex double *) (*result)->gsl->eigval_err->data;
+  (*result)->residuals = (*result)->gsl->residuals->data;
+  (*result)->eigvec = (complex double *) (*result)->gsl->eigvec->data;
+  return retval;
+}
+
+void beyn_result_free(beyn_result_t *result) {
+  if(result)
+    beyn_result_gsl_free(result->gsl);
+  free(result);
 }
 

@@ -19,6 +19,10 @@ add_executable( tbeyn tbeyn.c )
 target_link_libraries( tbeyn qpms gsl lapacke amos m )
 target_include_directories( tbeyn PRIVATE .. )
 
+add_executable( tbeyn_gsl tbeyn_gsl.c )
+target_link_libraries( tbeyn_gsl qpms gsl lapacke amos m )
+target_include_directories( tbeyn_gsl PRIVATE .. )
+
 add_custom_target( mytests DEPENDS test_single_translations_vs_calc test_vswf_translations test_vswf_translations_array tbeyn )
 
 add_test( NAME single_vs_array_translation_coeffs COMMAND test_single_translations_vs_calc )
