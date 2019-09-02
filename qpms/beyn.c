@@ -33,39 +33,19 @@ typedef struct BeynSolver
   gsl_matrix_complex *A0, *A1, *A0_coarse, *A1_coarse, *MInvVHat;
   gsl_matrix_complex *VHat;
   gsl_vector *Sigma, *residuals;
-  double complex *Workspace;
 } BeynSolver;
 
 // constructor, destructor
 BeynSolver *BeynSolver_create(int M, int L);
 void BeynSolver_free(BeynSolver *solver);
 
-// reset the random matrix VHat used in the Beyn algorithm
-//
+// reset the random matrix VHat used in Beyn's algorithm
 void BeynSolver_srandom(BeynSolver *solver, unsigned int RandSeed);
 
-// for both of the following routines,
-// the return value is the number of eigenvalues found,
-// and the eigenvalues and eigenvectors are stored in the
-// Lambda and eigenvectors fields of the BeynSolver structure
+// Uniformly random number from interval [a, b].
+static double randU(double a, double b) { return a + (b-a) * random() * (1. / RAND_MAX); }
 
-// Beyn method for circular contour of radius R,
-// centered at z0, using N quadrature points
-//int BeynSolve(BeynSolver *solver,
-//              BeynFunction UserFunction, void *Params,
-//              double complex z0, double R, int N);
-
-// Beyn method for elliptical contour of horizontal, vertical
-// radii Rx, Ry, centered at z0, using N quadrature points
-int BeynSolve(BeynSolver *solver,
-    beyn_function_M_gsl_t M_function, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat_function, void *params,
-    double complex z0, double Rx, double Ry, int N);
-
-
-
-
-static double randU(double A, double B) { return A + (B-A) * random() * (1. / RAND_MAX); }
-
+// Random number from normal distribution (via Box-Muller transform, which is enough for our purposes).
 static double randN(double Sigma, double Mu) {
   double u1 = randU(0, 1);
   double u2 = randU(0, 1);
@@ -75,7 +55,6 @@ static double randN(double Sigma, double Mu) {
 static complex double zrandN(double sigma, double mu){
   return randN(sigma, mu) + I*randN(sigma, mu);
 }
-
 
 beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double rIm, size_t n) 
 {
@@ -174,30 +153,29 @@ void BeynSolver_srandom(BeynSolver *solver, unsigned int RandSeed)
 }
 
 
-/***************************************************************/
-/* perform linear-algebra manipulations on the A0 and A1       */
-/* matrices (obtained via numerical quadrature) to extract     */
-/* eigenvalues and eigenvectors                                */
-/***************************************************************/
+/*
+ * linear-algebra manipulations on the A0 and A1 matrices 
+ * (obtained via numerical quadrature) to extract eigenvalues 
+ * and eigenvectors                                
+ */
 
 static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_function, 
     void *Params,
     gsl_matrix_complex *A0, gsl_matrix_complex *A1, double complex z0,
-    gsl_vector_complex *eigenvalues, gsl_matrix_complex *eigenvectors, const double RankTol, const double ResTol)
+    gsl_vector_complex *eigenvalues, gsl_matrix_complex *eigenvectors, const double rank_tol, const double res_tol)
 {
-  int M = solver->M;
-  int L = solver->L;
+  const size_t m = solver->M;
+  const size_t l = solver->L;
   gsl_vector *Sigma = solver->Sigma;
-
 
   int verbose = 1; // TODO
 
   // A0 -> V0_full * Sigma * W0T_full' 
-  printf(" Beyn: computing SVD...\n");
-  gsl_matrix_complex* V0_full = gsl_matrix_complex_alloc(M,L);
+  if(verbose) printf(" Beyn: computing SVD...\n");
+  gsl_matrix_complex* V0_full = gsl_matrix_complex_alloc(m,l);
   gsl_matrix_complex_memcpy(V0_full,A0);
 
-  gsl_matrix_complex* W0T_full = gsl_matrix_complex_alloc(L,L);
+  gsl_matrix_complex* W0T_full = gsl_matrix_complex_alloc(l,l);
   //A0->SVD(Sigma, &V0_full, &W0T_full);
 
   QPMS_ENSURE(Sigma->stride == 1, "Sigma vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
@@ -210,7 +188,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
         V0_full->tda /*lda*/,
         Sigma->data /*s*/, 
         NULL /*u; not used*/, 
-        M /*ldu; should not be really used but lapacke requires it for some obscure reason*/,
+        m /*ldu; should not be really used but lapacke requires it for some obscure reason*/,
         (lapack_complex_double *)W0T_full->data /*vt*/,
         W0T_full->tda /*ldvt*/
         ));
@@ -218,20 +196,20 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 
   // compute effective rank K (number of eigenvalue candidates)
   int K=0;
-  for(int k=0; k<Sigma->size /* this is L, actually */; k++)
-  { if (verbose) printf("Beyn: SV(%i)=%e\n",k,gsl_vector_get(Sigma, k));
-    if (gsl_vector_get(Sigma, k) > RankTol )
+  for (int k=0; k<Sigma->size /* this is l, actually */; k++) { 
+    if (verbose) printf("Beyn: SV(%d)=%e\n",k,gsl_vector_get(Sigma, k));
+    if (gsl_vector_get(Sigma, k) > rank_tol)
       K++;
   }
-  printf(" Beyn: %i/%i relevant singular values\n",K,L);
-  if (K==0)
-  { printf("no singular values found in Beyn eigensolver\n");
+  if (verbose)printf(" Beyn: %d/%zd relevant singular values\n",K,l);
+  if (K==0) { 
+    QPMS_WARN("no singular values found in Beyn eigensolver\n");
     return 0;
   }
 
   // set V0, W0T = matrices of first K right, left singular vectors
-  gsl_matrix_complex *V0 = gsl_matrix_complex_alloc(M,K);
-  gsl_matrix_complex *W0T= gsl_matrix_complex_alloc(K,L);
+  gsl_matrix_complex *V0 = gsl_matrix_complex_alloc(m,K);
+  gsl_matrix_complex *W0T= gsl_matrix_complex_alloc(K,l);
 
   for (int k = 0; k < K; ++k) {
     gsl_vector_complex_view tmp;
@@ -245,18 +223,17 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
   gsl_matrix_complex_free(W0T_full);
 
   // B <- V0' * A1 * W0 * Sigma^-1
-  gsl_matrix_complex *TM2 = gsl_matrix_complex_calloc(K,L);
+  gsl_matrix_complex *TM2 = gsl_matrix_complex_calloc(K,l);
   gsl_matrix_complex *B = gsl_matrix_complex_calloc(K,K);
 
-  printf(" Multiplying V0*A1->TM...\n");
+  if(verbose) printf(" Multiplying V0*A1->TM...\n");
   //V0.Multiply(A1, &TM2, "--transA C");   // TM2 <- V0' * A1
   const gsl_complex one = gsl_complex_rect(1,0);
   const gsl_complex zero = gsl_complex_rect(0,0);
   gsl_blas_zgemm(CblasConjTrans, CblasNoTrans, one,
       V0, A1, zero, TM2);
 
-  printf(" Multiplying TM*W0T->B...\n");
-  //TM2.Multiply(&W0T, &B, "--transB C");   //  B <- TM2 * W0
+  if(verbose) printf(" Multiplying TM*W0T->B...\n");
 
   gsl_blas_zgemm(CblasNoTrans, CblasConjTrans, one,
       TM2, W0T, zero, B);
@@ -264,9 +241,9 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
   gsl_matrix_complex_free(W0T);
   gsl_matrix_complex_free(TM2);
 
-  printf(" Scaling B <- B*Sigma^{-1}\n");
+  if(verbose) printf(" Scaling B <- B*Sigma^{-1}\n");
   gsl_vector_complex *tmp = gsl_vector_complex_calloc(K);
-  for(int i = 0; i < K; i++){
+  for(int i = 0; i < K; i++) {
     gsl_matrix_complex_get_col(tmp, B, i);
     gsl_vector_complex_scale(tmp, gsl_complex_rect(1.0/gsl_vector_get(Sigma,i), 0));
     gsl_matrix_complex_set_col(B,i,tmp);
@@ -275,11 +252,8 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 
   //for(int m=0; m<K; m++)                  //  B <- B * Sigma^{-1}
 
-  // for(int n=0; n<K; n++)
-  //  B.ScaleEntry(m,n,1.0/Sigma->GetEntry(n));
-
   // B -> S*Lambda*S'
-  printf(" Eigensolving (%i,%i)\n",K,K);
+  if(verbose) printf(" Eigensolving (%i,%i)\n",K,K);
 
   gsl_vector_complex *Lambda = gsl_vector_complex_alloc(K); // eigenvalues
   gsl_matrix_complex *S = gsl_matrix_complex_alloc(K,K); // eigenvectors
@@ -295,7 +269,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
         B->tda  /* lda */,
         (lapack_complex_double *) Lambda->data /* w */,
         NULL /* vl */,
-        M /* ldvl, not used by for some reason needed */,
+        m /* ldvl, not used by for some reason needed */,
         (lapack_complex_double *)(S->data)/* vr */,
         S->tda/* ldvr */
         ));
@@ -304,28 +278,28 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 
   // V0S <- V0*S
   printf("Multiplying V0*S...\n");
-  gsl_matrix_complex *V0S = gsl_matrix_complex_alloc(M, K);
+  gsl_matrix_complex *V0S = gsl_matrix_complex_alloc(m, K);
   QPMS_ENSURE_SUCCESS(gsl_blas_zgemm(CblasNoTrans, CblasNoTrans,
         one, V0, S, zero, V0S));
 
   gsl_matrix_complex_free(V0);
 
   int KRetained = 0;
-  gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
-  gsl_vector_complex *MVk = gsl_vector_complex_alloc(M);
+  gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(m, m);
+  gsl_vector_complex *MVk = gsl_vector_complex_alloc(m);
   for (int k = 0; k < K; ++k) {
     const gsl_complex zgsl = gsl_complex_add(gsl_complex_rect(creal(z0), cimag(z0)), gsl_vector_complex_get(Lambda, k));
     const complex double z = GSL_REAL(zgsl) + I*GSL_IMAG(zgsl);
     gsl_vector_complex_const_view Vk = gsl_matrix_complex_const_column(V0S, k);
 
     double residual = 0;
-    if(ResTol > 0) {
+    if(res_tol > 0) {
       QPMS_ENSURE_SUCCESS(M_function(Mmat, z, Params));
       QPMS_ENSURE_SUCCESS(gsl_blas_zgemv(CblasNoTrans, one, Mmat, &(Vk.vector), zero, MVk));
       residual = gsl_blas_dznrm2(MVk);
       if (verbose) printf("Beyn: Residual(%i)=%e\n",k,residual);
     }
-    if (ResTol > 0 && residual > ResTol) continue;
+    if (res_tol > 0 && residual > res_tol) continue;
 
     gsl_vector_complex_set(eigenvalues, KRetained, zgsl);
     if(eigenvectors) {
@@ -345,15 +319,13 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 }
 
 
-int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l,
+int beyn_solve_gsl(beyn_result_gsl_t **result, const size_t m, const size_t l,
     beyn_function_M_gsl_t M_function, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat_function,
     void *params, const beyn_contour_t *contour,
     double rank_tol, double res_tol)
 {  
   BeynSolver *solver = BeynSolver_create(m, l);
 
-  const int M = solver->M;
-  const int L = solver->L;
   gsl_matrix_complex *A0           = solver->A0;
   gsl_matrix_complex *A1           = solver->A1;
   gsl_matrix_complex *A0_coarse     = solver->A0_coarse;
@@ -388,14 +360,14 @@ int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l,
       QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z, params));
     } else {
       lapack_int *pivot;
-      gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(M,M);
+      gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(m,m);
       QPMS_ENSURE_SUCCESS(M_function(Mmat, z, params));
-      QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * M);
+      QPMS_CRASHING_MALLOC(pivot, sizeof(lapack_int) * m);
       QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR,
-            M /*m*/, M /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
-      QPMS_ENSURE(MInvVHat->tda == L, "wut?");
+            m /*m*/, m /*n*/,(lapack_complex_double *) Mmat->data /*a*/, Mmat->tda /*lda*/, pivot /*ipiv*/));
+      QPMS_ENSURE(MInvVHat->tda == l, "wut?");
       QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,
-            M /*n*/, L/*nrhs*/, (lapack_complex_double *)(Mmat->data) /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
+            m /*n*/, l/*nrhs*/, (lapack_complex_double *)(Mmat->data) /*a*/, Mmat->tda /*lda*/, pivot/*ipiv*/, 
             (lapack_complex_double *)(MInvVHat->data) /*b*/, MInvVHat->tda/*ldb*/));
 
       free(pivot);
