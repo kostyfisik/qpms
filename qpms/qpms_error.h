@@ -1,6 +1,8 @@
 #ifndef QPMS_ERROR_H
 #define QPMS_ERROR_H
 
+#include "optim.h"
+
 /// Provisional error message with abort();
 void qpms_pr_error(const char *fmt, ...);
 //void qpms_error(const char *fmt, ...);
@@ -47,7 +49,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_CRASHING_MALLOC(pointer, size) {\
 	(pointer) = malloc(size);\
-       	if(!(pointer) && (size))\
+       	if(QPMS_UNLIKELY(!(pointer) && (size)))\
        		qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,\
 			"Allocation of %zd bytes for " #pointer " failed.",\
 			(size_t) (size));\
@@ -55,7 +57,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_CRASHING_CALLOC(pointer, nmemb, size) {\
 	(pointer) = calloc((nmemb), (size));\
-       	if(!(pointer) && (nmemb) && (size))\
+       	if(QPMS_UNLIKELY(!(pointer) && (nmemb) && (size)))\
        		qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,\
 			"Allocation of %zd bytes for " #pointer " failed.",\
 			(size_t)((nmemb)*(size)));\
@@ -63,7 +65,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_CRASHING_REALLOC(pointer, size) {\
 	(pointer) = realloc((pointer), size);\
-       	if(!(pointer) && (size))\
+       	if(QPMS_UNLIKELY(!(pointer) && (size)))\
        		qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,\
 			"Rellocation of %zd bytes for " #pointer " failed.",\
 			(size_t) (size));\
@@ -73,7 +75,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_UNTESTED {\
 	static _Bool already_bitched = 0; \
-	if (!already_bitched) {\
+	if (QPMS_UNLIKELY(!already_bitched)) {\
 		qpms_warn_at_flf(__FILE__,__LINE__,__func__,"Warning: untested function/feature!");\
 		already_bitched = 1;\
 	}\
@@ -84,15 +86,15 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 // TODO replace this macro with an inline function?
 #define QPMS_ENSURE_SUCCESS(x) { \
 	int errorcode = (x); \
-	if(errorcode) \
+	if(QPMS_UNLIKELY(errorcode)) \
 		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error (%d)", errorcode); \
 }
 
 
-#define QPMS_ENSURE(x, msg, ...) {if(!(x)) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
+#define QPMS_ENSURE(x, msg, ...) {if(QPMS_UNLIKELY(!(x))) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
 
 #define QPMS_ASSERT(x) {\
-	if(!(x))\
+	if(QPMS_UNLIKELY(!(x)))\
        		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,\
 			"Unexpected error. This is most certainly a bug.");\
 }
@@ -102,7 +104,7 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_INCOMPLETE_IMPLEMENTATION(msg, ...) {\
 	static _Bool already_bitched = 0; \
-	if (!already_bitched) {\
+	if (QPMS_UNLIKELY(!already_bitched)) {\
 		qpms_warn_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__);\
 		already_bitched = 1;\
 	}\
