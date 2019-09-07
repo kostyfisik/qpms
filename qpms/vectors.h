@@ -99,11 +99,20 @@ static inline cart2_t cart3xy2cart2(const cart3_t a) {
 	return c;
 }
 
-/// 3D vector euclidian norm.
-static inline double cart3norm(const cart3_t v) {
-	return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+/// 3D vector dot product.
+static inline double cart3_dot(const cart3_t a, const cart3_t b) {
+	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+/// 3D vector euclidian norm squared.
+static inline double cart3_normsq(const cart3_t a) {
+	return cart3_dot(a, a);
+}
+
+/// 3D vector euclidian norm.
+static inline double cart3norm(const cart3_t v) {
+	return sqrt(cart3_normsq(v));
+}
 
 /// 3D cartesian to spherical coordinates conversion. See @ref coord_conversions.
 static inline sph_t cart2sph(const cart3_t cart) {
@@ -222,11 +231,6 @@ static inline csphvec_t csphvec_scale(complex double c, const csphvec_t v) {
 static inline complex double csphvec_dotnc(const csphvec_t a, const csphvec_t b) {
 	//N.B. no complex conjugation done here
 	return a.rc * b.rc + a.thetac * b.thetac + a.phic * b.phic;
-}
-
-/// 3D vector dot product.
-static inline double cart3_dot(const cart3_t a, const cart3_t b) {
-	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 /// Spherical coordinate system scaling.

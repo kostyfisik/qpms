@@ -73,6 +73,9 @@ static inline point2d point2d_fromxy(const double x, const double y) {
 int qpms_reduce_lattice_basis(double *b, ///< Array of dimension [bsize][ndim].
 		const size_t bsize, ///< Number of the basis vectors (dimensionality of the lattice).
 		const size_t ndim, ///< Dimension of the space into which the lattice is embedded.
+		/// Lovász condition parameter \f$ \delta \f$.
+		/** Polynomial time complexity guaranteed for \f$\delta \in (1/4,1)\f$.
+		 */
 		double delta
 		);
 
@@ -655,11 +658,24 @@ typedef enum {
 } SpaceGroup2;
 #endif
 
+// Just for detecting the right angles (needed for generators).
+typedef enum {
+	NOT_ORTHOGONAL = 0,
+	ORTHOGONAL_01 = 1,
+	ORTHOGONAL_12 = 2,
+	ORTHOGONAL_02 = 4
+} LatticeFlags;
+
+
+
 /*
  * Lagrange-Gauss reduction of a 2D basis.
  * The output shall satisfy |out1| <= |out2| <= |out2 - out1|
  */
 void l2d_reduceBasis(cart2_t in1, cart2_t in2, cart2_t *out1, cart2_t *out2);
+
+// This one uses LLL reduction.
+void l3d_reduceBasis(const cart3_t in[3], cart3_t out[3]);
 
 /* 
  * This gives the "ordered shortest triple" of base vectors (each pair from the triple
@@ -683,6 +699,10 @@ bool l2d_is_obtuse(cart2_t i1, cart2_t i2);
  * Given two basis vectors, returns 2D Bravais lattice type.
  */
 LatticeType2 l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol);
+
+// Detects right angles.
+LatticeFlags l2d_detectRightAngles(cart2_t b1, cart2_t b2, double rtol);
+LatticeFlags l3d_detectRightAngles(const cart3_t basis[3], double rtol);
 
 // Other functions in lattices2d.py: TODO?
 // range2D()

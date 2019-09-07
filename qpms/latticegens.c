@@ -439,7 +439,7 @@ typedef struct PGen_xyWeb_StateData {
   cart2_t b1, b2; // lattice vectors
   cart2_t offset; // offset of the zeroth lattice point from origin (TODO will be normalised to the WS cell)
   // TODO type rectangular vs. triangular
-  LatticeType2 lt;
+  LatticeFlags lf;
 } PGen_xyWeb_StateData;
 
 // Constructor
@@ -450,7 +450,7 @@ PGen PGen_xyWeb_new(cart2_t b1, cart2_t b2, double rtol, cart2_t offset, double 
   s->inc_maxR = inc_maxR;
   l2d_reduceBasis(b1, b2, &(s->b1), &(s->b2));
   s->offset = offset; // TODO shorten into the WS cell ?
-  s->lt = l2d_classifyLattice(s->b1, s->b2, rtol);
+  s->lf = l2d_detectRightAngles(s->b1, s->b2, rtol);
   s->layer_min_height = l2d_hexWebInCircleRadius(s->b1, s->b2);
   s->layer = ceil(s->minR/s->layer_min_height);
   if(!inc_minR && (s->layer * s->layer_min_height)  <= minR)
@@ -485,7 +485,7 @@ PGenCart2ReturnData PGen_xyWeb_next_cart2(PGen *g) {
         s->i = s->layer;
         s->j = 0;
       }
-      else if(s->lt & (SQUARE | RECTANGULAR)) {
+      else if(s->lf & ORTHOGONAL_01) {
         // rectangular or square lattice, four perimeters
         switch(s->phase) {
           case 0: // initial i = l, j = 0

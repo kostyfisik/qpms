@@ -677,6 +677,11 @@ void l2d_reduceBasis(cart2_t b1, cart2_t b2, cart2_t *out1, cart2_t *out2){
   *out2 = b2;
 }
 
+void l3d_reduceBasis(const cart3_t in[3], cart3_t out[3]) {
+  memcpy(out, in, 3*sizeof(cart3_t));
+  QPMS_ENSURE_SUCCESS(qpms_reduce_lattice_basis((double *)out, 3, 3, 1.));
+}
+
 /*
  * This gives the "ordered shortest triple" of base vectors (each pair from the triple
  * is a base) and there may not be obtuse angle between o1, o2 and between o2, o3
@@ -765,6 +770,33 @@ LatticeType2 l2d_classifyLattice(cart2_t b1, cart2_t b2, double rtol)
     return OBLIQUE;
 }
 
+LatticeFlags l2d_detectRightAngles(cart2_t b1, cart2_t b2, double rtol)
+{
+  l2d_reduceBasis(b1, b2, &b1, &b2);
+  cart2_t ht = cart2_substract(b2, b1);
+  double b1s = cart2_normsq(b1), b2s = cart2_normsq(b2), hts = cart2_normsq(ht);
+  double eps = rtol * (b2s + b1s); //FIXME what should eps be?
+  if (hts - b2s - b1s <= eps)
+    return ORTHOGONAL_01;
+  else 
+    return NOT_ORTHOGONAL;
+}
+
+LatticeFlags l3d_detectRightAngles(const cart3_t basis_nr[3], double rtol) 
+{
+  cart3_t b[3];
+  l3d_reduceBasis(basis_nr, b);
+  LatticeFlags res = NOT_ORTHOGONAL;
+  for (int i = 0; i < 3; ++i) {
+    cart3_t ba = b[i], bb = b[(i+1) % 3];
+    cart3_t ht = cart3_substract(ba, bb);
+    double bas = cart3_normsq(ba), bbs = cart3_normsq(ba), hts = cart3_normsq(ht);
+    double eps = rtol * (bas + bbs);
+    if (hts - bbs - bas <= eps)
+      res |= ((LatticeFlags[]){ORTHOGONAL_01, ORTHOGONAL_12, ORTHOGONAL_02})[i];
+  }
+  return res;
+}
 
 # if 0
 // variant
