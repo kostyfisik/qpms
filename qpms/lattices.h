@@ -620,7 +620,11 @@ PGen PGen_1D_new_minMaxR(double period, ///< Distance between points.
 
 
 extern const PGenClassInfo PGen_xyWeb;
-PGen PGen_xyWeb_new(cart2_t b1, cart2_t b2, double rtol, cart2_t offset, 
+PGen PGen_xyWeb_new(cart2_t b1, cart2_t b2, double orthogonality_rtol, cart2_t offset, 
+		double minR, bool inc_minR, double maxR, bool inc_maxR);
+
+extern const PGenClassInfo PGen_xyzWeb;
+PGen PGen_xyzWeb_new(const cart3_t basis[3], double orthogonality_rtol, cart3_t offset,
 		double minR, bool inc_minR, double maxR, bool inc_maxR);
 
 
@@ -691,6 +695,8 @@ int l2d_shortestBase46(cart2_t i1, cart2_t i2,  cart2_t *o1, cart2_t *o2, cart2_
 // variant
 int l2d_shortestBase46_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 
+int l3d_shortestBase356(const cart3_t basis[3], cart3_t shortest356[6], double rtol);
+
 // Determines whether angle between inputs is obtuse
 bool l2d_is_obtuse_r(cart2_t i1, cart2_t i2, double rtol);
 bool l2d_is_obtuse(cart2_t i1, cart2_t i2);
@@ -728,6 +734,8 @@ double l2d_unitcell_area(cart2_t b1, cart2_t b2);
 
 // returns the radius of inscribed circle of a hexagon (or rectangle/square if applicable) created by the shortest base triple
 double l2d_hexWebInCircleRadius(cart2_t b1, cart2_t b2);
+
+double l3d_inSphereRadius(const cart3_t b[3]);
 
 /*
  * THE MORE OR LESS OK PART
