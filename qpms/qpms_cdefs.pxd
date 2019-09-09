@@ -535,3 +535,47 @@ cdef extern from "ewald.h":
     int cx_gamma_inc_CF_e(double a, cdouble x, qpms_csf_result *result)
     int complex_gamma_inc_e(double a, cdouble x, qpms_csf_result *result)
 
+cdef extern from "gsl/gsl_complex.h":
+    ctypedef struct gsl_complex:
+        double dat[2]
+
+cdef extern from "gsl/gsl_matrix.h":
+    ctypedef struct gsl_matrix_complex:
+        pass
+    ctypedef struct gsl_vector:
+        pass
+    ctypedef struct gsl_vector_complex:
+        pass
+
+cdef extern from "beyn.h":
+    ctypedef struct beyn_contour_t:
+        pass
+    ctypedef struct beyn_result_gsl_t:
+        pass
+    ctypedef struct beyn_result_t:
+        size_t neig
+        cdouble *eigval
+        cdouble *eigval_err
+        double *residuals
+        cdouble *eigvec
+        beyn_result_gsl_t *gsl
+
+    ctypedef int (*beyn_function_M_gsl_t)(gsl_matrix_complex *target_M, cdouble z, void *params)
+    ctypedef int (*beyn_function_M_inv_Vhat_gsl_t)(gsl_matrix_complex *target, const gsl_matrix_complex *Vhat, cdouble z, void *params)
+    ctypedef int (*beyn_function_M_t)(cdouble *target_M, size_t m, cdouble z, void *params)
+    ctypedef int (*beyn_function_M_inv_Vhat_t)(cdouble *target, size_t m, size_t l, const cdouble *Vhat, cdouble z, void *params)
+
+    void beyn_result_gsl_free(beyn_result_gsl_t *result)
+    void beyn_result_free(beyn_result_t *result)
+
+    int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l, beyn_function_M_gsl_t M,
+            beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
+            double rank_tol, double res_tol)
+
+    int beyn_solve(beyn_result_t **result, size_t m, size_t l, beyn_function_M_t M,
+            beyn_function_M_inv_Vhat_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
+            double rank_tol, double res_tol)
+
+    cdouble gsl_comlpex_tostd(gsl_complex z)
+    gsl_complex gsl_complex_fromstd(cdouble z)
+
