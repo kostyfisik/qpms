@@ -51,6 +51,7 @@ void beyn_result_gsl_free(beyn_result_gsl_t *result);
 /// Beyn algorithm result structure (pure C array version).
 typedef struct beyn_result_t {
 	size_t neig; ///< Number of eigenvalues found.
+	size_t vlen; ///< Vector space dimension (also the leading dimension of eigvec).
 	complex double *eigval;
 	complex double *eigval_err;
 	double *residuals;
@@ -69,7 +70,7 @@ beyn_result_t *beyn_result_from_beyn_result_gsl(beyn_result_gsl_t *g);
 
 void beyn_result_free(beyn_result_t *result);
 
-int beyn_solve_gsl(beyn_result_gsl_t **result,
+beyn_result_gsl_t *beyn_solve_gsl(
 		size_t m, ///< Dimension of the matrix \a M.
 		size_t l, ///< Number of columns of the random matrix  \f$ \hat V \f$ (larger than the expected number of solutions).
 		beyn_function_M_gsl_t M, ///< Function providing the matrix \f$ M(z) \f$.
@@ -80,7 +81,7 @@ int beyn_solve_gsl(beyn_result_gsl_t **result,
 		double res_tol ///< (default: `0.0`) TODO DOC.
 	      );
 
-int beyn_solve(beyn_result_t **result,
+beyn_result_t *beyn_solve(
 		size_t m, ///< Dimension of the matrix \a M.
 		size_t l, ///< Number of columns of the random matrix  \f$ \hat V \f$ (larger than the expected number of solutions).
 		beyn_function_M_t M, ///< Function providing the matrix \f$ M(z) \f$.

@@ -24,13 +24,13 @@ int main() {
   int L = 10, N = 50, dim = 400;
   beyn_contour_t *contour = beyn_contour_ellipse(z0, Rx, Ry, N);
 
-  beyn_result_t *result;
-  int K = beyn_solve(&result, dim, L, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
+  beyn_result_t *result =
+    beyn_solve(dim, L, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
       contour, 1e-4, 0);
-  printf("Found %d eigenvalues:\n", K);
-  for (int i = 0; i < K; ++i) {
+  printf("Found %zd eigenvalues:\n", result->neig);
+  for (size_t i = 0; i < result->neig; ++i) {
     complex double eig = result->eigval[i];
-    printf("%d: %g%+gj\n", i, creal(eig), cimag(eig));
+    printf("%zd: %g%+gj\n", i, creal(eig), cimag(eig));
   }
   free(contour);
   beyn_result_free(result);

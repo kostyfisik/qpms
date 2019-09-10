@@ -554,6 +554,7 @@ cdef extern from "beyn.h":
         pass
     ctypedef struct beyn_result_t:
         size_t neig
+        size_t vlen
         cdouble *eigval
         cdouble *eigval_err
         double *residuals
@@ -568,11 +569,11 @@ cdef extern from "beyn.h":
     void beyn_result_gsl_free(beyn_result_gsl_t *result)
     void beyn_result_free(beyn_result_t *result)
 
-    int beyn_solve_gsl(beyn_result_gsl_t **result, size_t m, size_t l, beyn_function_M_gsl_t M,
+    beyn_result_gsl_t *beyn_solve_gsl(size_t m, size_t l, beyn_function_M_gsl_t M,
             beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
             double rank_tol, double res_tol)
 
-    int beyn_solve(beyn_result_t **result, size_t m, size_t l, beyn_function_M_t M,
+    beyn_result_t *beyn_solve(size_t m, size_t l, beyn_function_M_t M,
             beyn_function_M_inv_Vhat_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
             double rank_tol, double res_tol)
 

@@ -284,6 +284,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 
   gsl_matrix_complex_free(V0);
 
+  // FIXME!!! make clear relation between KRetained and K in the results!
   int KRetained = 0;
   gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(m, m);
   gsl_vector_complex *MVk = gsl_vector_complex_alloc(m);
@@ -319,7 +320,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 }
 
 
-int beyn_solve_gsl(beyn_result_gsl_t **result, const size_t m, const size_t l,
+beyn_result_gsl_t *beyn_solve_gsl(const size_t m, const size_t l,
     beyn_function_M_gsl_t M_function, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat_function,
     void *params, const beyn_contour_t *contour,
     double rank_tol, double res_tol)
@@ -399,15 +400,17 @@ int beyn_solve_gsl(beyn_result_gsl_t **result, const size_t m, const size_t l,
   gsl_blas_zaxpy(gsl_complex_rect(-1,0), eigenvalues, eigenvalue_errors);
   // TODO Original did also fabs on the complex and real parts ^^^.
 
-  QPMS_CRASHING_MALLOC(*result, sizeof(beyn_result_gsl_t));
-  (*result)->eigval = solver->eigenvalues;
-  (*result)->eigval_err = solver->eigenvalue_errors;
-  (*result)->residuals = solver->residuals;
-  (*result)->eigvec = solver->eigenvectors;
+  beyn_result_gsl_t *result;
+  QPMS_CRASHING_MALLOC(result, sizeof(beyn_result_gsl_t));
+  result->eigval = solver->eigenvalues;
+  result->eigval_err = solver->eigenvalue_errors;
+  result->residuals = solver->residuals;
+  result->eigvec = solver->eigenvectors;
+  result->neig = K;
 
   BeynSolver_free_partial(solver);
 
-  return K;
+  return result;
 }
 
 // Wrapper of pure C array M-matrix function to GSL.
@@ -440,16 +443,14 @@ static int beyn_function_M_inv_Vhat_carr2gsl(gsl_matrix_complex *target,
       (complex double *) Vhat->data, z, p->param);
 }
 
-int beyn_solve(beyn_result_t **result, size_t m, size_t l, beyn_function_M_t M, beyn_function_M_inv_Vhat_t M_inv_Vhat,
+beyn_result_t *beyn_solve(size_t m, size_t l, beyn_function_M_t M, beyn_function_M_inv_Vhat_t M_inv_Vhat,
     void *params, const beyn_contour_t *contour, double rank_tol, double res_tol) {
   struct beyn_function_M_carr2gsl_param p = {M, M_inv_Vhat, params};
-  QPMS_CRASHING_MALLOC(*result, sizeof(beyn_result_t));
-  struct beyn_result_gsl_t *result_gsl;
-  int retval = beyn_solve_gsl(&result_gsl, m, l, beyn_function_M_carr2gsl,
+  return beyn_result_from_beyn_result_gsl(
+    beyn_solve_gsl(m, l, beyn_function_M_carr2gsl,
       (p.M_inv_Vhat_function) ? beyn_function_M_inv_Vhat_carr2gsl : NULL, 
-      (void *) &p, contour, rank_tol, res_tol);
-  *result = beyn_result_from_beyn_result_gsl(result_gsl);
-  return retval;
+      (void *) &p, contour, rank_tol, res_tol)
+    );
 }
 
 beyn_result_t *beyn_result_from_beyn_result_gsl(beyn_result_gsl_t *g) {
@@ -457,6 +458,7 @@ beyn_result_t *beyn_result_from_beyn_result_gsl(beyn_result_gsl_t *g) {
   QPMS_CRASHING_MALLOC(result, sizeof(beyn_result_t));
   result->gsl = g;
   result->neig = result->gsl->neig;
+  result->vlen = result->gsl->eigvec->size2;
   result->eigval = (complex double *) result->gsl->eigval->data;
   result->eigval_err = (complex double *) result->gsl->eigval_err->data;
   result->residuals = result->gsl->residuals->data;
