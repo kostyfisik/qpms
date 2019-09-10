@@ -444,17 +444,26 @@ int beyn_solve(beyn_result_t **result, size_t m, size_t l, beyn_function_M_t M, 
     void *params, const beyn_contour_t *contour, double rank_tol, double res_tol) {
   struct beyn_function_M_carr2gsl_param p = {M, M_inv_Vhat, params};
   QPMS_CRASHING_MALLOC(*result, sizeof(beyn_result_t));
-  int retval = beyn_solve_gsl(&((*result)->gsl), m, l, beyn_function_M_carr2gsl,
+  struct beyn_result_gsl_t *result_gsl;
+  int retval = beyn_solve_gsl(&result_gsl, m, l, beyn_function_M_carr2gsl,
       (p.M_inv_Vhat_function) ? beyn_function_M_inv_Vhat_carr2gsl : NULL, 
       (void *) &p, contour, rank_tol, res_tol);
-  (*result)->neig = (*result)->gsl->neig;
-  (*result)->eigval = (complex double *) (*result)->gsl->eigval->data;
-  (*result)->eigval_err = (complex double *) (*result)->gsl->eigval_err->data;
-  (*result)->residuals = (*result)->gsl->residuals->data;
-  (*result)->eigvec = (complex double *) (*result)->gsl->eigvec->data;
+  *result = beyn_result_from_beyn_result_gsl(result_gsl);
   return retval;
 }
 
+beyn_result_t *beyn_result_from_beyn_result_gsl(beyn_result_gsl_t *g) {
+  struct beyn_result_t *result;
+  QPMS_CRASHING_MALLOC(result, sizeof(beyn_result_t));
+  result->gsl = g;
+  result->neig = result->gsl->neig;
+  result->eigval = (complex double *) result->gsl->eigval->data;
+  result->eigval_err = (complex double *) result->gsl->eigval_err->data;
+  result->residuals = result->gsl->residuals->data;
+  result->eigvec = (complex double *) result->gsl->eigvec->data;
+  return result;
+}
+  
 void beyn_result_free(beyn_result_t *result) {
   if(result)
     beyn_result_gsl_free(result->gsl);

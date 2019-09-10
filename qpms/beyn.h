@@ -61,6 +61,12 @@ typedef struct beyn_result_t {
 	
 } beyn_result_t;
 
+/// Converts beyn_result_gsl_t from beyn_result_t.
+/** After calling this, use beyn_result_free() on the returned pointer;
+ *  do NOT run beyn_result_gsl_free() anymore.
+ */
+beyn_result_t *beyn_result_from_beyn_result_gsl(beyn_result_gsl_t *g);
+
 void beyn_result_free(beyn_result_t *result);
 
 int beyn_solve_gsl(beyn_result_gsl_t **result,
