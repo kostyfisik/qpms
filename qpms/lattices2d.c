@@ -941,7 +941,7 @@ void qpms_emptylattice2_modes_nearest(double target[2],
   double *freqlist;
   size_t n = qpms_emptylattice2_modes_maxfreq(&freqlist,
       b1, b2, rtol, k, c, omega);
-  target[0] = freqlist[n-2];
+  target[0] = (n > 1) ? freqlist[n-2] : NAN;
   target[1] = freqlist[n-1];
   free(freqlist);
 }

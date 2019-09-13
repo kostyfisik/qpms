@@ -211,6 +211,11 @@ cdef extern from "lattices.h":
             double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
     int qpms_reduce_lattice_basis(double *b, size_t bsize, size_t ndim, double delta)
 
+    size_t qpms_emptylattice2_modes_maxfreq(double **target_freqs, cart2_t b1_rec, cart2_t b2_rec,
+            double rtol, cart2_t k, double wave_speed, double maxomega)
+    size_t qpms_emptylattice2_modes_nearest(double *target_freqs, cart2_t b1_rec, cart2_t b2_rec,
+            double rtol, cart2_t k, double wave_speed, double omega)
+
 
 cdef extern from "quaternions.h":
     qpms_quat_t qpms_quat_2c_from_4d(qpms_quat4d_t q)
