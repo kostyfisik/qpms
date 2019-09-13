@@ -909,8 +909,13 @@ size_t qpms_emptylattice2_modes_maxfreq(double **target_freqs,
 
   size_t generated = 0;
   PGenReturnDataBulk rd;
-  while((rd = PGen_fetch_cart2(&Kgen, capacity - generated, Kpoints + generated)).flags & PGEN_NOTDONE)
+  while((rd = PGen_fetch_cart2(&Kgen, capacity - generated, Kpoints + generated)).flags & PGEN_NOTDONE) {
     generated += rd.generated;
+    if (capacity <= generated) {
+      PGen_destroy(&Kgen); 
+      break;
+    }
+  }
 
   double *thefreqs;
   QPMS_CRASHING_MALLOC(thefreqs, generated * sizeof(double));
