@@ -866,4 +866,83 @@ double l2d_unitcell_area(cart2_t b1, cart2_t b2) {
 }
   
 
+#if 0
+double qpms_emptylattice2_mode_nth(
+                cart2_t b1_rec,
+                cart2_t b2_rec,
+                double rtol,
+                cart2_t k,
+                double c,
+                size_t N 
+                );
+
+void qpms_emptylattice2_modes_maxindex(
+                double target_freqs[], 
+                cart2_t b1_rec,
+                cart2_t b2_rec,
+                double rtol,
+                cart2_t k,
+                double c,
+                size_t maxindex 
+                );
+#endif
+
+static int dblcmp(const void *p1, const void *p2) {
+  const double *x1 = (double *) p1, *x2 = (double *) p2;
+  double dif = *x1 - *x2;
+  if(dif > 0) return 1;
+  else if (dif < 0) return -1;
+  else return 0;
+}
+
+size_t qpms_emptylattice2_modes_maxfreq(double **target_freqs, 
+  cart2_t b1, cart2_t b2, double rtol, cart2_t k, 
+  double c, double maxfreq)
+{
+  QPMS_UNTESTED;
+  l2d_reduceBasis(b1, b2, &b1, &b2);
+  double maxk_safe = cart2norm(k) + maxfreq / c + cart2norm(b1) + cart2norm(b2); // This is an overkill
+  size_t capacity = PGen_xyWeb_sizecap(b1, b2, rtol, k, 0, true, maxk_safe, true);
+  cart2_t *Kpoints;
+  QPMS_CRASHING_MALLOC(Kpoints, sizeof(cart2_t) * capacity);
+  PGen Kgen = PGen_xyWeb_new(b1, b2, rtol, k, 0, true, maxk_safe, true);
+
+  size_t generated;
+  PGenReturnDataBulk rd;
+  while((rd = PGen_fetch_cart2(&Kgen, capacity - generated, Kpoints + generated)).flags & PGEN_NOTDONE)
+    generated += rd.generated;
+
+  double *thefreqs;
+  QPMS_CRASHING_MALLOC(thefreqs, generated * sizeof(double));
+  for(size_t i = 0; i < generated; ++i) thefreqs[i] = cart2norm(Kpoints[i]) * c;
+
+  free(Kpoints);
+
+  qsort(thefreqs, generated, sizeof(double), dblcmp);
+  size_t count;
+  bool hitmax = false;
+  for(count = 0; count < generated; ++count)
+    if(thefreqs[count] > maxfreq) {
+      if(hitmax)
+        break;
+      else 
+        hitmax = true;
+    }
+
+  *target_freqs = thefreqs;
+  return count;
+}
+
+void qpms_emptylattice2_modes_nearest(double target[2],
+    cart2_t b1, cart2_t b2, double rtol,
+    cart2_t k, double c, double omega) 
+{
+  QPMS_UNTESTED;
+  double *freqlist;
+  size_t n = qpms_emptylattice2_modes_maxfreq(&freqlist,
+      b1, b2, rtol, k, c, omega);
+  target[0] = freqlist[n-2];
+  target[1] = freqlist[n-1];
+  free(freqlist);
+}
 

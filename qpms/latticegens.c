@@ -585,3 +585,18 @@ const PGenClassInfo PGen_xyWeb = {
 };
 
 
+size_t PGen_xyWeb_sizecap(cart2_t b1, cart2_t b2, double rtol, cart2_t offset,
+    double minR, bool inc_minR, double maxR, bool inc_maxR) 
+{
+  l2d_reduceBasis(b1, b2, &b1, &b2);
+  LatticeFlags lf = l2d_detectRightAngles(b1, b2, rtol);
+  double layer_min_height = l2d_hexWebInCircleRadius(b1, b2);
+  long layer = ceil(minR / layer_min_height);
+  if(!inc_minR && (layer * layer_min_height)  <= minR)
+    ++layer; 
+  long last_layer = floor(maxR / layer_min_height);
+  if(!inc_maxR && (last_layer * layer_min_height) >= maxR)
+    --(last_layer);
+  // TODO less crude estimate (this one should be safe, however)
+  return ((lf & ORTHOGONAL_01) ? 4 : 6) * (last_layer - layer + 1);
+}
