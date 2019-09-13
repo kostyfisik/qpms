@@ -10,7 +10,7 @@ PGenPolReturnData PGen_next_pol_from_cart2(PGen *g) {
     return PGenPolDoneVal;
   else {
     PGenPolReturnData p;
-    p.flags = c.flags;
+    p.flags = (c.flags & ~QPMS_COORDS_BITRANGE) | QPMS_COORDS_POL;
     p.point_pol = cart2pol(c.point_cart2);
     return p;
   }
@@ -22,7 +22,7 @@ PGenCart2ReturnData PGen_next_cart2_from_pol(PGen *g) {
     return PGenCart2DoneVal;
   else {
     PGenCart2ReturnData c;
-    c.flags = p.flags;
+    c.flags = (p.flags & ~QPMS_COORDS_BITRANGE) | QPMS_COORDS_CART2;
     c.point_cart2 = pol2cart(p.point_pol);
     return c;
   }
@@ -34,7 +34,7 @@ PGenSphReturnData PGen_next_sph_from_cart3(PGen *g) {
     return PGenSphDoneVal;
   else {
     PGenSphReturnData s;
-    s.flags = c.flags;
+    s.flags = (c.flags & ~QPMS_COORDS_BITRANGE) | QPMS_COORDS_SPH;
     s.point_sph = cart2sph(c.point_cart3);
     return s;
   }
@@ -46,7 +46,7 @@ PGenCart3ReturnData PGen_next_cart3_from_cart2xy(PGen *g) {
     return PGenCart3DoneVal;
   else {
     PGenCart3ReturnData c3;
-    c3.flags = c2.flags;
+    c3.flags = (c2.flags & ~QPMS_COORDS_BITRANGE) | QPMS_COORDS_CART3;
     c3.point_cart3 = cart22cart3xy(c2.point_cart2);
     return c3;
   }
@@ -58,7 +58,7 @@ PGenSphReturnData PGen_next_sph_from_cart2(PGen *g) {
     return PGenSphDoneVal;
   else {
     PGenSphReturnData s;
-    s.flags = c.flags;
+    s.flags = (c.flags & ~QPMS_COORDS_BITRANGE) | QPMS_COORDS_SPH;
     s.point_sph = cart22sph(c.point_cart2);
     return s;
   }
@@ -70,7 +70,7 @@ PGenCart3ReturnData PGen_next_cart3_from_sph(PGen *g) {
     return PGenCart3DoneVal;
   else {
     PGenCart3ReturnData c;
-    c.flags = s.flags;
+    c.flags = (s.flags & ~QPMS_COORDS_BITRANGE) | QPMS_COORDS_CART3;
     c.point_cart3 = sph2cart(s.point_sph);
     return c;
   }
@@ -569,13 +569,13 @@ const PGenClassInfo PGen_xyWeb = {
   "PGen_xyWeb",
   2,
   PGEN_COORDS_CART2,
-  NULL,//PGen_xyWeb_next,
+  NULL,//PGen_xyWeb_next, // FIXME I should really implement this.
   NULL,//PGen_xyWeb_next_z,
   PGen_next_pol_from_cart2, //NULL,//PGen_xyWeb_next_pol,
   PGen_next_sph_from_cart2, //NULL,//PGen_xyWeb_next_sph,
   PGen_xyWeb_next_cart2, // native
   PGen_next_cart3_from_cart2xy, //NULL,//PGen_xyWeb_next_cart3,
-  NULL,//PGen_xyWeb_fetch,
+  NULL,//PGen_xyWeb_fetch, // FIXME I should really implement this
   NULL,//PGen_xyWeb_fetch_z,
   NULL,//PGen_xyWeb_fetch_pol,
   NULL,//PGen_xyWeb_fetch_sph,

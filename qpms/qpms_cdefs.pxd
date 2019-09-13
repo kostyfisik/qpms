@@ -199,6 +199,16 @@ cdef extern from "lattices.h":
         PGenClassInfo* c
         void *statedata
     void PGen_destroy(PGen *g)
+    
+    int l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+    double l2d_unitcell_area(cart2_t b1, cart2_t b2)
+    void l2d_reduceBasis(cart2_t in1, cart2_t in2, cart2_t *out1, cart2_t *out2)
+
+    const double BASIS_RTOL
+    size_t qpms_emptylattice2_modes_maxfreq(double **target_freqs, cart2_t b1_rec, cart2_t b2_rec,
+            double rtol, cart2_t k, double wave_speed, double maxomega)
+    void qpms_emptylattice2_modes_nearest(double *target_freqs, cart2_t b1_rec, cart2_t b2_rec,
+            double rtol, cart2_t k, double wave_speed, double omega)
 
     # now the individual PGen implementations:
     # FIXME Is bint always guaranteed to be equivalent to _Bool? (I dont't think so.)
@@ -211,10 +221,9 @@ cdef extern from "lattices.h":
             double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
     int qpms_reduce_lattice_basis(double *b, size_t bsize, size_t ndim, double delta)
 
-    size_t qpms_emptylattice2_modes_maxfreq(double **target_freqs, cart2_t b1_rec, cart2_t b2_rec,
-            double rtol, cart2_t k, double wave_speed, double maxomega)
-    size_t qpms_emptylattice2_modes_nearest(double *target_freqs, cart2_t b1_rec, cart2_t b2_rec,
-            double rtol, cart2_t k, double wave_speed, double omega)
+cdef extern from "vectors.h":
+    cart2_t cart2_substract(cart2_t a, cart2_t b)
+    cart2_t cart2_scale(const double c, cart2_t b)
 
 
 cdef extern from "quaternions.h":

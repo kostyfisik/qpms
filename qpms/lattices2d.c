@@ -907,7 +907,7 @@ size_t qpms_emptylattice2_modes_maxfreq(double **target_freqs,
   QPMS_CRASHING_MALLOC(Kpoints, sizeof(cart2_t) * capacity);
   PGen Kgen = PGen_xyWeb_new(b1, b2, rtol, k, 0, true, maxk_safe, true);
 
-  size_t generated;
+  size_t generated = 0;
   PGenReturnDataBulk rd;
   while((rd = PGen_fetch_cart2(&Kgen, capacity - generated, Kpoints + generated)).flags & PGEN_NOTDONE)
     generated += rd.generated;

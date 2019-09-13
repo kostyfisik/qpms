@@ -708,6 +708,7 @@ static inline void qpms_array_coord_transform(void *dest, qpms_coord_system_t td
 /** The dest and src arrays must not overlap */
 static inline void anycoord_arr2something(void *dest, qpms_coord_system_t tdest,
 		const anycoord_point_t *src, qpms_coord_system_t tsrc, size_t nmemb) {
+  if(nmemb) {
 	switch(tdest & QPMS_COORDS_BITRANGE) {
 		case QPMS_COORDS_SPH: 
 			{
@@ -833,6 +834,7 @@ static inline void anycoord_arr2something(void *dest, qpms_coord_system_t tdest,
 			break;
 	}
 	QPMS_WTF;
+  }
 }
 
 
