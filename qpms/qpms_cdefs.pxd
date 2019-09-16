@@ -559,6 +559,7 @@ cdef extern from "beyn.h":
         cdouble *eigval_err
         double *residuals
         cdouble *eigvec
+        double *ranktest_SV
         beyn_result_gsl_t *gsl
 
     ctypedef int (*beyn_function_M_gsl_t)(gsl_matrix_complex *target_M, cdouble z, void *params)

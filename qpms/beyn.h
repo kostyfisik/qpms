@@ -44,6 +44,7 @@ typedef struct beyn_result_gsl_t {
 	gsl_vector_complex *eigval_err;
 	gsl_vector *residuals;
 	gsl_matrix_complex *eigvec;
+	gsl_vector *ranktest_SV;
 } beyn_result_gsl_t;
 
 void beyn_result_gsl_free(beyn_result_gsl_t *result);
@@ -56,6 +57,7 @@ typedef struct beyn_result_t {
 	complex double *eigval_err;
 	double *residuals;
 	complex double *eigvec;
+	double *ranktest_SV;
 
 	/// Private, we wrap it around beyn_result_gsl_t for now.
 	beyn_result_gsl_t *gsl;

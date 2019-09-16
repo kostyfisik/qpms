@@ -77,6 +77,7 @@ void beyn_result_gsl_free(beyn_result_gsl_t *r) {
     gsl_vector_complex_free(r->eigval_err);
     gsl_vector_free(r->residuals);
     gsl_matrix_complex_free(r->eigvec);
+    gsl_vector_free(r->ranktest_SV);
     free(r);
   }
 }
@@ -134,7 +135,6 @@ void BeynSolver_free_partial(BeynSolver *solver)
   gsl_matrix_complex_free(solver->A0_coarse);
   gsl_matrix_complex_free(solver->A1_coarse);
   gsl_matrix_complex_free(solver->MInvVHat);
-  gsl_vector_free(solver->Sigma);
   gsl_matrix_complex_free(solver->VHat);
 
   free(solver);
@@ -406,6 +406,7 @@ beyn_result_gsl_t *beyn_solve_gsl(const size_t m, const size_t l,
   result->eigval_err = solver->eigenvalue_errors;
   result->residuals = solver->residuals;
   result->eigvec = solver->eigenvectors;
+  result->ranktest_SV = solver->Sigma;
   result->neig = K;
 
   BeynSolver_free_partial(solver);
@@ -463,6 +464,7 @@ beyn_result_t *beyn_result_from_beyn_result_gsl(beyn_result_gsl_t *g) {
   result->eigval_err = (complex double *) result->gsl->eigval_err->data;
   result->residuals = result->gsl->residuals->data;
   result->eigvec = (complex double *) result->gsl->eigvec->data;
+  result->ranktest_SV = result->gsl->ranktest_SV->data;
   return result;
 }
   
