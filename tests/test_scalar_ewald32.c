@@ -17,6 +17,8 @@
 #include <string.h>
 #include <float.h>
 #include <gsl/gsl_sf_legendre.h>
+#include <fenv.h>
+
 typedef struct ewaldtest2d_params {
   qpms_l_t lMax;
   point2d b1, b2;
@@ -66,6 +68,7 @@ int isclose_cmplx(complex double a, complex double b, double rtol, double atol) 
 ewaldtest2d_results *ewaldtest2d(const ewaldtest2d_params p);
 
 int main(int argc, char **argv) {
+  feenableexcept(FE_INVALID | FE_OVERFLOW);
   bool verbose = !!getenv("QPMS_VERBOSE_TESTS");
   gsl_set_error_handler(IgnoreUnderflowsGSLErrorHandler);
   QPMS_ENSURE(argc >= 18, "At least 16 arguments expected, I see only %d.", argc-1);

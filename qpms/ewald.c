@@ -189,6 +189,17 @@ int ewald3_sigma0(complex double *result, double *err,
   return 0;
 }
 
+// Wrapper over cpow to correctly handle the k->0 behaviour
+static inline complex double cpow_0lim_zi(complex double x, long z)
+{
+  if (x == 0 && z == 0)
+    return 1;
+  else if (x == 0 && z > 0) // lol branch cut in cpow
+    return 0;
+  else
+    return cpow(x, z);
+}
+
 int ewald3_21_xy_sigma_long (
     complex double *target, // must be c->nelem_sc long
     double *err,
@@ -293,7 +304,7 @@ int ewald3_21_xy_sigma_long (
         double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
         assert((n-abs(m))/2 == c->s1_jMaxes[y]);
         for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
-          complex double summand = cpow(rbeta_pq/k, n-2*j) 
+          complex double summand = cpow_0lim_zi(rbeta_pq/k, n-2*j)
             * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
             * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
             * c->s1_constfacs[y][j];

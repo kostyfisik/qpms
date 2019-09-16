@@ -48,3 +48,8 @@ add_test( NAME scalar_ewald32_square_cplxk_negative_Im2 COMMAND test_scalar_ewal
 #	lMax b1.x b1.y b2.x b2.y wavenum.real wavenum.imag k.x k.y particle_shift.x particle_shift.y csphase rtol atol maxR maxK eta1 ...
 	3    1    0    0    1    2.3          -0.1          2.7   1              0.0           0.0        -1 1e-8 1e-10  20  160  1.5   1.6 2.5 2.6
 	)
+
+add_test( NAME scalar_ewald32_square_zerok COMMAND test_scalar_ewald32 
+#	lMax b1.x b1.y b2.x b2.y wavenum.real wavenum.imag k.x k.y particle_shift.x particle_shift.y csphase rtol atol maxR maxK eta1 ...
+	3    1    0    0    1    2.3          0            0   0                0.5           0.1325      -1 1e-8 1e-10  40  160  1.5   1.6 2.5 2.6
+	)
