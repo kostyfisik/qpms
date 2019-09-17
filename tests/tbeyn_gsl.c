@@ -28,7 +28,7 @@ int main() {
 
   beyn_result_gsl_t *result =
     beyn_solve_gsl(dim, L, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
-      contour, 1e-4, 0);
+      contour, 1e-4, 1e-4);
   printf("Found %zd eigenvalues:\n", result->neig);
   for (size_t i = 0; i < result->neig; ++i) {
     gsl_complex eig = gsl_vector_complex_get(result->eigval, i);

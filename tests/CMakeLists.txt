@@ -19,6 +19,10 @@ add_executable( tbeyn tbeyn.c )
 target_link_libraries( tbeyn qpms gsl lapacke amos m )
 target_include_directories( tbeyn PRIVATE .. )
 
+add_executable( tbeyn2 tbeyn2.c )
+target_link_libraries( tbeyn2 qpms gsl lapacke amos m )
+target_include_directories( tbeyn2 PRIVATE .. )
+
 add_executable( tbeyn_gsl tbeyn_gsl.c )
 target_link_libraries( tbeyn_gsl qpms gsl lapacke amos m )
 target_include_directories( tbeyn_gsl PRIVATE .. )
