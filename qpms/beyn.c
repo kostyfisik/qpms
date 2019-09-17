@@ -56,10 +56,19 @@ static complex double zrandN(double sigma, double mu){
   return randN(sigma, mu) + I*randN(sigma, mu);
 }
 
+static inline double dsq(double a) { return a * a; }
+
+static _Bool beyn_contour_ellipse_inside_test(struct beyn_contour_t *c, complex double z) {
+  double rRe = c->z_dz[c->n][0];
+  double rIm = c->z_dz[c->n][1];
+  complex double zn = z - c->centre;
+  return dsq(creal(zn)/rRe) + dsq(cimag(zn)/rIm) < 1;
+}
+
 beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double rIm, size_t n) 
 {
   beyn_contour_t *c;
-  QPMS_CRASHING_MALLOC(c, sizeof(beyn_contour_t) + n*sizeof(c->z_dz[0]));
+  QPMS_CRASHING_MALLOC(c, sizeof(beyn_contour_t) + (n+1)*sizeof(c->z_dz[0]));
   c->centre = centre;
   c->n = n;
   for(size_t i = 0; i < n; ++i) {
@@ -68,6 +77,10 @@ beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double r
     c->z_dz[i][0] = centre + ct*rRe + I*st*rIm;
     c->z_dz[i][1] = (I*rRe*st + rIm*ct) / n;
   }
+  // We hide the half-axes metadata after the discretisation points.
+  c->z_dz[n][0] = rRe;
+  c->z_dz[n][1] = rIm;
+  c->inside_test = beyn_contour_ellipse_inside_test;
   return c;
 }
 

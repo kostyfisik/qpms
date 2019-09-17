@@ -37,6 +37,8 @@ typedef struct beyn_contour_t {
 	 * but it should be "somewhere around" where the contour is.
 	 */
 	complex double centre;
+	/// Function testing that a point \a z lies inside the contour (optional).
+	_Bool (*inside_test)(struct beyn_contour_t *, complex double z);
 	complex double z_dz[][2]; ///< Pairs of contour points and derivatives in that points.
 } beyn_contour_t;
 

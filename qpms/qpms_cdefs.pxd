@@ -549,6 +549,7 @@ cdef extern from "gsl/gsl_matrix.h":
 
 cdef extern from "beyn.h":
     ctypedef struct beyn_contour_t:
+        bint (*inside_test)(beyn_contour_t *, cdouble z)
         pass
     ctypedef struct beyn_result_gsl_t:
         pass
