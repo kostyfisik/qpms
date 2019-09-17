@@ -104,6 +104,7 @@ BeynSolver *BeynSolver_create(int M, int L)
   solver->MInvVHat     = gsl_matrix_complex_calloc(M,L);
   solver->VHat         = gsl_matrix_complex_calloc(M,L);
   solver->Sigma        = gsl_vector_calloc(L);
+  // Beyn Step 1: Generate random matrix VHat
   BeynSolver_srandom(solver,(unsigned)time(NULL));
 
   return solver;
@@ -170,14 +171,11 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 
   int verbose = 1; // TODO
 
-  // A0 -> V0_full * Sigma * W0T_full' 
+  // Beyn Step 3: Compute SVD: A0 = V0_full * Sigma * W0T_full
   if(verbose) printf(" Beyn: computing SVD...\n");
   gsl_matrix_complex* V0_full = gsl_matrix_complex_alloc(m,l);
   gsl_matrix_complex_memcpy(V0_full,A0);
-
   gsl_matrix_complex* W0T_full = gsl_matrix_complex_alloc(l,l);
-  //A0->SVD(Sigma, &V0_full, &W0T_full);
-
   QPMS_ENSURE(Sigma->stride == 1, "Sigma vector stride must be 1 for LAPACKE_zgesdd, got %zd.", Sigma->stride);
   QPMS_ENSURE(V0_full->size1 >= V0_full->size2, "m = %zd, l = %zd, what the hell?");
   QPMS_ENSURE_SUCCESS(LAPACKE_zgesdd(LAPACK_ROW_MAJOR, // A = U*Σ*conjg(V') 
@@ -194,6 +192,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
         ));
 
 
+  // Beyn Step 4: Rank test for Sigma
   // compute effective rank K (number of eigenvalue candidates)
   int K=0;
   for (int k=0; k<Sigma->size /* this is l, actually */; k++) { 
@@ -207,6 +206,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
     return 0;
   }
 
+  // Beyn step 5:  B = V0' * A1 * W0 * Sigma^-1
   // set V0, W0T = matrices of first K right, left singular vectors
   gsl_matrix_complex *V0 = gsl_matrix_complex_alloc(m,K);
   gsl_matrix_complex *W0T= gsl_matrix_complex_alloc(K,l);
@@ -222,12 +222,11 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
   gsl_matrix_complex_free(V0_full);
   gsl_matrix_complex_free(W0T_full);
 
-  // B <- V0' * A1 * W0 * Sigma^-1
   gsl_matrix_complex *TM2 = gsl_matrix_complex_calloc(K,l);
   gsl_matrix_complex *B = gsl_matrix_complex_calloc(K,K);
 
   if(verbose) printf(" Multiplying V0*A1->TM...\n");
-  //V0.Multiply(A1, &TM2, "--transA C");   // TM2 <- V0' * A1
+
   const gsl_complex one = gsl_complex_rect(1,0);
   const gsl_complex zero = gsl_complex_rect(0,0);
   gsl_blas_zgemm(CblasConjTrans, CblasNoTrans, one,
@@ -251,8 +250,16 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
   gsl_vector_complex_free(tmp);
 
   //for(int m=0; m<K; m++)                  //  B <- B * Sigma^{-1}
-
-  // B -> S*Lambda*S'
+  
+  // Beyn step 6.
+  // Eigenvalue decomposition B -> S*Lambda*S'
+  /* According to Beyn's paper (Algorithm 1), one should check conditioning
+   * of the eigenvalues; if they are ill-conditioned, one should perform
+   * a procedure involving Schur decomposition and reordering.
+   *
+   * Beyn refers to MATLAB routines eig, condeig, schur, ordschur.
+   * I am not sure about the equivalents in LAPACK, TODO check zgeevx, zgeesx.
+   */
   if(verbose) printf(" Eigensolving (%i,%i)\n",K,K);
 
   gsl_vector_complex *Lambda = gsl_vector_complex_alloc(K); // eigenvalues
@@ -285,6 +292,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
   gsl_matrix_complex_free(V0);
 
   // FIXME!!! make clear relation between KRetained and K in the results!
+  // (If they differ, there are possibly some spurious eigenvalues.)
   int KRetained = 0;
   gsl_matrix_complex *Mmat = gsl_matrix_complex_alloc(m, m);
   gsl_vector_complex *MVk = gsl_vector_complex_alloc(m);
@@ -347,15 +355,14 @@ beyn_result_gsl_t *beyn_solve_gsl(const size_t m, const size_t l,
   if(N & 1) QPMS_WARN("Contour discretisation point number is odd (%zd),"
      " the error estimates might be a bit off.", N);
 
+
+  // Beyn Step 2: Computa A0, A1 
   const complex double z0 = contour->centre;
   for(int n=0; n<N; n++) { 
     const complex double z = contour->z_dz[n][0];
     const complex double dz = contour->z_dz[n][1];
 
     gsl_matrix_complex_memcpy(MInvVHat, VHat);
-
-    // Tän pitäis kutsua eval_WT
-    // Output ilmeisesti tallentuun neljänteen parametriin
 
     if(M_inv_Vhat_function) {
       QPMS_ENSURE_SUCCESS(M_inv_Vhat_function(MInvVHat, VHat, z, params));
@@ -382,7 +389,7 @@ beyn_result_gsl_t *beyn_solve_gsl(const size_t m, const size_t l,
       gsl_matrix_complex_add(A0_coarse, MInvVHat);
     }
 
-    gsl_matrix_complex_scale(MInvVHat, cs2g(z - z0));
+    gsl_matrix_complex_scale(MInvVHat, cs2g(z - z0)); // A_1 scaling as in Beyn's Remark 3.2(b) for numerical stability.
     gsl_matrix_complex_add(A1, MInvVHat);
     if((n%2)==0) {
       gsl_matrix_complex_add(A1_coarse, MInvVHat);
@@ -394,11 +401,13 @@ beyn_result_gsl_t *beyn_solve_gsl(const size_t m, const size_t l,
   gsl_vector_complex *eigenvalue_errors     = solver->eigenvalue_errors;
   gsl_matrix_complex *eigenvectors = solver->eigenvectors;
 
+  // Beyn Steps 3–6
   int K = beyn_process_matrices(solver, M_function, params, A0, A1, z0, eigenvalues, eigenvectors, rank_tol, res_tol);
+  // Repeat Steps 3–6 with rougher contour approximation to get an error estimate.
   int K_coarse = beyn_process_matrices(solver, M_function, params, A0_coarse, A1_coarse, z0, eigenvalue_errors, eigenvectors, rank_tol, res_tol);
 
   gsl_blas_zaxpy(gsl_complex_rect(-1,0), eigenvalues, eigenvalue_errors);
-  // TODO Original did also fabs on the complex and real parts ^^^.
+  // Reid did also fabs on the complex and real parts ^^^.
 
   beyn_result_gsl_t *result;
   QPMS_CRASHING_MALLOC(result, sizeof(beyn_result_gsl_t));

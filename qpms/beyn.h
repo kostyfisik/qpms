@@ -29,7 +29,14 @@ typedef int (*beyn_function_M_inv_Vhat_t)(complex double *target_M_inv_Vhat, siz
 /// Complex plane integration contour structure.
 typedef struct beyn_contour_t {
 	size_t n; ///< Number of discretisation points.
-	complex double centre; ///< TODO what is the exact purpose of this?
+	/// "Centre" of the contour.
+	/** 
+	 * This point is used in the rescaling of the \f$ A_1 \f$ matrix as in
+	 * Beyn's Remark 3.2 (b) in order to improve the numerical stability.
+	 * It does not have to be a centre in some strictly defined sense,
+	 * but it should be "somewhere around" where the contour is.
+	 */
+	complex double centre;
 	complex double z_dz[][2]; ///< Pairs of contour points and derivatives in that points.
 } beyn_contour_t;
 
