@@ -705,6 +705,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
   assert(c->normalisation == destspec->norm && c->normalisation == srcspec->norm);
   assert(c->lMax >= destspec->lMax && c->lMax >= srcspec->lMax);
   assert(destspec->lMax_L < 0 && srcspec->lMax_L < 0);
+  // TODO don't use c->lMax etc. if both destspec->lMax and srcspec->lMax are smaller
   complex double A[c->nelem][c->nelem];
   complex double B[c->nelem][c->nelem];
   qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays(c,
@@ -726,6 +727,60 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
   }
   return retval;
 }
+
+qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculator *c,
+    complex double *target, double *err,
+    /// Must be destspec->lMax <= c-> lMax && destspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *destspec, size_t deststride,
+    /// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+    const double eta, const complex double k,
+    cart2_t b1, cart2_t b2,
+    const cart2_t beta,
+    const cart2_t particle_shift,
+    double maxR, double maxK
+    )
+{
+  TROPS_ONLY_AB_SYMMETRIC_NORMS_IMPLEMENTED(c->normalisation);
+  QPMS_ENSURE(c->normalisation == destspec->norm && c->normalisation == srcspec->norm,
+      "The normalisation conventions must be the same");
+  assert(c->lMax >= destspec->lMax && c->lMax >= srcspec->lMax);
+  assert(destspec->lMax_L < 0 && srcspec->lMax_L < 0);
+  // TODO don't use c->lMax etc. if both destspec->lMax and srcspec->lMax are smaller
+  const ptrdiff_t ldAB = c->nelem;
+  complex double *A, *B;
+  double *Aerr = NULL, *Berr = NULL;
+  QPMS_CRASHING_MALLOC(A, c->nelem*c->nelem*sizeof(complex double));
+  QPMS_CRASHING_MALLOC(B, c->nelem*c->nelem*sizeof(complex double));
+  if(err) {
+    QPMS_CRASHING_MALLOC(Aerr, c->nelem*c->nelem*sizeof(double));
+    QPMS_CRASHING_MALLOC(Berr, c->nelem*c->nelem*sizeof(double));
+  }
+  qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays_e32(c,
+      A, Aerr, B, Berr, ldAB, 1, 
+      eta, k, b1, b2, beta, particle_shift, maxR, maxK);
+  for (size_t desti = 0; desti < destspec->n; ++desti) {
+    qpms_y_t desty; qpms_vswf_type_t destt;
+    if(QPMS_SUCCESS != qpms_uvswfi2ty(destspec->ilist[desti], &destt, &desty))
+        qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,
+          "Invalid u. vswf index %llx.", destspec->ilist[desti]);
+    for (size_t srci = 0; srci < srcspec->n; ++srci){
+      qpms_y_t srcy; qpms_vswf_type_t srct;
+      if(QPMS_SUCCESS != qpms_uvswfi2ty(srcspec->ilist[srci], &srct, &srcy))
+          qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,
+            "Invalid u. vswf index %llx.", srcspec->ilist[srci]);
+      target[srci * srcstride + desti * deststride]
+        = (srct == destt) ? A[ldAB*desty + srcy] : B[ldAB*desty + srcy];
+      if(err) err[srci * srcstride + desti * deststride]
+        = (srct == destt) ? Aerr[ldAB*desty + srcy] : Berr[ldAB*desty + srcy];
+    }
+  }
+  free(A); free(B);
+  if (err) { free(Aerr); free(Berr); }
+  return retval;
+}
+
+
 
 qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p( 
     const qpms_trans_calculator *c,
