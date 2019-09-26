@@ -125,7 +125,7 @@ beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
   }
   for(size_t i = 0; i < nline; ++i) {
     double t = 0.5 * (1 - (double) nline) + i;
-    complex double z = centre + faktor * t * l;
+    complex double z = centre + faktor * t * 2 * l / nline;
     switch(or) { // ensure correct zero signs; CHECKME!!!
       case BEYN_CONTOUR_HALFELLIPSE_RE_PLUS:
         if(creal(z) == 0 && signbit(creal(z)))
@@ -146,7 +146,7 @@ beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
       default: QPMS_WTF;
     }
     c->z_dz[narc + i][0] = z;
-    c->z_dz[narc + i][1] = faktor * l / nline;
+    c->z_dz[narc + i][1] = faktor * 2 * l / nline;
   }
   // We hide the half-axes metadata after the discretisation points.
   c->z_dz[n][0] = rRe;

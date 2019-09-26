@@ -28,6 +28,11 @@ target_link_libraries( tbeyn3a qpms gsl lapacke amos m )
 target_include_directories( tbeyn3a PRIVATE .. )
 target_compile_definitions( tbeyn3a PRIVATE VARIANTA )
 
+add_executable( tbeyn3a_implus tbeyn3.c )
+target_link_libraries( tbeyn3a_implus qpms gsl lapacke amos m )
+target_include_directories( tbeyn3a_implus PRIVATE .. )
+target_compile_definitions( tbeyn3a_implus PRIVATE VARIANTA IMPLUS )
+
 add_executable( tbeyn3b tbeyn3.c )
 target_link_libraries( tbeyn3b qpms gsl lapacke amos m )
 target_include_directories( tbeyn3b PRIVATE .. )

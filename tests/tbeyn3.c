@@ -1,8 +1,10 @@
+#define _GNU_SOURCE
 #include <qpms/beyn.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <fenv.h>
 
 static double randU(double a, double b) {return a + (b-a) * random() * (1. / RAND_MAX); }
 // Normal distribution via Box-Muller transform
@@ -45,13 +47,14 @@ int M_function(complex double *target, const size_t m, const complex double z, v
 }
 
 int main(int argc, char **argv) {
-  complex double z0 = 0;
+  feenableexcept(FE_INVALID | FE_OVERFLOW);
+  complex double z0 = 0+3e-1*I;
 #ifdef RXSMALL
   double Rx = .1;
 #else 
   double Rx = .3; // Variant B will fail in this case due to large number of eigenvalues (>30)
 #endif
-  double Ry = .3;
+  double Ry = .25;
 #ifdef VARIANTF
   int L = 10, N = 150, dim = 10;
 #else
@@ -59,7 +62,11 @@ int main(int argc, char **argv) {
 #endif
   if (argc > 1) N = atoi(argv[1]);
   if (argc > 2) L = atoi(argv[2]);
+#ifdef IMPLUS
+  beyn_contour_t *contour = beyn_contour_halfellipse(z0, Rx, Ry, N, BEYN_CONTOUR_HALFELLIPSE_IM_PLUS);
+#else
   beyn_contour_t *contour = beyn_contour_ellipse(z0, Rx, Ry, N);
+#endif
   struct param p;
   p.T0 = malloc(dim*dim*sizeof(double));
   p.T1 = malloc(dim*dim*sizeof(double));
