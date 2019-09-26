@@ -75,7 +75,7 @@ beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double r
     double t = i*2*M_PI/n;
     double st = sin(t), ct = cos(t);
     c->z_dz[i][0] = centre + ct*rRe + I*st*rIm;
-    c->z_dz[i][1] = (I*rRe*st + rIm*ct) / n;
+    c->z_dz[i][1] = (-rRe*st + I*rIm*ct) * (2*M_PI / n);
   }
   // We hide the half-axes metadata after the discretisation points.
   c->z_dz[n][0] = rRe;
@@ -121,7 +121,7 @@ beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
     double t = (i+0.5)*M_PI/narc;
     double st = sin(t), ct = cos(t);
     c->z_dz[i][0] = centre + faktor*(ct*l + I*st*h);
-    c->z_dz[i][1] = faktor * (I*l*st + h*ct) / narc;
+    c->z_dz[i][1] = faktor * (-l*st + I*h*ct) * (M_PI / narc);
   }
   for(size_t i = 0; i < nline; ++i) {
     double t = 0.5 * (1 - (double) nline) + i;
@@ -146,7 +146,7 @@ beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
       default: QPMS_WTF;
     }
     c->z_dz[narc + i][0] = z;
-    c->z_dz[narc + i][1] = faktor * l / narc;
+    c->z_dz[narc + i][1] = faktor * l / nline;
   }
   // We hide the half-axes metadata after the discretisation points.
   c->z_dz[n][0] = rRe;
