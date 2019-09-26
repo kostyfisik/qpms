@@ -84,6 +84,79 @@ beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double r
   return c;
 }
 
+
+beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
+    double rIm, size_t n, beyn_contour_halfellipse_orientation or)
+{
+  beyn_contour_t *c;
+  QPMS_CRASHING_MALLOC(c, sizeof(beyn_contour_t) + (n+1)*sizeof(c->z_dz[0])
+      + sizeof(beyn_contour_halfellipse_orientation));
+  c->centre = centre;
+  c->n = n;
+  const size_t nline = n/2;
+  const size_t narc = n - nline;
+  complex double faktor;
+  const double positive_zero = copysign(0., +1.);
+  const double negative_zero = copysign(0., -1.);
+  double l = rRe, h = rIm;
+  switch(or) {
+    case BEYN_CONTOUR_HALFELLIPSE_RE_PLUS:
+      faktor = -I;
+      l = rIm; h = rRe;
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_RE_MINUS:
+      faktor = I;
+      l = rIm; h = rRe;
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_IM_PLUS:
+      faktor = 1;
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_IM_MINUS:
+      faktor = -1;
+      break;
+    default: QPMS_WTF;
+  }
+
+  for(size_t i = 0; i < narc; ++i) {
+    double t = (i+0.5)*M_PI/narc;
+    double st = sin(t), ct = cos(t);
+    c->z_dz[i][0] = centre + faktor*(ct*l + I*st*h);
+    c->z_dz[i][1] = faktor * (I*l*st + h*ct) / narc;
+  }
+  for(size_t i = 0; i < nline; ++i) {
+    double t = 0.5 * (1 - (double) nline) + i;
+    complex double z = centre + faktor * t * l;
+    switch(or) { // ensure correct zero signs; CHECKME!!!
+      case BEYN_CONTOUR_HALFELLIPSE_RE_PLUS:
+        if(creal(z) == 0 && signbit(creal(z)))
+          z = positive_zero + I * cimag(z);
+        break;
+      case BEYN_CONTOUR_HALFELLIPSE_RE_MINUS:
+        if(creal(z) == 0 && !signbit(creal(z)))
+          z = negative_zero + I * cimag(z);
+        break;
+      case BEYN_CONTOUR_HALFELLIPSE_IM_PLUS:
+        if(cimag(z) == 0 && signbit(cimag(z)))
+          z = creal(z) + I * positive_zero;
+        break;
+      case BEYN_CONTOUR_HALFELLIPSE_IM_MINUS:
+        if(cimag(z) == 0 && !signbit(cimag(z)))
+          z = creal(z) + I * negative_zero;
+        break;
+      default: QPMS_WTF;
+    }
+    c->z_dz[narc + i][0] = z;
+    c->z_dz[narc + i][1] = faktor * l / narc;
+  }
+  // We hide the half-axes metadata after the discretisation points.
+  c->z_dz[n][0] = rRe;
+  c->z_dz[n][1] = rIm;
+  // ugly...
+  *((beyn_contour_halfellipse_orientation *) &c->z_dz[n+1][0]) = or;
+  c->inside_test = NULL; // TODO beyn_contour_halfellipse_inside_test;
+  return c;
+}
+
 void beyn_result_gsl_free(beyn_result_gsl_t *r) {
   if(r) {
     gsl_vector_complex_free(r->eigval);

@@ -562,6 +562,11 @@ cdef extern from "beyn.h":
         cdouble *eigvec
         double *ranktest_SV
         beyn_result_gsl_t *gsl
+    ctypedef enum beyn_contour_halfellipse_orientation:
+        BEYN_CONTOUR_HALFELLIPSE_RE_PLUS
+        BEYN_CONTOUR_HALFELLIPSE_IM_PLUS
+        BEYN_CONTOUR_HALFELLIPSE_RE_MINUS
+        BEYN_CONTOUR_HALFELLIPSE_IM_MINUS
 
     ctypedef int (*beyn_function_M_gsl_t)(gsl_matrix_complex *target_M, cdouble z, void *params)
     ctypedef int (*beyn_function_M_inv_Vhat_gsl_t)(gsl_matrix_complex *target, const gsl_matrix_complex *Vhat, cdouble z, void *params)

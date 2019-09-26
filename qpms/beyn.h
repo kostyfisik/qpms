@@ -46,6 +46,20 @@ typedef struct beyn_contour_t {
 /** Free using free(). */
 beyn_contour_t *beyn_contour_ellipse(complex double centre, double halfax_re, double halfax_im, size_t npoints);
 
+
+typedef enum {
+	BEYN_CONTOUR_HALFELLIPSE_RE_PLUS = 3,
+	BEYN_CONTOUR_HALFELLIPSE_RE_MINUS = 1,
+	BEYN_CONTOUR_HALFELLIPSE_IM_PLUS = 0,
+	BEYN_CONTOUR_HALFELLIPSE_IM_MINUS = 2,
+} beyn_contour_halfellipse_orientation;
+
+
+/// Complex plane "half-elliptic" integration contour with axes parallel to the real, imaginary axes.
+/** Free using free(). */
+beyn_contour_t *beyn_contour_halfellipse(complex double centre, double halfax_re, double halfax_im, size_t npoints,
+		beyn_contour_halfellipse_orientation or);
+
 /// Beyn algorithm result structure (GSL matrix/vector version).
 typedef struct beyn_result_gsl_t {
 	size_t neig; ///< Number of eigenvalues found (a bit redundant?).
