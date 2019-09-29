@@ -19,6 +19,7 @@
 #include <gsl/gsl_eigen.h>
 
 #include "beyn.h"
+#define SQ(x) ((x)*(x))
 
 STATIC_ASSERT((sizeof(lapack_complex_double) == sizeof(gsl_complex)), lapack_and_gsl_complex_must_be_consistent);
 
@@ -85,6 +86,36 @@ beyn_contour_t *beyn_contour_ellipse(complex double centre, double rRe, double r
 }
 
 
+// Sets correct sign to zero for a given branch cut orientation
+static inline complex double 
+align_zero(complex double z, beyn_contour_halfellipse_orientation or) 
+{
+  // Maybe redundant, TODO check the standard.
+  const double positive_zero = copysign(0., +1.);
+  const double negative_zero = copysign(0., -1.);
+  switch(or) { // ensure correct zero signs; CHECKME!!!
+    case BEYN_CONTOUR_HALFELLIPSE_RE_PLUS:
+      if(creal(z) == 0 && signbit(creal(z)))
+        z = positive_zero + I * cimag(z);
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_RE_MINUS:
+      if(creal(z) == 0 && !signbit(creal(z)))
+        z = negative_zero + I * cimag(z);
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_IM_PLUS:
+      if(cimag(z) == 0 && signbit(cimag(z)))
+        z = creal(z) + I * positive_zero;
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_IM_MINUS:
+      if(cimag(z) == 0 && !signbit(cimag(z)))
+        z = creal(z) + I * negative_zero;
+      break;
+    default: QPMS_WTF;
+  }
+  return z;
+}
+
+
 beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
     double rIm, size_t n, beyn_contour_halfellipse_orientation or)
 {
@@ -96,8 +127,6 @@ beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
   const size_t nline = n/2;
   const size_t narc = n - nline;
   complex double faktor;
-  const double positive_zero = copysign(0., +1.);
-  const double negative_zero = copysign(0., -1.);
   double l = rRe, h = rIm;
   switch(or) {
     case BEYN_CONTOUR_HALFELLIPSE_RE_PLUS:
@@ -125,27 +154,7 @@ beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
   }
   for(size_t i = 0; i < nline; ++i) {
     double t = 0.5 * (1 - (double) nline) + i;
-    complex double z = centre + faktor * t * 2 * l / nline;
-    switch(or) { // ensure correct zero signs; CHECKME!!!
-      case BEYN_CONTOUR_HALFELLIPSE_RE_PLUS:
-        if(creal(z) == 0 && signbit(creal(z)))
-          z = positive_zero + I * cimag(z);
-        break;
-      case BEYN_CONTOUR_HALFELLIPSE_RE_MINUS:
-        if(creal(z) == 0 && !signbit(creal(z)))
-          z = negative_zero + I * cimag(z);
-        break;
-      case BEYN_CONTOUR_HALFELLIPSE_IM_PLUS:
-        if(cimag(z) == 0 && signbit(cimag(z)))
-          z = creal(z) + I * positive_zero;
-        break;
-      case BEYN_CONTOUR_HALFELLIPSE_IM_MINUS:
-        if(cimag(z) == 0 && !signbit(cimag(z)))
-          z = creal(z) + I * negative_zero;
-        break;
-      default: QPMS_WTF;
-    }
-    c->z_dz[narc + i][0] = z;
+    c->z_dz[narc + i][0] = align_zero(centre + faktor * t * 2 * l / nline, or);
     c->z_dz[narc + i][1] = faktor * 2 * l / nline;
   }
   // We hide the half-axes metadata after the discretisation points.
@@ -153,6 +162,93 @@ beyn_contour_t *beyn_contour_halfellipse(complex double centre, double rRe,
   c->z_dz[n][1] = rIm;
   // ugly...
   *((beyn_contour_halfellipse_orientation *) &c->z_dz[n+1][0]) = or;
+  c->inside_test = NULL; // TODO beyn_contour_halfellipse_inside_test;
+  return c;
+}
+
+beyn_contour_t *beyn_contour_kidney(complex double centre, double rRe,
+    double rIm, const double rounding, const size_t n, beyn_contour_halfellipse_orientation or)
+{
+  beyn_contour_t *c;
+  QPMS_ENSURE(rounding >= 0 && rounding < .5, "rounding must lie in the interval [0, 0.5)");
+  QPMS_CRASHING_MALLOC(c, sizeof(beyn_contour_t) + (n+1)*sizeof(c->z_dz[0])
+      + sizeof(beyn_contour_halfellipse_orientation));
+  c->centre = centre;
+  c->n = n;
+  complex double faktor;
+  double l = rRe, h = rIm;
+  switch(or) {
+    case BEYN_CONTOUR_HALFELLIPSE_RE_PLUS:
+      faktor = -I;
+      l = rIm; h = rRe;
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_RE_MINUS:
+      faktor = I;
+      l = rIm; h = rRe;
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_IM_PLUS:
+      faktor = 1;
+      break;
+    case BEYN_CONTOUR_HALFELLIPSE_IM_MINUS:
+      faktor = -1;
+      break;
+    default: QPMS_WTF;
+  }
+
+  // Small circle centre coordinates.
+  const double y = rounding * h; // distance from the cut / straight line
+  const double x = sqrt(SQ(h - y) - SQ(y)); 
+
+  const double alpha = asin(y/(h-y));
+  const double ar = l/h; // aspect ratio
+
+  // Parameter range (equal to the contour length if ar == 1)
+  const double tmax = 2 * (x + (M_PI_2 + alpha) * y + (M_PI_2 - alpha) * h);
+  const double dt = tmax / n;
+
+  size_t i = 0;
+  double t;
+  // Straight line, first part
+  double t_lo = 0, t_hi = x;
+  for(; t = i * dt, t <= t_hi; ++i) { 
+    c->z_dz[i][0] = align_zero(centre + (t - t_lo) * ar * faktor, or);
+    c->z_dz[i][1] = dt * ar * faktor;
+  }
+  // First small arc
+  t_lo = t_hi; t_hi = t_lo + (M_PI_2 + alpha) * y;
+  for(; t = i * dt, dt < t_hi; ++i) {
+    double phi = (t - t_lo) / y - M_PI_2;
+    c->z_dz[i][0] = centre + (ar * (x + y * cos(phi)) + y * (1 + sin(phi)) * I) * faktor;
+    c->z_dz[i][1] = dt * y * (- ar * sin(phi) + cos(phi) * I) * faktor;
+  }
+  // Big arc
+  t_lo = t_hi; t_hi = t_lo + (M_PI + 2 * alpha) * h;
+  for(; t = i * dt, dt < t_hi; ++i) {
+    double phi = (t - t_lo) / h + M_PI_2 + alpha;
+    c->z_dz[i][0] = centre + (ar * (h * cos(phi)) + h * (1 + sin(phi)) * I) * faktor;
+    c->z_dz[i][1] = dt * h * (- ar * sin(phi) + cos(phi) * I) * faktor;
+  }
+  // Second small arc
+  t_lo = t_hi; t_hi = t_lo + (M_PI_2 + alpha) * y;
+  for(; t = i * dt, dt < t_hi; ++i) {
+    double phi = (t - t_lo) / y + M_PI - alpha;
+    c->z_dz[i][0] = centre + (ar * (x + y * cos(phi)) + y * (1 + sin(phi)) * I) * faktor;
+    c->z_dz[i][1] = dt * y * (- ar * sin(phi) + cos(phi) * I) * faktor;
+  }
+  // Straight line, second part
+  t_lo = t_hi; t_hi = tmax;
+  for(; t = i * dt, i < n; ++i) {
+    c->z_dz[i][0] = align_zero(centre + (t - t_lo - x) * ar * faktor, or);
+    c->z_dz[i][1] = dt * ar * faktor;
+  }
+  
+#if 0 // TODO later
+  // We hide the half-axes metadata after the discretisation points.
+  c->z_dz[n][0] = rRe;
+  c->z_dz[n][1] = rIm;
+  // ugly...
+  *((beyn_contour_halfellipse_orientation *) &c->z_dz[n+1][0]) = or;
+#endif
   c->inside_test = NULL; // TODO beyn_contour_halfellipse_inside_test;
   return c;
 }
