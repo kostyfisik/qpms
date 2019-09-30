@@ -37,6 +37,11 @@ target_link_libraries( tbeyn3a_implus qpms gsl lapacke amos m )
 target_include_directories( tbeyn3a_implus PRIVATE .. )
 target_compile_definitions( tbeyn3a_implus PRIVATE VARIANTA IMPLUS )
 
+add_executable( tbeyn3a_kidney tbeyn3.c )
+target_link_libraries( tbeyn3a_kidney qpms gsl lapacke amos m )
+target_include_directories( tbeyn3a_kidney PRIVATE .. )
+target_compile_definitions( tbeyn3a_kidney PRIVATE VARIANTA IMPLUS_KIDNEY )
+
 add_executable( tbeyn3b tbeyn3.c )
 target_link_libraries( tbeyn3b qpms gsl lapacke amos m )
 target_include_directories( tbeyn3b PRIVATE .. )

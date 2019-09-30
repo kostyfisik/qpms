@@ -64,6 +64,8 @@ int main(int argc, char **argv) {
   if (argc > 2) L = atoi(argv[2]);
 #ifdef IMPLUS
   beyn_contour_t *contour = beyn_contour_halfellipse(z0, Rx, Ry, N, BEYN_CONTOUR_HALFELLIPSE_IM_PLUS);
+#elif defined IMPLUS_KIDNEY
+  beyn_contour_t *contour = beyn_contour_kidney(z0, Rx, Ry, 0.3, N, BEYN_CONTOUR_HALFELLIPSE_IM_PLUS);
 #else
   beyn_contour_t *contour = beyn_contour_ellipse(z0, Rx, Ry, N);
 #endif
