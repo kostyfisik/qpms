@@ -3,8 +3,6 @@ find_package(GSL 2.0 REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
-add_definitions(-DLATTICESUMS32)
-add_definitions(-DQPMS_VECTORS_NICE_TRANSFORMATIONS)
 
 #includes
 set (DIRS ${GSL_INCLUDE_DIRS} ${GSLCBLAS_INCLUDE_DIRS})
@@ -29,6 +27,9 @@ target_link_libraries (qpms
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_options(qpms PRIVATE -Wall -Wno-return-type)
+target_compile_definitions(qpms PRIVATE LATTICESUMS32 QPMS_VECTORS_NICE_TRANSFORMATIONS
+	EWALD_AUTO_CUTOFF
+	)
 
 install(TARGETS qpms
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

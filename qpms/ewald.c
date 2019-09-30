@@ -29,6 +29,8 @@
 #define M_SQRTPI 1.7724538509055160272981674833411452
 #endif
 
+#define MAX(x,y) ((x)<(y)?(y):(x))
+#define MIN(x,y) ((x)<(y)?(x):(y))
 
 
 // sloppy implementation of factorial
@@ -221,6 +223,7 @@ int ewald3_21_xy_sigma_long (
   assert((latdim & LAT_XYONLY) && (latdim & SPACE3D));
   assert((latdim & LAT1D) || (latdim & LAT2D));
   const qpms_y_t nelem_sc = c->nelem_sc;
+  assert(nelem_sc > 0);
   const qpms_l_t lMax = c->lMax;
   
   // Manual init of the ewald summation targets
@@ -231,6 +234,23 @@ int ewald3_21_xy_sigma_long (
     err_c = calloc(nelem_sc, sizeof(double));
     memset(err, 0, nelem_sc * sizeof(double));
   }
+
+#ifdef EWALD_AUTO_CUTOFF
+  /* 
+   * Experimental: stop the evaluation if the relative contribution of the "last layer"
+   * is below DBL_EPSILON to speed up the calculation. 
+   * This obviously can currently work only for "suitable PGen"s that generate points in
+   * layers with increasing distance from the origin.
+   * Currently, the "layers" are chunks of 12 * lw + 1 points, where w is an
+   * increasing integer index (starting from 1).
+   * TODO: define the layers (optionally) in the PGen metadata and switch this feature on
+   * during run time instead of using this EWALD_AUTO_CUTOFF macro.
+   */
+  size_t lw = 1; // "Layer" index.
+  size_t li = 0; // Counter of points inside the current "layer".
+  double lsum, lsum_c; // Layer contribution magnitude sum + kahan compensation
+  kahaninit(&lsum, &lsum_c);
+#endif
 
   const complex double commonfac = 1/(k*k*unitcell_volume); // used in the very end (CFC)
   if (k_is_real)
@@ -317,12 +337,34 @@ int ewald3_21_xy_sigma_long (
         }
         jsum *= phasefac * factor1d; // PFC
         ckahanadd(target + y, target_c + y, jsum);
+#ifdef EWALD_AUTO_CUTOFF
+        kahanadd(&lsum, &lsum_c, cabs(jsum));
+#endif
         if(err) kahanadd(err + y, err_c + y, jsum_err);
       }
 #ifndef NDEBUG
     rbeta_pq_prev = rbeta_pq;
 #endif
+#ifdef EWALD_AUTO_CUTOFF
+    ++li;
+    double cursum_min = INFINITY;
+    for (qpms_y_t y = 0; y < nelem_sc; ++y) {
+      const double a = cabs(target[y]);
+      if (a) // Skip possible symmetry-induced zeros; TODO this might need to be done in completely different way, perhaps on per-y basis
+        cursum_min = MIN(cursum_min, a);
+    }
+    if (li >= 12 * lw + 1) {
+      if(lsum < DBL_EPSILON * cursum_min)
+        goto ewald3_21_xy_sigma_long_end_point_loop;
+      kahaninit(&lsum, &lsum_c);
+      li = 0;
+      ++lw;
+    }
+#endif
   } // END POINT LOOP
+#ifdef EWALD_AUTO_CUTOFF
+ewald3_21_xy_sigma_long_end_point_loop:
+#endif
  
   free(err_c);
   free(target_c);
@@ -606,8 +648,17 @@ int ewald3_sigma_short(
     err_c = calloc(nelem_sc, sizeof(double));
     memset(err, 0, nelem_sc * sizeof(double));
   }
-  
 
+#ifdef EWALD_AUTO_CUTOFF
+  /* 
+   * Experimental; see the notes at the first #ifdef EWALD_AUTO_CUTOFF in this file.
+   */
+  size_t lw = 1; // "Layer" index.
+  size_t li = 0; // Counter of points inside the current "layer".
+  double lsum, lsum_c; // Layer contribution magnitude sum + kahan compensation
+  kahaninit(&lsum, &lsum_c);
+#endif
+  
   PGenSphReturnData pgen_retdata;
 #ifndef NDEBUG
   double r_pq_shifted_prev;
@@ -705,15 +756,38 @@ int ewald3_sigma_short(
         if(err)
           kahanadd(err + y, err_c + y, cabs(leg * (prefacn / I) * R_pq_pown
               * interr[n])); // TODO include also other errors
-        ckahanadd(target + y, target_c + y,
-            prefacn * R_pq_pown * leg * cintres[n] * e_beta_Rpq * e_imf * min1pow_m_neg(m));
+        complex double thesummand = prefacn * R_pq_pown * leg * cintres[n] * e_beta_Rpq * e_imf * min1pow_m_neg(m);
+        ckahanadd(target + y, target_c + y, thesummand);
+#ifdef EWALD_AUTO_CUTOFF
+        kahanadd(&lsum, &lsum_c, cabs(thesummand));
+#endif
       }
 
     }
 #ifndef NDEBUG
     r_pq_shifted_prev = r_pq_shifted;
 #endif
+#ifdef EWALD_AUTO_CUTOFF
+    ++li;
+    double cursum_min = INFINITY;
+    for (qpms_y_t y = 0; y < nelem_sc; ++y) {
+      const double a = cabs(target[y]);
+      if (a) // Skip possible symmetry-induced zeros; TODO this might need to be done in completely different way, perhaps on per-y basis
+        cursum_min = MIN(cursum_min, a);
+    }
+    if (li >= 12 * lw + 1) {
+      if(lsum < DBL_EPSILON * cursum_min)
+        goto ewald3_sigma_short_end_point_loop;
+      kahaninit(&lsum, &lsum_c);
+      li = 0;
+      ++lw;
+    }
+#endif
   }
+  //END POINT LOOP
+#ifdef EWALD_AUTO_CUTOFF
+ewald3_sigma_short_end_point_loop:
+#endif
 
   gsl_integration_workspace_free(workspace);
   if(err) free(err_c);
