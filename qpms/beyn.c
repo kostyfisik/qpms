@@ -216,24 +216,24 @@ beyn_contour_t *beyn_contour_kidney(complex double centre, double rRe,
   }
   // First small arc
   t_lo = t_hi; t_hi = t_lo + (M_PI_2 + alpha) * y;
-  for(; t = i * dt, dt < t_hi; ++i) {
+  for(; t = i * dt, t < t_hi; ++i) {
     double phi = (t - t_lo) / y - M_PI_2;
     c->z_dz[i][0] = centre + (ar * (x + y * cos(phi)) + y * (1 + sin(phi)) * I) * faktor;
-    c->z_dz[i][1] = dt * y * (- ar * sin(phi) + cos(phi) * I) * faktor;
+    c->z_dz[i][1] = dt * (- ar * sin(phi) + cos(phi) * I) * faktor;
   }
   // Big arc
-  t_lo = t_hi; t_hi = t_lo + (M_PI + 2 * alpha) * h;
-  for(; t = i * dt, dt < t_hi; ++i) {
-    double phi = (t - t_lo) / h + M_PI_2 + alpha;
-    c->z_dz[i][0] = centre + (ar * (h * cos(phi)) + h * (1 + sin(phi)) * I) * faktor;
-    c->z_dz[i][1] = dt * h * (- ar * sin(phi) + cos(phi) * I) * faktor;
+  t_lo = t_hi; t_hi = t_lo + (M_PI - 2 * alpha) * h;
+  for(; t = i * dt, t < t_hi; ++i) {
+    double phi = (t - t_lo) / h + alpha;
+    c->z_dz[i][0] = centre + (ar * (h * cos(phi)) + h * sin(phi) * I) * faktor;
+    c->z_dz[i][1] = dt * (- ar * sin(phi) + cos(phi) * I) * faktor;
   }
   // Second small arc
   t_lo = t_hi; t_hi = t_lo + (M_PI_2 + alpha) * y;
-  for(; t = i * dt, dt < t_hi; ++i) {
+  for(; t = i * dt, t < t_hi; ++i) {
     double phi = (t - t_lo) / y + M_PI - alpha;
-    c->z_dz[i][0] = centre + (ar * (x + y * cos(phi)) + y * (1 + sin(phi)) * I) * faktor;
-    c->z_dz[i][1] = dt * y * (- ar * sin(phi) + cos(phi) * I) * faktor;
+    c->z_dz[i][0] = centre + (ar * (- x + y * cos(phi)) + y * (1 + sin(phi)) * I) * faktor;
+    c->z_dz[i][1] = dt * (- ar * sin(phi) + cos(phi) * I) * faktor;
   }
   // Straight line, second part
   t_lo = t_hi; t_hi = tmax;

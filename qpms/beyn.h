@@ -60,6 +60,12 @@ typedef enum {
 beyn_contour_t *beyn_contour_halfellipse(complex double centre, double halfax_re, double halfax_im, size_t npoints,
 		beyn_contour_halfellipse_orientation or);
 
+/// Similar to halfellipse but with rounded corners.
+beyn_contour_t *beyn_contour_kidney(complex double centre, double halfax_re, double halfax_im, 
+	double rounding, ///< Must be in interval [0, 0.5)
+	size_t n, beyn_contour_halfellipse_orientation or);
+
+
 /// Beyn algorithm result structure (GSL matrix/vector version).
 typedef struct beyn_result_gsl_t {
 	size_t neig; ///< Number of eigenvalues found (a bit redundant?).

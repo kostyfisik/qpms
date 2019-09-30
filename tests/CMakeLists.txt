@@ -15,6 +15,10 @@ add_executable( test_scalar_ewald32 test_scalar_ewald32.c )
 target_link_libraries( test_scalar_ewald32 qpms gsl lapacke amos m )
 target_include_directories( test_scalar_ewald32 PRIVATE .. )
 
+add_executable( kidneycontour kidneycontour.c )
+target_link_libraries( kidneycontour qpms gsl lapacke amos m )
+target_include_directories( kidneycontour PRIVATE .. )
+
 add_executable( tbeyn tbeyn.c )
 target_link_libraries( tbeyn qpms gsl lapacke amos m )
 target_include_directories( tbeyn PRIVATE .. )
