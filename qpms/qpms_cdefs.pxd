@@ -584,6 +584,13 @@ cdef extern from "beyn.h":
             beyn_function_M_inv_Vhat_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
             double rank_tol, double res_tol)
 
+    beyn_contour_t *beyn_contour_ellipse(cdouble centre, double halfax_re, double halfax_im, size_t npoints)
+    beyn_contour_t *beyn_contour_halfellipse(cdouble centre, double halfax_re, double halfax_im, size_t npoints,
+            beyn_contour_halfellipse_orientation ori)
+    beyn_contour_t *beyn_contour_kidney(cdouble centre, double halfax_re, double halfax_im, size_t npoints,
+            double rounding, beyn_contour_halfellipse_orientation ori)
+
+
     cdouble gsl_comlpex_tostd(gsl_complex z)
     gsl_complex gsl_complex_fromstd(cdouble z)
 
