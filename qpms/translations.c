@@ -10,7 +10,6 @@
 #include "tiny_inlines.h"
 #include "assert_cython_workaround.h"
 #include "kahansum.h"
-#include <stdlib.h> //abort()
 #include <gsl/gsl_sf_coupling.h>
 #include "qpms_error.h"
 #include "normalisation.h"
@@ -145,13 +144,13 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm,
   double a1q[qmax+1];
   int err;
   gaunt_xu(-m,n,mu,nu,qmax,a1q,&err);
+  QPMS_ENSURE_SUCCESS(err);
   double a1q0 = a1q[0];
-  if (err) abort();
 
   double leg[gsl_sf_legendre_array_n(n+nu)];
-  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,costheta,-1,leg)) abort();
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,costheta,-1,leg));
   complex double bes[n+nu+1];
-  if (qpms_sph_bessel_fill(J, n+nu, kdlj.r, bes)) abort();
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu, kdlj.r, bes));
   complex double sum = 0;
   for(int q = 0; q <= qmax; ++q) {
     int p = n+nu-2*q;
@@ -219,16 +218,18 @@ complex double qpms_trans_single_B(qpms_normalisation_t norm,
     a2q0 = 1;
   }
   else { 
-    gaunt_xu(-m-1,n+1,mu+1,nu,q2max,a2q,&err); if (err) abort();
+    gaunt_xu(-m-1,n+1,mu+1,nu,q2max,a2q,&err);
+    QPMS_ENSURE_SUCCESS(err);
     a2q0 = a2q[0];
   }
-  gaunt_xu(-m,n+1,mu,nu,Qmax,a3q,&err); if (err) abort();
+  gaunt_xu(-m,n+1,mu,nu,Qmax,a3q,&err);
+  QPMS_ENSURE_SUCCESS(err);
   a3q0 = a3q[0];
   
   double leg[gsl_sf_legendre_array_n(n+nu+1)];
-  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,costheta,-1,leg)) abort();
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,costheta,-1,leg));
   complex double bes[n+nu+2];
-  if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bes)) abort();
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bes));
 
   complex double sum = 0;
   for (int q = 0; q <= realQmax; ++q) {
@@ -317,7 +318,7 @@ static void qpms_trans_calculator_multipliers_A(
   double a1q[qmax+1];
   int err;
   gaunt_xu(-m,n,mu,nu,qmax,a1q,&err);
-  if (err) abort();
+  QPMS_ENSURE_SUCCESS(err);
   double a1q0 = a1q[0];
 
   double normlogfac = qpms_trans_normlogfac(norm,m,n,mu,nu);
@@ -502,8 +503,8 @@ qpms_trans_calculator
   c->e3c = qpms_ewald3_constants_init(2 * lMax + 1, /*csphase*/ qpms_normalisation_t_csphase(normalisation));
 #endif
   c->legendre0 = malloc(gsl_sf_legendre_array_n(2*lMax+1) * sizeof(double));
-  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*lMax+1,
-              0,-1,c->legendre0)) abort(); // TODO maybe use some "precise" analytical formula instead?
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*lMax+1,
+              0,-1,c->legendre0)); // TODO maybe use some "precise" analytical formula instead?
   return c;
 }
 
@@ -540,9 +541,9 @@ complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
   int csphase = qpms_normalisation_t_csphase(c->normalisation);
   
   double costheta = cos(kdlj.theta);
-  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,
-        costheta,csphase,legendre_buf)) abort();
-  if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu,
+        costheta,csphase,legendre_buf));
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf));
   return qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
       kdlj,r_ge_d,J,bessel_buf,legendre_buf);
 }
@@ -579,9 +580,9 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
     return NAN+I*NAN;
   int csphase = qpms_normalisation_t_csphase(c->normalisation);
   double costheta = cos(kdlj.theta);
-  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
-        costheta,csphase,legendre_buf)) abort();
-  if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
+        costheta,csphase,legendre_buf));
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf));
   return qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
       kdlj,r_ge_d,J,bessel_buf,legendre_buf);
 }
@@ -599,9 +600,9 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
     return 0;
   }
   double costheta = cos(kdlj.theta);
-  if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
-        costheta,-1,legendre_buf)) abort();
-  if (qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf)) abort();
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,n+nu+1,
+        costheta,-1,legendre_buf));
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf));
   *Adest = qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
       kdlj,r_ge_d,J,bessel_buf,legendre_buf);
   *Bdest = qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
@@ -627,9 +628,9 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
   }
   {
     double costheta = cos(kdlj.theta);
-    if (gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
-          costheta,-1,legendre_buf)) abort();
-    if (qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf)) abort();
+    QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
+          costheta,-1,legendre_buf));
+    QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf));
     size_t desti = 0, srci = 0;
     for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
       for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
@@ -829,14 +830,11 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
     serr_total = malloc(sizeof(double)*nelem2_sc);
   } else serr_short = serr_long = serr_total = NULL;
 
-  int retval;
-  retval = ewald31z_sigma_long_points_and_shift(sigmas_long, serr_long, //DIFF21
-      c->e3c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift);
-  if (retval) abort();
+  QPMS_ENSURE_SUCCESS(ewald31z_sigma_long_points_and_shift(sigmas_long, serr_long, //DIFF21
+      c->e3c, eta, k, unitcell_area, nKpoints, Kpoints, beta, particle_shift));
 
-  retval = ewald31z_sigma_short_points_and_shift(sigmas_short, serr_short, //DIFF21
-      c->e3c, eta, k, nRpoints, Rpoints, beta, particle_shift);
-  if (retval) abort();
+  QPMS_ENSURE_SUCCESS(ewald31z_sigma_short_points_and_shift(sigmas_short, serr_short, //DIFF21
+      c->e3c, eta, k, nRpoints, Rpoints, beta, particle_shift));
 
   for(qpms_y_t y = 0; y < nelem2_sc; ++y)
     sigmas_total[y] = sigmas_short[y] + sigmas_long[y];
@@ -845,8 +843,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
 
   complex double sigma0 = 0; double sigma0_err = 0;
   if (do_sigma0) {
-    retval = ewald31z_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k);//DIFF21
-    if(retval) abort();
+    QPMS_ENSURE_SUCCESS(ewald31z_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k));
     const qpms_l_t y = qpms_mn2y_sc(0,0);
     sigmas_total[y] += sigma0;
     if(doerr) serr_total[y] += sigma0_err;
@@ -946,7 +943,7 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 
   const double unitcell_area = l2d_unitcell_area(b1, b2);
   cart2_t rb1, rb2; // reciprocal basis
-  if (QPMS_SUCCESS != l2d_reciprocalBasis2pi(b1, b2, &rb1, &rb2)) abort();
+  QPMS_ENSURE_SUCCESS(l2d_reciprocalBasis2pi(b1, b2, &rb1, &rb2));
 
   PGen Rgen = PGen_xyWeb_new(b1, b2, BASIS_RTOL, 
 #ifdef GEN_RSHIFTEDPOINTS
@@ -963,26 +960,27 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 #endif
      0, true, maxK, false);
 
-  int retval;
-  retval = ewald3_sigma_long(sigmas_long, serr_long, c->e3c, eta, k, 
+  QPMS_ENSURE_SUCCESS(ewald3_sigma_long(sigmas_long, serr_long, c->e3c, eta, k, 
       unitcell_area, LAT_2D_IN_3D_XYONLY, &Kgen,
 #ifdef GEN_KSHIFTEDPOINTS
       true,
 #else
       false,
 #endif
-      cart22cart3xy(beta), cart22cart3xy(particle_shift));
-  if (retval) abort();
+      cart22cart3xy(beta), cart22cart3xy(particle_shift)));
+  if(Kgen.stateData) // PGen not consumed entirely (converged earlier)
+    PGen_destroy(&Kgen);
 
-  retval = ewald3_sigma_short(sigmas_short, serr_short, c->e3c, eta, k,
+  QPMS_ENSURE_SUCCESS(ewald3_sigma_short(sigmas_short, serr_short, c->e3c, eta, k,
       LAT_2D_IN_3D_XYONLY, &Rgen, 
 #ifdef GEN_RSHIFTEDPOINTS
       true,
 #else
       false,
 #endif
-      cart22cart3xy(beta), cart22cart3xy(particle_shift));
-  if (retval) abort();
+      cart22cart3xy(beta), cart22cart3xy(particle_shift)));
+  if(Rgen.stateData) // PGen not consumed entirely (converged earlier)
+    PGen_destroy(&Rgen);
 
   for(qpms_y_t y = 0; y < nelem2_sc; ++y)
     sigmas_total[y] = sigmas_short[y] + sigmas_long[y];
@@ -991,8 +989,7 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 
   complex double sigma0 = 0; double sigma0_err = 0;
   if (do_sigma0) {
-    retval = ewald3_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k);
-    if(retval) abort();
+    QPMS_ENSURE_SUCCESS(ewald3_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k));
     const qpms_l_t y = qpms_mn2y_sc(0,0);
     sigmas_total[y] += sigma0;
     if(doerr) serr_total[y] += sigma0_err;

@@ -178,6 +178,12 @@ int ewald3_sigma_short(
 		/** Ignored apart from asserts and possible optimisations, as the SR formula stays the same. */
 		const LatticeDimensionality latdim,
 		/// Lattice point generator for the direct Bravais lattice.
+		/** There is a possibility that the whole PGen is not consumed
+		 *  (this might happen if the summand start to be consistently smaller
+		 *  than the (partial) sums * DBL_EPSILON.
+		 *  In such case, it is the responsibility of the caller to deallocate
+		 *  the generator.
+		 */
 		PGen *pgen_R,
 		/// Indicates whether pgen_R already generates shifted points.
 		/** If false, the behaviour corresponds to the old ewald32_sigma_short_points_and_shift(),
@@ -204,6 +210,12 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		/// Lattice dimensionality. 
 		const LatticeDimensionality latdim,
 		/// Lattice point generator for the reciprocal lattice.
+		/** There is a possibility that the whole PGen is not consumed
+		 *  (this might happen if the summand start to be consistently smaller
+		 *  than the (partial) sums * DBL_EPSILON.
+		 *  In such case, it is the responsibility of the caller to deallocate
+		 *  the generator.
+		 */
 		PGen *pgen_K, 
 		/// Indicates whether pgen_K already generates shifted points.
 		/** If false, the behaviour corresponds to the old ewald32_sigma_long_points_and_shift(),
