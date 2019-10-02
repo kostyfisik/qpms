@@ -570,7 +570,7 @@ qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, ///< T-matrix whose 
   qpms_l_t lMax = t->spec->lMax;
   complex double *miecoeffs = qpms_mie_coefficients_reflection(NULL, t->spec, a, k_i, k_e, mu_i, mu_e,
     QPMS_BESSEL_REGULAR, QPMS_HANKEL_PLUS);
-  memset(t->m, 0, SQ(t->spec->n));
+  memset(t->m, 0, SQ(t->spec->n)*sizeof(complex double));
   for(size_t i = 0; i < t->spec->n; ++i) 
     t->m[t->spec->n*i + i] = miecoeffs[i];
   free(miecoeffs);
