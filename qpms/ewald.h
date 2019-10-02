@@ -44,7 +44,7 @@ gsl_error_handler_t IgnoreUnderflowsGSLErrorHandler;
  * Used internally by qpms_translation_calculator_t. 
  * Initialised by qpms_ewald3_constants_init() and freed by qpms_ewald3_constants_free().
  */
-typedef struct { 
+typedef struct qpms_ewald3_constants_t { 
 	qpms_l_t lMax;
 	qpms_y_t nelem_sc;
 	/// The values of maximum \a j's in the long-range part summation, `[(l-|m|/2)]`.

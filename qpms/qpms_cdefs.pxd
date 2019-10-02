@@ -197,7 +197,7 @@ cdef extern from "lattices.h":
         pass
     struct PGen: # probably important
         PGenClassInfo* c
-        void *statedata
+        void *stateData
     void PGen_destroy(PGen *g)
     
     int l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
@@ -220,10 +220,27 @@ cdef extern from "lattices.h":
     PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bint inc_minR,
             double maxR, bint inc_maxR, PGen_1D_incrementDirection incdir)
     int qpms_reduce_lattice_basis(double *b, size_t bsize, size_t ndim, double delta)
+    ctypedef enum LatticeDimensionality:
+        LAT1D
+        LAT2D
+        LAT3D
+        SPACE1D
+        SPACE2D
+        SPACE3D
+        LAT_1D_IN_3D
+        LAT_2D_IN_3D
+        LAT_3D_IN_3D
+        LAT_ZONLY
+        LAT_XYONLY
+        LAT_1D_IN_3D_ZONLY
+        LAT_2D_IN_3D_XYONLY
+
 
 cdef extern from "vectors.h":
     cart2_t cart2_substract(cart2_t a, cart2_t b)
     cart2_t cart2_scale(const double c, cart2_t b)
+    double cart2norm(cart2_t a)
+    const cart2_t CART2_ZERO
 
 
 cdef extern from "quaternions.h":
@@ -544,9 +561,25 @@ cdef extern from "ewald.h":
     struct qpms_csf_result:
         cdouble val
         double err
+
+    struct qpms_ewald3_constants_t:
+        qpms_l_t lMax
+        qpms_y_t nelem_sc
+    qpms_ewald3_constants_t *qpms_ewald3_constants_init(qpms_l_t lMax, int csphase)
+    void qpms_ewald3_constants_free(qpms_ewald3_constants_t *c)
+    
     cdouble lilgamma(double t)
     cdouble clilgamma(cdouble z)
     int cx_gamma_inc_series_e(double a, cdouble x, qpms_csf_result *result)
     int cx_gamma_inc_CF_e(double a, cdouble x, qpms_csf_result *result)
     int complex_gamma_inc_e(double a, cdouble x, qpms_csf_result *result)
+
+    int ewald3_sigma0(cdouble *target, double *err, const qpms_ewald3_constants_t *c, double eta, cdouble wavenumber)
+    int ewald3_sigma_long(cdouble *target_sigmalr_y, double *target_sigmalr_y_err, const qpms_ewald3_constants_t *c, 
+            double eta, cdouble wavenumber, double unitcell_volume, LatticeDimensionality latdim, PGen *pgen_K,
+            bint pgen_generates_shifted_points, cart3_t k, cart3_t particle_shift)
+    int ewald3_sigma_short(cdouble *target_sigmasr_y, double *target_sigmasr_y_err, const qpms_ewald3_constants_t *c, 
+            double eta, cdouble wavenumber, LatticeDimensionality latdim, PGen *pgen_R, 
+            bint pgen_generates_shifted_points, cart3_t k, cart3_t particle_shift)
+
 

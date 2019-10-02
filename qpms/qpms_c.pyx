@@ -635,4 +635,127 @@ def lll_reduce(basis, double delta=0.75):
     return basis
 
 
+cdef PGen get_PGen_direct(direct_basis, bint include_origin=False, double layers=30):
+    dba = np.array(direct_basis)
+    if not (dba.shape == (2,2)):
+        raise NotImplementedError
+    cdef cart2_t b1, b2
+    b1.x = dba[0,0]
+    b1.y = dba[0,1]
+    b2.x = dba[1,0]
+    b2.y = dba[0,1]
+    cdef double maxR = layers*max(cart2norm(b1), cart2norm(b2))
+    return PGen_xyWeb_new(b1, b2, BASIS_RTOL, CART2_ZERO, 0, include_origin, maxR, False)
+
+cdef double get_unitcell_volume(direct_basis):
+    dba = np.array(direct_basis)
+    if not (dba.shape == (2,2)):
+        raise NotImplementedError
+    cdef cart2_t b1, b2
+    b1.x = dba[0,0]
+    b1.y = dba[0,1]
+    b2.x = dba[1,0]
+    b2.y = dba[0,1]
+    return l2d_unitcell_area(b1, b2)
+
+cdef PGen get_PGen_reciprocal2pi(direct_basis, double layers = 30):
+    dba = np.array(direct_basis)
+    if not (dba.shape == (2,2)):
+        raise NotImplementedError
+    cdef cart2_t b1, b2, rb1, rb2
+    b1.x = dba[0,0]
+    b1.y = dba[0,1]
+    b2.x = dba[1,0]
+    b2.y = dba[0,1]
+    if(l2d_reciprocalBasis2pi(b1, b2, &rb1, &rb2) != 0):
+            raise RuntimeError
+    cdef double maxK = layers*max(cart2norm(rb1), cart2norm(rb2))
+    return PGen_xyWeb_new(rb1, rb2, BASIS_RTOL, CART2_ZERO,
+            0, True, maxK, False)
+
+cdef class Ewald3Calculator:
+    '''Wrapper class over qpms_ewald3_constants_t.
+    
+    Mainly for testing low-level scalar Ewald summation functionality.'''
+    cdef qpms_ewald3_constants_t *c
+
+    def __cinit__(self, qpms_l_t lMax, int csphase = -1):
+        if (csphase != -1 and csphase != 1):
+            raise ValueError("csphase must be +1 or -1, not %d" % csphase)
+        self.c = qpms_ewald3_constants_init(lMax, csphase)
+
+    def __dealloc__(self):
+        qpms_ewald3_constants_free(self.c)
+
+    def sigma0(self, double eta, cdouble wavenumber, do_err = False):
+        cdef int retval
+        cdef double err
+        cdef cdouble result
+        retval = ewald3_sigma0(&result, &err, self.c, eta, wavenumber)
+        if retval:
+            raise RuntimeError("ewald3_sigma0 returned non-zero value (%d)" % retval)
+        if do_err:
+            return (result, err)
+        else:
+            return result
+
+    def sigma_short(self, double eta, cdouble wavenumber, direct_basis, wavevector, particle_shift, do_err=False):
+        # FIXME now only 2d XY lattice in 3D is implemented here, we don't even do proper dimensionality checks.
+        cdef cart3_t beta, pshift
+        beta.x = wavevector[0]
+        beta.y = wavevector[1]
+        beta.z = 0
+        pshift.x = particle_shift[0]
+        pshift.y = particle_shift[1]
+        pshift.z = 0
+        cdef qpms_l_t n = self.c[0].nelem_sc
+        cdef np.ndarray[complex, ndim=1] result = np.empty((n,), dtype=complex)
+        cdef cdouble[::1] result_v = result
+        cdef np.ndarray[double, ndim=1] err
+        cdef double[::1] err_v
+        if do_err:
+            err = np.empty((n,), dtype=np.double)
+            err_v = err
+        cdef bint include_origin = not (particle_shift[0] == 0 and particle_shift[1] == 0)
+        cdef PGen rgen = get_PGen_direct(direct_basis, include_origin)
+        cdef int retval = ewald3_sigma_short(&result_v[0], &err_v[0] if do_err else NULL, 
+                self.c, eta, wavenumber, LAT_2D_IN_3D_XYONLY, &rgen, False, beta, pshift)
+        if rgen.stateData: PGen_destroy(&rgen)
+        if retval: raise RuntimeError("ewald3_sigma_short returned %d" % retval)
+        if do_err:
+            return (result, err)
+        else:
+            return result
+
+    def sigma_long(self, double eta, cdouble wavenumber, direct_basis, wavevector, particle_shift, do_err=False):
+        # FIXME now only 2d XY lattice in 3D is implemented here, we don't even do proper dimensionality checks.
+        cdef cart3_t beta, pshift
+        beta.x = wavevector[0]
+        beta.y = wavevector[1]
+        beta.z = 0
+        pshift.x = particle_shift[0]
+        pshift.y = particle_shift[1]
+        pshift.z = 0
+        cdef qpms_l_t n = self.c[0].nelem_sc
+        cdef np.ndarray[complex, ndim=1] result = np.empty((n,), dtype=complex)
+        cdef cdouble[::1] result_v = result
+        cdef np.ndarray[double, ndim=1] err
+        cdef double[::1] err_v
+        if do_err:
+            err = np.empty((n,), dtype=np.double)
+            err_v = err
+        cdef PGen kgen = get_PGen_reciprocal2pi(direct_basis)
+        cdef double unitcell_volume = get_unitcell_volume(direct_basis)
+        cdef int retval = ewald3_sigma_long(&result_v[0], &err_v[0] if do_err else NULL,
+                self.c, eta, wavenumber, unitcell_volume, LAT_2D_IN_3D_XYONLY, &kgen, False, beta, pshift)
+
+        if kgen.stateData: PGen_destroy(&kgen)
+        if retval: raise RuntimeError("ewald3_sigma_long returned %d" % retval)
+        if do_err:
+            return (result, err)
+        else:
+            return result
+        
+
+
 
