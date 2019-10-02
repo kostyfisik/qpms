@@ -149,22 +149,23 @@ int complex_expint_n_e(int n, complex double x, qpms_csf_result *result);
 
 
 /// Hypergeometric 2F2, used to calculate some errors.
-int hyperg_2F2_series(const double a, const double b, const double c, const double d,
-    const double x, gsl_sf_result *result);
+int hyperg_2F2_series(double a, double b, double c, double d, double x, 
+		gsl_sf_result *result);
 
 #if 0
 // The integral from (4.6); maybe should be static and not here.
 int ewald32_sr_integral(double r, double k, double n, double eta, double *result, double *err, gsl_integration_workspace *workspace);
 #endif
 
-#include "lattices.h"
 
 // General functions acc. to [2], sec. 4.6 – currently valid for 2D and 1D lattices in 3D space
 
-// TODO DOC!!!
-int ewald3_sigma0(complex double *result, double *err,
-		const qpms_ewald3_constants_t *c,
-		double eta, complex double k
+/// The Ewald sum "self-interaction" term that appears in the lattice sums with zero (direct-space) Bravais lattice displacement.
+int ewald3_sigma0(complex double *result, ///< Pointer to save the result (single complex double).
+	       	double *err, ///< Pointer to save the result error estimate (single double).
+		const qpms_ewald3_constants_t *c, ///< Constant factors structure initialised by qpms_ewald3_constants_init().
+		double eta, ///< Ewald parameter.
+		complex double wavenumber ///< Wavenumber of the background medium.
 );
 
 /// Short-range part of outgoing scalar spherical wavefunctions' lattice sum \f$ \sigma_{l,m}^\mathrm{S}(\vect k,\vect s)\f$.
@@ -172,11 +173,11 @@ int ewald3_sigma_short(
 		complex double *target_sigmasr_y, ///< Target array for \f$ \sigma_{l,m}^\mathrm{S} \f$, must be `c->nelem_sc` long.
 		double *target_sigmasr_y_err, ///< Target array for error estimates, must be `c->nelem_sc` long or `NULL`.
 		const qpms_ewald3_constants_t *c, ///< Constant factors structure initialised by qpms_ewald3_constants_init().
-		const double eta, ///< Ewald parameter.
-	       	const complex double wavenumber, ///< Wavenumber of the background medium. 
+		double eta, ///< Ewald parameter.
+	       	complex double wavenumber, ///< Wavenumber of the background medium. 
 		/// Lattice dimensionality. 
 		/** Ignored apart from asserts and possible optimisations, as the SR formula stays the same. */
-		const LatticeDimensionality latdim,
+		LatticeDimensionality latdim,
 		/// Lattice point generator for the direct Bravais lattice.
 		/** There is a possibility that the whole PGen is not consumed
 		 *  (this might happen if the summand start to be consistently smaller
@@ -192,11 +193,11 @@ int ewald3_sigma_short(
 		 * If true, it assumes that they are already shifted (if calculating interaction between
 		 * different particles in the unit cell).
 		 */
-		const bool pgen_generates_shifted_points,
+		bool pgen_generates_shifted_points,
 		/// Wave vector \f$\vect k\f$.
-		const cart3_t k,
+		cart3_t k,
 		/// Lattice offset \f$\vect s\f$ wrt. the Bravais lattice.
-		const cart3_t particle_shift
+		cart3_t particle_shift
 		);
 
 /// Long-range part of outgoing scalar spherical wavefunctions' lattice sum \f$ \sigma_{l,m}^\mathrm{L}(\vect k,\vect s)\f$.
@@ -204,11 +205,11 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		complex double *target_sigmalr_y, ///< Target array for \f$ \sigma_{l,m}^\mathrm{L} \f$, must be `c->nelem_sc` long.
 		double *target_sigmalr_y_err, ///< Target array for error estimates, must be `c->nelem_sc` long or `NULL`.
 		const qpms_ewald3_constants_t *c, ///< Constant factors structure initialised by qpms_ewald3_constants_init().
-		const double eta, ///< Ewald parameter.
-	       	const complex double wavenumber, ///< Wavenumber of the background medium. 
-	        const double unitcell_volume, ///< Volume of the (direct lattice) unit cell (with dimension corresponding to the lattice dimensionality).
+		double eta, ///< Ewald parameter.
+	       	complex double wavenumber, ///< Wavenumber of the background medium. 
+	        double unitcell_volume, ///< Volume of the (direct lattice) unit cell (with dimension corresponding to the lattice dimensionality).
 		/// Lattice dimensionality. 
-		const LatticeDimensionality latdim,
+		LatticeDimensionality latdim,
 		/// Lattice point generator for the reciprocal lattice.
 		/** There is a possibility that the whole PGen is not consumed
 		 *  (this might happen if the summand start to be consistently smaller
@@ -223,11 +224,11 @@ int ewald3_sigma_long( // calls ewald3_21_sigma_long or ewald3_3_sigma_long, dep
 		 * and adds beta to the generated points before calculations.
 		 * If true, it assumes that they are already shifted.
 		 */
-		const bool pgen_generates_shifted_points,
+		bool pgen_generates_shifted_points,
 		/// Wave vector \f$\vect k\f$.
-		const cart3_t k,
+		cart3_t k,
 		/// Lattice offset \f$\vect s\f$ wrt. the Bravais lattice.
-		const cart3_t particle_shift
+		cart3_t particle_shift
 		);
 		
 #endif //EWALD_H
