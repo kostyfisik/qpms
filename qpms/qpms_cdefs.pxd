@@ -572,7 +572,7 @@ cdef extern from "ewald.h":
     cdouble clilgamma(cdouble z)
     int cx_gamma_inc_series_e(double a, cdouble x, qpms_csf_result *result)
     int cx_gamma_inc_CF_e(double a, cdouble x, qpms_csf_result *result)
-    int complex_gamma_inc_e(double a, cdouble x, qpms_csf_result *result)
+    int complex_gamma_inc_e(double a, cdouble x, int m, qpms_csf_result *result)
 
     int ewald3_sigma0(cdouble *target, double *err, const qpms_ewald3_constants_t *c, double eta, cdouble wavenumber)
     int ewald3_sigma_long(cdouble *target_sigmalr_y, double *target_sigmalr_y_err, const qpms_ewald3_constants_t *c, 

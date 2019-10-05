@@ -162,26 +162,44 @@ int cx_gamma_inc_CF_e(const double a, const complex double z, qpms_csf_result *r
 }
 
 
-/// Incomplete gamma function for complex second argument.
-int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
+// Incomplete gamma function for complex second argument.
+int complex_gamma_inc_e(double a, complex double x, int m, qpms_csf_result *result) {
+  int retval;
   if (creal(x) >= 0 &&
       (0 == fabs(cimag(x)) || // x is real positive; just use the real fun
       fabs(cimag(x)) < fabs(creal(x)) * COMPLEXPART_REL_ZERO_LIMIT)) {
     gsl_sf_result real_gamma_inc_result;
-    int retval = gsl_sf_gamma_inc_e(a, creal(x), &real_gamma_inc_result);
+    retval = gsl_sf_gamma_inc_e(a, creal(x), &real_gamma_inc_result);
     result->val = real_gamma_inc_result.val;
     result->err = real_gamma_inc_result.err;
-    return retval;
   } else if (creal(x) >= 0 && cabs(x) > 0.5)
-    return cx_gamma_inc_CF_e(a, x, result);
-  else if (QPMS_LIKELY(a > 0 || (a % 1.0)))
-    return cx_gamma_inc_series_e(a, x, result);
+    retval = cx_gamma_inc_CF_e(a, x, result);
+  else if (QPMS_LIKELY(a > 0 || fmod(a, 1.0)))
+    retval = cx_gamma_inc_series_e(a, x, result);
   else
   /* FIXME cx_gamma_inc_series_e() probably fails for non-positive integer a.
    * This does not matter for 2D lattices in 3D space, 
    * but it might cause problems in the other cases.
    */
     QPMS_NOT_IMPLEMENTED("Incomplete Gamma function with non-positive integer a.");
+  if (m) { // Non-principal branch.
+    /* This might be sub-optimal, as Γ(a) has probably been already evaluated
+     * somewhere in the functions called above. */
+    gsl_sf_result fullgamma;
+    int retval_fg = gsl_sf_gamma_e(a, &fullgamma);
+    if (GSL_EUNDRFLW == retval_fg)
+      fullgamma.err += DBL_MIN;
+    else if (GSL_SUCCESS != retval_fg){
+      result->val = NAN + NAN*I; result->err = NAN;
+      return GSL_ERROR_SELECT_2(retval_fg, retval);
+    }
+    complex double f = cexp(2*m*M_PI*a*I);
+    result->val *= f;
+    f = 1 - f;
+    result->err += cabs(f) * fullgamma.err;
+    result->val += f * fullgamma.val;
+  }
+  return retval;
 }
 
 // Exponential integral for complex argument; !UNTESTED! and probably not needed, as I expressed everything in terms of inc. gammas anyways.
@@ -195,7 +213,7 @@ int complex_expint_n_e(int n, complex double x, qpms_csf_result *result) {
     result->err = real_expint_result.err;
     return retval;
   } else {
-    int retval = complex_gamma_inc_e(-n+1, x, result);
+    int retval = complex_gamma_inc_e(-n+1, x, 0, result);
     complex double f = cpow(x, 2*n-2);
     result->val *= f;
     result->err *= cabs(f);

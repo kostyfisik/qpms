@@ -598,10 +598,10 @@ def linton_gamma(cdouble x):
 def linton_gamma_real(double x):
     return lilgamma(x)
 
-def gamma_inc(double a, cdouble x):
+def gamma_inc(double a, cdouble x, int m = 0):
     cdef qpms_csf_result res
     with pgsl_ignore_error(15): #15 is underflow
-        complex_gamma_inc_e(a, x, &res)
+        complex_gamma_inc_e(a, x, m, &res)
     return (res.val, res.err)
 
 def gamma_inc_series(double a, cdouble x):

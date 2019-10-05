@@ -141,7 +141,23 @@ int cx_gamma_inc_CF_e(double a, complex z, qpms_csf_result * result);
 
 /// Incomplete gamma for complex second argument.
 /** if x is (almost) real, it just uses gsl_sf_gamma_inc_e(). */
-int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result);
+int complex_gamma_inc_e(double a, complex double x,
+	/// Branch index.
+	/** If zero, the principal value is calculated; on the negative real axis
+	 * we take the limit \f[
+	 * \Gamma(a,z)=\lim_{\epsilon\to 0+}\Gamma(\mu,z-i\epsilon).
+	 * \f]
+	 * Other branches might be chosen using non-zero \a m.
+	 * In such case, the returned value corresponds to \f[
+	 * \Gamma(a,ze^{2\pi mi})=e^{2\pi mia} \Gamma(a,z) 
+	 *   + (1-e^{2\pi mia}) \Gamma(a).
+	 * \f]
+	 *
+	 * If \a a is non-positive integer, the limiting value should
+	 * be used, but this is not yet implemented!
+	 */
+	int m,
+	qpms_csf_result *result);
 
 /// Exponential integral for complex second argument.
 /** If x is (almost) positive real, it just uses gsl_sf_expint_En_e(). */
