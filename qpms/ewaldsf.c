@@ -37,6 +37,8 @@ void IgnoreUnderflowsGSLErrorHandler (const char * reason,
 
 // DLMF 8.7.3 (latter expression) for complex second argument
 // BTW if a is large negative, it might take a while to evaluate.
+// This can't be used for non-positive integer a due to
+// Г(a) in the formula.
 int cx_gamma_inc_series_e(const double a, const complex double z, qpms_csf_result * result) {
   if (a <= 0 && a == (int) a) {
     result->val = NAN + NAN*I;
@@ -160,7 +162,7 @@ int cx_gamma_inc_CF_e(const double a, const complex double z, qpms_csf_result *r
 }
 
 
-// incomplete gamma for complex second argument
+/// Incomplete gamma function for complex second argument.
 int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
   if (creal(x) >= 0 &&
       (0 == fabs(cimag(x)) || // x is real positive; just use the real fun
@@ -172,9 +174,14 @@ int complex_gamma_inc_e(double a, complex double x, qpms_csf_result *result) {
     return retval;
   } else if (creal(x) >= 0 && cabs(x) > 0.5)
     return cx_gamma_inc_CF_e(a, x, result);
-  else
+  else if (QPMS_LIKELY(a > 0 || (a % 1.0)))
     return cx_gamma_inc_series_e(a, x, result);
-  
+  else
+  /* FIXME cx_gamma_inc_series_e() probably fails for non-positive integer a.
+   * This does not matter for 2D lattices in 3D space, 
+   * but it might cause problems in the other cases.
+   */
+    QPMS_NOT_IMPLEMENTED("Incomplete Gamma function with non-positive integer a.");
 }
 
 // Exponential integral for complex argument; !UNTESTED! and probably not needed, as I expressed everything in terms of inc. gammas anyways.

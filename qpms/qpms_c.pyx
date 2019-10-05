@@ -592,6 +592,12 @@ def pitau(double theta, qpms_l_t lMax, double csphase = -1):
     qpms_pitau_fill(&leg[0], &pi[0], &tau[0], theta, lMax, csphase)
     return (lega, pia, taua)
 
+def linton_gamma(cdouble x):
+    return clilgamma(x)
+
+def linton_gamma_real(double x):
+    return lilgamma(x)
+
 def gamma_inc(double a, cdouble x):
     cdef qpms_csf_result res
     with pgsl_ignore_error(15): #15 is underflow
