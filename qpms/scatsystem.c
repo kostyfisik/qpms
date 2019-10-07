@@ -31,7 +31,7 @@
 
 #define SQ(x) ((x)*(x))
 #define QPMS_SCATSYS_LEN_RTOL 1e-13
-#define QPMS_SCATSYS_TMATRIX_ATOL 1e-14
+#define QPMS_SCATSYS_TMATRIX_ATOL 1e-12
 #define QPMS_SCATSYS_TMATRIX_RTOL 1e-12
 
 long qpms_scatsystem_nthreads_default = 4;

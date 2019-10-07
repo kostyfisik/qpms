@@ -26,6 +26,9 @@ TODO list before public release
 - Remove legacy code.
 - Split qpms_c.pyx.
 - Reduce compiler warnings.
+- Python exceptions instead of hard crashes in the C library where possible.
+- Scatsystem init sometimes fail due to rounding errors and hardcoded absolute tolerance 
+  in the qpms_tmatrix_isclose() call.
 - Prefix all identifiers. Maybe think about a different prefix than qpms?
 - Consistent indentation and style overall.
 - Rewrite the parallelized translation matrix, mode problem matrix generators

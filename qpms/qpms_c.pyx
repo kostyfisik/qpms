@@ -358,7 +358,8 @@ cdef class ScatteringSystem:
     def __dealloc__(self):
         qpms_scatsys_free(self.s)
 
-    def particles_tmi(self):
+    property particles_tmi:
+      def __get__(self):
         r = list()
         cdef qpms_ss_pi_t pi
         for pi in range(self.s[0].p_count):
@@ -470,7 +471,8 @@ cdef class ScatteringSystem:
                 self.s, iri, k, J)
         return target
     
-    def fullvec_psizes(self):
+    property fullvec_psizes:
+      def __get__(self):
         cdef np.ndarray[int32_t, ndim=1] ar = np.empty((self.s[0].p_count,), dtype=np.int32)
         cdef int32_t[::1] ar_view = ar
         for pi in range(self.s[0].p_count):
@@ -478,7 +480,8 @@ cdef class ScatteringSystem:
         return ar
 
 
-    def fullvec_poffsets(self):
+    property fullvec_poffsets:
+      def __get__(self):
         cdef np.ndarray[intptr_t, ndim=1] ar = np.empty((self.s[0].p_count,), dtype=np.intp)
         cdef intptr_t[::1] ar_view = ar
         cdef intptr_t offset = 0
@@ -487,7 +490,8 @@ cdef class ScatteringSystem:
             offset += self.s[0].tm[self.s[0].p[pi].tmatrix_id].spec[0].n
         return ar
 
-    def positions(self):
+    property positions:
+      def __get__(self):
         cdef np.ndarray[np.double_t, ndim=2] ar = np.empty((self.s[0].p_count, 3), dtype=float)
         cdef np.double_t[:,::1] ar_view = ar
         for pi in range(self.s[0].p_count):
