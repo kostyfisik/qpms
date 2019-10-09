@@ -195,7 +195,7 @@ int complex_gamma_inc_e(double a, complex double x, int m, qpms_csf_result *resu
     }
     complex double f = cexp(2*m*M_PI*a*I);
     result->val *= f;
-    f = 1 - f;
+    f = -f + 1;
     result->err += cabs(f) * fullgamma.err;
     result->val += f * fullgamma.val;
   }

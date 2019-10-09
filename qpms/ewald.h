@@ -133,20 +133,48 @@ static inline complex double clilgamma(complex double z) {
 }
 
 /// Incomplete Gamma function as a series.
-/** DLMF 8.7.3 (latter expression) for complex second argument */
+/** DLMF 8.7.3 (latter expression) for complex second argument.
+ *
+ * The principal value is calculated. On the negative real axis
+ * (where the function has branch cut), the sign of the imaginary
+ * part is what matters (even if it is zero). Therefore one
+ * can have
+ * `cx_gamma_inc_series_e(a, z1) != cx_gamma_inc_series_e(a, z2)`
+ * even if `z1 == z2`, because `-0 == 0` according to IEEE 754.
+ * The side of the branch cut can be determined using `signbit(creal(z))`.
+ */
 int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
 
 /// Incomplete Gamma function as continued fractions.
+/** 
+ * The principal value is calculated. On the negative real axis
+ * (where the function has branch cut), the sign of the imaginary
+ * part is what matters (even if it is zero). Therefore one
+ * can have
+ * `cx_gamma_inc_CF_e(a, z1) != cx_gamma_inc_CF_e(a, z2)`
+ * even if `z1 == z2`, because `-0 == 0` according to IEEE 754.
+ * The side of the branch cut can be determined using `signbit(creal(z))`.
+ */
 int cx_gamma_inc_CF_e(double a, complex z, qpms_csf_result * result);
 
 /// Incomplete gamma for complex second argument.
-/** if x is (almost) real, it just uses gsl_sf_gamma_inc_e(). */
+/** 
+ * If x is (almost) real, it just uses gsl_sf_gamma_inc_e(). 
+ * 
+ * On the negative real axis
+ * (where the function has branch cut), the sign of the imaginary
+ * part is what matters (even if it is zero). Therefore one
+ * can have
+ * `complex_gamma_inc_e(a, z1, m) != complex_gamma_inc_e(a, z2, m)`
+ * even if `z1 == z2`, because `-0 == 0` according to IEEE 754.
+ * The side of the branch cut can be determined using `signbit(creal(z))`.
+ *
+ * Another than principal branch can be selected using non-zero \a m 
+ * argument.
+ */
 int complex_gamma_inc_e(double a, complex double x,
 	/// Branch index.
-	/** If zero, the principal value is calculated; on the negative real axis
-	 * we take the limit \f[
-	 * \Gamma(a,z)=\lim_{\epsilon\to 0+}\Gamma(\mu,z-i\epsilon).
-	 * \f]
+	/** If zero, the principal value is calculated.	 
 	 * Other branches might be chosen using non-zero \a m.
 	 * In such case, the returned value corresponds to \f[
 	 * \Gamma(a,ze^{2\pi mi})=e^{2\pi mia} \Gamma(a,z) 

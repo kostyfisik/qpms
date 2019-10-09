@@ -181,8 +181,10 @@ int ewald3_sigma0(complex double *result, double *err,
     const double eta, const complex double k)
 {
   qpms_csf_result gam;
-  int retval = complex_gamma_inc_e(-0.5, -csq(k/(2*eta)), 0 /*TODO*/, &gam);
-  // FIXME DO THIS CORRECTLY gam.val = conj(gam.val); // We take the other branch, cf. [Linton, p. 642 in the middle]
+  complex double z = -csq(k/(2*eta));
+  int retval = complex_gamma_inc_e(-0.5, z, 
+     // we take the branch which is principal for the Re z < 0, Im z < 0 quadrant, cf. [Linton, p. 642 in the middle]
+     QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, &gam);
   if (0 != retval)
     abort();
   *result = gam.val * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
@@ -300,11 +302,9 @@ int ewald3_21_xy_sigma_long (
       gamma_pq = clilgamma(rbeta_pq/k);
       z = csq(gamma_pq*k/(2*eta)); 
       for(qpms_l_t j = 0; j <= lMax/2; ++j) {
-        // TODO COMPLEX FIXME check the branches in the old lilgamma case
-        int retval = complex_gamma_inc_e(0.5-j, z, 0 /*TODO*/, Gamma_pq+j);
-        // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
-        //if(creal(z) < 0) 
-        //  Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
+        int retval = complex_gamma_inc_e(0.5-j, z,
+          // we take the branch which is principal for the Re z < 0, Im z < 0 quadrant, cf. [Linton, p. 642 in the middle]
+          QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, Gamma_pq+j);
         if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
       }
       if (latdim & LAT1D)
@@ -443,10 +443,9 @@ int ewald3_1_z_sigma_long (
     complex double gamma_pq = clilgamma(rbeta_mu/k);  // For real beta and k this is real or pure imaginary ...
     const complex double z = csq(gamma_pq*k/(2*eta));// ... so the square (this) is in fact real.
     for(qpms_l_t j = 0; j <= lMax/2; ++j) {
-      int retval = complex_gamma_inc_e(0.5-j, z, 0 /*TODO*/, Gamma_pq+j);
-      // we take the other branch, cf. [Linton, p. 642 in the middle]: FIXME instead use the C11 CMPLX macros and fill in -O*I part to z in the line above
-      //if(creal(z) < 0) 
-      //  Gamma_pq[j].val = conj(Gamma_pq[j].val); //FIXME as noted above
+      int retval = complex_gamma_inc_e(0.5-j, z,
+          // we take the branch which is principal for the Re z < 0, Im z < 0 quadrant, cf. [Linton, p. 642 in the middle]
+          QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, Gamma_pq+j);
       if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
     }
     // R-DEPENDENT END
