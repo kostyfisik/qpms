@@ -135,7 +135,7 @@ Single-particle scattering
 In order to define the basic concepts, let us first consider the case of
  electromagnetic (EM) radiation scattered by a single particle.
  We assume that the scatterer lies inside a closed ball 
-\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\closedball{R^{<}}{\vect0}$
 \end_inset
 
  of radius 
@@ -144,16 +144,16 @@ In order to define the basic concepts, let us first consider the case of
 
  and center in the origin of the coordinate system (which can be chosen
  that way; the natural choice of 
-\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\closedball{R^{<}}{\vect0}$
 \end_inset
 
  is the circumscribed ball of the scatterer) and that there exists a larger
  open cocentric ball 
-\begin_inset Formula $\openball{R^{>}}{\vect 0}$
+\begin_inset Formula $\openball{R^{>}}{\vect0}$
 \end_inset
 
 , such that the (non-empty) spherical shell 
-\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}=\openball{R^{>}}{\vect 0}\setminus\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect0}=\openball{R^{>}}{\vect0}\setminus\closedball{R^{<}}{\vect0}$
 \end_inset
 
  is filled with a homogeneous isotropic medium with relative electric permittivi
@@ -173,7 +173,7 @@ ty
 \end_inset
 
  in 
-\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect0}$
 \end_inset
 
  must satisfy the homogeneous vector Helmholtz equation together with the
@@ -278,8 +278,8 @@ outgoing
 , respectively, defined as follows:
 \begin_inset Formula 
 \begin{align}
-\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(\kappa r\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{\kappa r}\frac{\ud\left(\kappa rj_{l}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(\kappa r\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
+\vswfrtlm1lm\left(k\vect r\right) & =j_{l}\left(\kappa r\right)\vsh1lm\left(\uvec r\right),\nonumber \\
+\vswfrtlm2lm\left(k\vect r\right) & =\frac{1}{\kappa r}\frac{\ud\left(\kappa rj_{l}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(\kappa r\right)}{kr}\vsh3lm\left(\uvec r\right),\label{eq:VSWF regular}
 \end{align}
 
 \end_inset
@@ -287,8 +287,8 @@ outgoing
 
 \begin_inset Formula 
 \begin{align}
-\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(\kappa r\right)}{\kappa r}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
+\vswfouttlm1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh1lm\left(\uvec r\right),\nonumber \\
+\vswfouttlm2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(\kappa r\right)}{\kappa r}\vsh3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
  & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,\nonumber 
 \end{align}
 
@@ -323,9 +323,9 @@ vector spherical harmonics
 
 \begin_inset Formula 
 \begin{align}
-\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\nonumber \\
-\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\nonumber \\
-\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).\label{eq:vector spherical harmonics definition}
+\vsh1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\nonumber \\
+\vsh2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\nonumber \\
+\vsh3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).\label{eq:vector spherical harmonics definition}
 \end{align}
 
 \end_inset
@@ -473,7 +473,7 @@ noprefix "false"
 \end_inset
 
  inside a ball 
-\begin_inset Formula $\openball{R^{>}}{\vect 0}$
+\begin_inset Formula $\openball{R^{>}}{\vect0}$
 \end_inset
 
  with radius 
@@ -483,7 +483,7 @@ noprefix "false"
  and center in the origin, were it filled with homogeneous isotropic medium;
  however, if the equation is not guaranteed to hold inside a smaller ball
  
-\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\closedball{R^{<}}{\vect0}$
 \end_inset
 
  around the origin (typically due to presence of a scatterer), one has to
@@ -492,7 +492,7 @@ noprefix "false"
 \end_inset
 
  to have a complete basis of the solutions in the volume 
-\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}=\openball{R^{>}}{\vect 0}\setminus\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect0}=\openball{R^{>}}{\vect0}\setminus\closedball{R^{<}}{\vect0}$
 \end_inset
 
 .
@@ -514,11 +514,11 @@ The single-particle scattering problem at frequency
 \end_inset
 
  can be posed as follows: Let a scatterer be enclosed inside the ball 
-\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\closedball{R^{<}}{\vect0}$
 \end_inset
 
  and let the whole volume 
-\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect0}$
 \end_inset
 
  be filled with a homogeneous isotropic medium with wave number 
@@ -527,7 +527,7 @@ The single-particle scattering problem at frequency
 
 .
  Inside 
-\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect0}$
 \end_inset
 
 , the electric field can be expanded as
@@ -549,7 +549,7 @@ doplnit frekvence a polohy
 \end_inset
 
 If there were no scatterer and 
-\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\closedball{R^{<}}{\vect0}$
 \end_inset
 
  were filled with the same homogeneous medium, the part with the outgoing
@@ -558,7 +558,7 @@ If there were no scatterer and
 \end_inset
 
  due to sources outside 
-\begin_inset Formula $\openball{R^{>}}{\vect 0}$
+\begin_inset Formula $\openball{R^{>}}{\vect0}$
 \end_inset
 
  would remain.
@@ -1032,8 +1032,8 @@ literal "false"
 with expansion coefficients
 \begin_inset Formula 
 \begin{eqnarray}
-\rcoeffptlm{}1lm\left(\uvec k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right),\nonumber \\
-\rcoeffptlm{}2lm\left(\uvec k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right).\label{eq:plane wave expansion}
+\rcoeffptlm{}1lm\left(\uvec k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right)\cdot\vect E_{0},\nonumber \\
+\rcoeffptlm{}2lm\left(\uvec k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right)\cdot\vect E_{0}.\label{eq:plane wave expansion}
 \end{eqnarray}
 
 \end_inset
