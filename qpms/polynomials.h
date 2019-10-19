@@ -33,6 +33,12 @@ void qpq_extend(qpq_t *x, int new_capacity);
 
 void qpq_set(qpq_t *copy, const qpq_t *orig);
 
+void qpq_set_elem(qpq_t *x, int exponent, const mpq_t coeff);
+void qpq_set_elem_si(qpq_t *x, int exponent, long numerator, unsigned long denominator);
+void qpq_get_elem(mpq_t coeff, const qpq_t *x, int exponent);
+/** \returns zero if the result fits into long / unsigned long; non-zero otherwise. */
+int qpq_get_elem_si(long *numerator, unsigned long *denominator, const qpq_t *x, int exponent);
+
 /// Deinitialise the coefficients array in qpq_t.
 void qpq_clear(qpq_t *x);
 

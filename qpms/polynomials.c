@@ -6,6 +6,15 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) <= (y)) ? (x) : (y))
 
+
+// Auxillary function to set a mpq_t to 0/1
+static inline void mpq_zero(mpq_t q) {
+// Maybe not the best way to set it to zero.
+// Alternatively, we could use just mpz_set_si(mpq_numref(sum->coeffs[i - minoffset]), 0);
+  mpq_clear(q);
+  mpq_init(q);
+}
+
 // qpq_t internal consistency check
 static inline void qpq_cc(const qpq_t *p) {
   if (!p->coeffs) return;
@@ -41,6 +50,70 @@ void qpq_extend(qpq_t *p, int cap) {
   }
 }
 
+void qpq_set(qpq_t *p, const qpq_t *orig) {
+  const int order = orig->order, offset = orig->offset;
+  qpq_extend(p, order - offset + 1);
+  for (int i = orig->offset; i <= order; ++i)
+    mpq_set(p->coeffs[i - offset], orig->coeffs[i - offset]);
+  p->offset = offset;
+  p->order = order;
+  return;
+}
+
+void qpq_set_elem(qpq_t *p, const int exponent, const mpq_t coeff)  {
+  QPMS_ENSURE(exponent >= 0, "Exponent must be non-negative, got %d", exponent);
+  int offset = p->offset, order = p->order;
+  if(mpq_sgn(coeff) == 0 && (exponent < offset || exponent > order)) 
+    return; // exponent out of range, but zero needs not to be assigned explicitly
+  if(exponent < p->offset) {
+    qpq_extend(p, p->order - exponent + 1);
+    offset = exponent;
+    for(int i = order - offset; i >= p->offset - offset; --i) 
+      mpq_swap(p->coeffs[i], p->coeffs[i - (p->offset - offset)]);
+    for(int i = p->offset - offset - 1; i > 0; --i) 
+      mpq_zero(p->coeffs[i]);
+    p->offset = offset;
+  }
+  if(exponent > order) {
+    qpq_extend(p, exponent - p->offset + 1);
+    for(int i = p->order - p->offset + 1; i <= exponent - p->offset; ++i)
+      mpq_zero(p->coeffs[i]);
+    p->order = exponent;
+  }
+  mpq_set(p->coeffs[exponent - p->offset], coeff);
+  return;
+}
+
+void qpq_set_elem_si(qpq_t *p, const int exponent, const long int num, const unsigned long int den) {
+  mpq_t q;
+  mpq_init(q);
+  mpq_set_si(q, num, den);
+  qpq_set_elem(p, exponent, q);
+  mpq_clear(q);
+}
+
+void qpq_get_elem(mpq_t coeff, const qpq_t *p, const int exponent) {
+  if (exponent < p->offset || exponent > p->order) 
+    mpq_zero(coeff);
+  else 
+    mpq_set(coeff, p->coeffs[exponent-p->offset]);
+}
+
+int qpq_get_elem_si(long *num, unsigned long *den, const qpq_t *p, const int exponent) {
+  mpq_t q;
+  mpq_init(q);
+  qpq_get_elem(q, p, exponent);
+  int retval = 0;
+  *num = mpz_get_si(mpq_numref(q));
+  if (!mpz_fits_slong_p(mpq_numref(q)))
+    retval += 1;
+  *den = mpz_get_ui(mpq_denref(q));
+  if (!mpz_fits_ulong_p(mpq_denref(q)))
+    retval += 2;
+  mpq_clear(q);
+  return retval;
+}
+
 void qpq_clear(qpq_t *p) {
   if (p->capacity > 0) {
     for (int i = p->capacity; i >= 0; --i)
@@ -65,10 +138,7 @@ void qpq_add(qpq_t *sum, const qpq_t *x, const qpq_t *y) {
       if (i - y->offset >= 0 && i <= y->order)
         mpq_set(sum->coeffs[i - minoffset], y->coeffs[i - x->offset]);
       else {
-        // Maybe not the best way to set it to zero.
-        // Alternatively, we could use just mpz_set_si(mpq_numref(sum->coeffs[i - minoffset]), 0);
-        mpq_clear(sum->coeffs[i - minoffset]);
-        mpq_init(sum->coeffs[i - minoffset]);
+        mpq_zero(sum->coeffs[i - minoffset]);
       }
     }
   }
@@ -92,9 +162,7 @@ void qpq_sub(qpq_t *dif, const qpq_t *x, const qpq_t *y) {
         mpq_set(dif->coeffs[i - minoffset], y->coeffs[i - x->offset]);
         mpq_neg(dif->coeffs[i - minoffset], dif->coeffs[i - minoffset]);
       } else {
-        // Maybe not the best way to set it to zero.
-        mpq_clear(dif->coeffs[i - minoffset]);
-        mpq_init(dif->coeffs[i - minoffset]);
+        mpq_zero(dif->coeffs[i - minoffset]);
       }
     }
   }
