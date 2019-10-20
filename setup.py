@@ -135,16 +135,21 @@ qpms_c = Extension('qpms.qpms_c',
         #extra_objects = ['amos/libamos.a'], # FIXME apparently, I would like to eliminate the need to cmake/make first
         )
 
+cypolynomials = Extension('qpms.cypolynomials',
+        sources = ['qpms/cypolynomials.pyx'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread', 'gmp']
+        )
+
 setup(name='qpms',
         version = "0.2.996",
         packages=['qpms'],
 #        libraries = [('amos', {'sources': amos_sources} )],
-        setup_requires=['cython>=0.28',],
+        setup_requires=['cython>=0.28', 'gmpy2>=2.1b'],
         install_requires=['cython>=0.28',
             #'quaternion','spherical_functions',
-            'scipy>=0.18.0', 'sympy>=1.2'],
+            'scipy>=0.18.0', 'sympy>=1.2', 'gmpy2>=2.1b'],
         #dependency_links=['https://github.com/moble/quaternion/archive/v2.0.tar.gz','https://github.com/moble/spherical_functions/archive/master.zip'],
-        ext_modules=cythonize([qpms_c, cywaves, cytranslations, cytmatrices, cycommon, cyquaternions, cybspec, cymaterials], include_path=['qpms', 'amos'], gdb_debug=True),
+        ext_modules=cythonize([qpms_c, cywaves, cytranslations, cytmatrices, cycommon, cyquaternions, cybspec, cymaterials, cypolynomials], include_path=['qpms', 'amos'], gdb_debug=True),
         cmdclass = {'build_ext': build_ext},
         zip_safe=False
         )

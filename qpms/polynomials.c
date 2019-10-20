@@ -116,7 +116,7 @@ int qpq_get_elem_si(long *num, unsigned long *den, const qpq_t *p, const int exp
 
 void qpq_clear(qpq_t *p) {
   if (p->capacity > 0) {
-    for (int i = p->capacity; i >= 0; --i)
+    for (int i = p->capacity - 1; i >= 0; --i)
       mpq_clear(p->coeffs[i]);
     free(p->coeffs);
   }
@@ -195,7 +195,7 @@ void qpq_deriv(qpq_t *dp, const qpq_t *p) {
   mpq_t qi;
   mpq_init(qi); // qi is now 0 / 1
   for(int i = p->offset + !p->offset; i <= p->order; ++i) {
-    mpz_set_si(mpq_numref(qi), 1); // qi is now i / 1
+    mpz_set_si(mpq_numref(qi), i); // qi is now i / 1
     mpq_mul(dp->coeffs[i-1], qi, p->coeffs[i]);
   }
   mpq_clear(qi);

@@ -24,6 +24,7 @@ target_link_libraries (qpms
 	lapack
 	blas
 	amos
+	gmp
 	)
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
