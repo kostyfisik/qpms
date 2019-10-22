@@ -202,3 +202,30 @@ void qpq_deriv(qpq_t *dp, const qpq_t *p) {
   dp->order = p->order - 1;
   dp->offset = p->offset - 1 + !p->offset;
 }
+
+
+void qpq_legendroid_init(qpq_legendroid_t *p) {
+  qpq_init(&p->p);
+  p->f = 0;
+}
+
+void qpq_legendroid_clear(qpq_legendroid_t *p) {
+  qpq_clear(&p->p);
+  p->f = 0;
+}
+
+void qpq_legendroid_mul(qpq_legendroid_t *p, const qpq_legendroid_t *a, const qpq_legendroid_t *b) {
+  qpq_mul(&p->p, &a->p, &b->p);
+  if (a->f && b->f) {
+    // TODO make somehow a static representation of this constant polynomial
+    qpq_t ff;
+    qpq_init(&ff);
+    qpq_extend(&ff, 3);
+    qpq_set_elem_si(&ff, 0, -1, 1);
+    qpq_set_elem_si(&ff, 2, 1, 1);
+    qpq_mul(p, &ff);
+    qpq_clear(&ff);
+  }
+  p->f = !(a->f) != !(b->f);
+}
+

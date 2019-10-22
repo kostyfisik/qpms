@@ -21,7 +21,7 @@ const static qpq_t QPQ_ZERO = {-1, 0, 0, NULL};
  * (and not recently cleared),
  * otherwise you can get a memory leak.
  */
-void qpq_init(qpq_t *x, int capacity);
+void qpq_init(qpq_t *p, int capacity);
 
 /// Extend capacity of a qpq_t instance.
 /** If the requested new_capacity is larger than the qpq_t's
@@ -29,32 +29,51 @@ void qpq_init(qpq_t *x, int capacity);
  * Otherwise, nothing happend (this function does _not_ trim
  * the capacity).
  */
-void qpq_extend(qpq_t *x, int new_capacity);
+void qpq_extend(qpq_t *p, int new_capacity);
 
 void qpq_set(qpq_t *copy, const qpq_t *orig);
 
-void qpq_set_elem(qpq_t *x, int exponent, const mpq_t coeff);
-void qpq_set_elem_si(qpq_t *x, int exponent, long numerator, unsigned long denominator);
-void qpq_get_elem(mpq_t coeff, const qpq_t *x, int exponent);
+void qpq_set_elem(qpq_t *p, int exponent, const mpq_t coeff);
+void qpq_set_elem_si(qpq_t *p, int exponent, long numerator, unsigned long denominator);
+void qpq_get_elem(mpq_t coeff, const qpq_t *p, int exponent);
 /** \returns zero if the result fits into long / unsigned long; non-zero otherwise. */
-int qpq_get_elem_si(long *numerator, unsigned long *denominator, const qpq_t *x, int exponent);
+int qpq_get_elem_si(long *numerator, unsigned long *denominator, const qpq_t *p, int exponent);
 
 /// Deinitialise the coefficients array in qpq_t.
-void qpq_clear(qpq_t *x);
+void qpq_clear(qpq_t *p);
 
 /// Polynomial addition.
+/** This cannot currently be used in-place, i.e. `sum == addend1` or `sum == addend2` is not allowed. */
 void qpq_add(qpq_t *sum, const qpq_t *addend1, const qpq_t *addend2);
 
 /// Polynomial substraction.
+/** This cannot currently be used in-place, i.e. `difference == minuend` or `difference == substrahend` is not allowed. */
 void qpq_sub(qpq_t *difference, const qpq_t *minuend, const qpq_t *substrahend);
 
 /// Polynomial multiplication.
+/** This cannot currently be used in-place, i.e. `product == multiplier` or `product == multiplicand` is not allowed. */
 void qpq_mul(qpq_t *product, const qpq_t *multiplier, const qpq_t *multiplicand);
 
 /// Polynomial derivative.
+/** This can be used in-place, i.e. `dPdx == P` is allowed. */
 void qpq_deriv(qpq_t *dPdx, const qpq_t *P);
 
 _Bool qpq_nonzero(const qpq_t *);
+
+/// A type representing a polynomial with rational coefficients times an optional factor \f$ \sqrt{1-x^2} \f$.
+typedef struct qpq_legendroid_t {
+	qpq_t p;
+	_Bool f;
+} qpq_legendroid_t;
+
+void qpq_legendroid_init(qpq_legendroid_t *p);
+void qpq_legendroid_clear(qpq_legendroid_t *p);
+
+/// Polynomial multiplication.
+void qpq_legendroid_mul(qpq_legendroid_t *product, const qpq_legendroid_t *multiplier, const qpq_legendroid_t *multiplicand);
+
+/// Polynomial derivative.
+void qpq_legendroid_deriv(qpq_legendroid_t *dP_dx, const qpq_legendroid_t *P);
 
 
 /// Polynomial with double coeffs.
@@ -66,10 +85,10 @@ typedef struct qpz_t {
 } qpz_t;
 
 /// Initiasise the coefficients array in qpz_t.
-void qpz_init(qpz_t *x, int maxorder);
+void qpz_init(qpz_t *p, int maxorder);
 
 /// Deinitialise the coefficients array in qpz_t.
-void qpz_clear(qpz_t *x);
+void qpz_clear(qpz_t *p);
 
 /// Polynomial addition.
 void qpz_add(qpz_t *sum, const qpz_t *addend1, const qpz_t *addend2);
