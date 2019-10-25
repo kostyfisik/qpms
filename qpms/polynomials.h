@@ -71,6 +71,21 @@ void qpq_deriv(qpq_t *dPdx, const qpq_t *P);
 /// Tests whether a polynomial is non-zero.
 _Bool qpq_nonzero(const qpq_t *);
 
+/// A type representing a polynomial with rational coefficients times an optional factor \f$ \sqrt{1-x^2} \f$.
+typedef struct qpq_legendroid_t {
+	qpq_t p;
+	_Bool f;
+} qpq_legendroid_t;
+
+void qpq_legendroid_init(qpq_legendroid_t *p);
+void qpq_legendroid_clear(qpq_legendroid_t *p);
+
+/// Polynomial multiplication.
+void qpq_legendroid_mul(qpq_legendroid_t *product, const qpq_legendroid_t *multiplier, const qpq_legendroid_t *multiplicand);
+
+/// Polynomial derivative.
+void qpq_legendroid_deriv(qpq_legendroid_t *dP_dx, const qpq_legendroid_t *P);
+
 
 /// Polynomial with double coeffs.
 typedef struct qpz_t {
