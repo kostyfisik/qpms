@@ -2,10 +2,18 @@
 #include <stdlib.h>
 #include "qpms_error.h"
 #include <stdbool.h>
+#include <stdio.h>
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) <= (y)) ? (x) : (y))
 
+
+static void qpq_dbgprint(const qpq_t *p) {
+  for(int n = p->order; n >= p->offset; --n)
+    if(mpq_sgn(p->coeffs[n - p->offset]))
+      gmp_printf("%+Qdx**%d  ", p->coeffs[n - p->offset], n);
+  gmp_printf("[%d, %d, %d]\n", p->capacity, p->order, p->offset);
+}
 
 // Auxillary function to set a mpq_t to 0/1
 static inline void mpq_zero(mpq_t q) {
@@ -13,6 +21,10 @@ static inline void mpq_zero(mpq_t q) {
 // Alternatively, we could use just mpz_set_si(mpq_numref(sum->coeffs[i - minoffset]), 0);
   mpq_clear(q);
   mpq_init(q);
+}
+
+static inline void qpq_zero(qpq_t *q) {
+  qpq_clear(q);
 }
 
 // qpq_t internal consistency check
@@ -23,7 +35,7 @@ static inline void qpq_cc(const qpq_t *p) {
 
 _Bool qpq_nonzero(const qpq_t *p) {
   qpq_cc(p);
-  if (p->capacity <= 0) return false;
+  if (p->capacity == 0) return false;
   
   for(int i = 0; i <= p->order - p->offset; ++i) 
     if (mpq_sgn(p->coeffs[i]))
@@ -42,11 +54,41 @@ void qpq_init(qpq_t *p, int capacity) {
 }
 
 void qpq_extend(qpq_t *p, int cap) {
+  QPMS_ENSURE(p->capacity >= 0, "Got polynomial with negative capacity (%d). Is this a manually allocated one?", p->capacity);
   if (cap > 0 && cap > p->capacity) {
     QPMS_CRASHING_REALLOC(p->coeffs, sizeof(mpq_t) * cap);
     for(int i = p->capacity; i < cap; ++i) 
       mpq_init(p->coeffs[i]);
     p->capacity = cap;
+  }
+}
+
+void qpq_shrink(qpq_t *p) {
+  if (p->capacity > 0) {
+      for(int n = p->capacity - 1; n > p->order - p->offset; --n)
+        mpq_clear(p->coeffs[n]);
+      p->capacity = p->order - p->offset + 1;
+      if (p->capacity > 0) 
+        QPMS_CRASHING_REALLOC(p->coeffs, p->capacity * sizeof(mpq_t));
+  }
+}
+
+void qpq_canonicalise(qpq_t *p) {
+  qpq_cc(p);
+  // Lower the order if necessary (here one can get -1 if the polynomial is 0)
+  while (p->order >= p->offset && !mpq_sgn(p->coeffs[p->order - p->offset])) --p->order;
+  if (p->order < p->offset)
+    qpq_zero(p);
+  else { // remove the lowest-order coefficients which are in fact zero.
+    int i = 0;
+    while (i <= p->order - p->offset && !mpq_sgn(p->coeffs[i])) ++i;
+    if (i > 0)
+      for (int j = 0; j <= p->order - p->offset - i; ++j)
+        mpq_swap(p->coeffs[j], p->coeffs[j+i]);
+    p->offset += i;
+    // canonicalise the fractions
+    for (i = 0; i <= p->order - p->offset; ++i) 
+      mpq_canonicalize(p->coeffs[i]);
   }
 }
 
@@ -123,10 +165,32 @@ void qpq_clear(qpq_t *p) {
   *p = QPQ_ZERO;
 }
 
+
+// Auxillary function for lowering the offset
+void qpq_lower_offset(qpq_t *p, int dec) {
+  QPMS_ENSURE(dec >= 0, "Offset decrease must be positive, is %d!", dec);
+  QPMS_ENSURE(dec <= p->offset, "Offset can't be pushed below 0, (offset=%d, decr.=%d!)", 
+      p->offset,  dec);
+  if(dec > 0) {
+    qpq_extend(p, p->order - p->offset + dec + 1);
+    for(int i = p->order; i >= p->offset; --i) 
+      mpq_swap(p->coeffs[i+dec - p->offset], p->coeffs[i - p->offset]);
+    p->offset -= dec;
+    for(int i = dec - 1; i >= 0; --i)
+      mpq_set_si(p->coeffs[i], 0, 1);
+  }
+}
+
 void qpq_add(qpq_t *sum, const qpq_t *x, const qpq_t *y) {
   const int maxorder = MAX(x->order, y->order);
   const int minoffset = MIN(x->offset, y->offset);
   qpq_extend(sum, maxorder - minoffset + 1);
+  /* if sum is actually some of the summands and that summand has higher
+   * offset, we have to lower the offset.
+   */
+  if ((sum == x || sum == y) && sum->offset > minoffset) 
+    qpq_lower_offset(sum, sum->offset - minoffset);
+
   for (int i = minoffset; i <= maxorder; ++i) {
     if (i - x->offset >= 0 && i <= x->order) {
       if (i - y->offset >= 0 && i <= y->order) 
@@ -136,7 +200,7 @@ void qpq_add(qpq_t *sum, const qpq_t *x, const qpq_t *y) {
         mpq_set(sum->coeffs[i - minoffset], x->coeffs[i - x->offset]);
     } else {
       if (i - y->offset >= 0 && i <= y->order)
-        mpq_set(sum->coeffs[i - minoffset], y->coeffs[i - x->offset]);
+        mpq_set(sum->coeffs[i - minoffset], y->coeffs[i - y->offset]);
       else {
         mpq_zero(sum->coeffs[i - minoffset]);
       }
@@ -150,6 +214,12 @@ void qpq_sub(qpq_t *dif, const qpq_t *x, const qpq_t *y) {
   const int maxorder = MAX(x->order, y->order);
   const int minoffset = MIN(x->offset, y->offset);
   qpq_extend(dif, maxorder - minoffset + 1);
+  /* if dif is actually some of the summands and that summand has higher
+   * offset, we have to lower the offset.
+   */
+  if ((dif == x || dif == y) && dif->offset > minoffset) 
+    qpq_lower_offset(dif, dif->offset - minoffset);
+
   for (int i = minoffset; i <= maxorder; ++i) {
     if (i - x->offset >= 0 && i <= x->order) {
       if (i - y->offset >= 0 && i <= y->order) 
@@ -159,7 +229,7 @@ void qpq_sub(qpq_t *dif, const qpq_t *x, const qpq_t *y) {
         mpq_set(dif->coeffs[i - minoffset], x->coeffs[i - x->offset]);
     } else {
       if (i - y->offset >= 0 && i <= y->order) {
-        mpq_set(dif->coeffs[i - minoffset], y->coeffs[i - x->offset]);
+        mpq_set(dif->coeffs[i - minoffset], y->coeffs[i - y->offset]);
         mpq_neg(dif->coeffs[i - minoffset], dif->coeffs[i - minoffset]);
       } else {
         mpq_zero(dif->coeffs[i - minoffset]);
@@ -176,13 +246,66 @@ void qpq_mul(qpq_t *p, const qpq_t *x, const qpq_t *y) {
   // Easiest way to set p to a zero polynomial...
   qpq_clear(p);
   qpq_init(p, maxorder - minoffset + 1);
+  mpq_t tmp; mpq_init(tmp);
   for (int xi = x->offset; xi <= x->order; ++xi)
-    for (int yi = y->offset; yi <= y->order; ++yi)
-      mpq_mul(p->coeffs[xi + yi - minoffset],
-          x->coeffs[xi - x->offset], y->coeffs[yi - y->offset]);
+    for (int yi = y->offset; yi <= y->order; ++yi) {
+      mpq_mul(tmp, x->coeffs[xi - x->offset], y->coeffs[yi - y->offset]);
+      mpq_add(p->coeffs[xi + yi - minoffset], p->coeffs[xi + yi - minoffset], tmp);
+    }
   p->order = maxorder;
   p->offset = minoffset;
+  mpq_clear(tmp);
+} 
+
+void qpq_div(qpq_t *q, qpq_t *r, const qpq_t *dend, const qpq_t *dor) {
+  // Split the divisor into "head" and "tail"
+  qpq_t dor_tail[1]; qpq_init(dor_tail, dor->order - dor->offset); // divisor tail
+  qpq_set(dor_tail, dor);
+  qpq_canonicalise(dor_tail);
+  QPMS_ENSURE(qpq_nonzero(dor_tail), "The divisor must be non-zero");
+
+  const int dor_order = dor_tail->order;
+  mpq_t dor_head; mpq_init(dor_head);
+  mpq_set(dor_head, dor_tail->coeffs[dor_order - dor_tail->offset]);
+  dor_tail->order--;
+
+  qpq_zero(q);
+  qpq_extend(q, dend->order - dor_order + 1);
+  q->order = dend->order - dor_order;
+  q->offset = 0;
+
+  // Assign the dividend to r but with extended capacity (with zero offset)
+  qpq_extend(r, dend->order + 1);
+  r->offset = 0;
+  r->order = dend->order;
+  for (int n = 0; n < dend->offset; ++n) 
+    mpq_set_si(r->coeffs[n], 0, 1);
+  for (int n = dend->offset; n <= dend->order; ++n) 
+    mpq_set(r->coeffs[n], dend->coeffs[n - dend->offset]);
+
+  qpq_t f[1]; qpq_init(f, 1);
+  qpq_t ftail[1]; qpq_init(ftail, dor_tail->order - dor_tail->offset + 1);
+  for(; r->order >= dor_order; --r->order) {
+    // Compute the current order (r->order - dor_order) of q
+    mpq_t * const hicoeff = &(q->coeffs[r->order - dor_order]);
+    mpq_div(*hicoeff, r->coeffs[r->order], dor_head);
+    mpq_canonicalize(*hicoeff);
+    
+    // Update the remainder
+    f->offset = f->order = r->order - dor_order;
+    mpq_set(f->coeffs[0], *hicoeff);
+    qpq_mul(ftail, f, dor_tail);
+    qpq_sub(r, r, ftail);
+  }
+  qpq_clear(ftail);
+  qpq_clear(f);
+  mpq_clear(dor_head);
+  qpq_clear(dor_tail);
+
+  qpq_canonicalise(r);
+  qpq_canonicalise(q);
 }
+
 
 void qpq_deriv(qpq_t *dp, const qpq_t *p) {
   if (p->order <= 0) { // p is constant, dp is zero.

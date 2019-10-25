@@ -31,6 +31,7 @@ cdef extern from "polynomials.h":
     void qpq_add(qpq_t *sum, const qpq_t *addend1, const qpq_t *addend2)
     void qpq_sub(qpq_t *difference, const qpq_t *minuend, const qpq_t *substrahend)
     void qpq_mul(qpq_t *product, const qpq_t *multiplier, const qpq_t *multiplicand)
+    void qpq_div(qpq_t *quotient, qpq_t *remainder, const qpq_t *dividend, const qpq_t *divisor)
     void qpq_deriv(qpq_t *dPdx, const qpq_t *P)
     bint qpq_nonzero(const qpq_t *)
 
@@ -111,6 +112,10 @@ cdef class qpq:
         cdef qpq result = qpq()
         qpq_mul(&result.p, &self.p, &other.p)
         return result
+    def __divmod__(qpq self, qpq other):
+        cdef qpq q = qpq(), r = qpq()
+        qpq_div(&q.p, &r.p, &self.p, &other.p)
+        return (q, r)
     def derivative(self):
         cdef qpq result = qpq()
         qpq_deriv(&result.p, &self.p)
@@ -136,6 +141,6 @@ cdef class qpq:
         for exponent in range(self.p.offset, self.p.order + 1):
             i = exponent - self.p.offset
             if mpq_sgn(self.p.coeffs[i]):
-                result[i] = GMPy_MPQ_From_mpq(self.p.coeffs[i])
+                result[exponent] = GMPy_MPQ_From_mpq(self.p.coeffs[i])
         return result
 
