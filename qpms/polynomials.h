@@ -57,11 +57,11 @@ void qpq_add(qpq_t *sum, const qpq_t *addend1, const qpq_t *addend2);
 void qpq_sub(qpq_t *difference, const qpq_t *minuend, const qpq_t *substrahend);
 
 /// Polynomial multiplication.
-/** Does not support operand and result pointer mixing. */
+/** Supports operand and result pointer mixing. */
 void qpq_mul(qpq_t *product, const qpq_t *multiplier, const qpq_t *multiplicand);
 
 /// Polynomial division with remainder.
-/** Does not support operand and result pointer mixing. */
+/** Supports operand and result pointer mixing. */
 void qpq_div(qpq_t *quotient, qpq_t *remainder, const qpq_t *dividend, const qpq_t *divisor);
 
 /// Polynomial derivative.

@@ -93,13 +93,14 @@ void qpq_canonicalise(qpq_t *p) {
 }
 
 void qpq_set(qpq_t *p, const qpq_t *orig) {
-  const int order = orig->order, offset = orig->offset;
-  qpq_extend(p, order - offset + 1);
-  for (int i = orig->offset; i <= order; ++i)
-    mpq_set(p->coeffs[i - offset], orig->coeffs[i - offset]);
-  p->offset = offset;
-  p->order = order;
-  return;
+  if(p != orig) {
+    const int order = orig->order, offset = orig->offset;
+    qpq_extend(p, order - offset + 1);
+    for (int i = orig->offset; i <= order; ++i)
+      mpq_set(p->coeffs[i - offset], orig->coeffs[i - offset]);
+    p->offset = offset;
+    p->order = order;
+  }
 }
 
 void qpq_set_elem(qpq_t *p, const int exponent, const mpq_t coeff)  {
@@ -240,11 +241,12 @@ void qpq_sub(qpq_t *dif, const qpq_t *x, const qpq_t *y) {
   dif->order = maxorder;
 }
 
-void qpq_mul(qpq_t *p, const qpq_t *x, const qpq_t *y) {
+void qpq_mul(qpq_t *p_orig, const qpq_t *x, const qpq_t *y) {
+
   const int maxorder = x->order + y->order;
   const int minoffset = x->offset + y->offset;
-  // Easiest way to set p to a zero polynomial...
-  qpq_clear(p);
+  
+  qpq_t p[1];
   qpq_init(p, maxorder - minoffset + 1);
   mpq_t tmp; mpq_init(tmp);
   for (int xi = x->offset; xi <= x->order; ++xi)
@@ -252,12 +254,18 @@ void qpq_mul(qpq_t *p, const qpq_t *x, const qpq_t *y) {
       mpq_mul(tmp, x->coeffs[xi - x->offset], y->coeffs[yi - y->offset]);
       mpq_add(p->coeffs[xi + yi - minoffset], p->coeffs[xi + yi - minoffset], tmp);
     }
+  mpq_clear(tmp);
   p->order = maxorder;
   p->offset = minoffset;
-  mpq_clear(tmp);
+  qpq_set(p_orig, p);
+  qpq_clear(p);
 } 
 
-void qpq_div(qpq_t *q, qpq_t *r, const qpq_t *dend, const qpq_t *dor) {
+void qpq_div(qpq_t *q_orig, qpq_t *r_orig, const qpq_t *dend, const qpq_t *dor) {
+  QPMS_ENSURE(q_orig != r_orig, 
+      "Quotient and remainder must be _different_ instances of qpq_t.");
+
+
   // Split the divisor into "head" and "tail"
   qpq_t dor_tail[1]; qpq_init(dor_tail, dor->order - dor->offset); // divisor tail
   qpq_set(dor_tail, dor);
@@ -269,17 +277,14 @@ void qpq_div(qpq_t *q, qpq_t *r, const qpq_t *dend, const qpq_t *dor) {
   mpq_set(dor_head, dor_tail->coeffs[dor_order - dor_tail->offset]);
   dor_tail->order--;
 
-  qpq_zero(q);
-  qpq_extend(q, dend->order - dor_order + 1);
+  qpq_t q[1];  qpq_init(q, dend->order - dor_order + 1);
   q->order = dend->order - dor_order;
   q->offset = 0;
 
   // Assign the dividend to r but with extended capacity (with zero offset)
-  qpq_extend(r, dend->order + 1);
+  qpq_t r[1]; qpq_init(r, dend->order + 1);
   r->offset = 0;
   r->order = dend->order;
-  for (int n = 0; n < dend->offset; ++n) 
-    mpq_set_si(r->coeffs[n], 0, 1);
   for (int n = dend->offset; n <= dend->order; ++n) 
     mpq_set(r->coeffs[n], dend->coeffs[n - dend->offset]);
 
@@ -304,6 +309,9 @@ void qpq_div(qpq_t *q, qpq_t *r, const qpq_t *dend, const qpq_t *dor) {
 
   qpq_canonicalise(r);
   qpq_canonicalise(q);
+  qpq_set(q_orig, q);
+  qpq_set(r_orig, r);
+  qpq_clear(r); qpq_clear(f);
 }
 
 
@@ -328,7 +336,7 @@ void qpq_deriv(qpq_t *dp, const qpq_t *p) {
 
 
 void qpq_legendroid_init(qpq_legendroid_t *p) {
-  qpq_init(&p->p);
+  qpq_init(&p->p, 0);
   p->f = 0;
 }
 
@@ -342,11 +350,10 @@ void qpq_legendroid_mul(qpq_legendroid_t *p, const qpq_legendroid_t *a, const qp
   if (a->f && b->f) {
     // TODO make somehow a static representation of this constant polynomial
     qpq_t ff;
-    qpq_init(&ff);
-    qpq_extend(&ff, 3);
+    qpq_init(&ff, 3);
     qpq_set_elem_si(&ff, 0, -1, 1);
     qpq_set_elem_si(&ff, 2, 1, 1);
-    qpq_mul(p, &ff);
+    qpq_mul(&p->p, &p->p, &ff);
     qpq_clear(&ff);
   }
   p->f = !(a->f) != !(b->f);
