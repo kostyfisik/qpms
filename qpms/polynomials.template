@@ -1,0 +1,159 @@
+// C preprocessor sorcery inspired by gsl/specfunc/legendre_source.c
+
+
+
+#if defined(TEMPLATE_QPQ)
+#define POLYTYPE qpq_t
+#define COEFTYPE mpq_t
+#define POLYFUNC(x) qpq_ ## x
+#define COEFFUNC(x) mpq_ ## x
+#define POLYTYPE_ZERO QPQ_ZERO
+
+#elif defined(TEMPLATE_QPQS)
+#define POLYTYPE qpqs_t
+#define COEFTYPE mpqs_t
+#define POLYFUNC(x) qpqs_ ## x
+#define COEFFUNC(x) mpqs_ ## x
+#define POLYTYPE_ZERO QPQS_ZERO
+
+#endif
+
+
+// POLYTYPE internal consistency check
+static inline void POLYFUNC(cc)(const POLYTYPE *p) {
+  if (!p->coeffs) return;
+  QPMS_ENSURE(p->capacity >= p->order - p->offset + 1, "POLYTYPE inconsistency detected; have you initialised it properly?");
+}
+
+_Bool POLYFUNC(nonzero)(const POLYTYPE *p) {
+  POLYFUNC(cc)(p);
+  if (p->capacity == 0) return false;
+
+  for(int i = 0; i <= p->order - p->offset; ++i)
+    if (COEFFUNC(sgn)(p->coeffs[i]))
+      return true;
+  return false;
+}
+
+void POLYFUNC(init)(POLYTYPE *p, int capacity) {
+  *p = POLYTYPE_ZERO;
+  if (capacity <= 0)
+    return;
+  QPMS_CRASHING_MALLOC(p->coeffs, capacity * sizeof(COEFTYPE));
+  for(int i = 0; i < capacity; ++i)
+    COEFFUNC(init)(p->coeffs[i]);
+  p->capacity = capacity;
+}
+
+void POLYFUNC(extend)(POLYTYPE *p, int cap) {
+  QPMS_ENSURE(p->capacity >= 0, "Got polynomial with negative capacity (%d). Is this a manually allocated one?", p->capacity);
+  if (cap > 0 && cap > p->capacity) {
+    QPMS_CRASHING_REALLOC(p->coeffs, sizeof(COEFTYPE) * cap);
+    for(int i = p->capacity; i < cap; ++i)
+      COEFFUNC(init)(p->coeffs[i]);
+    p->capacity = cap;
+  }
+}
+
+void POLYFUNC(shrink)(POLYTYPE *p) {
+  if (p->capacity > 0) {
+      for(int n = p->capacity - 1; n > p->order - p->offset; --n)
+        COEFFUNC(clear)(p->coeffs[n]);
+      p->capacity = p->order - p->offset + 1;
+      if (p->capacity > 0)
+        QPMS_CRASHING_REALLOC(p->coeffs, p->capacity * sizeof(COEFTYPE));
+  }
+}
+
+
+void POLYFUNC(canonicalise)(POLYTYPE *p) {
+  POLYFUNC(cc)(p);
+  // Lower the order if necessary (here one can get -1 if the polynomial is 0)
+  while (p->order >= p->offset && !COEFFUNC(sgn)(p->coeffs[p->order - p->offset])) --p->order;
+  if (p->order < p->offset)
+    POLYFUNC(zero)(p);
+  else { // remove the lowest-order coefficients which are in fact zero.
+    int i = 0;
+    while (i <= p->order - p->offset && !COEFFUNC(sgn)(p->coeffs[i])) ++i;
+    if (i > 0)
+      for (int j = 0; j <= p->order - p->offset - i; ++j)
+        COEFFUNC(swap)(p->coeffs[j], p->coeffs[j+i]);
+    p->offset += i;
+    // canonicalise the fractions
+    for (i = 0; i <= p->order - p->offset; ++i)
+      COEFFUNC(canonicalize)(p->coeffs[i]);
+  }
+}
+
+void POLYFUNC(set)(POLYTYPE *p, const POLYTYPE *orig) {
+  if(p != orig) {
+    const int order = orig->order, offset = orig->offset;
+    POLYFUNC(extend)(p, order - offset + 1);
+    for (int i = orig->offset; i <= order; ++i)
+      COEFFUNC(set)(p->coeffs[i - offset], orig->coeffs[i - offset]);
+    p->offset = offset;
+    p->order = order;
+  }
+}
+
+void POLYFUNC(set_elem)(POLYTYPE *p, const int exponent, const COEFTYPE coeff)  {
+  QPMS_ENSURE(exponent >= 0, "Exponent must be non-negative, got %d", exponent);
+  int offset = p->offset, order = p->order;
+  if(COEFFUNC(sgn)(coeff) == 0 && (exponent < offset || exponent > order))
+    return; // exponent out of range, but zero needs not to be assigned explicitly
+  if(exponent < p->offset) {
+    POLYFUNC(extend)(p, p->order - exponent + 1);
+    offset = exponent;
+    for(int i = order - offset; i >= p->offset - offset; --i)
+      COEFFUNC(swap)(p->coeffs[i], p->coeffs[i - (p->offset - offset)]);
+    for(int i = p->offset - offset - 1; i > 0; --i)
+      COEFFUNC(zero)(p->coeffs[i]);
+    p->offset = offset;
+  }
+  if(exponent > order) {
+    POLYFUNC(extend)(p, exponent - p->offset + 1);
+    for(int i = p->order - p->offset + 1; i <= exponent - p->offset; ++i)
+      COEFFUNC(zero)(p->coeffs[i]);
+    p->order = exponent;
+  }
+  COEFFUNC(set)(p->coeffs[exponent - p->offset], coeff);
+  return;
+}
+
+
+void POLYFUNC(get_elem)(COEFTYPE coeff, const POLYTYPE *p, const int exponent) {
+  if (exponent < p->offset || exponent > p->order)
+    COEFFUNC(zero)(coeff);
+  else
+    COEFFUNC(set)(coeff, p->coeffs[exponent-p->offset]);
+}
+
+
+void POLYFUNC(clear)(POLYTYPE *p) {
+  if (p->capacity > 0) {
+    for (int i = p->capacity - 1; i >= 0; --i)
+      COEFFUNC(clear)(p->coeffs[i]);
+    free(p->coeffs);
+  }
+  *p = POLYTYPE_ZERO;
+}
+
+// Auxillary function for lowering the offset
+void POLYFUNC(lower_offset)(POLYTYPE *p, int dec) {
+  QPMS_ENSURE(dec >= 0, "Offset decrease must be positive, is %d!", dec);
+  QPMS_ENSURE(dec <= p->offset, "Offset can't be pushed below 0, (offset=%d, decr.=%d!)",
+      p->offset,  dec);
+  if(dec > 0) {
+    POLYFUNC(extend)(p, p->order - p->offset + dec + 1);
+    for(int i = p->order; i >= p->offset; --i)
+      COEFFUNC(swap)(p->coeffs[i+dec - p->offset], p->coeffs[i - p->offset]);
+    p->offset -= dec;
+    for(int i = dec - 1; i >= 0; --i)
+      COEFFUNC(set_si)(p->coeffs[i], 0, 1);
+  }
+}
+#undef POLYTYPE
+#undef COEFTYPE
+#undef POLYFUNC
+#undef COEFFUNC
+#undef POLYTYPE_ZERO

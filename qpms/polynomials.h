@@ -71,6 +71,72 @@ void qpq_deriv(qpq_t *dPdx, const qpq_t *P);
 /// Tests whether a polynomial is non-zero.
 _Bool qpq_nonzero(const qpq_t *);
 
+
+/// Square root of a rational number.
+typedef struct mpqs_struct_t {
+	mpq_t _2; 
+} mpqs_t[1];
+
+static inline void mpqs_init(mpqs_t q) {mpq_init(q->_2);}
+static inline void mpqs_clear(mpqs_t q) {mpq_clear(q->_2);}
+static inline void mpqs_mul(mpqs_t product, const mpqs_t multiplier, const mpqs_t multiplicand) {
+	mpq_mul(product->_2, multiplier->_2, multiplicand->_2);
+}
+static inline void mpqs_div(mpqs_t quotient, const mpqs_t dividend, const mpqs_t divisor) {
+	mpq_div(quotient->_2, dividend->_2, divisor->_2);
+}
+static inline void mpqs_set(mpqs_t copy, const mpqs_t orig) { mpq_set(copy->_2, orig->_2); }
+static inline void mpqs_set_mpq(mpqs_t qs, const mpq_t q) {
+	mpq_mul(qs->_2, q, q);
+}
+static inline int mpqs_sgn(const mpqs_t q) { return mpq_sgn(q->_2); }
+static inline void mpqs_canonicalize(mpqs_t q) { mpq_canonicalize(q->_2); }
+static inline void mpqs_swap(mpqs_t a, mpqs_t b) { mpq_swap(a->_2, b->_2); }
+
+/// Polynomial with rational square root coeffs.
+// TODO more docs about initialisation etc.
+typedef struct qpqs_t {
+	int order;
+	int offset;
+	int capacity;
+	mpqs_t *coeffs;
+} qpqs_t;
+const static qpqs_t QPQS_ZERO = {-1, 0, 0, NULL};
+
+/// Initiasise the coefficients array in qpqs_t.
+/** Do not use on qpqs_t that has already been initialised
+ * (and not recently cleared),
+ * otherwise you can get a memory leak.
+ */
+void qpqs_init(qpqs_t *p, int capacity);
+
+/// Extend capacity of a qpqs_t instance.
+/** If the requested new_capacity is larger than the qpqs_t's
+ * capacity, the latter is extended to match new_capacity.
+ * Otherwise, nothing happend (this function does _not_ trim
+ * the capacity).
+ */
+void qpqs_extend(qpqs_t *p, int new_capacity);
+
+/// Shrinks the capacity to the minimum that can store the current polynomial.
+void qpqs_shrink(qpqs_t *p);
+
+/// Canonicalises the coefficients and (re)sets the correct degree.
+void qpqs_canonicalise(qpqs_t *p);
+
+void qpqs_set(qpqs_t *copy, const qpqs_t *orig);
+
+void qpqs_set_elem(qpqs_t *p, int exponent, const mpqs_t coeff);
+void qpqs_set_elem_si(qpqs_t *p, int exponent, long numerator, unsigned long denominator);
+void qpqs_get_elem(mpqs_t coeff, const qpqs_t *p, int exponent);
+/** \returns zero if the result fits into long / unsigned long; non-zero otherwise. */
+int qpqs_get_elem_si(long *numerator, unsigned long *denominator, const qpqs_t *p, int exponent);
+
+/// Deinitialise the coefficients array in qpqs_t.
+void qpqs_clear(qpqs_t *p);
+
+
+
 /// A type representing a polynomial with rational coefficients times an optional factor \f$ \sqrt{1-x^2} \f$.
 typedef struct qpq_legendroid_t {
 	qpq_t p;
