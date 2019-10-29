@@ -136,6 +136,32 @@ int qpqs_get_elem_si(long *numerator, unsigned long *denominator, const qpqs_t *
 void qpqs_clear(qpqs_t *p);
 
 
+/// Type representing a number of form \f$ a \sqrt{b}; a \in \ints, b \in \nats \f$.
+typedef struct _qp_mpzs {
+	mpz_t _1; ///< The integer factor \f$ a \f$.
+	mpz_t _2; ///< The square-rooted factor \f$ b \f$. Always positive.
+} mpzs_t[1];
+
+void mpzs_init(mpzs_t x);
+void mpzs_clear(mpzs_t x);
+void mpzs_set(mpzs_t x, const mpzs_t y);
+
+/// Sum of square roots of rational numbers.
+/// Represented as \f$ \sum_s a_i \sqrt{b_i} / d \f$.
+typedef struct _qp_mpqs {
+	int sz; ///< Used size of the numtree.
+	void *nt; ///< Numerator tree.
+	mpz_t den; ///< Denominator. Always positive.
+} mpqs_t[1];
+
+void mpqs_init(mpqs_t x);
+void mpqs_clear(mpqs_t x);
+void mpqs_add(mpqs_t sum, const mpqs_t addend1, const mpqs_t addend2);
+void mpqs_sub(mpqs_t difference, const mpqs_t minuend, const mpqs_t substrahend);
+void mpqs_mul(mpqs_t product, const mpqs_t multiplier, const mpqs_t multiplicand);
+void mpqs_div(mpqs_t quotient, const mpqs_t dividend, const mpqs_t divisor);
+void mpqs_clear_num(mpqs_t x); ///< Sets the numerator to zero, clearing the numerator tree.
+
 
 /// A type representing a polynomial with rational coefficients times an optional factor \f$ \sqrt{1-x^2} \f$.
 typedef struct qpq_legendroid_t {

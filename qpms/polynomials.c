@@ -7,6 +7,57 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) <= (y)) ? (x) : (y))
 
+void mpzs_init(mpzs_t x) {
+  mpz_init(x->_1);
+  mpz_init(x->_2);
+}
+
+void mpzs_clear(mpzs_t x) {
+  mpz_clear(x->_1);
+  mpz_clear(x->_2);
+}
+
+void mpzs_set(mpzs_t x, const mpzs_t y) {
+  mpz_set(x->_1, y->_1);
+  mpz_set(x->_2, y->_2);
+}
+
+// Compares the square-rooted part of mpzs_t, so we can use it as a key in a search tree.
+static int mpzs_cmp2(void *op1, void *op2) {
+  mpz_cmpabs(((mpzs_t) op1)->_2, ((mpzs_t) op2)->_2);
+}
+
+void mpqs_clear_num(mpqs_t x) {
+  TODO;
+}
+
+void mpqs_init(mpqs_t x) {
+  x->sz = 0;
+  x->nt = 0;
+  mpz_init_set_ui(x->den, 1);
+}
+
+void mpqs_clear(mpqs_t x) {
+  mpqs_clear_num(mpqs_t x);
+  mpz_clear(x->den);
+  x->sz = -1
+  x->nt = 0;
+}
+
+static void mpqs_num_add_elem(mpqs_t q, mpzs_t n) {
+  mpzs_t *n_owned;
+  QPMS_CRASHING_MALLOC(n_owned, sizeof(mpzs_t));
+  mpzs_init(*n_owned);
+  mpzs_set(*n_owned, n);
+  void *added =
+    tsearch(n_owned, &(t->nt), mpzs_cmp2);
+  QPMS_ENSURE(added, "Failed to add numerator element. Memory error?");
+  QPMS_ENSURE(added != n_owned, "FIXME another numerator elements with the same square root found."); // TODO how to handle this?
+}
+
+
+
+
 
 // Auxillary function to set a mpq_t to 0/1
 static inline void mpq_zero(mpq_t q) {
