@@ -72,27 +72,6 @@ void qpq_deriv(qpq_t *dPdx, const qpq_t *P);
 _Bool qpq_nonzero(const qpq_t *);
 
 
-/// Square root of a rational number.
-typedef struct mpqs_struct_t {
-	mpq_t _2; 
-} mpqs_t[1];
-
-static inline void mpqs_init(mpqs_t q) {mpq_init(q->_2);}
-static inline void mpqs_clear(mpqs_t q) {mpq_clear(q->_2);}
-static inline void mpqs_mul(mpqs_t product, const mpqs_t multiplier, const mpqs_t multiplicand) {
-	mpq_mul(product->_2, multiplier->_2, multiplicand->_2);
-}
-static inline void mpqs_div(mpqs_t quotient, const mpqs_t dividend, const mpqs_t divisor) {
-	mpq_div(quotient->_2, dividend->_2, divisor->_2);
-}
-static inline void mpqs_set(mpqs_t copy, const mpqs_t orig) { mpq_set(copy->_2, orig->_2); }
-static inline void mpqs_set_mpq(mpqs_t qs, const mpq_t q) {
-	mpq_mul(qs->_2, q, q);
-}
-static inline int mpqs_sgn(const mpqs_t q) { return mpq_sgn(q->_2); }
-static inline void mpqs_canonicalize(mpqs_t q) { mpq_canonicalize(q->_2); }
-static inline void mpqs_swap(mpqs_t a, mpqs_t b) { mpq_swap(a->_2, b->_2); }
-
 /// Polynomial with rational square root coeffs.
 // TODO more docs about initialisation etc.
 typedef struct qpqs_t {
@@ -135,7 +114,7 @@ int qpqs_get_elem_si(long *numerator, unsigned long *denominator, const qpqs_t *
 /// Deinitialise the coefficients array in qpqs_t.
 void qpqs_clear(qpqs_t *p);
 
-
+#if 0
 /// Type representing a number of form \f$ a \sqrt{b}; a \in \ints, b \in \nats \f$.
 typedef struct _qp_mpzs {
 	mpz_t _1; ///< The integer factor \f$ a \f$.
@@ -145,12 +124,25 @@ typedef struct _qp_mpzs {
 void mpzs_init(mpzs_t x);
 void mpzs_clear(mpzs_t x);
 void mpzs_set(mpzs_t x, const mpzs_t y);
+#endif
+
+/// Type representing a number of form \f$ a \sqrt{b}; a \in \ints, b \in \nats \f$.
+/** This includes UT hash handle structure */
+typedef struct _qp_mpzs_hashed {
+	mpz_t _1; ///< The integer factor \f$ a \f$.
+	mpz_t _2; ///< The square-rooted factor \f$ b \f$. Always positive.
+	UT_hash_handle hh; 
+} mpzs_hh_t[1];
+
+void mpzs_hh_init(mpzs_hh_t x);
+void mpzs_hh_clear(mpzs_hh_t x);
+void mpzs_hh_set(mpzs_hh_t x, const mpzs_hh_t y);
 
 /// Sum of square roots of rational numbers.
 /// Represented as \f$ \sum_s a_i \sqrt{b_i} / d \f$.
 typedef struct _qp_mpqs {
 	int sz; ///< Used size of the numtree.
-	void *nt; ///< Numerator tree.
+	mpzs_hh_t *nt; ///< List of numerator components..
 	mpz_t den; ///< Denominator. Always positive.
 } mpqs_t[1];
 
