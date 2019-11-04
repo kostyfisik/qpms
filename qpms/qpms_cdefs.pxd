@@ -589,3 +589,62 @@ cdef extern from "ewald.h":
             bint pgen_generates_shifted_points, cart3_t k, cart3_t particle_shift)
 
 
+cdef extern from "gsl/gsl_complex.h":
+    ctypedef struct gsl_complex:
+        double dat[2]
+
+cdef extern from "gsl/gsl_matrix.h":
+    ctypedef struct gsl_matrix_complex:
+        pass
+    ctypedef struct gsl_vector:
+        pass
+    ctypedef struct gsl_vector_complex:
+        pass
+
+cdef extern from "beyn.h":
+    ctypedef struct beyn_contour_t:
+        bint (*inside_test)(beyn_contour_t *, cdouble z)
+        pass
+    ctypedef struct beyn_result_gsl_t:
+        pass
+    ctypedef struct beyn_result_t:
+        size_t neig
+        size_t vlen
+        cdouble *eigval
+        cdouble *eigval_err
+        double *residuals
+        cdouble *eigvec
+        double *ranktest_SV
+        beyn_result_gsl_t *gsl
+    ctypedef enum beyn_contour_halfellipse_orientation:
+        BEYN_CONTOUR_HALFELLIPSE_RE_PLUS
+        BEYN_CONTOUR_HALFELLIPSE_IM_PLUS
+        BEYN_CONTOUR_HALFELLIPSE_RE_MINUS
+        BEYN_CONTOUR_HALFELLIPSE_IM_MINUS
+
+    ctypedef int (*beyn_function_M_gsl_t)(gsl_matrix_complex *target_M, cdouble z, void *params)
+    ctypedef int (*beyn_function_M_inv_Vhat_gsl_t)(gsl_matrix_complex *target, const gsl_matrix_complex *Vhat, cdouble z, void *params)
+    ctypedef int (*beyn_function_M_t)(cdouble *target_M, size_t m, cdouble z, void *params)
+    ctypedef int (*beyn_function_M_inv_Vhat_t)(cdouble *target, size_t m, size_t l, const cdouble *Vhat, cdouble z, void *params)
+
+    void beyn_result_gsl_free(beyn_result_gsl_t *result)
+    void beyn_result_free(beyn_result_t *result)
+
+    beyn_result_gsl_t *beyn_solve_gsl(size_t m, size_t l, beyn_function_M_gsl_t M,
+            beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
+            double rank_tol, double res_tol)
+
+    beyn_result_t *beyn_solve(size_t m, size_t l, beyn_function_M_t M,
+            beyn_function_M_inv_Vhat_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
+            double rank_tol, double res_tol)
+
+    beyn_contour_t *beyn_contour_ellipse(cdouble centre, double halfax_re, double halfax_im, size_t npoints)
+    beyn_contour_t *beyn_contour_halfellipse(cdouble centre, double halfax_re, double halfax_im, size_t npoints,
+            beyn_contour_halfellipse_orientation ori)
+    beyn_contour_t *beyn_contour_kidney(cdouble centre, double halfax_re, double halfax_im, size_t npoints,
+            double rounding, beyn_contour_halfellipse_orientation ori)
+
+
+    cdouble gsl_comlpex_tostd(gsl_complex z)
+    gsl_complex gsl_complex_fromstd(cdouble z)
+
