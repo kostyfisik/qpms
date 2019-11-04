@@ -69,6 +69,15 @@ typedef struct qpms_ldparams_t {
 
 extern const qpms_ldparams_t *const QPMS_LDPARAMS_AG; ///< Lorentz-Drude parameters for silver.
 extern const qpms_ldparams_t *const QPMS_LDPARAMS_AU; ///< Lorentz-Drude parameters for gold.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_CU; ///< Lorentz-Drude parameters for copper.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_AL; ///< Lorentz-Drude parameters for aluminium.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_CR; ///< Lorentz-Drude parameters for chromium.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_TI; ///< Lorentz-Drude parameters for titanium.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_BE; ///< Lorentz-Drude parameters for beryllium.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_NI; ///< Lorentz-Drude parameters for nickel.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_PD; ///< Lorentz-Drude parameters for polonium.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_PT; ///< Lorentz-Drude parameters for platinum.
+extern const qpms_ldparams_t *const QPMS_LDPARAMS_W ; ///< Lorentz-Drude parameters for tungsten.
 
 /// Lorentz-Drude permittivity.
 complex double qpms_lorentzdrude_eps(complex double omega, const qpms_ldparams_t *);
