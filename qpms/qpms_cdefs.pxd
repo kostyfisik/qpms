@@ -562,6 +562,12 @@ cdef extern from "ewald.h":
         cdouble val
         double err
 
+    ctypedef enum qpms_ewald_part:
+        QPMS_EWALD_LONG_RANGE
+        QPMS_EWALD_SHORT_RANGE
+        QPMS_EWALD_FULL
+        QPMS_EWALD_0TERM
+
     struct qpms_ewald3_constants_t:
         qpms_l_t lMax
         qpms_y_t nelem_sc

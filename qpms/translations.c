@@ -729,7 +729,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
   return retval;
 }
 
-qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculator *c,
+qpms_errno_t qpms_trans_calculator_get_trans_array_e32_e(const qpms_trans_calculator *c,
     complex double *target, double *err,
     /// Must be destspec->lMax <= c-> lMax && destspec->norm == c->norm.
     const qpms_vswf_set_spec_t *destspec, size_t deststride,
@@ -739,7 +739,8 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculat
     cart2_t b1, cart2_t b2,
     const cart2_t beta,
     const cart2_t particle_shift,
-    double maxR, double maxK
+    double maxR, double maxK,
+    const qpms_ewald_part parts
     )
 {
   TROPS_ONLY_AB_SYMMETRIC_NORMS_IMPLEMENTED(c->normalisation);
@@ -757,9 +758,9 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculat
     QPMS_CRASHING_MALLOC(Aerr, c->nelem*c->nelem*sizeof(double));
     QPMS_CRASHING_MALLOC(Berr, c->nelem*c->nelem*sizeof(double));
   }
-  qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays_e32(c,
+  qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays_e32_e(c,
       A, Aerr, B, Berr, ldAB, 1, 
-      eta, k, b1, b2, beta, particle_shift, maxR, maxK);
+      eta, k, b1, b2, beta, particle_shift, maxR, maxK, parts);
   for (size_t desti = 0; desti < destspec->n; ++desti) {
     qpms_y_t desty; qpms_vswf_type_t destt;
     if(QPMS_SUCCESS != qpms_uvswfi2ty(destspec->ilist[desti], &destt, &desty))
@@ -781,6 +782,22 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculat
   return retval;
 }
 
+qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculator *c,
+    complex double *target, double *err,
+    /// Must be destspec->lMax <= c-> lMax && destspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *destspec, size_t deststride,
+    /// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm.
+    const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
+    const double eta, const complex double k,
+    cart2_t b1, cart2_t b2,
+    const cart2_t beta,
+    const cart2_t particle_shift,
+    double maxR, double maxK
+    )
+{
+  return qpms_trans_calculator_get_trans_array_e32_e(c, target, err, destspec, deststride,
+      srcspec, srcstride, eta, k, b1, b2, beta, particle_shift, maxR, maxK, QPMS_EWALD_FULL);
+}
 
 
 qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p( 
@@ -913,7 +930,7 @@ int qpms_trans_calculator_get_AB_arrays_e31z_both_points_and_shift(const qpms_tr
 // and GEN_KSHIFTEDPOINTS.
 // The results should be the same. The performance can slightly differ (especially
 // if some optimizations in the point generators are implemented.)
-int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
+int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
     complex double * const Adest, double * const Aerr,
     complex double * const Bdest, double * const Berr,
     const ptrdiff_t deststride, const ptrdiff_t srcstride,
@@ -922,7 +939,8 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
     const cart2_t b1, const cart2_t b2,
     const cart2_t beta,
     const cart2_t particle_shift,
-    double maxR, double maxK
+    double maxR, double maxK,
+    const qpms_ewald_part parts
     )
 {
 
@@ -945,50 +963,58 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
   cart2_t rb1, rb2; // reciprocal basis
   QPMS_ENSURE_SUCCESS(l2d_reciprocalBasis2pi(b1, b2, &rb1, &rb2));
 
-  PGen Rgen = PGen_xyWeb_new(b1, b2, BASIS_RTOL, 
-#ifdef GEN_RSHIFTEDPOINTS
-      cart2_scale(-1 /*CHECKSIGN*/, particle_shift),
-#else
-      CART2_ZERO,
-#endif
-      0, !do_sigma0, maxR, false);
-  PGen Kgen = PGen_xyWeb_new(rb1, rb2, BASIS_RTOL,
+  if (parts & QPMS_EWALD_LONG_RANGE) {
+    PGen Kgen = PGen_xyWeb_new(rb1, rb2, BASIS_RTOL,
 #ifdef GEN_KSHIFTEDPOINTS
-      beta,
+        beta,
 #else
-     CART2_ZERO,
+        CART2_ZERO,
 #endif
-     0, true, maxK, false);
+        0, true, maxK, false);
 
-  QPMS_ENSURE_SUCCESS(ewald3_sigma_long(sigmas_long, serr_long, c->e3c, eta, k, 
-      unitcell_area, LAT_2D_IN_3D_XYONLY, &Kgen,
+    QPMS_ENSURE_SUCCESS(ewald3_sigma_long(sigmas_long, serr_long, c->e3c, eta, k, 
+          unitcell_area, LAT_2D_IN_3D_XYONLY, &Kgen,
 #ifdef GEN_KSHIFTEDPOINTS
-      true,
+          true,
 #else
-      false,
+          false,
 #endif
-      cart22cart3xy(beta), cart22cart3xy(particle_shift)));
-  if(Kgen.stateData) // PGen not consumed entirely (converged earlier)
-    PGen_destroy(&Kgen);
+          cart22cart3xy(beta), cart22cart3xy(particle_shift)));
+    if(Kgen.stateData) // PGen not consumed entirely (converged earlier)
+      PGen_destroy(&Kgen);
+  }
 
-  QPMS_ENSURE_SUCCESS(ewald3_sigma_short(sigmas_short, serr_short, c->e3c, eta, k,
-      LAT_2D_IN_3D_XYONLY, &Rgen, 
+  if (parts & QPMS_EWALD_SHORT_RANGE) {
+    PGen Rgen = PGen_xyWeb_new(b1, b2, BASIS_RTOL, 
 #ifdef GEN_RSHIFTEDPOINTS
-      true,
+        cart2_scale(-1 /*CHECKSIGN*/, particle_shift),
 #else
-      false,
+        CART2_ZERO,
 #endif
-      cart22cart3xy(beta), cart22cart3xy(particle_shift)));
-  if(Rgen.stateData) // PGen not consumed entirely (converged earlier)
-    PGen_destroy(&Rgen);
+        0, !do_sigma0, maxR, false);
+
+    QPMS_ENSURE_SUCCESS(ewald3_sigma_short(sigmas_short, serr_short, c->e3c, eta, k,
+          LAT_2D_IN_3D_XYONLY, &Rgen, 
+#ifdef GEN_RSHIFTEDPOINTS
+          true,
+#else
+          false,
+#endif
+          cart22cart3xy(beta), cart22cart3xy(particle_shift)));
+
+    if(Rgen.stateData) // PGen not consumed entirely (converged earlier)
+      PGen_destroy(&Rgen);
+  }
 
   for(qpms_y_t y = 0; y < nelem2_sc; ++y)
-    sigmas_total[y] = sigmas_short[y] + sigmas_long[y];
+    sigmas_total[y] = ((parts & QPMS_EWALD_SHORT_RANGE) ? sigmas_short[y] : 0)
+                    + ((parts & QPMS_EWALD_LONG_RANGE)  ? sigmas_long[y] : 0);
   if (doerr) for(qpms_y_t y = 0; y < nelem2_sc; ++y)
-    serr_total[y]  = serr_short[y] + serr_long[y];
+    serr_total[y]  = ((parts & QPMS_EWALD_SHORT_RANGE) ? serr_short[y] : 0)
+                    + ((parts & QPMS_EWALD_LONG_RANGE)  ? serr_long[y] : 0);
 
   complex double sigma0 = 0; double sigma0_err = 0;
-  if (do_sigma0) {
+  if (do_sigma0 && (parts & QPMS_EWALD_0TERM)) {
     QPMS_ENSURE_SUCCESS(ewald3_sigma0(&sigma0, &sigma0_err, c->e3c, eta, k));
     const qpms_l_t y = qpms_mn2y_sc(0,0);
     sigmas_total[y] += sigma0;
@@ -1049,6 +1075,22 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
     free(serr_total);
   }
   return 0;
+}
+
+int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
+    complex double * const Adest, double * const Aerr,
+    complex double * const Bdest, double * const Berr,
+    const ptrdiff_t deststride, const ptrdiff_t srcstride,
+    /* qpms_bessel_t J*/ // assume QPMS_HANKEL_PLUS
+    const double eta, const complex double k,
+    const cart2_t b1, const cart2_t b2,
+    const cart2_t beta,
+    const cart2_t particle_shift,
+    double maxR, double maxK) 
+{
+  return qpms_trans_calculator_get_AB_arrays_e32_e(
+      c, Adest, Aerr, Bdest, Berr, deststride, srcstride, 
+      eta, k, b1, b2, beta, particle_shift, maxR, maxK, QPMS_EWALD_FULL);
 }
 
 #endif // LATTICESUMS32

@@ -35,6 +35,15 @@
 #include "qpms_types.h"
 #include "lattices.h"
 
+
+typedef enum {
+	QPMS_EWALD_LONG_RANGE = 1,
+	QPMS_EWALD_SHORT_RANGE = 2,
+	QPMS_EWALD_0TERM = 4,
+	QPMS_EWALD_FULL = QPMS_EWALD_LONG_RANGE | QPMS_EWALD_SHORT_RANGE | QPMS_EWALD_0TERM,
+} qpms_ewald_part;
+
+
 /// Use this handler to ignore underflows of incomplete gamma.
 gsl_error_handler_t IgnoreUnderflowsGSLErrorHandler;
 
