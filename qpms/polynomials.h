@@ -4,6 +4,7 @@
  */
 #ifndef QPMS_POLYNOMIALS_H
 #include <gmp.h>
+#include "uthash.h"
 
 /// Polynomial with rational coeffs.
 // TODO more docs about initialisation etc.
@@ -72,47 +73,6 @@ void qpq_deriv(qpq_t *dPdx, const qpq_t *P);
 _Bool qpq_nonzero(const qpq_t *);
 
 
-/// Polynomial with rational square root coeffs.
-// TODO more docs about initialisation etc.
-typedef struct qpqs_t {
-	int order;
-	int offset;
-	int capacity;
-	mpqs_t *coeffs;
-} qpqs_t;
-const static qpqs_t QPQS_ZERO = {-1, 0, 0, NULL};
-
-/// Initiasise the coefficients array in qpqs_t.
-/** Do not use on qpqs_t that has already been initialised
- * (and not recently cleared),
- * otherwise you can get a memory leak.
- */
-void qpqs_init(qpqs_t *p, int capacity);
-
-/// Extend capacity of a qpqs_t instance.
-/** If the requested new_capacity is larger than the qpqs_t's
- * capacity, the latter is extended to match new_capacity.
- * Otherwise, nothing happend (this function does _not_ trim
- * the capacity).
- */
-void qpqs_extend(qpqs_t *p, int new_capacity);
-
-/// Shrinks the capacity to the minimum that can store the current polynomial.
-void qpqs_shrink(qpqs_t *p);
-
-/// Canonicalises the coefficients and (re)sets the correct degree.
-void qpqs_canonicalise(qpqs_t *p);
-
-void qpqs_set(qpqs_t *copy, const qpqs_t *orig);
-
-void qpqs_set_elem(qpqs_t *p, int exponent, const mpqs_t coeff);
-void qpqs_set_elem_si(qpqs_t *p, int exponent, long numerator, unsigned long denominator);
-void qpqs_get_elem(mpqs_t coeff, const qpqs_t *p, int exponent);
-/** \returns zero if the result fits into long / unsigned long; non-zero otherwise. */
-int qpqs_get_elem_si(long *numerator, unsigned long *denominator, const qpqs_t *p, int exponent);
-
-/// Deinitialise the coefficients array in qpqs_t.
-void qpqs_clear(qpqs_t *p);
 
 #if 0
 /// Type representing a number of form \f$ a \sqrt{b}; a \in \ints, b \in \nats \f$.
@@ -137,21 +97,23 @@ typedef struct _qp_mpzs_hashed {
 void mpzs_hh_init(mpzs_hh_t x);
 void mpzs_hh_clear(mpzs_hh_t x);
 void mpzs_hh_set(mpzs_hh_t x, const mpzs_hh_t y);
+// void mpzs_hh_set_ui(mpzs_hh_t x, long integer_factor, unsigned long sqrt_part);
 
 /// Sum of square roots of rational numbers.
 /// Represented as \f$ \sum_s a_i \sqrt{b_i} / d \f$.
 typedef struct _qp_mpqs {
-	int sz; ///< Used size of the numtree.
+	//int sz; ///< Used size of the numtree.
 	mpzs_hh_t *nt; ///< List of numerator components..
-	mpz_t den; ///< Denominator. Always positive.
+	mpq_t f; ///< Common rational factor. Always positive.
 } mpqs_t[1];
 
 void mpqs_init(mpqs_t x);
 void mpqs_clear(mpqs_t x);
+void mpqs_set(mpqs_t x, const mpqs_t y);
 void mpqs_add(mpqs_t sum, const mpqs_t addend1, const mpqs_t addend2);
 void mpqs_sub(mpqs_t difference, const mpqs_t minuend, const mpqs_t substrahend);
 void mpqs_mul(mpqs_t product, const mpqs_t multiplier, const mpqs_t multiplicand);
-void mpqs_div(mpqs_t quotient, const mpqs_t dividend, const mpqs_t divisor);
+//void mpqs_div_zs(mpqs_t quotient, const mpqs_t dividend, const mpzs_hh_t divisor);
 void mpqs_clear_num(mpqs_t x); ///< Sets the numerator to zero, clearing the numerator tree.
 
 

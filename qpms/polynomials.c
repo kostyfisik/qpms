@@ -7,6 +7,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) <= (y)) ? (x) : (y))
 
+#if 0
 void mpzs_init(mpzs_t x) {
   mpz_init(x->_1);
   mpz_init(x->_2);
@@ -23,39 +24,156 @@ void mpzs_set(mpzs_t x, const mpzs_t y) {
 }
 
 // Compares the square-rooted part of mpzs_t, so we can use it as a key in a search tree.
+// Probably deprecated, since we now use hashes.
 static int mpzs_cmp2(void *op1, void *op2) {
   mpz_cmpabs(((mpzs_t) op1)->_2, ((mpzs_t) op2)->_2);
 }
+#endif
 
-void mpqs_clear_num(mpqs_t x) {
-  TODO;
+void mpzs_hh_init(mpzs_hh_t x) {
+  mpz_init(x->_1);
+  mpz_init(x->_2);
 }
 
+void mpzs_hh_clear(mpzs_hh_t x) {
+  mpz_clear(x->_1);
+  mpz_clear(x->_2);
+}
+
+void mpzs_hh_set(mpzs_hh_t x, const mpzs_hh_t y) {
+  mpz_set(x->_1, y->_1);
+  mpz_set(x->_2, y->_2);
+}
+
+//===== mpqs_t =====
+
 void mpqs_init(mpqs_t x) {
-  x->sz = 0;
+  //x->sz = 0;
   x->nt = 0;
-  mpz_init_set_ui(x->den, 1);
+  mpq_init(x->f);
+  mpq_set_ui(x->f, 1, 1);
+}
+
+void mpqs_clear_num(mpqs_t x) {
+  struct _qp_mpzs_hashed *current, *tmp;
+  HASH_ITER(hh, *(x->nt), current, tmp) {
+    HASH_DEL(x->nt, current);
+    free(current);
+    //x->sz--;
+  }
 }
 
 void mpqs_clear(mpqs_t x) {
   mpqs_clear_num(mpqs_t x);
-  mpz_clear(x->den);
-  x->sz = -1
+  mpq_clear(x->f);
+  //x->sz = 0;
   x->nt = 0;
 }
 
-static void mpqs_num_add_elem(mpqs_t q, mpzs_t n) {
-  mpzs_t *n_owned;
-  QPMS_CRASHING_MALLOC(n_owned, sizeof(mpzs_t));
-  mpzs_init(*n_owned);
-  mpzs_set(*n_owned, n);
-  void *added =
-    tsearch(n_owned, &(t->nt), mpzs_cmp2);
-  QPMS_ENSURE(added, "Failed to add numerator element. Memory error?");
-  QPMS_ENSURE(added != n_owned, "FIXME another numerator elements with the same square root found."); // TODO how to handle this?
+void mpqs_nt_append(mpqs_t x, const mpzs_hh_t numelem) {
+  mpzs_hh_t *n;
+  QPMS_CRASHING_MALLOC(n, sizeof(mpzs_hh_t));
+  mpzs_hh_init(*n);
+  mpzs_hh_set(*n, numelem);
+  HASH_ADD_KEYPTR(hh, x->nt, mpz_limbs_read(*n->_2),
+      mpz_size(*n->_2) * sizeof(mp_limb_t), n);
 }
 
+void mpqs_nt_add(mpqs_t x, const mpzs_hh_t addend) {
+  mpzs_hh_t *s;
+  HASH_FIND(hh, x->nt, mpz_limbs_read(addend->_2),
+      mpz_size(addend->_2), s);
+  if (!s) mpqs_nt_append(addend, x); // if not found
+  else {
+    mpz_add(*s->_1, *s->_1, addend);
+    if(!mpz_sgn(*s->_1)) { // If zero, annihilate
+      HASH_DEL(x->nt, s);
+      mpzs_hh_clear(*s);
+      free(*s);
+    }
+  }
+}
 
+void mpqs_init_set(mpqs_t dest, const mpqs_t src) {
+  mpqs_init(dest);
+  mpq_set(dest->f, src->f);
+  struct _qp_mpzs_hashed *numitem, *tmp;
+  HASH_ITER(hh, src->nt, numitem, tmp) {
+    mpqs_nt_append(dest, numitem);
+  }
+}
+
+void mpqs_set(mpqs_t x, const mpqs_t y) {
+  mpqs_clear(x);
+  mpqs_init_set(x, y);
+}
+
+void mpqs_nt_gcd(mpz_t gcd, const mpqs_t x) {
+  if(x->nt) {
+    mpz_set(gcd, *(x->nt)->_1);
+    for(mpzs_hh_t *n = (x->nt)->hh.next; n != NULL; n = n->hh.next) {
+      mpz_gcd(gcd, gcd, *n->_1);
+    }
+  } else 
+    mpz_set_ui(gcd, 1);
+}
+
+void mpqs_canonicalise(mpqs_t x) {
+  mpz_t gcd; mpz_init(gcd);
+  mpqs_nt_gcd(gcd, x);
+  mpz_mul(mpq_numref(x->f), mpq_numref(x->f), gcd);
+  mpz_clear(gcd);
+  mpq_canonicalize(x->f);
+}
+
+void mpqs_add(mpqs_t sum_final, const mpqs_t x, const mpqs_t y) {
+  mpqs_t sum; mpqs_init(sum);
+  mpqs_set(sum, x);
+
+  mpzs_hh_t hh_cur;
+  
+  // Denominators gcd
+  mpz_t den_gcd; mpz_init(den_gcd);
+  mpz_gcd(den_gcd, mpq_denref(x->f), mpq_denref(y->f));
+  // Common denominator
+  mpz_divexact(mpq_denref(sum->f), mpq_denref(sum->f), den_gcd);
+  mpz_mul(mpq_denref(sum->f), mpq_denref(y->f));
+  
+  // Left operand numerator factor
+  mpz_t tmp; mpz_init(tmp);
+  mpz_set(tmp, mpq_denref(y->f));
+  mpz_divexact(tmp, den_gcd);
+  mpz_mul(tmp, tmp, mpq_numref(x->f));
+  /* Distribute the factor to numerator elements; this approach might be
+   * be suboptimal if x is a complicated expression
+   * and y is quite simple. Maybe optimise later 
+   */
+  for(mpzs_hh_t *n = sum->nt; n != NULL, n = n->hh.next)
+    mpz_mul(*n->_1, *n->_1, tmp);
+  mpz_set_ui(mpq_numref(sum->f), 1);
+  
+  // At this point, sum is equal to x but in a form prepared to
+  // take summands from y.
+
+  // Right operand numerator factor
+  mpz_set(tmp, mpq_denref(x->f));
+  mpz_divexact(tmp, den_gcd);
+  mpz_mul(tmp, tmp, mpq_numref(y->f));
+
+  mpzs_hh_t addend; mpzs_hh_init(addend);
+  for(const mpzs_hh_t *n = y->nt; n != NULL; n = n->hh.next) {
+    mpz_mul(addend->_1, tmp, *n->_1);
+    mpz_set(addend->_2, *n->_2);
+    mpqs_nt_add(y, addend);
+  }
+  mpzs_hh_clear(addend);
+  mpz_clear(tmp);
+  mpz_clear(den_gcd);
+  
+  mpqs_canonicalise(sum);
+  mpqs_set(sum_final, sum);
+  mpqs_clear(sum);
+}
 
 
 
