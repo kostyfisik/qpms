@@ -329,14 +329,14 @@ cdef class trans_calculator:
         # have to be cdef public in order that __init__ can set these attributes
         object get_A, get_B, get_AB
 
-    def __cinit__(self, int lMax, int normalization = 1):
+    def __cinit__(self, int lMax, int normalization = QPMS_NORMALISATION_DEFAULT):
         if (lMax <= 0):
             raise ValueError('lMax has to be greater than 0.')
         self.c = qpms_trans_calculator_init(lMax, normalization)
         if self.c is NULL:
             raise MemoryError
 
-    def __init__(self, int lMax, int normalization = 1):
+    def __init__(self, int lMax, int normalization = QPMS_NORMALISATION_DEFAULT):
         if self.c is NULL:
             raise MemoryError()
         self.get_A_data[0].c = self.c
@@ -401,6 +401,7 @@ cdef class trans_calculator:
     def nelem(self):
         return self.c[0].nelem
 
+    # THIS FUNCTION MIGHT BE OBSOLETE; NOT SURE WHETHER IT'S WORKING ANY MORE
     def get_AB_arrays(self, r, theta, phi, r_ge_d, int J, 
             destaxis=None, srcaxis=None, expand=True):
         """
@@ -520,17 +521,17 @@ cdef class trans_calculator:
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (destn, srcn), dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
-        cdef sph_t kdlj_sph
+        cdef csph_t kdlj_sph
         kdlj_sph.r = kdlj[0]
-        kdlj_sph.theta = kdlj[1]
-        kdlj_sph.phi = kdlj[2]
+        kdlj_sph.theta = kdlj[1].real
+        kdlj_sph.phi = kdlj[2].real
         qpms_trans_calculator_get_trans_array(self.c, &target_view[0][0], 
                 destspec.rawpointer(), srcn, srcspec.rawpointer(), 1, 
                 kdlj_sph, False, J)
         return target
 
     def get_trans_array_bspec_c3pos(self, BaseSpec destspec, BaseSpec srcspec,
-            double k, destpos, srcpos, qpms_bessel_t J = QPMS_HANKEL_PLUS):
+            cdouble k, destpos, srcpos, qpms_bessel_t J = QPMS_HANKEL_PLUS):
         destpos = np.array(destpos)
         srcpos = np.array(srcpos)
         if destpos.shape != (3,) or srcpos.shape != (3,):

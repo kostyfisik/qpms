@@ -37,10 +37,10 @@
 #endif
 
 
-complex double qpms_trans_single_A(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+complex double qpms_trans_single_A(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, csph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
 
-complex double qpms_trans_single_B(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+complex double qpms_trans_single_B(qpms_normalisation_t norm, qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, csph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
 
 /// Structure holding the constant factors in normalisation operators.
@@ -91,38 +91,38 @@ qpms_trans_calculator *qpms_trans_calculator_init(qpms_l_t lMax, ///< Truncation
 void qpms_trans_calculator_free(qpms_trans_calculator *);
 
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
-		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, csph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
 complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
-		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, csph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
 int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
-		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, sph_t kdlj,
+		qpms_m_t m, qpms_l_t n, qpms_m_t mu, qpms_l_t nu, csph_t kdlj,
 		bool r_ge_d, qpms_bessel_t J);
 int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		size_t deststride, size_t srcstride,
-		sph_t kdlj, bool r_ge_d, qpms_bessel_t J); 
+		csph_t kdlj, bool r_ge_d, qpms_bessel_t J); 
 
 // TODO update the types later
 complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
-		int m, int n, int mu, int nu, double kdlj_r,
+		int m, int n, int mu, int nu, complex double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
 complex double qpms_trans_calculator_get_B_ext(const qpms_trans_calculator *c,
-		int m, int n, int mu, int nu, double kdlj_r,
+		int m, int n, int mu, int nu, complex double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
 int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
-		int m, int n, int mu, int nu, double kdlj_r,
+		int m, int n, int mu, int nu, complex double kdlj_r,
 		double kdlj_th, double kdlj_phi, int r_ge_d, int J);
 
 int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
 		complex double *Adest, complex double *Bdest,
 		size_t deststride, size_t srcstride,
-		double kdlj_r, double kdlj_theta, double kdlj_phi,
+		complex double kdlj_r, double kdlj_theta, double kdlj_phi,
 		int r_ge_d, int J);
 
 // Convenience functions using VSWF base specs
@@ -132,7 +132,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
 		const qpms_vswf_set_spec_t *destspec, size_t deststride,
 		/// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm. 
 		const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-		sph_t kdlj, bool r_ge_d, qpms_bessel_t J);
+		csph_t kdlj, bool r_ge_d, qpms_bessel_t J);
 
 /// Version with \a k and cartesian particle positions
 /// and with automatic \a r_ge_d = `false`.
@@ -143,7 +143,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p(
 		const qpms_vswf_set_spec_t *destspec, size_t deststride,
 		/// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm. 
 		const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-		double k, cart3_t destpos, cart3_t srcpos,
+		complex double k, cart3_t destpos, cart3_t srcpos,
 		qpms_bessel_t J
 		/// Workspace has to be at least 2 * c->neleme**2 long
 		);

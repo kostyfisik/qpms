@@ -333,6 +333,15 @@ static inline csph_t ccart2csph(const ccart3_t cart) {
 	return sph;
 }
 
+/// Real 3D cartesian to spherical (complex r) coordinates conversion. See @ref coord_conversions.
+static inline csph_t cart2csph(const cart3_t cart) {
+	csph_t sph;
+	sph.r = cart3norm(cart);
+	sph.theta = sph.r ? acos(cart.z / sph.r) : M_PI_2;
+	sph.phi = atan2(cart.y, cart.x);
+	return sph;
+}
+
 /// Coordinate transform of csph_t to ccart3_t
 static inline ccart3_t csph2ccart(const csph_t sph) {
 	ccart3_t cart;

@@ -967,7 +967,7 @@ complex double *qpms_scatsys_build_translation_matrix_full(
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,
     const qpms_scatsys_t *ss,
-    double k ///< Wave number to use in the translation matrix.
+    complex double k ///< Wave number to use in the translation matrix.
     )
 {
   return qpms_scatsys_build_translation_matrix_e_full(
@@ -978,7 +978,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,
     const qpms_scatsys_t *ss,
-    double k, ///< Wave number to use in the translation matrix.
+    complex double k, ///< Wave number to use in the translation matrix.
     qpms_bessel_t J ///< Bessel function type.
     )
 {
@@ -1018,7 +1018,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,
     const qpms_scatsys_t *ss,
-    double k ///< Wave number to use in the translation matrix.
+    complex double k ///< Wave number to use in the translation matrix.
     )
 {
   const size_t full_len = ss->fecv_size;
@@ -1067,7 +1067,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_t *ss, qpms_iri_t iri,
-    double k ///< Wave number to use in the translation matrix.
+    complex double k ///< Wave number to use in the translation matrix.
     )
 {
   const size_t packedlen = ss->saecv_sizes[iri];
@@ -1177,7 +1177,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_t *ss, qpms_iri_t iri,
-    double k ///< Wave number to use in the translation matrix.
+    complex double k ///< Wave number to use in the translation matrix.
     )
 {
   const size_t packedlen = ss->saecv_sizes[iri];
@@ -1299,7 +1299,7 @@ struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg{
   pthread_mutex_t *opistartR_mutex;
   qpms_iri_t iri;
   complex double *target_packed;
-  double k;
+  complex double k;
 };
 
 static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread(void *arg)
@@ -1436,7 +1436,7 @@ struct qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thread_arg
   pthread_mutex_t *opistartR_mutex;
   qpms_iri_t iri;
   complex double *target_packed;
-  double k;
+  complex double k;
   qpms_bessel_t J;
 };
 
@@ -1566,7 +1566,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 		complex double *target_packed,
 		const qpms_scatsys_t *ss,
 		qpms_iri_t iri,
-		double k, ///< Wave number to use in the translation matrix.
+		complex double k, ///< Wave number to use in the translation matrix.
 		qpms_bessel_t J
 		)
 {
@@ -1619,7 +1619,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_t *ss, qpms_iri_t iri,
-    double k ///< Wave number to use in the translation matrix.
+    complex double k ///< Wave number to use in the translation matrix.
     )
 {
   const size_t packedlen = ss->saecv_sizes[iri];
@@ -1781,14 +1781,14 @@ qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(complex double
 
 qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(
     complex double *target, int *target_piv,
-    const qpms_scatsys_t *ss, double k){
+    const qpms_scatsys_t *ss, complex double k){
   target = qpms_scatsys_build_modeproblem_matrix_full(target, ss, k);
   return qpms_scatsys_modeproblem_matrix_full_factorise(target, target_piv, ss);
 }
 
 qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
     complex double *target, int *target_piv,
-    const qpms_scatsys_t *ss, qpms_iri_t iri, double k){
+    const qpms_scatsys_t *ss, qpms_iri_t iri, complex double k){
   target = qpms_scatsys_build_modeproblem_matrix_irrep_packed(target, ss, iri, k);
   return qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(target, target_piv, ss, iri);
 }

@@ -132,7 +132,7 @@ static inline double qpms_trans_normfac(qpms_normalisation_t norm,
 }
 
 complex double qpms_trans_single_A(qpms_normalisation_t norm,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   TROPS_ONLY_EIMF_IMPLEMENTED(norm);
   if(r_ge_d) J = QPMS_BESSEL_REGULAR;
@@ -201,7 +201,7 @@ complex double qpms_trans_single_A(qpms_normalisation_t norm,
 
 
 complex double qpms_trans_single_B(qpms_normalisation_t norm,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) { 
   TROPS_ONLY_EIMF_IMPLEMENTED(norm);
   if(r_ge_d) J = QPMS_BESSEL_REGULAR;
@@ -509,7 +509,7 @@ qpms_trans_calculator
 }
 
 static inline complex double qpms_trans_calculator_get_A_precalcbuf(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J,
     const complex double *bessel_buf, const double *legendre_buf) {
   TROPS_ONLY_EIMF_IMPLEMENTED(c->normalisation);
@@ -530,7 +530,7 @@ static inline complex double qpms_trans_calculator_get_A_precalcbuf(const qpms_t
 }
 
 complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J,
     complex double *bessel_buf, double *legendre_buf) {
   // This functions gets preallocated memory for bessel and legendre functions, but computes them itself
@@ -549,7 +549,7 @@ complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
 }
 
 static inline complex double qpms_trans_calculator_get_B_precalcbuf(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J,
     const complex double *bessel_buf, const double *legendre_buf) {
   TROPS_ONLY_EIMF_IMPLEMENTED(c->normalisation);
@@ -570,7 +570,7 @@ static inline complex double qpms_trans_calculator_get_B_precalcbuf(const qpms_t
 }
 
 complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J,
     complex double *bessel_buf, double *legendre_buf) {
   // This functions gets preallocated memory for bessel and legendre functions, but computes them itself
@@ -589,7 +589,7 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
 
 int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J,
     complex double *bessel_buf, double *legendre_buf) {
   if (r_ge_d) J = QPMS_BESSEL_REGULAR;
@@ -614,7 +614,7 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
 int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
     size_t deststride, size_t srcstride,
-    sph_t kdlj, bool r_ge_d, qpms_bessel_t J,
+    csph_t kdlj, bool r_ge_d, qpms_bessel_t J,
     complex double *bessel_buf, double *legendre_buf) {
   if (r_ge_d) J = QPMS_BESSEL_REGULAR;
   if (0 == kdlj.r && J != QPMS_BESSEL_REGULAR) {
@@ -654,7 +654,7 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
 }
 
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(n+nu)];
   complex double bes[n+nu+1]; // maximum order is 2n for A coeffs, plus the zeroth.
@@ -663,7 +663,7 @@ complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
 }
 
 complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(n+nu+1)];
   complex double bes[n+nu+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
@@ -673,7 +673,7 @@ complex double qpms_trans_calculator_get_B(const qpms_trans_calculator *c,
 
 int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
-    int m, int n, int mu, int nu, sph_t kdlj,
+    int m, int n, int mu, int nu, csph_t kdlj,
     bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(2*c->lMax+1)];
   complex double bes[2*c->lMax+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
@@ -684,7 +684,7 @@ int qpms_trans_calculator_get_AB_p(const qpms_trans_calculator *c,
 int qpms_trans_calculator_get_AB_arrays(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
     size_t deststride, size_t srcstride,
-    sph_t kdlj, bool r_ge_d, qpms_bessel_t J) {
+    csph_t kdlj, bool r_ge_d, qpms_bessel_t J) {
   double leg[gsl_sf_legendre_array_n(c->lMax+c->lMax+1)];
   complex double bes[2*c->lMax+2]; // maximum order is 2n+1 for B coeffs, plus the zeroth.
   return qpms_trans_calculator_get_AB_arrays_buf(c, 
@@ -700,7 +700,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
     const qpms_vswf_set_spec_t *destspec, size_t deststride,
     /// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm.
     const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-    sph_t kdlj, bool r_ge_d, qpms_bessel_t J) 
+    csph_t kdlj, bool r_ge_d, qpms_bessel_t J) 
 {
   TROPS_ONLY_AB_SYMMETRIC_NORMS_IMPLEMENTED(c->normalisation);
   assert(c->normalisation == destspec->norm && c->normalisation == srcspec->norm);
@@ -807,11 +807,11 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_lc3p(
     const qpms_vswf_set_spec_t *destspec, size_t deststride,
     /// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm.
     const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-    double k, cart3_t destpos, cart3_t srcpos, qpms_bessel_t J
+    complex double k, cart3_t destpos, cart3_t srcpos, qpms_bessel_t J
     /// Workspace has to be at least 2 * c->neleme**2 long
     )
 {
-  sph_t kdlj = cart2sph(cart3_substract(destpos, srcpos));
+  csph_t kdlj = cart2csph(cart3_substract(destpos, srcpos));
   kdlj.r *= k;
   return qpms_trans_calculator_get_trans_array(c, target,
       destspec, deststride, srcspec, srcstride, kdlj, 
@@ -1098,35 +1098,35 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 
 complex double qpms_trans_calculator_get_A_ext(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu,
-    double kdlj_r, double kdlj_theta, double kdlj_phi,
+    complex double kdlj_r, double kdlj_theta, double kdlj_phi,
     int r_ge_d, int J) {
-  sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+  csph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
   return qpms_trans_calculator_get_A(c,m,n,mu,nu,kdlj,r_ge_d,J);
 }
 
 complex double qpms_trans_calculator_get_B_ext(const qpms_trans_calculator *c,
     int m, int n, int mu, int nu,
-    double kdlj_r, double kdlj_theta, double kdlj_phi,
+    complex double kdlj_r, double kdlj_theta, double kdlj_phi,
     int r_ge_d, int J) {
-  sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+  csph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
   return qpms_trans_calculator_get_B(c,m,n,mu,nu,kdlj,r_ge_d,J);
 }
 
 int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
     int m, int n, int mu, int nu,
-    double kdlj_r, double kdlj_theta, double kdlj_phi,
+    complex double kdlj_r, double kdlj_theta, double kdlj_phi,
     int r_ge_d, int J) {
-  sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+  csph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
   return qpms_trans_calculator_get_AB_p(c,Adest,Bdest,m,n,mu,nu,kdlj,r_ge_d,J);
 }
 
 int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
     size_t deststride, size_t srcstride,
-    double kdlj_r, double kdlj_theta, double kdlj_phi,
+    complex double kdlj_r, double kdlj_theta, double kdlj_phi,
     int r_ge_d, int J) {
-  sph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
+  csph_t kdlj = {kdlj_r, kdlj_theta, kdlj_phi};
   return qpms_trans_calculator_get_AB_arrays(c,Adest,Bdest,deststride,srcstride,
       kdlj, r_ge_d, J);
 }

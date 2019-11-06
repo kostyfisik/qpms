@@ -237,7 +237,7 @@ complex double *qpms_scatsys_build_translation_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss,
-		double k ///< Wave number to use in the translation matrix.
+		complex double k ///< Wave number to use in the translation matrix.
 		);
 
 /// As qpms_scatsys_build_translation_full() but with choice of Bessel function type.
@@ -247,7 +247,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss,
-		double k, ///< Wave number to use in the translation matrix.
+		complex double k, ///< Wave number to use in the translation matrix.
 		qpms_bessel_t J
 		);
 
@@ -261,7 +261,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 		complex double *target,
 		const qpms_scatsys_t *ss,
 		qpms_iri_t iri,
-		double k, ///< Wave number to use in the translation matrix.
+		complex double k, ///< Wave number to use in the translation matrix.
 		qpms_bessel_t J
 		);
 
@@ -270,28 +270,28 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss,
-		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
+		complex double k ///< Wave number to use in the translation matrix.
 		);
 /// Creates the mode problem matrix \f$ (I - TS) \f$ directly in the irrep-packed form.
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
+		complex double k ///< Wave number to use in the translation matrix.
 		);
 /// Alternative implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
+		complex double k ///< Wave number to use in the translation matrix.
 		);
 /// Alternative implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorder_parallelR(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		/*COMPLEXIFY*/double k ///< Wave number to use in the translation matrix.
+		complex double k ///< Wave number to use in the translation matrix.
 		);
 
 /// LU factorisation (LAPACKE_zgetrf) result holder.
@@ -311,7 +311,7 @@ qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(
 		complex double *target, ///< Pre-allocated target array. Optional (if NULL, new one is allocated).
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
 		const qpms_scatsys_t *ss,
-		/*COMPLEXIFY*/ double k ///< Wave number to use in the translation matrix.
+		complex double k ///< Wave number to use in the translation matrix.
 		);
 
 /// Builds an irrep-packed LU-factorised mode/scattering problem matrix from scratch.
@@ -319,7 +319,7 @@ qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
 		complex double *target, ///< Pre-allocated target array. Optional (if NULL, new one is allocated).
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		/*COMPLEXIFY*/ double k ///< Wave number to use in the translation matrix.
+		complex double k ///< Wave number to use in the translation matrix.
 		);
 
 /// Computes LU factorisation of a pre-calculated mode/scattering problem matrix, replacing its contents.

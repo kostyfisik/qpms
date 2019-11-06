@@ -313,19 +313,19 @@ cdef extern from "translations.h":
     qpms_trans_calculator* qpms_trans_calculator_init(int lMax, int nt) # should be qpms_normalization_t
     void qpms_trans_calculator_free(qpms_trans_calculator* c)
     cdouble qpms_trans_calculator_get_A_ext(const qpms_trans_calculator* c,
-            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
+            int m, int n, int mu, int nu, cdouble kdlj_r, double kdlj_th, double kdlj_phi,
             int r_ge_d, int J) nogil
     cdouble qpms_trans_calculator_get_B_ext(const qpms_trans_calculator* c,
-            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
+            int m, int n, int mu, int nu, cdouble kdlj_r, double kdlj_th, double kdlj_phi,
             int r_ge_d, int J) nogil
     int qpms_trans_calculator_get_AB_p_ext(const qpms_trans_calculator* c,
             cdouble *Adest, cdouble *Bdest,
-            int m, int n, int mu, int nu, double kdlj_r, double kdlj_th, double kdlj_phi,
+            int m, int n, int mu, int nu, cdouble kdlj_r, double kdlj_th, double kdlj_phi,
             int r_ge_d, int J) nogil
     int qpms_trans_calculator_get_AB_arrays_ext(const qpms_trans_calculator *c,
             cdouble *Adest, cdouble *Bdest,
             size_t deststride, size_t srcstride,
-            double kdlj_r, double kdlj_theta, double kdlj_phi,
+            cdouble kdlj_r, double kdlj_theta, double kdlj_phi,
             int r_ge_d, int J) nogil
     int qpms_cython_trans_calculator_get_AB_arrays_loop(qpms_trans_calculator *c,
             int J, int resnd,
@@ -341,14 +341,14 @@ cdef extern from "translations.h":
                 cdouble *target,
                 const qpms_vswf_set_spec_t *destspec, size_t deststride,
                 const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-                sph_t kdlj, bint r_ge_d, qpms_bessel_t J);
+                csph_t kdlj, bint r_ge_d, qpms_bessel_t J);
 
     int qpms_trans_calculator_get_trans_array_lc3p(
                 const qpms_trans_calculator *c,
                 cdouble *target,
                 const qpms_vswf_set_spec_t *destspec, size_t deststride,
                 const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-                double k, cart3_t destpos, cart3_t srcpos,
+                cdouble k, cart3_t destpos, cart3_t srcpos,
                 qpms_bessel_t J
                 );
 
@@ -520,19 +520,19 @@ cdef extern from "scatsystem.h":
     cdouble *qpms_scatsys_irrep_unpack_vector(cdouble *target_full,
             const cdouble *orig_packed, const qpms_scatsys_t *ss, qpms_iri_t iri, bint add)
     cdouble *qpms_scatsys_build_modeproblem_matrix_full(cdouble *target,
-            const qpms_scatsys_t *ss, double k)
+            const qpms_scatsys_t *ss, cdouble k)
     cdouble *qpms_scatsys_build_translation_matrix_full(cdouble *target,
-            const qpms_scatsys_t *ss, double k)
+            const qpms_scatsys_t *ss, cdouble k)
     cdouble *qpms_scatsys_build_translation_matrix_e_full(cdouble *target,
-            const qpms_scatsys_t *ss, double k, qpms_bessel_t J)
+            const qpms_scatsys_t *ss, cdouble k, qpms_bessel_t J)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed(cdouble *target,
-            const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
+            const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k)
     cdouble *qpms_scatsys_build_translation_matrix_e_irrep_packed(cdouble *target,
-            const qpms_scatsys_t *ss, qpms_iri_t iri, double k, qpms_bessel_t J)
+            const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k, qpms_bessel_t J)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
-            cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
+            cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
-            cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, double k) nogil
+            cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k) nogil
     cdouble *qpms_scatsys_incident_field_vector_full(cdouble *target_full,
             const qpms_scatsys_t *ss, qpms_incfield_t field_at_point, 
             const void *args, bint add)
@@ -546,9 +546,9 @@ cdef extern from "scatsystem.h":
         int *ipiv
     void qpms_ss_LU_free(qpms_ss_LU lu)
     qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(cdouble *target,
-            int *target_piv, const qpms_scatsys_t *ss, double k)
+            int *target_piv, const qpms_scatsys_t *ss, cdouble k)
     qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(cdouble *target,
-            int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri, double k)
+            int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k)
     qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(cdouble *modeproblem_matrix_full,
             int *target_piv, const qpms_scatsys_t *ss)
     qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(cdouble *modeproblem_matrix_full,
