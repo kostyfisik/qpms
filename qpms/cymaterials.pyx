@@ -68,20 +68,46 @@ cdef class LorentzDrudeModel:
     def __call__(self, omega):
         return qpms_lorentzdrude_eps(omega, self.params)
 
+cdef class _CLorentzDrudeModel:
+    def __cinit__(self):
+        "Do not use directly. Do not use from Python. Use the link() method instead."
+        pass
+
+    @staticmethod
+    cdef link(const qpms_ldparams_t *params):
+        self = _CLorentzDrudeModel()
+        self.params = params
+        return self
+
+    def __call__(self, omega):
+        return qpms_lorentzdrude_eps(omega, self.params)
+
 cdef double eh = eV/hbar
 
 # Some basic Lorentz-Drude parameters
 lorentz_drude = {
-        'Au' : 
+        'Au_py' :  # This should give the same results as 'Au'; to be removed.
             LorentzDrudeModel(1, 9.03*eh,
                 (0.76, 0.024, 0.01, 0.071, 0.601, 4.384),
                 (0, 0.415*eh, 0.83*eh, 2.969*eh, 4.304*eh, 13.32*eh),
                 (0.053*eh, 0.241*eh, 0.345*eh, 0.87*eh, 2.494*eh, 2.214*eh)),
-        'Ag' : 
+        'Ag_py' :  # This should give the same results as 'Ag'; to be removed.
             LorentzDrudeModel(1, 9.01*eh,
                 (0.84, 0.065,0.124, 0.111, 0.840, 5.646),
                 (0, 0.816*eh,4.481*eh, 8.185*eh, 9.083*eh, 20.29*eh),
                     (0.053*eh, 3.886*eh, 0.452*eh,0.065*eh, 0.916*eh, 2.419*eh)),
+        'Au' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_AU),
+        'Ag' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_AG),
+        'Cu' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_CU),
+        'Al' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_AL),
+        'Cr' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_CR),
+        'Ti' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_TI),
+        'Be' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_BE),
+        'Ni' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_NI),
+        'Pd' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_PD),
+        'Pt' : _CLorentzDrudeModel.link(QPMS_LDPARAMS_PT),
+        'W'  : _CLorentzDrudeModel.link(QPMS_LDPARAMS_W),
+
 }
 
 cdef qpms_epsmu_t python_epsmu_generator(cdouble omega, const void *params):
@@ -100,6 +126,10 @@ cdef class EpsMuGenerator:
             self.holder = what
             self.g.function = qpms_lorentzdrude_epsmu_g
             self.g.params = (<LorentzDrudeModel?>self.holder).rawpointer()
+        elif isinstance(what, _CLorentzDrudeModel):
+            self.holder = what
+            self.g.function = qpms_lorentzdrude_epsmu_g
+            self.g.params = (<_CLorentzDrudeModel?>self.holder).rawpointer()
         elif isinstance(what, MaterialInterpolator):
             self.holder = what
             self.g.function = qpms_permittivity_interpolator_epsmu_g

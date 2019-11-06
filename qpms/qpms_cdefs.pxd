@@ -397,8 +397,6 @@ cdef extern from "materials.h":
         double omega_p
         size_t n
         qpms_ldparams_triple_t data[0]
-    const qpms_ldparams_t *const QPMS_LDPARAMS_AG
-    const qpms_ldparams_t *const QPMS_LDPARAMS_AU
     cdouble qpms_lorentzdrude_eps(cdouble, const qpms_ldparams_t *)
 
 cdef extern from "tmatrices.h":
