@@ -86,24 +86,14 @@ void mpzs_clear(mpzs_t x);
 void mpzs_set(mpzs_t x, const mpzs_t y);
 #endif
 
-/// Type representing a number of form \f$ a \sqrt{b}; a \in \ints, b \in \nats \f$.
-/** This includes UT hash handle structure */
-typedef struct _qp_mpzs_hashed {
-	mpz_t _1; ///< The integer factor \f$ a \f$.
-	mpz_t _2; ///< The square-rooted factor \f$ b \f$. Always positive.
-	UT_hash_handle hh; 
-} mpzs_hh_t[1];
 
-void mpzs_hh_init(mpzs_hh_t x);
-void mpzs_hh_clear(mpzs_hh_t x);
-void mpzs_hh_set(mpzs_hh_t x, const mpzs_hh_t y);
-// void mpzs_hh_set_ui(mpzs_hh_t x, long integer_factor, unsigned long sqrt_part);
+struct _qp_mpzs_hashed;
 
 /// Sum of square roots of rational numbers.
 /// Represented as \f$ \sum_s a_i \sqrt{b_i} / d \f$.
 typedef struct _qp_mpqs {
 	//int sz; ///< Used size of the numtree.
-	mpzs_hh_t *nt; ///< List of numerator components..
+	struct _qp_mpzs_hashed *nt; ///< List of numerator components..
 	mpq_t f; ///< Common rational factor. Always positive.
 } mpqs_t[1];
 
@@ -111,6 +101,7 @@ void mpqs_init(mpqs_t x);
 void mpqs_clear(mpqs_t x);
 void mpqs_set(mpqs_t x, const mpqs_t y);
 void mpqs_add(mpqs_t sum, const mpqs_t addend1, const mpqs_t addend2);
+void mpqs_neg(mpqs_t negated_operand, const mpqs_t operand);
 void mpqs_sub(mpqs_t difference, const mpqs_t minuend, const mpqs_t substrahend);
 void mpqs_mul(mpqs_t product, const mpqs_t multiplier, const mpqs_t multiplicand);
 //void mpqs_div_zs(mpqs_t quotient, const mpqs_t dividend, const mpzs_hh_t divisor);

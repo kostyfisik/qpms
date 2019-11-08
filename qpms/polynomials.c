@@ -30,6 +30,20 @@ static int mpzs_cmp2(void *op1, void *op2) {
 }
 #endif
 
+/// Type representing a number of form \f$ a \sqrt{b}; a \in \ints, b \in \nats \f$.
+/** This includes UT hash handle structure */
+typedef struct _qp_mpzs_hashed {
+        mpz_t _1; ///< The integer factor \f$ a \f$.
+        mpz_t _2; ///< The square-rooted factor \f$ b \f$. Always positive.
+        UT_hash_handle hh;
+} mpzs_hh_t[1];
+
+void mpzs_hh_init(mpzs_hh_t x);
+void mpzs_hh_clear(mpzs_hh_t x);
+void mpzs_hh_set(mpzs_hh_t x, const mpzs_hh_t y);
+// void mpzs_hh_set_ui(mpzs_hh_t x, long integer_factor, unsigned long sqrt_part);
+
+
 void mpzs_hh_init(mpzs_hh_t x) {
   mpz_init(x->_1);
   mpz_init(x->_2);
@@ -54,9 +68,9 @@ void mpqs_init(mpqs_t x) {
   mpq_set_ui(x->f, 1, 1);
 }
 
-void mpqs_clear_num(mpqs_t x) {
+void mpqs_clear_num(struct _qp_mpqs *x) {
   struct _qp_mpzs_hashed *current, *tmp;
-  HASH_ITER(hh, *(x->nt), current, tmp) {
+  HASH_ITER(hh, x->nt, current, tmp) {
     HASH_DEL(x->nt, current);
     free(current);
     //x->sz--;
@@ -64,32 +78,32 @@ void mpqs_clear_num(mpqs_t x) {
 }
 
 void mpqs_clear(mpqs_t x) {
-  mpqs_clear_num(mpqs_t x);
+  mpqs_clear_num(x);
   mpq_clear(x->f);
   //x->sz = 0;
   x->nt = 0;
 }
 
-void mpqs_nt_append(mpqs_t x, const mpzs_hh_t numelem) {
-  mpzs_hh_t *n;
+void mpqs_nt_append(mpqs_t x, const struct _qp_mpzs_hashed *numelem) {
+  struct _qp_mpzs_hashed *n;
   QPMS_CRASHING_MALLOC(n, sizeof(mpzs_hh_t));
-  mpzs_hh_init(*n);
-  mpzs_hh_set(*n, numelem);
-  HASH_ADD_KEYPTR(hh, x->nt, mpz_limbs_read(*n->_2),
-      mpz_size(*n->_2) * sizeof(mp_limb_t), n);
+  mpzs_hh_init(n);
+  mpzs_hh_set(n, numelem);
+  HASH_ADD_KEYPTR(hh, x->nt, mpz_limbs_read(n->_2),
+      mpz_size(n->_2) * sizeof(mp_limb_t), n);
 }
 
-void mpqs_nt_add(mpqs_t x, const mpzs_hh_t addend) {
-  mpzs_hh_t *s;
+void mpqs_nt_add(mpqs_t x, const struct _qp_mpzs_hashed *addend) {
+  struct _qp_mpzs_hashed *s;
   HASH_FIND(hh, x->nt, mpz_limbs_read(addend->_2),
       mpz_size(addend->_2), s);
-  if (!s) mpqs_nt_append(addend, x); // if not found
+  if (!s) mpqs_nt_append(x, addend); // if not found
   else {
-    mpz_add(*s->_1, *s->_1, addend);
-    if(!mpz_sgn(*s->_1)) { // If zero, annihilate
+    mpz_add(s->_1, s->_1, addend->_1);
+    if(!mpz_sgn(s->_1)) { // If zero, annihilate
       HASH_DEL(x->nt, s);
-      mpzs_hh_clear(*s);
-      free(*s);
+      mpzs_hh_clear(s);
+      free(s);
     }
   }
 }
@@ -108,11 +122,22 @@ void mpqs_set(mpqs_t x, const mpqs_t y) {
   mpqs_init_set(x, y);
 }
 
+void mpqs_neg_inplace(mpqs_t x) {
+  for(struct _qp_mpzs_hashed *n = (x->nt)->hh.next; n != NULL; n = n->hh.next) {
+    mpz_neg(n->_1, n->_1);
+  }
+}
+
+void mpqs_neg(mpqs_t negated_operand, const mpqs_t operand) {
+  mpqs_set(negated_operand, operand);
+  mpqs_neg_inplace(negated_operand);
+}
+
 void mpqs_nt_gcd(mpz_t gcd, const mpqs_t x) {
   if(x->nt) {
-    mpz_set(gcd, *(x->nt)->_1);
-    for(mpzs_hh_t *n = (x->nt)->hh.next; n != NULL; n = n->hh.next) {
-      mpz_gcd(gcd, gcd, *n->_1);
+    mpz_set(gcd, x->nt->_1);
+    for(struct _qp_mpzs_hashed *n = (x->nt)->hh.next; n != NULL; n = n->hh.next) {
+      mpz_gcd(gcd, gcd, n->_1);
     }
   } else 
     mpz_set_ui(gcd, 1);
@@ -130,41 +155,37 @@ void mpqs_add(mpqs_t sum_final, const mpqs_t x, const mpqs_t y) {
   mpqs_t sum; mpqs_init(sum);
   mpqs_set(sum, x);
 
-  mpzs_hh_t hh_cur;
-  
   // Denominators gcd
   mpz_t den_gcd; mpz_init(den_gcd);
   mpz_gcd(den_gcd, mpq_denref(x->f), mpq_denref(y->f));
   // Common denominator
   mpz_divexact(mpq_denref(sum->f), mpq_denref(sum->f), den_gcd);
-  mpz_mul(mpq_denref(sum->f), mpq_denref(y->f));
+  mpz_mul(mpq_denref(sum->f), mpq_denref(sum->f), mpq_denref(y->f));
   
   // Left operand numerator factor
   mpz_t tmp; mpz_init(tmp);
-  mpz_set(tmp, mpq_denref(y->f));
-  mpz_divexact(tmp, den_gcd);
+  mpz_divexact(tmp, mpq_denref(y->f), den_gcd);
   mpz_mul(tmp, tmp, mpq_numref(x->f));
   /* Distribute the factor to numerator elements; this approach might be
    * be suboptimal if x is a complicated expression
    * and y is quite simple. Maybe optimise later 
    */
-  for(mpzs_hh_t *n = sum->nt; n != NULL, n = n->hh.next)
-    mpz_mul(*n->_1, *n->_1, tmp);
+  for(struct _qp_mpzs_hashed *n = sum->nt; n != NULL; n = n->hh.next)
+    mpz_mul(n->_1, n->_1, tmp);
   mpz_set_ui(mpq_numref(sum->f), 1);
   
   // At this point, sum is equal to x but in a form prepared to
   // take summands from y.
 
   // Right operand numerator factor
-  mpz_set(tmp, mpq_denref(x->f));
-  mpz_divexact(tmp, den_gcd);
+  mpz_divexact(tmp, mpq_denref(x->f), den_gcd);
   mpz_mul(tmp, tmp, mpq_numref(y->f));
 
   mpzs_hh_t addend; mpzs_hh_init(addend);
-  for(const mpzs_hh_t *n = y->nt; n != NULL; n = n->hh.next) {
-    mpz_mul(addend->_1, tmp, *n->_1);
-    mpz_set(addend->_2, *n->_2);
-    mpqs_nt_add(y, addend);
+  for(const struct _qp_mpzs_hashed *n = y->nt; n != NULL; n = n->hh.next) {
+    mpz_mul(addend->_1, tmp, n->_1);
+    mpz_set(addend->_2, n->_2);
+    mpqs_nt_add(sum, addend);
   }
   mpzs_hh_clear(addend);
   mpz_clear(tmp);
@@ -175,7 +196,13 @@ void mpqs_add(mpqs_t sum_final, const mpqs_t x, const mpqs_t y) {
   mpqs_clear(sum);
 }
 
-
+void mpqs_sub(mpqs_t dif, const mpqs_t x, const mpqs_t y) {
+  // This is probably not optimal
+  mpqs_t tmp; mpqs_init(tmp);
+  mpqs_neg(tmp, y);
+  mpqs_add(dif, x, tmp);
+  mpqs_clear(tmp);
+}
 
 // Auxillary function to set a mpq_t to 0/1
 static inline void mpq_zero(mpq_t q) {
@@ -197,6 +224,7 @@ static inline void qpq_zero(qpq_t *q) {
 #include "polynomials.template"
 #undef TEMPLATE_QPQ
 
+#if 0
 // Used in the template but perhaps not too useful to put in the header.
 static inline void mpqs_set_si(mpqs_t q, int num, unsigned den) {mpq_set_si(q->_2, num, den) ;}
 
@@ -221,7 +249,7 @@ static void qpq_dbgprint(const qpq_t *p) {
       gmp_printf("%+Qdx**%d  ", p->coeffs[n - p->offset], n);
   gmp_printf("[%d, %d, %d]\n", p->capacity, p->order, p->offset);
 }
-
+#endif
 
 void qpq_set_elem_si(qpq_t *p, const int exponent, const long int num, const unsigned long int den) {
   mpq_t q;
