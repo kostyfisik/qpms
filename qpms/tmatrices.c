@@ -23,6 +23,7 @@
 #include "qpms_specfunc.h"
 #include "normalisation.h"
 #include <errno.h>
+#include <pthread.h>
 #include <gsl/gsl_integration.h>
 
 // These are quite arbitrarily chosen constants for the quadrature in qpms_tmatrix_axialsym_fill()
@@ -474,11 +475,12 @@ qpms_errno_t qpms_load_scuff_tmatrix(
     complex double ** const tmdata
     ) {
   FILE *f = fopen(path, "r");
-  if (!f) 
+  if (!f) {
     if (qpms_load_scuff_tmatrix_crash_on_failure)
       qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
           "Could not open T-matrix file %s", path); 
     else return errno;
+  }
   qpms_errno_t retval = 
     qpms_read_scuff_tmatrix(f, bs, n, freqs, freqs_su, tmatrices_array, tmdata);
 
@@ -519,7 +521,7 @@ complex double *qpms_mie_coefficients_reflection(
   qpms_l_t lMax = bspec->lMax;
   complex double x_i = k_i * a;
   complex double x_e = k_e * a;
-  complex double m = k_i / k_e;
+  // complex double m = k_i / k_e;
   complex double eta_inv_i = k_i / mu_i;
   complex double eta_inv_e = k_e / mu_e;
 
@@ -567,7 +569,6 @@ qpms_errno_t qpms_tmatrix_spherical_fill(qpms_tmatrix_t *t, ///< T-matrix whose 
 		complex double mu_i, ///< Relative permeability of the sphere material.
 		complex double mu_e ///< Relative permeability of the surrounding medium.
 		) {
-  qpms_l_t lMax = t->spec->lMax;
   complex double *miecoeffs = qpms_mie_coefficients_reflection(NULL, t->spec, a, k_i, k_e, mu_i, mu_e,
     QPMS_BESSEL_REGULAR, QPMS_HANKEL_PLUS);
   memset(t->m, 0, SQ(t->spec->n)*sizeof(complex double));
@@ -691,6 +692,91 @@ static double tmatrix_axialsym_integrand(double theta, void *param) {
   return p->realpart ? creal(res) : cimag(res);
 }
 
+
+
+long qpms_axsym_tmatrix_integration_nthreads_default = 4;
+long qpms_axsym_tmatrix_integration_nthreads_override = 0;
+
+void qpms_axsym_tmatrix_integration_set_nthreads(long n) {
+    qpms_axsym_tmatrix_integration_nthreads_override = n;
+}
+
+struct qpms_tmatrix_axialsym_fill_integration_thread_arg {
+  complex double *Q, *R;
+  const qpms_vswf_set_spec_t *bspecQR;
+  double epsrel, epsabs;
+  size_t intlimit;
+  qpms_arc_function_t f;
+  const struct tmatrix_axialsym_integral_param_t *p_template; // Thread must copy this and set its own realpart and btype fields.
+  size_t *i2start_ptr;
+  pthread_mutex_t *i2start_mutex;
+};
+
+static void * qpms_tmatrix_axialsym_fill_integration_thread(void *arg) {
+  const struct qpms_tmatrix_axialsym_fill_integration_thread_arg *a = arg;
+  struct tmatrix_axialsym_integral_param_t p = *a->p_template;
+  const gsl_function f = {tmatrix_axialsym_integrand, (void *) &p};
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(a->intlimit);
+
+  while(1) {
+    QPMS_ENSURE_SUCCESS(pthread_mutex_lock(a->i2start_mutex));
+    if(*(a->i2start_ptr) >= a->bspecQR->n) {// Everything already done, leave thread
+      QPMS_ENSURE_SUCCESS(pthread_mutex_unlock(a->i2start_mutex));
+      break;
+    }
+    const size_t i2 = *(a->i2start_ptr);
+    ++*(a->i2start_ptr);
+    QPMS_ENSURE_SUCCESS(pthread_mutex_unlock(a->i2start_mutex));
+    for(size_t i1 = 0; i1 < a->bspecQR->n; ++i1) {
+      // NOTE that the Q', R' matrices are !TRANSPOSED! here because of zgetrs
+      const size_t iQR = i1 + i2 * a->bspecQR->n;
+      qpms_m_t m1, m2;
+      qpms_l_t l1, l2;
+      qpms_vswf_type_t t1, t2;
+      const qpms_uvswfi_t u1 = a->bspecQR->ilist[i1], u2 = a->bspecQR->ilist[i2];
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u1, &t1, &m1, &l1));
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u2, &t2, &m2, &l2));
+      if (m1 + m2) {
+        a->Q[iQR] = 0;
+        a->R[iQR] = 0;
+      } else {
+        p.m = m1;
+        p.l = l1; p.l_in = l2;
+        p.t = t1; p.t_in = t2;
+
+        double result; 
+        double abserr; // gsl_integration_qag() needs this; thrown away for now
+        // Re(R')
+        p.btype = QPMS_BESSEL_REGULAR;
+        p.realpart = true;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
+              a->intlimit, 2, w, &result, &abserr));
+        a->R[iQR] = result;
+        
+        // Im(R')
+        p.realpart = false;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
+              a->intlimit, 2, w, &result, &abserr));
+        a->R[iQR] += I*result;
+
+        // Re(Q')
+        p.btype = QPMS_HANKEL_PLUS;
+        p.realpart = true;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
+              a->intlimit, 2, w, &result, &abserr));
+        a->Q[iQR] = result;
+
+        // Im(Q')
+        p.realpart = false;
+        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
+              a->intlimit, 2, w, &result, &abserr));
+        a->Q[iQR] += I*result;
+      }
+    }
+  }
+  gsl_integration_workspace_free(w);
+}
+
 qpms_errno_t qpms_tmatrix_axialsym_fill(
 		qpms_tmatrix_t *t, complex double omega, qpms_epsmu_t outside,
 		qpms_epsmu_t inside,qpms_arc_function_t shape, qpms_l_t lMaxQR)
@@ -704,7 +790,6 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
   p.z_in = qpms_waveimpedance(inside);
   p.f = shape;
   p.bspec = bspec;
-  const gsl_function f = {tmatrix_axialsym_integrand, (void *) &p};
 
   if (lMaxQR < bspec->lMax) lMaxQR = bspec->lMax;
   qpms_vswf_set_spec_t *bspecQR = qpms_vswf_set_spec_from_lMax(lMaxQR, bspec->norm);
@@ -719,55 +804,43 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
   const size_t intlimit = 1024;
   const double epsrel = TMATRIX_AXIALSYM_INTEGRAL_EPSREL;
   const double epsabs = TMATRIX_AXIALSYM_INTEGRAL_EPSABS;
-  gsl_integration_workspace *w = gsl_integration_workspace_alloc(intlimit);
-  for(size_t i1 = 0; i1 < bspecQR->n; ++i1)
-    for(size_t i2 = 0; i2 < bspecQR->n; ++i2) {
-      // NOTE that the Q', R' matrices are !TRANSPOSED! here because of zgetrs
-      const size_t iQR = i1 + i2 * bspecQR->n;
-      qpms_m_t m1, m2;
-      qpms_l_t l1, l2;
-      qpms_vswf_type_t t1, t2;
-      const qpms_uvswfi_t u1 = bspecQR->ilist[i1], u2 = bspecQR->ilist[i2];
-      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u1, &t1, &m1, &l1));
-      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(u2, &t2, &m2, &l2));
-      if (m1 + m2) {
-        Q[iQR] = 0;
-        R[iQR] = 0;
-      } else {
-        p.m = m1;
-        p.l = l1; p.l_in = l2;
-        p.t = t1; p.t_in = t2;
 
-        double result; 
-        double abserr; // gsl_integration_qag() needs this; thrown away for now
-        // Re(R')
-        p.btype = QPMS_BESSEL_REGULAR;
-        p.realpart = true;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, &abserr));
-        R[iQR] = result;
-        
-        // Im(R')
-        p.realpart = false;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, &abserr));
-        R[iQR] += I*result;
+  //==== multi-threaded integration begin
+  size_t i2start = 0;
+  pthread_mutex_t i2start_mutex;
+  QPMS_ENSURE_SUCCESS(pthread_mutex_init(&i2start_mutex, NULL));
+  const struct qpms_tmatrix_axialsym_fill_integration_thread_arg
+    arg = {Q, R, bspecQR, epsrel, epsabs, intlimit, shape, &p, &i2start, &i2start_mutex};
 
-        // Re(Q')
-        p.btype = QPMS_HANKEL_PLUS;
-        p.realpart = true;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, &abserr));
-        Q[iQR] = result;
-
-        // Im(Q')
-        p.realpart = false;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, epsabs, epsrel,
-              intlimit, 2, w, &result, &abserr));
-        Q[iQR] += I*result;
-      }
+  // FIXME THIS IS NOT PORTABLE (_SC_NPROCESSORS_ONLN is not a standard POSIX thing)
+  long nthreads;
+  if (qpms_axsym_tmatrix_integration_nthreads_override > 0) {
+    nthreads = qpms_axsym_tmatrix_integration_nthreads_override;
+    QPMS_DEBUG(QPMS_DBGMSG_THREADS, "Using overriding value of %ld thread(s).",
+        nthreads);
+  } else {
+    nthreads = sysconf(_SC_NPROCESSORS_ONLN);
+    if (nthreads < 1) {
+      QPMS_DEBUG(QPMS_DBGMSG_THREADS, "_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
+         nthreads, qpms_axsym_tmatrix_integration_nthreads_default);
+      nthreads = qpms_axsym_tmatrix_integration_nthreads_default;
+    } else {
+      QPMS_DEBUG(QPMS_DBGMSG_THREADS, "_SC_NRPOCESSORS_ONLN returned %ld.", nthreads);
     }
-  gsl_integration_workspace_free(w);
+  }
+  nthreads = MIN(nthreads, bspec->n); // don't make redundant threads 
+  pthread_t thread_ids[nthreads];
+  for(long thi = 0; thi < nthreads; ++thi)
+    QPMS_ENSURE_SUCCESS(pthread_create(thread_ids + thi, NULL,
+      qpms_tmatrix_axialsym_fill_integration_thread,
+      (void *) &arg));
+  for(long thi = 0; thi < nthreads; ++thi) {
+    void *retval;
+    QPMS_ENSURE_SUCCESS(pthread_join(thread_ids[thi], &retval));
+  }
+  QPMS_ENSURE_SUCCESS(pthread_mutex_destroy(&i2start_mutex));
+  //===== multi-threaded integration end
+
 
   // Compute T-matrix; maybe it would be better solved with some sparse matrix mechanism,
   // but fukkit.
@@ -777,7 +850,6 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
   QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR, n, n, Q, n, pivot));
   // Solve Q'^T X = R'^T where X will be -T^T
   // Note that Q'^T, R'^T are already (transposed) in Q, R.
-  const complex double minus1 = -1;
   QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N', n, n /*nrhs*/,
         Q, n, pivot, R, n));
   // R now contains -T^T.
