@@ -158,7 +158,7 @@ complex double qpms_lorentzdrude_eps(complex double omega, const qpms_ldparams_t
   complex double eps = 0;
   for(size_t j = 0; j < p->n; ++j) {
     const qpms_ldparams_triple_t d = p->data[j];
-    eps += d.f * SQ(p->omega_p) / (SQ(d.omega) - SQ(omega) + I*omega*d.gamma );
+    eps += d.f * SQ(p->omega_p) / (SQ(d.omega) - SQ(omega) - I*omega*d.gamma );
   }
   return eps;
 }
