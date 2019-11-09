@@ -100,6 +100,10 @@ typedef struct _qp_mpqs {
 void mpqs_init(mpqs_t x);
 void mpqs_clear(mpqs_t x);
 void mpqs_set(mpqs_t x, const mpqs_t y);
+void mpqs_set_z(mpqs_t x, const mpz_t numerator_int, 
+		const mpz_t numerator_sqrt, const mpz_t denominator);
+void mpqs_set_si(mpqs_t x, long numerator_int, 
+		unsigned long numerator_sqrt, unsigned long denominator);
 void mpqs_add(mpqs_t sum, const mpqs_t addend1, const mpqs_t addend2);
 void mpqs_neg(mpqs_t negated_operand, const mpqs_t operand);
 void mpqs_sub(mpqs_t difference, const mpqs_t minuend, const mpqs_t substrahend);

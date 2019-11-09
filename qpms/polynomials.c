@@ -93,6 +93,34 @@ void mpqs_nt_append(mpqs_t x, const struct _qp_mpzs_hashed *numelem) {
       mpz_size(n->_2) * sizeof(mp_limb_t), n);
 }
 
+void mpqs_set_z(mpqs_t x, const mpz_t num1, const mpz_t num2,
+    const mpz_t den) {
+  mpqs_clear_num(x);
+  if (mpz_sgn(num1) == 0 || mpz_sgn(num2) == 0) return;
+  mpz_abs(mpq_numref(x->f), num1);
+  mpz_abs(mpq_denref(x->f), den);
+  mpq_canonicalize(x->f);
+  mpzs_hh_t tmp; mpzs_hh_init(tmp);
+  mpz_set_si(tmp->_1, mpz_sgn(num1) * mpz_sgn(den));
+  mpz_set(tmp->_2, num2);
+  mpqs_nt_append(x, tmp);
+  mpzs_hh_clear(tmp);
+}
+
+void mpqs_set_si(mpqs_t x, long num1, unsigned long num2,
+    unsigned long den) {
+  mpqs_clear_num(x);
+  if(num1 == 0 || num2 == 0) return;
+  mpz_set_ui(mpq_numref(x->f), labs(num1));
+  mpz_set_ui(mpq_denref(x->f), den);
+  mpq_canonicalize(x->f);
+  mpzs_hh_t tmp; mpzs_hh_init(tmp);
+  mpz_set_si(tmp->_1, (num1 < 0) ? -1 : 1);
+  mpz_set_ui(tmp->_2, num2);
+  mpqs_nt_append(x, tmp);
+  mpzs_hh_clear(tmp);
+}
+
 void mpqs_nt_add(mpqs_t x, const struct _qp_mpzs_hashed *addend) {
   struct _qp_mpzs_hashed *s;
   HASH_FIND(hh, x->nt, mpz_limbs_read(addend->_2),
@@ -203,6 +231,37 @@ void mpqs_sub(mpqs_t dif, const mpqs_t x, const mpqs_t y) {
   mpqs_add(dif, x, tmp);
   mpqs_clear(tmp);
 }
+
+void mpqs_mul(mpqs_t product_final, const mpqs_t x, const mpqs_t y) {
+  mpqs_t prod; mpqs_init(prod);
+
+  mpz_mul(mpq_numref(prod->f), mpq_numref(x->f), mpq_numref(y->f));
+  mpz_mul(mpq_denref(prod->f), mpq_denref(x->f), mpq_denref(y->f));
+
+  mpz_t gcd; mpz_init(gcd); // common denominator of the sqrt to factor out
+  mpz_t mx, my; mpz_init(mx); mpz_init(my);
+  mpzs_hh_t addend; mpzs_hh_init(addend);
+
+  for (const struct _qp_mpzs_hashed *nx = x->nt->hh.next; 
+      nx != NULL; nx = nx->hh.next) {
+    for (const struct _qp_mpzs_hashed *ny = x->nt->hh.next; 
+        ny != NULL; ny = ny->hh.next) {
+      mpz_gcd(gcd, nx->_2, ny->_2);
+      mpz_divexact(mx, nx->_2, gcd);
+      mpz_divexact(my, ny->_2, gcd);
+      mpz_mul(addend->_2, mx, my);
+      mpz_mul(addend->_1, ny->_1, nx->_1);
+      mpz_mul(addend->_1, addend->_1, gcd);
+      mpqs_nt_add(prod, addend);
+    }
+  }
+  mpzs_hh_clear(addend);
+  mpz_clear(mx); mpz_clear(my); mpz_clear(gcd);
+  mpqs_canonicalise(prod);
+  mpqs_set(product_final, prod);
+  mpqs_clear(prod);
+}
+
 
 // Auxillary function to set a mpq_t to 0/1
 static inline void mpq_zero(mpq_t q) {
