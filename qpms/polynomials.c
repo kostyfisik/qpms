@@ -59,6 +59,15 @@ void mpzs_hh_set(mpzs_hh_t x, const mpzs_hh_t y) {
   mpz_set(x->_2, y->_2);
 }
 
+static inline void mpzs_hash_clear(struct _qp_mpzs_hashed **hash) {
+  struct _qp_mpzs_hashed *current, *tmp;
+  HASH_ITER(hh, *hash, current, tmp) {
+    HASH_DEL(*hash, current);
+    free(current);
+    //x->sz--;
+  }
+}
+
 /* Append an mpzs element to a mpzs sum that must not contain a matching key
  * in advance.
  */
@@ -125,12 +134,7 @@ void mpqs_init(mpqs_t x) {
 }
 
 void mpqs_clear_num(struct _qp_mpqs *x) {
-  struct _qp_mpzs_hashed *current, *tmp;
-  HASH_ITER(hh, x->nt, current, tmp) {
-    HASH_DEL(x->nt, current);
-    free(current);
-    //x->sz--;
-  }
+  mpzs_hash_clear(&(x->nt));
 }
 
 void mpqs_clear(mpqs_t x) {
