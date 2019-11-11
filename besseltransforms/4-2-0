@@ -1,1 +1,0 @@
-Integrate[(E^(I*k0*x)*(-1 + E^(-(c*x)))^4*BesselJ[0, k*x])/(k0^2*x), {x, 0, Infinity}, Assumptions -> n == 0 && q == 2 && κ == 4]
