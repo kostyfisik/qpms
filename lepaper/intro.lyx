@@ -117,7 +117,7 @@ Some refs here?
 
 \end_inset
 
- The most commonly used general approaches used in computational electrodynamics
+ The most common general approaches used in computational electrodynamics
  are often unsuitable for simulating systems with larger number of scatterers
  due to their computational complexity: differential methods such as the
  finite difference time domain (FDTD) method or the finite element method
@@ -159,8 +159,8 @@ literal "false"
 
 \begin_layout Standard
 The natural way to overcome both limitations of CDA mentioned above is to
- include higher multipoles into account.
- Instead of polarisability tensor, the scattering properties of an individual
+ take higher multipoles into account.
+ Instead of a polarisability tensor, the scattering properties of an individual
  particle are then described with more general 
 \begin_inset Formula $T$
 \end_inset
@@ -280,20 +280,10 @@ TODO refs to the code repositories once it is published.
  The features include computations of electromagnetic response to external
  driving, the related cross sections, and finding resonances of finite structure
 s.
- Moreover, it includes the improvements covered in this paper, enabling
+ Moreover, it includes the improvements covered in this article, enabling
  to simulate even larger systems and also infinite structures with periodicity
- in one, two or three dimensions, which can be used e.g.
- for quickly evaluating dispersions of such structures
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-And also their topological invariants (TODO)?
-\end_layout
-
-\end_inset
-
-.
+ in one or two or three dimensions, which can be used e.g.
+ for quickly evaluating dispersions of such structures.
  The QPMS suite contains a core C library, Python bindings and several utilities
  for routine computations.
 \begin_inset Marginal

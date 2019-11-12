@@ -488,7 +488,7 @@ noprefix "false"
 
  around the origin (typically due to presence of a scatterer), one has to
  add the outgoing VSWFs 
-\begin_inset Formula $\vswfrtlm{\tau}lm\left(\kappa\vect r\right)$
+\begin_inset Formula $\vswfouttlm{\tau}lm\left(\kappa\vect r\right)$
 \end_inset
 
  to have a complete basis of the solutions in the volume 
@@ -608,7 +608,7 @@ transition matrix,
 \begin_inset Formula $T$
 \end_inset
 
--matrix we can solve the single-patricle scatering prroblem simply by substituti
+-matrix we can solve the single-particle scattering problem simply by substituti
 ng appropriate expansion coefficients 
 \begin_inset Formula $\rcoefftlm{\tau'}{l'}{m'}$
 \end_inset
@@ -680,12 +680,12 @@ literal "false"
 
 , but in general one can find them numerically by simulating scattering
  of a regular spherical wave 
-\begin_inset Formula $\vswfouttlm{\tau}lm$
+\begin_inset Formula $\vswfrtlm{\tau}lm$
 \end_inset
 
  and projecting the scattered fields (or induced currents, depending on
  the method) onto the outgoing VSWFs 
-\begin_inset Formula $\vswfrtlm{\tau}{'l'}{m'}$
+\begin_inset Formula $\vswfouttlm{\tau'}{l'}{m'}$
 \end_inset
 
 .
@@ -974,15 +974,67 @@ noprefix "false"
 \begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
 \end_inset
 
- via by electromagnetic radiation is
+ by electromagnetic radiation is
 \begin_inset Formula 
 \begin{equation}
-P=\frac{1}{2\kappa^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)=\frac{1}{2\kappa^{2}\eta_{0}\eta}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{}.\label{eq:Power transport}
+P=\frac{1}{2\kappa^{2}\eta_{0}\eta}\left(\Re\left(\rcoeffp{}^{\dagger}\outcoeffp{}\right)+\left\Vert \outcoeffp{}\right\Vert ^{2}\right)=\frac{1}{2\kappa^{2}\eta_{0}\eta}\rcoeffp{}^{\dagger}\left(\Tp{}^{\dagger}\Tp{}+\frac{\Tp{}^{\dagger}+\Tp{}}{2}\right)\rcoeffp{},\label{eq:Power transport}
 \end{equation}
 
 \end_inset
 
-In realistic scattering setups, power is transferred by radiation into 
+where 
+\begin_inset Formula $\eta_{0}=\sqrt{\mu_{0}/\varepsilon_{0}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\eta=\sqrt{\mu/\varepsilon}$
+\end_inset
+
+ are wave impedance of vacuum and relative wave impedance of the medium
+ in 
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}$
+\end_inset
+
+, respectively.
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $P$
+\end_inset
+
+ is well-defined only when 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is real.
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ In realistic scattering setups, power is transferred by radiation into
+ 
 \begin_inset Formula $\openball{R^{<}}{\vect 0}$
 \end_inset
 
@@ -1319,7 +1371,7 @@ where
 \begin_inset Formula $T$
 \end_inset
 
-is a block-diagonal matrix containing all the individual 
+ is a block-diagonal matrix containing all the individual 
 \begin_inset Formula $T$
 \end_inset
 
@@ -1357,9 +1409,12 @@ In practice, the multiple-scattering problem is solved in its truncated
 \begin_inset Formula $\tau lm$
 \end_inset
 
--multiindices left.
+-multi-indices left.
  The truncation degree can vary for different scatterers (e.g.
- due to different physical sizes), so the truncated block 
+\begin_inset space \space{}
+\end_inset
+
+due to different physical sizes), so the truncated block 
 \begin_inset Formula $\left[\tropsp pq\right]_{l_{q}\le L_{q};l_{p}\le L_{q}}$
 \end_inset
 
@@ -1394,7 +1449,7 @@ If no other type of truncation is done, there remain
 \begin_inset Formula $\tau lm$
 \end_inset
 
--multiindices for 
+-multi-indices for the 
 \begin_inset Formula $p$
 \end_inset
 

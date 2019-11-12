@@ -597,11 +597,11 @@ Category: Methods and Algorithms for Scientific Computing?
 \end_layout
 
 \begin_layout Abstract
-The (somewhat underrated) T-matrix multiple scattering method (TMMSM) can
- be used to solve the electromagnetic response of systems consisting of
- many compact scatterers, retaining a good level of accuracy while using
- relatively few of degrees of freedom, largely surpassing other methods
- in the number of scatterers it can deal with.
+The T-matrix multiple scattering method (TMMSM) can be used to solve the
+ electromagnetic response of systems consisting of many compact scatterers,
+ retaining a good level of accuracy while using relatively few degrees of
+ freedom, largely surpassing other methods in the number of scatterers it
+ can deal with.
 \end_layout
 
 \begin_layout Abstract
