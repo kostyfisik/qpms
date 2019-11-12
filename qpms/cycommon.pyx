@@ -47,11 +47,13 @@ try:
     class DebugFlags(enum.IntFlag): # Should be IntFlag if python version >= 3.6
         MISC = QPMS_DBGMSG_MISC
         THREADS = QPMS_DBGMSG_THREADS
+        INTEGRATION = QPMS_DBGMSG_INTEGRATION
     has_IntFlag = True
 except AttributeError: # For old versions of enum, use IntEnum instead
     class DebugFlags(enum.IntEnum): 
         MISC = QPMS_DBGMSG_MISC
         THREADS = QPMS_DBGMSG_THREADS
+        INTEGRATION = QPMS_DBGMSG_INTEGRATION
     has_IntFlag = False
 
 def dbgmsg_enable(qpms_dbgmsg_flags types):

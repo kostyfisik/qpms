@@ -146,6 +146,7 @@ cdef extern from "qpms_error.h":
     ctypedef enum qpms_dbgmsg_flags:
         QPMS_DBGMSG_MISC
         QPMS_DBGMSG_THREADS
+        QPMS_DBGMSG_INTEGRATION
     qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types)
     qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types)
 

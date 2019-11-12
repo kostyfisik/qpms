@@ -25,6 +25,8 @@
 #include <errno.h>
 #include <pthread.h>
 #include <gsl/gsl_integration.h>
+#include <gsl/gsl_errno.h>
+#include "optim.h"
 
 // These are quite arbitrarily chosen constants for the quadrature in qpms_tmatrix_axialsym_fill()
 #define TMATRIX_AXIALSYM_INTEGRAL_EPSREL (1e-5)
@@ -712,6 +714,38 @@ struct qpms_tmatrix_axialsym_fill_integration_thread_arg {
   pthread_mutex_t *i2start_mutex;
 };
 
+// This wrapper retries to calculate the T-matrix integral and if it fails, reduces torelance.
+static inline int axint_wrapper(const gsl_function *f, double epsabs, double epsrel,
+    size_t intlimit, gsl_integration_workspace *w, double *result, double *abserr) {
+  static int tol_exceeded = 0;
+  double errfac;
+  int retval;
+  for (errfac = 1; epsabs*errfac < 0.01 && epsrel*errfac < 0.01; errfac *= 8) {
+    retval = gsl_integration_qag(f, 0, M_PI, epsabs*errfac, epsrel*errfac, 
+        intlimit, 2, w, result, abserr);
+    if(QPMS_LIKELY(!retval)) {
+      if(QPMS_LIKELY(errfac == 1))
+        return 0;
+      else {
+        QPMS_DEBUG(QPMS_DBGMSG_INTEGRATION, 
+            "T-matrix quadrature succeeded only after %g-fold"
+            "tolerance reduction."); // TODO more details here?
+        return GSL_EROUND;
+      }
+    }
+    else if(retval == GSL_EROUND) {
+      if (!tol_exceeded) {
+        QPMS_WARN("T-matrix quadrature failed; retrying with worse tolerances."
+            " (this warning will be shown only once).");
+      }
+      tol_exceeded += 1;
+    } 
+    else QPMS_ENSURE_SUCCESS(retval);
+  }
+  QPMS_PR_ERROR("T-matrix quadrature failed even after harsh tolerance reduction.");
+}
+
+
 static void * qpms_tmatrix_axialsym_fill_integration_thread(void *arg) {
   const struct qpms_tmatrix_axialsym_fill_integration_thread_arg *a = arg;
   struct tmatrix_axialsym_integral_param_t p = *a->p_template;
@@ -749,27 +783,23 @@ static void * qpms_tmatrix_axialsym_fill_integration_thread(void *arg) {
         // Re(R')
         p.btype = QPMS_BESSEL_REGULAR;
         p.realpart = true;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
-              a->intlimit, 2, w, &result, &abserr));
+        axint_wrapper(&f, a->epsabs, a->epsrel, a->intlimit, w, &result, &abserr);
         a->R[iQR] = result;
         
         // Im(R')
         p.realpart = false;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
-              a->intlimit, 2, w, &result, &abserr));
+        axint_wrapper(&f, a->epsabs, a->epsrel, a->intlimit, w, &result, &abserr);
         a->R[iQR] += I*result;
 
         // Re(Q')
         p.btype = QPMS_HANKEL_PLUS;
         p.realpart = true;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
-              a->intlimit, 2, w, &result, &abserr));
+        axint_wrapper(&f, a->epsabs, a->epsrel, a->intlimit, w, &result, &abserr);
         a->Q[iQR] = result;
 
         // Im(Q')
         p.realpart = false;
-        QPMS_ENSURE_SUCCESS(gsl_integration_qag(&f, 0, M_PI, a->epsabs, a->epsrel,
-              a->intlimit, 2, w, &result, &abserr));
+        axint_wrapper(&f, a->epsabs, a->epsrel, a->intlimit, w, &result, &abserr);
         a->Q[iQR] += I*result;
       }
     }

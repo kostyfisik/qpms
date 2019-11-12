@@ -29,7 +29,8 @@ void qpms_pr_debug_at_flf(const char *filename, unsigned int linenum,
 
 typedef enum {
 	QPMS_DBGMSG_MISC = 1, 
-	QPMS_DBGMSG_THREADS = 2 // Multithreading-related debug messages.
+	QPMS_DBGMSG_THREADS = 2, // Multithreading-related debug messages.
+	QPMS_DBGMSG_INTEGRATION = 4 // Quadrature-related debug messages.
 } qpms_dbgmsg_flags;
 
 void qpms_debug_at_flf(const char *filename, unsigned int linenum,
