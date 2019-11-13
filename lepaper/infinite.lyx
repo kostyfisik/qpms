@@ -622,7 +622,149 @@ d shapes.
 \begin_inset Formula $W\left(\omega,\vect k\right)$
 \end_inset
 
-, as described in the following.
+, as described in the following and illustrated in Fig.
+\begin_inset space \space{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ewald branch cuts"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/ewald_branchcuts.pdf
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Left: Illustration of branch cuts in 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ obtained using Ewald summation over two-dimensional square lattice in three-dim
+ensional space filled with dielectric medium with constant real refraction
+ index 
+\begin_inset Formula $n$
+\end_inset
+
+ and wavenumber 
+\begin_inset Formula $\kappa\left(\omega\right)=\omega n/c$
+\end_inset
+
+.
+ The function is holomorphic in the positive imaginary half-plane.
+ The points corresponding to the diffraction orders of an 
+\begin_inset Quotes eld
+\end_inset
+
+empty
+\begin_inset Quotes erd
+\end_inset
+
+ lattice lie on the real axis (pink), and from each of them two branch cuts
+ originate: one due to the branch cut in the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ function (orange, hyperbolic shape), and another due to the branch cut
+ of 
+\begin_inset Formula $\gamma(z)$
+\end_inset
+
+ as defined in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lilgamma"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ (blue, circular shape).
+ Further non-analyticities might stem from the material model: the violet
+ curve represents a branch cut originating from a complex square root in
+ the refractive index 
+\begin_inset Formula $n_{\mathrm{Au}}\left(\omega\right)=\sqrt{\varepsilon_{\mathrm{Au}}\left(\omega\right)}$
+\end_inset
+
+, where 
+\begin_inset Formula $\varepsilon_{\mathrm{Au}}\left(\omega\right)$
+\end_inset
+
+ is the Drude-Lorentz permittivity model of gold used for the scatterers.
+ The other parameters used here are 
+\begin_inset Formula $p_{x}=580\,\mathrm{nm}$
+\end_inset
+
+ (lattice period), 
+\begin_inset Formula $\vect k=\left(0.2\pi/p_{x},0\right)$
+\end_inset
+
+, 
+\begin_inset Formula $n=1.52$
+\end_inset
+
+.
+ The plot on the right shows the 
+\begin_inset Quotes eld
+\end_inset
+
+empty
+\begin_inset Quotes erd
+\end_inset
+
+ lattice diffraction orders on the line 
+\begin_inset Formula $\vect k=\left(k_{x},0\right),x\in\left[0,\pi/p_{x}\right].$
+\end_inset
+
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ewald branch cuts"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1002,9 +1144,9 @@ noprefix "false"
 
  is defined as
 \begin_inset Formula 
-\[
-\gamma\left(z\right)=\left(z-1\right)^{\frac{1}{2}}\left(z+1\right)^{\frac{1}{2}},\quad-\frac{3\pi}{2}<\arg\left(z-1\right)<\frac{\pi}{2},-\frac{\pi}{2}<\arg\left(z+1\right)<\frac{3\pi}{2}.
-\]
+\begin{equation}
+\gamma\left(z\right)=\left(z-1\right)^{\frac{1}{2}}\left(z+1\right)^{\frac{1}{2}},\quad-\frac{3\pi}{2}<\arg\left(z-1\right)<\frac{\pi}{2},-\frac{\pi}{2}<\arg\left(z+1\right)<\frac{3\pi}{2}.\label{eq:lilgamma}
+\end{equation}
 
 \end_inset
 
@@ -1203,18 +1345,33 @@ literal "false"
 \begin_inset Formula $\kappa$
 \end_inset
 
- away from the real axis.
+ away from the real axis, as illustrated in Fig.
+\begin_inset space \space{}
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ewald branch cuts"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-TODO Figure.
+Detailed physical interpretation of the remaining branch cuts is an open
+ question.
 \end_layout
 
 \end_inset
 
- Detailed physical interpretation of the remaining branch cuts is an open
- question.
+
 \begin_inset Note Note
 status open
 
