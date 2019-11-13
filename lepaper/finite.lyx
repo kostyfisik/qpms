@@ -2171,7 +2171,7 @@ reference "eq:absorption CS single"
 -th particle reads according to 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:regular vswf translation"
+reference "eq:reqular vswf coefficient vector translation"
 plural "false"
 caps "false"
 noprefix "false"
@@ -2194,7 +2194,7 @@ whereas the contributions of fields scattered from each particle expanded
  is, according to 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:singular vswf translation"
+reference "eq:singular to regular vswf coefficient vector translation"
 plural "false"
 caps "false"
 noprefix "false"

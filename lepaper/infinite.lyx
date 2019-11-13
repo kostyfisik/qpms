@@ -121,8 +121,8 @@ Although large finite systems are where MSTMM excels the most, there are
  Other methods might be already fast enough, but MSTMM will be faster in
  most cases in which there is enough spacing between the neighboring particles.
  MSTMM works well with any space group symmetry the system might have (as
- opposed to, for example, FDTD with cubic mesh applied to a honeycomb lattice),
- which makes e.g.
+ opposed to, for example, FDTD with a cubic mesh applied to a honeycomb
+ lattice), which makes e.g.
  application of group theory in mode analysis quite easy.
 \begin_inset Note Note
 status open
@@ -134,7 +134,7 @@ Topology anoyne?
 \end_inset
 
  And finally, having a method that handles well both infinite and large
- finite system gives a possibility to study finite-size effects in periodic
+ finite systems gives a possibility to study finite-size effects in periodic
  scatterer arrays.
 \end_layout
 
@@ -171,7 +171,7 @@ noprefix "false"
 \begin_inset Formula $d$
 \end_inset
 
--dimensional integar multiindex 
+-dimensional integer multi-index 
 \begin_inset Formula $\vect n\in\ints^{d}$
 \end_inset
 
@@ -473,7 +473,7 @@ noprefix "false"
 \end_inset
 
  is close enough to zero.
- However, this approach is quite expensive, for 
+ However, this approach is quite expensive, since 
 \begin_inset Formula $W\left(\omega,\vect k\right)$
 \end_inset
 
@@ -540,7 +540,7 @@ TODO write this in a clean way
 ).
  A somehow challenging step is to distinguish the different bands that can
  all be very close to the empty lattice approximation, especially if the
- particles in the systems are small.
+ particles in the system are small.
  In high-symmetry points of the Brilloin zone, this can be solved by factorising
  
 \begin_inset Formula $M\left(\omega,\vect k\right)$
@@ -586,7 +586,7 @@ literal "false"
 \end_layout
 
 \begin_layout Subsection
-Computing the Fourier sum of the translation operator
+Computing the lattice sum of the translation operator
 \begin_inset CommandInset label
 LatexCommand label
 name "subsec:W operator evaluation"
@@ -597,7 +597,7 @@ name "subsec:W operator evaluation"
 \end_layout
 
 \begin_layout Standard
-The problem evaluating 
+The problem in evaluating 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:W definition"
@@ -608,11 +608,16 @@ reference "eq:W definition"
 \begin_inset Formula $\tropsp{\vect 0,\alpha}{\vect m,\beta}\sim\left|\vect R_{\vect m}\right|^{-1}e^{i\kappa\left|\vect R_{\vect m}\right|}$
 \end_inset
 
- that does not in the strict sense converge for any 
+, so that its lattice sum does not in the strict sense converge for any
+ 
 \begin_inset Formula $d>1$
 \end_inset
 
--dimensional lattice.
+ -dimensional lattice unless 
+\begin_inset Formula $\Im\kappa>0$
+\end_inset
+
+.
 \begin_inset Note Note
 status open
 
@@ -647,14 +652,13 @@ literal "false"
 \end_inset
 
 .
- Its basic idea is to decompose the divide the lattice-summed function in
- two parts: a short-range part that decays fast and can be summed directly,
- and a long-range part which decays poorly but is fairly smooth everywhere,
- so that its Fourier transform decays fast enough, and to deal with the
- long range part by Poisson summation over the reciprocal lattice.
- The same idea can be used also in this case case of linear electrodynamic
- problems, just the technical details are more complicated than in electrostatic
-s.
+ Its basic idea is to decomposethe lattice-summed function in two parts:
+ a short-range part that decays fast and can be summed directly, and a long-rang
+e part which decays poorly but is fairly smooth everywhere, so that its
+ Fourier transform decays fast enough, and to deal with the long range part
+ by Poisson summation over the reciprocal lattice.
+ The same idea can be used also in the case of linear electrodynamic problems,
+ just the technical details are more complicated than in electrostatics.
 \end_layout
 
 \begin_layout Standard
@@ -695,11 +699,20 @@ literal "false"
 
  and can be applied to our case.
  If we formally label 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
-Check signs.
+FP: Check signs.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -820,7 +833,7 @@ In all three dimensionality cases, the lattice sums are divided into short-range
 status open
 
 \begin_layout Plain Layout
-Check sign of s
+FP: Check sign of s
 \end_layout
 
 \end_inset
@@ -831,27 +844,42 @@ Check sign of s
 \begin_layout Standard
 \begin_inset Formula 
 \begin{multline}
-\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{\kappa^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-\kappa/4\xi^{2}}\xi^{2l}\ud\xi\\
-+\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right),\label{eq:Ewald in 3D short-range part}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{\kappa^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\\
+\times\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-\kappa/4\xi^{2}}\xi^{2l}\ud\xi\\
++\delta_{\vect{R_{n}},-\vect s}\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right).\label{eq:Ewald in 3D short-range part}
 \end{multline}
 
 \end_inset
 
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-NEPATŘÍ TAM NĚJAKÁ DELTA FUNKCE K PŮVODNÍMU 
-\begin_inset Formula $\sigma_{n}^{m(0)}$
+Here 
+\begin_inset Formula $\Gamma(a,z)$
 \end_inset
 
-?
-\end_layout
+ is the incomplete Gamma function.
+ The last (
+\begin_inset Quotes eld
+\end_inset
+
+self-interaction
+\begin_inset Quotes erd
+\end_inset
+
+) term in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D short-range part"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
+, which appears only when the displacement vector 
+\begin_inset Formula $\vect s$
+\end_inset
 
+ coincides with a lattice point, is often noted separately in the literature.
+ 
 \begin_inset Note Note
 status open
 
@@ -870,7 +898,7 @@ The long-range part for cases
 status open
 
 \begin_layout Plain Layout
-check sign of 
+FP: check sign of 
 \begin_inset Formula $\vect k$
 \end_inset
 
@@ -882,8 +910,8 @@ check sign of
 
 \begin_inset Formula 
 \begin{multline}
-\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(-j,\frac{k^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
 \end{multline}
 
 \end_inset
@@ -895,7 +923,7 @@ and for
 
 \begin_inset Formula 
 \begin{equation}
-\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\frac{\left(\left|\vect k+\vect K\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right).\label{eq:Ewald in 3D long-range part 3D}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\frac{\left(\left|\vect k+\vect K\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right).\label{eq:Ewald in 3D long-range part 3D}
 \end{equation}
 
 \end_inset
@@ -968,28 +996,185 @@ The Ewald parameter
 \begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)$
 \end_inset
 
- .
+.
+ For one-dimensional, square, and cubic lattices, the optimal choice is
+ 
+\begin_inset Formula $\eta=\sqrt{\pi}/p$
+\end_inset
+
+ where 
+\begin_inset Formula $p$
+\end_inset
+
+ is the direct lattice period 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
-What would be a good choice?
+Whatabout different geometries?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
 
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
-I have some error estimates derived in my notes.
+FP: I have some error estimates derived in my notes.
  Should I include them?
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For a two-dimensional lattice, the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+-function 
+\begin_inset Formula $\Gamma\left(\frac{1}{2}-j,z\right)$
+\end_inset
+
+ in the long-range part has a branch point at 
+\begin_inset Formula $z=0$
+\end_inset
+
+ and special care has to be taken when choosing the appropriate branch.
+ If the wavenumber of the medium has a positive imaginary part, 
+\begin_inset Formula $\Im\kappa>0$
+\end_inset
+
+, then the translation operator elements 
+\begin_inset Formula $\trops_{\tau lm;\tau'l'm}\left(\kappa\vect r\right)$
+\end_inset
+
+ decay exponentially as 
+\begin_inset Formula $\left|\vect r\right|\to\infty$
+\end_inset
+
+ and the lattice sum in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ converges absolutely even in the direct space, and it is equal to the Ewald
+ sum with the principal value of the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ function being used in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D long-range part 1D 2D"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ For other values of 
+\begin_inset Formula $\kappa$
+\end_inset
+
+, the branch choice is made in such way that 
+\begin_inset Formula $W_{\alpha\beta}\left(\vect k\right)$
+\end_inset
+
+ is analytically continued even when the wavenumber's imaginary part crosses
+ the real axis.
+ The principal value of 
+\begin_inset Formula $\Gamma\left(\frac{1}{2}-j,z\right)$
+\end_inset
+
+ has a branch cut at the negative real half-axis, which, considering the
+ lattice sum as a function of 
+\begin_inset Formula $\kappa$
+\end_inset
+
+, translates into branch cuts starting at 
+\begin_inset Formula $\kappa=\left|\vect k+\vect K\right|$
+\end_inset
+
+ and continuing in straight lines towards 
+\begin_inset Formula $+\infty$
+\end_inset
+
+.
+ Therefore, in the quadrant 
+\begin_inset Formula $\Re z<0,\Im z\ge0$
+\end_inset
+
+ we use the continuation of the principal value from 
+\begin_inset Formula $\Re z<0,\Im z<0$
+\end_inset
+
+ instead of the principal branch 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "8.2.9"
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+, moving the branch cut in the 
+\begin_inset Formula $z$
+\end_inset
+
+ variable to the positive imaginary half-axis.
+ This moves the branch cuts w.r.t.
+ 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ away from the real axis.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO Figure.
+\end_layout
+
+\end_inset
+
+ Detailed physical interpretation of the remaining branch cuts is an open
+ question.
 \begin_inset Note Note
 status open
 
