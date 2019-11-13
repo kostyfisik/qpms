@@ -740,7 +740,7 @@ empty
 \end_inset
 
  lattice diffraction orders on the line 
-\begin_inset Formula $\vect k=\left(k_{x},0\right),x\in\left[0,\pi/p_{x}\right].$
+\begin_inset Formula $\vect k=\left(k_{x},0\right),k_{x}\in\left[0,\pi/p_{x}\right].$
 \end_inset
 
  
@@ -1093,7 +1093,8 @@ FP: check sign of
 \begin_inset Formula 
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
+\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
+\times\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
 \end{multline}
 
 \end_inset
