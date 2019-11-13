@@ -570,7 +570,12 @@ noprefix "false"
 \end_inset
 
 .
- Another, more robust approach is Beyn's contour integral algorithm 
+ 
+\end_layout
+
+\begin_layout Standard
+An alternative, more robust approach to generic minimisation algorithms
+ is Beyn's contour integral method 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "beyn_integral_2012"
@@ -582,7 +587,42 @@ literal "false"
 \begin_inset Formula $M\left(\omega,\vect k\right)=0$
 \end_inset
 
- in a given frequency contour.
+ inside an area enclosed by a given complex frequency plane contour, assuming
+ that 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ is an analytical function of 
+\begin_inset Formula $\omega$
+\end_inset
+
+ inside the contour.
+ A necessary prerequisite for this is that all the ingredients of 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ are analytical as well.
+ It practice, this usually means that interpolation cannot be used in a
+ straightforward way for material properties or 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices.
+ For material response, constant permittivity or Drude-Lorentz models suit
+ this purpose well.
+ The need to evaluate the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices precisely (without the speedup provided by interpolation) at many
+ points might cause a performance bottleneck for scatterers with more complicate
+d shapes.
+ And finally, the integration contour has to evade any branch cuts appearing
+ in the lattice-summed translation operator 
+\begin_inset Formula $W\left(\omega,\vect k\right)$
+\end_inset
+
+, as described in the following.
 \end_layout
 
 \begin_layout Subsection

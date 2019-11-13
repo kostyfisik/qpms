@@ -149,7 +149,7 @@ s used in nanophotonics: there are modes in which the particles' electric
  such as lasing or Bose-Einstein condensation have been observed 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "guo_lasing_2019,pourjamal_lasing_2019,hakala_lasing_2017,yang_real-time_2015,hakala_bose-einstein_2017"
+key "guo_lasing_2019,pourjamal_lasing_2019,hakala_lasing_2017,yang_real-time_2015,hakala_boseeinstein_2018"
 literal "false"
 
 \end_inset
