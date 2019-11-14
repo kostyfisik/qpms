@@ -108,23 +108,99 @@ name "sec:Introduction"
 The problem of electromagnetic response of a system consisting of many relativel
 y small, compact scatterers in various geometries, and its numerical solution,
  is relevant to many branches of nanophotonics.
-\begin_inset Marginal
+ In practice, the scatterers often form some ordered structure, such as
+ metalic or dielectric nanoparticle arrays 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "wang_rich_2018"
+literal "false"
+
+\end_inset
+
+ that offer many degrees of tunability, with applications including structural
+ color, ultra-thin lenses 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "khorasaninejad_metalenses_2017"
+literal "false"
+
+\end_inset
+
+, strong coupling between light and quantum emitters 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "vakevainen_plasmonic_2014,ramezani_strong_2019,torma_strong_2015,fedele_strong_2016"
+literal "false"
+
+\end_inset
+
+, nano-lasing
+\begin_inset CommandInset citation
+LatexCommand cite
+key "zhou_lasing_2013,hakala_lasing_2017"
+literal "false"
+
+\end_inset
+
+, Bose-Einstein condensation of surface plasmon-polaritons 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hakala_boseeinstein_2018,ramezani_strong_2019"
+literal "false"
+
+\end_inset
+
+ or sensing 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kuttner_plasmonics_2018"
+literal "false"
+
+\end_inset
+
+.
+ The number of scatterers tends to be rather large; unfortunately, the most
+ common general approaches used in computational electrodynamics are often
+ unsuitable for simulating systems with larger number of scatterers due
+ to their computational complexity: differential methods such as the finite
+ difference time domain (FDTD, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "sullivan_electromagnetic_2013"
+literal "false"
+
+\end_inset
+
+) method or the finite element method (FEM, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "raiyan_kabir_finite_2017"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Some refs here?
+zkontroluj reference, přidej referenci na frequency domain fem
 \end_layout
 
 \end_inset
 
- The most common general approaches used in computational electrodynamics
- are often unsuitable for simulating systems with larger number of scatterers
- due to their computational complexity: differential methods such as the
- finite difference time domain (FDTD) method or the finite element method
- (FEM) include the field degrees of freedom (DoF) of the background medium
- (which can have very large volumes), whereas integral approaches such as
- the boundary element method (BEM) need much less DoF but require working
- with dense matrices containing couplings between each pair of DoF.
+) include the field degrees of freedom (DoF) of the background medium (which
+ can have very large volumes), whereas integral approaches such as the boundary
+ element method (BEM, a.k.a the method of moments, MOM, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "medgyesi-mitschang_generalized_1994,reid_efficient_2015"
+literal "false"
+
+\end_inset
+
+) need much less DoF but require working with dense matrices containing
+ couplings between each pair of DoF.
  Therefore, a common (frequency-domain) approach to get an approximate solution
  of the scattering problem for many small particles has been the coupled
  dipole approximation (CDA) where a drastic reduction of the number of DoF
