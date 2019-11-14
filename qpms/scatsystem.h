@@ -230,7 +230,7 @@ complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
 
 /// Global translation matrix.
 /**
- * The diagonal (particle self-) block are filled with zeros.
+ * The diagonal (particle self-) block are filled with zeros (even for regular Bessel waves).
  * This may change in the future.
  */
 complex double *qpms_scatsys_build_translation_matrix_full(

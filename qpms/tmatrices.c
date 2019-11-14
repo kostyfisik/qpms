@@ -616,7 +616,7 @@ complex double *qpms_apply_tmatrix(
     QPMS_CRASHING_CALLOC(f, n, sizeof(complex double));
   const complex double one = 1;
   const complex double zero = 0;
-  cblas_zgemv(CblasRowMajor, CblasNoTrans, n, n, &one, T->m, n, a, 1, &zero, NULL, 1);
+  cblas_zgemv(CblasRowMajor, CblasNoTrans, n, n, &one, T->m, n, a, 1, &zero, f, 1);
   return f;
 }
 
