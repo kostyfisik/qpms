@@ -1063,7 +1063,8 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
   return target;
 }
 
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
+// Serial reference implementation.
+complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_t *ss, qpms_iri_t iri,
@@ -1615,7 +1616,9 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
   return target_packed;
 }
 
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
+
+// Parallel implementation, now default
+complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_t *ss, qpms_iri_t iri,

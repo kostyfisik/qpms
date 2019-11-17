@@ -286,8 +286,8 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
 		const qpms_scatsys_t *ss, qpms_iri_t iri,
 		complex double k ///< Wave number to use in the translation matrix.
 		);
-/// Alternative implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorder_parallelR(
+/// Alternative (serial reference) implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
+complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorder_serial(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_t *ss, qpms_iri_t iri,

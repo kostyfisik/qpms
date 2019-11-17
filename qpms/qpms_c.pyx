@@ -449,9 +449,9 @@ cdef class ScatteringSystem:
             qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(&target_view[0][0], self.s, iri, k)
         elif (version == 'pR'):
           with nogil:
-            qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(&target_view[0][0], self.s, iri, k)
-        else:
             qpms_scatsys_build_modeproblem_matrix_irrep_packed(&target_view[0][0], self.s, iri, k)
+        else:
+            qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(&target_view[0][0], self.s, iri, k)
         return target
 
     def translation_matrix_full(self, double k, J = QPMS_HANKEL_PLUS):

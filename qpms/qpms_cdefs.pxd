@@ -532,7 +532,7 @@ cdef extern from "scatsystem.h":
             const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k, qpms_bessel_t J)
     cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
             cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k)
-    cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR(
+    cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
             cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k) nogil
     cdouble *qpms_scatsys_incident_field_vector_full(cdouble *target_full,
             const qpms_scatsys_t *ss, qpms_incfield_t field_at_point, 
