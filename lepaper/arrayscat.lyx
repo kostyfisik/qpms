@@ -789,6 +789,10 @@ TODO
 \end_layout
 
 \begin_layout Itemize
+URLs from bibtex do not appear in the references.
+\end_layout
+
+\begin_layout Itemize
 It could be nice to include some illustration (example array) to the introductio
 n.
  Put a specific example of how large system are we able to simulate?

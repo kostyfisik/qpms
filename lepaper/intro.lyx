@@ -324,6 +324,25 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
+However, the potential of MSTMM reaches far beyond its past implementations.
+ Here we present several enhancements to the method, which are especially
+ useful in metamaterial and nanophotonics simulations.
+ We extend the method on infinite periodic systems using Ewald-type summation
+ techniques.
+ This enables, among other things, to use MSTMM for fast solving of the
+ lattice modes of such periodic systems, and comparing them to their finite
+ counterparts with respect to electromagnetic response, which is useful
+ to isolate the bulk and finite-size phenomena of photonic arrays.
+ Moreover, we exploit symmetries of the system to decompose the problem
+ into several substantially smaller ones, which provides better understanding
+ of modes, mainly in periodic systems, and substantially reduces the demands
+ on computational resources, hence speeding up the computations and allowing
+ for finite size simulations of systems with particle counts practically
+ impossible to reliably simulate with any other method.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Due to the limitations of the existing available codes, we have been developing
  our own implementation of MSTMM, which has been used in several previous
  works studying various physical phenomena in plasmonic nanoarrays 
@@ -352,13 +371,9 @@ infinite periodic systems
  one has to deal with badly behaving infinite lattice sums.
 \end_layout
 
-\begin_layout Standard
-Here we address both challenges: we extend the method on infinite periodic
- systems using Ewald-type summation techniques, and we exploit symmetries
- of the system to decompose the problem into several substantially smaller
- ones, which 1) reduces the demands on computational resources, hence speeds
- up the computations and allows for simulations of larger systems, and 2)
- provides better understanding of modes, mainly in periodic systems.
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -415,7 +430,14 @@ TODO před odesláním zkontrolovat, co všechno to v danou chvíli umí.
 \end_inset
 
  It includes extensive Doxygen documentation, together with description
- of the API, making extending and customising the code easy.
+ of the API.
+ It has been written with customisability and extendibility in mind, so
+ that including e.g.
+ alternative methods of 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix calculations of a single matrix are as easy as possible.
 \end_layout
 
 \begin_layout Standard
