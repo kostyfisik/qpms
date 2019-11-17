@@ -291,18 +291,28 @@ a.k.a.
 
 \end_inset
 
-, and it has been implemented previously for a limited subset of problems
-\begin_inset Marginal
-status open
+, and it has been implemented many times in the context of electromagnetics
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "scattport_multiple_nodate"
+literal "false"
 
-\begin_layout Plain Layout
-Refs; list the limitations of available codes?
-\end_layout
+\end_inset
+
+, but usually only as specific codes for limited subsets of problems, such
+ as scattering by clusters of spheres, circular cylinders, or Chebyshev
+ particles 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mackowski_multiple_2011,mackowski_mstm_2013,xu_fortran_2003"
+literal "false"
 
 \end_inset
 
 .
- 
+ Perhaps the most general MSTMM software with respect to the system geometry
+ has been FaSTMM 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "markkanen_fast_2017,markkanen_fastmm_2017"
@@ -310,18 +320,7 @@ literal "false"
 
 \end_inset
 
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO přestože blablaba, moc se to nepoužívalo, protože je težké udělat to
- správně.
-\end_layout
-
-\end_inset
-
- 
+, which also a rare example is in this field of a code with a clear licence.
 \end_layout
 
 \begin_layout Standard
