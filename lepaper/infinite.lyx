@@ -834,7 +834,7 @@ literal "false"
 \end_inset
 
 .
- Its basic idea is to decomposethe lattice-summed function in two parts:
+ Its basic idea is to decompose the lattice-summed function in two parts:
  a short-range part that decays fast and can be summed directly, and a long-rang
 e part which decays poorly but is fairly smooth everywhere, so that its
  Fourier transform decays fast enough, and to deal with the long range part
@@ -959,11 +959,20 @@ W_{\alpha,\tau lm;\beta,\tau'l'm'}(\vect k) & =\sum_{\lambda=\left|l-l'\right|+1
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
 Check signs
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset

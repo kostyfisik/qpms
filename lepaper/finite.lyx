@@ -678,8 +678,33 @@ literal "false"
 
 \end_inset
 
-, but in general one can find them numerically by simulating scattering
- of a regular spherical wave 
+; for particles with smooth surfaces one can find them numerically using
+ the 
+\emph on
+null-field method
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "waterman_new_1969,waterman_symmetry_1971,kristensson_scattering_2016"
+literal "false"
+
+\end_inset
+
+ which works well in the most typical cases, but for less common parameter
+ ranges (such as concave shapes, extreme values of aspect ratios or relative
+ refractive index) they might suffer from serious numerical instabilities
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "Sect. 5.8.4"
+key "mishchenko_scattering_2002"
+literal "false"
+
+\end_inset
+
+.
+ In general, simulating scattering of a regular spherical wave 
 \begin_inset Formula $\vswfrtlm{\tau}lm$
 \end_inset
 
@@ -699,12 +724,21 @@ literal "false"
 \end_inset
 
 , see below.
- For the numerical evaluation of 
+ 
+\end_layout
+
+\begin_layout Standard
+For the numerical evaluation of 
 \begin_inset Formula $T$
 \end_inset
 
--matrices we typically use the scuff-tmatrix tool from the free software
- SCUFF-EM suite 
+-matrices for simple axially symmetric scatterers in QPMS, we typically
+ use the null-field equations, and for more complicated scatterers we use
+ the 
+\family typewriter
+scuff-tmatrix
+\family default
+ tool from the free software SCUFF-EM suite 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "reid_efficient_2015,SCUFF2"
@@ -744,11 +778,20 @@ The magnitude of the
 
 -matrix elements depends heavily on the scatterer's size compared to the
  wavelength.
- Fortunately, the 
+ Typically,
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+It has been proven that the 
 \begin_inset Formula $T$
 \end_inset
 
--matrix of a bounded scatterer is a compact operator 
+-matrix of a bounded scatterer is a compact operator for 
+\emph on
+acoustic
+\emph default
+ scattering problems 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ganesh_convergence_2012"
@@ -756,17 +799,14 @@ literal "false"
 
 \end_inset
 
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO
+.
+ While we conjecture that this holds also for bounded electromagnetic scatterers
+, we are not aware of a definitive proof.
 \end_layout
 
 \end_inset
 
-, so from certain multipole degree onwards, 
+ from certain multipole degree onwards, 
 \begin_inset Formula $l,l'>L$
 \end_inset
 
@@ -782,7 +822,7 @@ TODO
 \begin_inset Formula $L$
 \end_inset
 
- gives a good approximation of the actual infinite-dimensional itself.
+ gives a good approximation of the actual infinite-dimensional operator.
  If the incident field is well-behaved, i.e.
  the expansion coefficients 
 \begin_inset Formula $\rcoefftlm{\tau'}{l'}{m'}$
@@ -1015,7 +1055,7 @@ where
 \end_inset
 
  is well-defined only when 
-\begin_inset Formula $\eta$
+\begin_inset Formula $\kappa^{2}\eta$
 \end_inset
 
  is real.
@@ -1043,6 +1083,26 @@ where
 \end_inset
 
  is negative and its magnitude equals to power absorbed by the scatterer.
+ In other words, the hermitian operator 
+\begin_inset Formula $\Pi=\Tp{}^{\dagger}\Tp{}+\left(\Tp{}^{\dagger}+\Tp{}\right)/2$
+\end_inset
+
+ must be negative (semi-)definite for a particle without gain.
+ This provides a simple but very useful sanity check on the numerically
+ obtained 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices: non-negligible positive eigenvalues of 
+\begin_inset Formula $\Pi$
+\end_inset
+
+ indicate either too drastic multipole truncation or another problem with
+ the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix.
 \end_layout
 
 \begin_layout Subsubsection

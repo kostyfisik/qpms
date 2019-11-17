@@ -260,6 +260,22 @@ superposition
 \end_inset
 
 -matrix method
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "litvinov_rigorous_2008"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\emph on
 \begin_inset Marginal
 status open
 
@@ -271,7 +287,10 @@ a.k.a.
 \end_inset
 
 
-\emph default
+\end_layout
+
+\end_inset
+
 , and it has been implemented previously for a limited subset of problems
 \begin_inset Marginal
 status open
@@ -283,6 +302,14 @@ Refs; list the limitations of available codes?
 \end_inset
 
 .
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "markkanen_fast_2017,markkanen_fastmm_2017"
+literal "false"
+
+\end_inset
+
  
 \begin_inset Note Note
 status open
@@ -340,13 +367,29 @@ We hereby release our MSTMM implementation, the
 \emph on
 QPMS Photonic Multiple Scattering
 \emph default
- suite, as free software under the GNU General Public License version 3.
- 
+ suite 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "necada_qpms_2019"
+literal "false"
+
+\end_inset
+
+, as free software under the GNU General Public License version 3.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
-TODO refs to the code repositories once it is published.
+(remember to clean / update the repos before submitting)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -358,25 +401,16 @@ TODO refs to the code repositories once it is published.
 s.
  Moreover, it includes the improvements covered in this article, enabling
  to simulate even larger systems and also infinite structures with periodicity
- in one or two or three dimensions, which can be used e.g.
- for quickly evaluating dispersions of such structures.
+ in one, two or three dimensions, which can be used e.g.
+ for evaluating dispersions of such structures.
  The QPMS suite contains a core C library, Python bindings and several utilities
- for routine computations.
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-Such as?
-\end_layout
-
-\end_inset
-
- 
+ for routine computations, such as scattering cross sections under plane
+ wave irradiation or lattice modes of two-dimensional periodic arrays.
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-, such as TODO.
+TODO před odesláním zkontrolovat, co všechno to v danou chvíli umí.
 \end_layout
 
 \end_inset
