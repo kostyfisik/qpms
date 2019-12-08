@@ -1,0 +1,54 @@
+# Drude-Lorentz models, with the same constants as in qpms.
+# Compared to qpms, sign of the imaginary part is swapped here due
+# to different time-frequency transform convention.
+
+MATERIAL LDSilver
+# Electronvolt over reduced Planck's constant; the omegas and gammas
+# are defined in these units.
+   eh = 1519267460583196.5;
+   omegap = 9.01
+   f0 = 0.84
+   f1 = 0.065
+   f2 = 0.124
+   f3 = 0.111
+   f4 = 0.84
+   f5 = 5.646
+   omega0 = 0.0
+   omega1 = 0.816
+   omega2 = 4.481
+   omega3 = 8.185
+   omega4 = 9.083
+   omega5 = 20.29
+   gamma0 = 0.053
+   gamma1 = 3.886
+   gamma2 = 0.452
+   gamma3 = 0.065
+   gamma4 = 0.916
+   gamma5 = 2.419
+   Eps(w) = f0 * (omegap * eh)^2 / ((omega0 * eh)^2 - w^2 + I * w * gamma0) + f1 * (omegap * eh)^2 / ((omega1 * eh)^2 - w^2 + I * w * gamma1) + f2 * (omegap * eh)^2 / ((omega2 * eh)^2 - w^2 + I * w * gamma2) + f3 * (omegap * eh)^2 / ((omega3 * eh)^2 - w^2 + I * w * gamma3) + f4 * (omegap * eh)^2 / ((omega4 * eh)^2 - w^2 + I * w * gamma4) + f5 * (omegap * eh)^2 / ((omega5 * eh)^2 - w^2 + I * w * gamma5);
+ENDMATERIAL
+
+MATERIAL LDGold
+   eh = 1519267460583196.5;
+   omegap = 9.03
+   f0 = 0.76
+   f1 = 0.024
+   f2 = 0.010
+   f3 = 0.071
+   f4 = 0.601
+   f5 = 4.384
+   omega0 = 0.0
+   omega1 = 0.415
+   omega2 = 0.83
+   omega3 = 2.969
+   omega4 = 4.304
+   omega5 = 13.32
+   gamma0 = 0.053
+   gamma1 = 0.241
+   gamma2 = 0.345
+   gamma3 = 0.87
+   gamma4 = 2.494
+   gamma5 = 2.214
+   Eps(w) = f0 * (omegap * eh)^2 / ((omega0 * eh)^2 - w^2 + I * w * gamma0) + f1 * (omegap * eh)^2 / ((omega1 * eh)^2 - w^2 + I * w * gamma1) + f2 * (omegap * eh)^2 / ((omega2 * eh)^2 - w^2 + I * w * gamma2) + f3 * (omegap * eh)^2 / ((omega3 * eh)^2 - w^2 + I * w * gamma3) + f4 * (omegap * eh)^2 / ((omega4 * eh)^2 - w^2 + I * w * gamma4) + f5 * (omegap * eh)^2 / ((omega5 * eh)^2 - w^2 + I * w * gamma5);
+ENDMATERIAL
+
