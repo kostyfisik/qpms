@@ -57,6 +57,15 @@ cdef class TMatrixInterpolator:
     property freq_interval:
         def __get__(self):
             return [self.freqs[0], self.freqs[self.nfreqs-1]]
+    property omega_table:
+        def __get__(self):
+            cdef size_t i
+            omegas = np.empty((self.nfreqs,), dtype=float)
+            cdef double[:] omegas_view = omegas
+            for i in range(self.nfreqs):
+                omegas_view[i] = self.freqs[i]
+            return omegas
+
 
 cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py!
     '''
