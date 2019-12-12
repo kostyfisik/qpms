@@ -1,3 +1,6 @@
+'''
+Mostly legacy code; new scripts use mostly argproc.py
+'''
 import warnings
 import argparse
 #import sys # for debugging purpose, TODO remove in production

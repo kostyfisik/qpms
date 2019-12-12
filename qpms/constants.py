@@ -1,6 +1,6 @@
 # unit conversions, mostly for standalone usage
 # TODO avoid importing the "heavy" qpms parts
-from scipy.constants import epsilon_0 as ε_0, c, pi as π, e as eV, hbar as ℏ, mu_0 as μ_0
+from scipy.constants import epsilon_0 as ε_0, c, pi as π, e as eV, hbar, hbar as ℏ, mu_0 as μ_0
 pi = π
 μm = 1e-6
 nm = 1e-9
