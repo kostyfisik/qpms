@@ -4,13 +4,9 @@ import math
 from qpms.argproc import ArgParser
 
 
-ap = ArgParser(['single_particle', 'single_omega', 'single_lMax'])
-ap.add_argument("-p", "--period", type=float, required=True, help='square lattice period')
-ap.add_argument("--Nx", type=int, required=True, help='Array size x')
-ap.add_argument("--Ny", type=int, required=True, help='Array size y')
+ap = ArgParser(['rectlattice2d_finite', 'single_particle', 'single_lMax', 'single_omega'])
 ap.add_argument("-k", '--kx-lim', nargs=2, type=float, required=True, help='k vector', metavar=('KX_MIN', 'KX_MAX'))
 # ap.add_argument("--kpi", action='store_true', help="Indicates that the k vector is given in natural units instead of SI, i.e. the arguments given by -k shall be automatically multiplied by pi / period (given by -p argument)")
-ap.add_argument("--rank-tol", type=float, required=False)
 ap.add_argument("-o", "--output", type=str, required=False, help='output path (if not provided, will be generated automatically)')
 ap.add_argument("-N", type=int, default="151", help="Number of angles")
 ap.add_argument("-O", "--plot-out", type=str, required=False, help="path to plot output (optional)")
@@ -23,12 +19,14 @@ a=ap.parse_args()
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
+Nx, Ny = a.size
+px, py = a.period
 
 particlestr = ("sph" if a.height is None else "cyl") + ("_r%gnm" % (a.radius*1e9))
 if a.height is not None: particlestr += "_h%gnm" % (a.height * 1e9)
-defaultprefix = "%s_p%gnm_%dx%d_m%s_n%g_angles(%g_%g)_Ey_f%geV_L%d_cn%d" % (
-    particlestr, a.period*1e9, a.Nx, a.Ny, str(a.material), a.refractive_index, a.kx_lim[0], a.kx_lim[1], a.eV, a.lMax, a.N)
-logging.info("Dafault file prefix: %s" % defaultprefix)
+defaultprefix = "%s_p%gnmx%gnm_%dx%d_m%s_n%g_angles(%g_%g)_Ey_f%geV_L%d_cn%d" % (
+    particlestr, px*1e9, py*1e9, Nx, Ny, str(a.material), a.refractive_index, a.kx_lim[0], a.kx_lim[1], a.eV, a.lMax, a.N)
+logging.info("Default file prefix: %s" % defaultprefix)
 
 
 import numpy as np
@@ -44,12 +42,9 @@ eh = eV/hbar
 
 dbgmsg_enable(DebugFlags.INTEGRATION)
 
-px=a.period
-py=a.period
-
 #Particle positions
-orig_x = (np.arange(a.Nx/2) + (0 if (a.Nx % 2) else .5)) * px
-orig_y = (np.arange(a.Ny/2) + (0 if (a.Ny % 2) else .5)) * py
+orig_x = (np.arange(Nx/2) + (0 if (Nx % 2) else .5)) * px
+orig_y = (np.arange(Ny/2) + (0 if (Ny % 2) else .5)) * py
 
 orig_xy = np.stack(np.meshgrid(orig_x, orig_y), axis = -1)
 
