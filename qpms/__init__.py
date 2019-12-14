@@ -16,7 +16,6 @@ except ImportError as ex:
             __warnings.warn("Does your LD_LIBRARY_PATH include a directory where you installed libqpms? Check and run python again."
                 '\nCurrently, I see LD_LIBRARY_PATH="%s"' % __os.environ['LD_LIBRARY_PATH'])        
     raise ex
-from .qpms_p import *
 from .cyquaternions import CQuat, IRot3
 from .cybspec import VSWFNorm, BaseSpec, default_bspec
 from .cytmatrices import CTMatrix, TMatrixInterpolator, TMatrixGenerator
@@ -24,7 +23,12 @@ from .cytranslations import trans_calculator
 from .cymaterials import MaterialInterpolator, EpsMu, LorentzDrudeModel, lorentz_drude, EpsMuGenerator
 from .cycommon import dbgmsg_enable, dbgmsg_disable, dbgmsg_active, BesselType, VSWFType
 from .cywaves import vswf_single
-from .lattices2d import *
-from .hexpoints import *
-from .tmatrices import *
+
+from .qpms_p import * # maybe don't import automatically in the future (adds around 0.5 s delay)
+from .constants import *
+
+# legacy code which brutally slows down the whole package init:
+#from .lattices2d import *
+#from .hexpoints import *
+#from .tmatrices import *
 
