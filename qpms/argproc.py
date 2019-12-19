@@ -26,6 +26,7 @@ class ArgParser:
             'rectlattice2d_periods': lambda ap: ap.add_argument("-p", "--period", type=float, nargs='+', required=True, help='square/rectangular lattice periods', metavar=('px','[py]')),
             'rectlattice2d_counts': lambda ap: ap.add_argument("--size", type=int, nargs=2, required=True, help='rectangular array size (particle column, row count)', metavar=('NCOLS', 'NROWS')),
             'single_frequency_eV': lambda ap: ap.add_argument("-f", "--eV", type=float, required=True, help='radiation angular frequency in eV'),
+            'seq_frequency_eV': lambda ap: ap.add_argument("-f", "--eV-seq", type=float, nargs=3, required=True, help='uniform radiation angular frequency sequence in eV', metavar=('FIRST', 'INCREMENT', 'LAST')),
             'single_material': lambda ap: ap.add_argument("-m", "--material", help='particle material (Au, Ag, ... for Lorentz-Drude or number for constant refractive index)', default='Au', required=True),
             'single_radius': lambda ap: ap.add_argument("-r", "--radius", type=float, required=True, help='particle radius (sphere or cylinder)'),
             'single_height': lambda ap: ap.add_argument("-H", "--height", type=float, help='cylindrical particle height; if not provided, particle is assumed to be spherical'),
@@ -45,6 +46,7 @@ class ArgParser:
             'single_particle': ("Single particle definition (shape [currently spherical or cylindrical]) and materials, incl. background)", ('background',), ('single_material', 'single_radius', 'single_height', 'single_lMax_extend'), ('_eval_single_tmgen',)),
             'single_lMax': ("Single particle lMax definition", (), ('single_lMax',), ()),
             'single_omega': ("Single angular frequency", (), ('single_frequency_eV',), ('_eval_single_omega',)),
+            'omega_seq': ("Equidistant real frequency range", (), ('seq_frequency_eV',), ('_eval_omega_seq',)),
             'lattice2d': ("Specification of a generic 2d lattice (spanned by the x,y axes)", (), ('lattice2d_basis',), ('_eval_lattice2d',)),
             'rectlattice2d': ("Specification of a rectangular 2d lattice; conflicts with lattice2d", (), ('rectlattice2d_periods',), ('_eval_rectlattice2d',)),
             'rectlattice2d_finite': ("Specification of a rectangular 2d lattice; conflicts with lattice2d", ('rectlattice2d',), ('rectlattice2d_counts',), ()),
@@ -118,6 +120,13 @@ class ArgParser:
     def _eval_single_omega(self): # feature: single_omega
         from .constants import eV, hbar
         self.omega = self.args.eV * eV / hbar
+
+    def _eval_omega_seq(self): # feature: omega_seq
+        import numpy as np
+        from .constants import eV, hbar
+        start, step, stop = self.args.eV_seq
+        self.omegas = np.arange(start, stop, step)
+        self.omegas *= eV/hbar
 
     def _eval_lattice2d(self): # feature: lattice2d
         l = len(self.args.basis_vectors)
