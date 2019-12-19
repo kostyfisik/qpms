@@ -124,8 +124,8 @@ typedef struct qpms_ss_particle_orbitinfo {
 struct qpms_trans_calculator;
 
 typedef struct qpms_scatsys_t {
-	// TODO does bspec belong here?
-	qpms_tmatrix_t **tm; ///< T-matrices in the system
+	qpms_qpms_epsmu_generator_t *medium; ///< Optical properties of the background medium.
+	qpms_abstract_tmatrix_t **tm; ///< T-matrices in the system
 	qpms_ss_tmi_t tm_count; ///< Number of all different T-matrices
 	qpms_ss_tmi_t tm_capacity; ///< Capacity of tm[].
 	qpms_particle_tid_t *p; ///< Particles.
@@ -166,6 +166,8 @@ typedef struct qpms_scatsys_t {
 	double lenscale; // radius of the array, used as a relative tolerance measure
 	struct qpms_trans_calculator *c;
 } qpms_scatsys_t;
+
+typedef struct qpms_scatsys_at_omega_t {
 
 /// Convenience function to access pi'th particle's bspec.
 static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi) {

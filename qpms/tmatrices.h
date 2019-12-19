@@ -8,6 +8,8 @@
 #include "materials.h"
 #include <stdio.h>
 
+
+
 struct qpms_finite_group_t;
 typedef struct qpms_finite_group_t qpms_finite_group_t;
 
@@ -501,6 +503,25 @@ qpms_errno_t qpms_tmatrix_axialsym_RQ_transposed_fill(complex double *target,
 		qpms_arc_function_t shape, qpms_l_t lMaxQR, qpms_normalisation_t norm,
 		qpms_bessel_t J ///< Use QPMS_BESSEL_REGULAR to calculate \f$ R^T\f$ or QPMS_HANKEL_PLUS to calculate \f$ Q^T\f$.
 		);
+
+
+/// An "abstract" t-matrix, contains a T-matrix generator instead of actual data.
+typedef struct qpms_tmatrix_function_t {
+        /** \brief VSWF basis specification, NOT owned by qpms_tmatrix_t by default.
+         *
+         *  Usually not checked for meaningfulness by the functions (methods),
+         *  so the caller should take care that \a spec->ilist does not
+         *  contain any duplicities and that for each wave with order \a m
+         *  there is also one with order \a −m.
+         */
+        const qpms_vswf_set_spec_t *spec;
+        const qpms_tmatrix_generator_t *gen; ///< A T-matrix generator function.
+} qpms_tmatrix_function_t;
+
+/// A recepy to create another T-matrices from qpms_tmatrix_fuction_t by symmetry operations.
+typedef struct qpms_derived_tmatrix_function_t {
+	const qpms_tmatrix_function_t *t;
+}
 
 
 #if 0
