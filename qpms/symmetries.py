@@ -5,10 +5,12 @@ from cmath import exp, pi
 from math import sqrt
 import numpy as np
 np.set_printoptions(linewidth=200)
-import qpms
 import numbers
 import re
 ň = None
+from .tmatrices import zflip_tyty, xflip_tyty, yflip_tyty, zrotN_tyty, WignerD_yy_fromvector, identity_tyty, apply_ndmatrix_left
+from .cyquaternions import IRot3
+from .cycommon import get_mn_y
 
 s3long = np.sqrt(np.longdouble(3.))
 
@@ -66,7 +68,7 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         self.rep3d_gens = rep3d_gens
         self.rep3d = None if rep3d_gens is None else generate_grouprep(
                 self.permgroup,
-                qpms.IRot3(),
+                IRot3(),
                 permgroupgens, rep3d_gens,
                 immultop = None, imcmp = (lambda x, y: x.isclose(y))
                 )
@@ -81,7 +83,7 @@ class SVWFPointGroupInfo: # only for point groups, coz in svwf_rep() I use I_tyt
         This method generates full SVWF (reducible) representation of the group.
         '''
         svwfgens = self.svwf_rep_gen_func(lMax, *rep_gen_func_args, **rep_gen_func_kwargs)
-        my, ny = qpms.get_mn_y(lMax)
+        my, ny = get_mn_y(lMax)
         nelem = len(my)
         I_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * np.eye(nelem), 2,1)
         return generate_grouprep(self.permgroup, I_tyty, self.permgroupgens, svwfgens, immultop = mmult_tyty, imcmp = np.allclose)
@@ -206,9 +208,9 @@ nun =  np.array(((-1/2,s3long/2),(s3long/2,1/2)))
 
 
 def mmult_tyty(a, b):
-        return(qpms.apply_ndmatrix_left(a, b, (-4,-3)))
+        return(apply_ndmatrix_left(a, b, (-4,-3)))
 def mmult_ptypty(a, b):
-    return(qpms.apply_ndmatrix_left(a, b, (-6,-5,-4)))
+    return(apply_ndmatrix_left(a, b, (-6,-5,-4)))
 
 def gen_point_group_svwfrep_irreps(permgroup, matrix_irreps_dict, sphrep_full):
     '''
@@ -346,14 +348,14 @@ def gen_point_D3h_svwf_rep(lMax, vflip = 'x'):
     as an array with indices [k,l,t,y,t,y]
     '''
 
-    my, ny = qpms.get_mn_y(lMax)
+    my, ny = get_mn_y(lMax)
     nelem = len(my)
-    C3_yy = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,2*pi/3]))
+    C3_yy = WignerD_yy_fromvector(lMax, np.array([0,0,2*pi/3]))
     C3_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * C3_yy, 2,1)
-    zfl_tyty = qpms.zflip_tyty(lMax)
-    #yfl_tyty = qpms.yflip_tyty(lMax)
-    #xfl_tyty = qpms.xflip_tyty(lMax)
-    vfl_tyty = qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax)
+    zfl_tyty = zflip_tyty(lMax)
+    #yfl_tyty = yflip_tyty(lMax)
+    #xfl_tyty = xflip_tyty(lMax)
+    vfl_tyty = yflip_tyty(lMax) if vflip == 'y' else xflip_tyty(lMax)
     I_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * np.eye(nelem), 2,1)
     order = D3h_permgroup.order()
     sphrep_full = generate_grouprep(D3h_permgroup, I_tyty, D3h_srcgens, [C3_tyty, vfl_tyty, zfl_tyty], 
@@ -382,14 +384,14 @@ def gen_point_D3h_svwf_rep(lMax, vflip = 'x'):
     return sphreps
         
 def gen_hexlattice_Kpoint_svwf_rep(lMax, psi, vflip = 'x'):
-    my, ny = qpms.get_mn_y(lMax)
+    my, ny = get_mn_y(lMax)
     nelem = len(my)
-    C3_yy = qpms.WignerD_yy_fromvector(lMax, np.array([0,0,2*pi/3]))
+    C3_yy = WignerD_yy_fromvector(lMax, np.array([0,0,2*pi/3]))
     C3_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * C3_yy, 2,1)
-    zfl_tyty = qpms.zflip_tyty(lMax)
-    #yfl_tyty = qpms.yflip_tyty(lMax)
-    #xfl_tyty = qpms.xflip_tyty(lMax)
-    vfl_tyty = qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax)
+    zfl_tyty = zflip_tyty(lMax)
+    #yfl_tyty = yflip_tyty(lMax)
+    #xfl_tyty = xflip_tyty(lMax)
+    vfl_tyty = yflip_tyty(lMax) if vflip == 'y' else xflip_tyty(lMax)
     I_tyty = np.moveaxis(np.eye(2)[:,:,ň,ň] * np.eye(nelem), 2,1)
     hex_C3_K_ptypty = np.diag([exp(-psi*1j*2*pi/3),exp(+psi*1j*2*pi/3)])[:,ň,ň,:,ň,ň] * C3_tyty[ň,:,:,ň,:,:]
     hex_zfl_ptypty = np.eye(2)[:,ň,ň,:,ň,ň] * zfl_tyty[ň,:,:,ň,:,:]
@@ -492,10 +494,10 @@ point_group_info = { # representation info of some useful point groups
                                     "A" : (1,),
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.identity_tyty(lMax),),
+                               lambda lMax : (identity_tyty(lMax),),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.IRot3.identity(),
+                                   IRot3.identity(),
                                 )
     ),
     'C2' : SVWFPointGroupInfo('C2',
@@ -509,10 +511,10 @@ point_group_info = { # representation info of some useful point groups
                                     'B': (-1,),    
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.zrotN_tyty(2, lMax),),
+                               lambda lMax : (zrotN_tyty(2, lMax),),
                  # quaternion rep generators
                                 rep3d_gens = (
-                                    qpms.IRot3.zrotN(2),
+                                    IRot3.zrotN(2),
                                 )
 
     ),
@@ -530,11 +532,11 @@ point_group_info = { # representation info of some useful point groups
                                     'B1': (1,-1),    
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax)),
+                               lambda lMax : (xflip_tyty(lMax), yflip_tyty(lMax)),
                  # quaternion rep generators
                                 rep3d_gens = (
-                                    qpms.IRot3.xflip(),
-                                    qpms.IRot3.yflip(),
+                                    IRot3.xflip(),
+                                    IRot3.yflip(),
                                 )
 
     ),
@@ -559,12 +561,12 @@ point_group_info = { # representation info of some useful point groups
                                     "B1''": (-1,1,-1),
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.xflip_tyty(lMax), qpms.yflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+                               lambda lMax : (xflip_tyty(lMax), yflip_tyty(lMax), zflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.IRot3.xflip(),
-                                   qpms.IRot3.yflip(),
-                                   qpms.IRot3.zflip(),
+                                   IRot3.xflip(),
+                                   IRot3.yflip(),
+                                   IRot3.zflip(),
                                 )
     ),
     'C4' : SVWFPointGroupInfo('C4',
@@ -579,10 +581,10 @@ point_group_info = { # representation info of some useful point groups
                                     '2E': (1j,),
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.zrotN_tyty(4, lMax), ),
+                               lambda lMax : (zrotN_tyty(4, lMax), ),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.IRot3.zrotN(4),
+                                   IRot3.zrotN(4),
                                 )
     ),
     'C4v' : SVWFPointGroupInfo('C4v',
@@ -600,11 +602,11 @@ point_group_info = { # representation info of some useful point groups
                                     'B2': (-1,-1),    
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax)),
+                               lambda lMax : (zrotN_tyty(4, lMax), xflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.IRot3.zrotN(4),
-                                   qpms.IRot3.xflip(),
+                                   IRot3.zrotN(4),
+                                   IRot3.xflip(),
                                 )
     ),
     'D4h' : SVWFPointGroupInfo('D4h',
@@ -627,12 +629,12 @@ point_group_info = { # representation info of some useful point groups
                                     "B2''": (-1,1,-1), 
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax : (qpms.zrotN_tyty(4, lMax), qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+                               lambda lMax : (zrotN_tyty(4, lMax), xflip_tyty(lMax), zflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.IRot3.zrotN(4),
-                                   qpms.IRot3.xflip(),
-                                   qpms.IRot3.zflip(),
+                                   IRot3.zrotN(4),
+                                   IRot3.xflip(),
+                                   IRot3.zflip(),
                                 )
     ),
     'D3h' : SVWFPointGroupInfo('D3h',
@@ -652,12 +654,12 @@ point_group_info = { # representation info of some useful point groups
                                     "A2''" : (1,1,-1),
                                },
                  # function that generates a tuple with svwf representation generators
-                               lambda lMax, vflip: (qpms.zrotN_tyty(3, lMax), qpms.yflip_tyty(lMax) if vflip == 'y' else qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+                               lambda lMax, vflip: (zrotN_tyty(3, lMax), yflip_tyty(lMax) if vflip == 'y' else xflip_tyty(lMax), zflip_tyty(lMax)),
                  # quaternion rep generators
                                rep3d_gens = (
-                                   qpms.IRot3.zrotN(3),
-                                   qpms.IRot3.xflip(), # if vflip == 'y' else qpms.IRot3.xflip(), # FIXME enable to choose
-                                   qpms.IRot3.zflip(),
+                                   IRot3.zrotN(3),
+                                   IRot3.xflip(), # if vflip == 'y' else IRot3.xflip(), # FIXME enable to choose
+                                   IRot3.zflip(),
                                 )
     ),
     'x_and_z_flip': SVWFPointGroupInfo(
@@ -672,10 +674,10 @@ point_group_info = { # representation info of some useful point groups
 	    "P''": (-1,-1),
 	    "R''": (1, -1),
 	},
-	lambda lMax : (qpms.xflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+	lambda lMax : (xflip_tyty(lMax), zflip_tyty(lMax)),
         rep3d_gens = (
-            qpms.IRot3.xflip(),
-            qpms.IRot3.zflip(),
+            IRot3.xflip(),
+            IRot3.zflip(),
         )
 
     ),
@@ -691,10 +693,10 @@ point_group_info = { # representation info of some useful point groups
 	    "P''": (-1,-1),
 	    "R''": (1, -1),
 	},
-	lambda lMax : (qpms.yflip_tyty(lMax), qpms.zflip_tyty(lMax)),
+	lambda lMax : (yflip_tyty(lMax), zflip_tyty(lMax)),
         rep3d_gens = (
-            qpms.IRot3.yflip(),
-            qpms.IRot3.zflip(),
+            IRot3.yflip(),
+            IRot3.zflip(),
         )
     ),
 }
