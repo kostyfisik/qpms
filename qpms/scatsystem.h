@@ -167,7 +167,22 @@ typedef struct qpms_scatsys_t {
 	struct qpms_trans_calculator *c;
 } qpms_scatsys_t;
 
+
 typedef struct qpms_scatsys_at_omega_t {
+	const qpms_scatsys_t *ss; ///< Parent scattering system.
+	/// T-matrices from \a ss, evaluated at \a omega.
+	/** The T-matrices are in the same order as in \a ss,
+	 * i.e in the order corresponding to TODO WHAT E7ACTLY??
+	 */
+	qpms_tmatrix_t **tm;
+	complex double omega; ///< Angular frequency
+	complex double eps; ///< Background medium relative electric permittivity
+	complex double mu; ///< Background medium relative magnetic permeability
+	complex double wavenumber; ///< Background medium wavenumber
+	complex double refractive_index; ///< Background medium refractive index
+} qpms_scatsys_at_omega_t;
+
+void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *);
 
 /// Convenience function to access pi'th particle's bspec.
 static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi) {

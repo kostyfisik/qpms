@@ -505,7 +505,7 @@ qpms_errno_t qpms_tmatrix_axialsym_RQ_transposed_fill(complex double *target,
 		);
 
 
-/// An "abstract" t-matrix, contains a T-matrix generator instead of actual data.
+/// An "abstract" T-matrix, contains a T-matrix generator instead of actual data.
 typedef struct qpms_tmatrix_function_t {
         /** \brief VSWF basis specification, NOT owned by qpms_tmatrix_t by default.
          *
