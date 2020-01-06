@@ -1007,7 +1007,7 @@ void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
       if(f->op.irot3arr.owns_ops)
         free(f->op.irot3arr.ops);
       break;
-    case QPMS_TMATRIX_OPERATION_FINITE_GROUP: // Group never owned
+    case QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE: // Group never owned
       break;
     case QPMS_TMATRIX_OPERATION_COMPOSE_SUM:
       {
@@ -1015,7 +1015,7 @@ void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
           &(f->op.compose_sum);
         if(o->opmem) {
           for(size_t i = 0; i < o->n; ++i) 
-            qpms_tmatrix_operation_clear(o->ops[i]);
+            qpms_tmatrix_operation_clear(&(o->opmem[i]));
           free(o->opmem);
         }
         free(o->ops);
@@ -1027,12 +1027,71 @@ void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
           &(f->op.compose_chain);
         if(o->opmem) {
           for(size_t i = 0; i < o->n; ++i) 
-            qpms_tmatrix_operation_clear(o->ops[i]);
+            qpms_tmatrix_operation_clear(&(o->opmem[i]));
           free(o->opmem);
         }
         free(o->ops);
       }
       break;
+    default:
+      QPMS_WTF;
+  }
+}
+
+qpms_tmatrix_t *qpms_tmatrix_apply_operation(
+    const qpms_tmatrix_operation_t *f, const qpms_tmatrix_t *orig) {
+  // Certain operations could be optimized, but the effect would be marginal.
+  qpms_tmatrix_t *res = qpms_tmatrix_copy(orig); 
+  return qpms_tmatrix_apply_operation_inplace(f, res);
+}
+
+static qpms_tmatrix_t *qtao_compose_sum_inplace(qpms_tmatrix_t *T, 
+    const struct qpms_tmatrix_operation_compose_sum *cs) {
+  qpms_tmatrix_t *tmp_target = qpms_tmatrix_init(T->spec);
+  qpms_tmatrix_t *sum = qpms_tmatrix_init(T->spec);
+  for (size_t i = 0; i < cs->n; ++i) {
+    memcpy(tmp_target->m, T->m, SQ(T->spec->n) * sizeof(complex double));
+    QPMS_ENSURE(qpms_tmatrix_apply_operation_inplace(cs->ops[i] , tmp_target),
+        "Got NULL pointer from qpms_tmatrix_apply_operation_inplace, hupsis!");
+    for (size_t j = 0; j < SQ(T->spec->n); ++j)
+      sum->m[j] += tmp_target->m[j];
+  }
+  for(size_t j = 0; j < SQ(T->spec->n); ++j)
+    T->m[j] = sum->m[j] * cs->factor;
+  qpms_tmatrix_free(sum);
+  qpms_tmatrix_free(tmp_target);
+  return T;
+}
+
+static qpms_tmatrix_t *qtao_compose_chain_inplace(qpms_tmatrix_t *T,
+    const struct qpms_tmatrix_operation_compose_chain *cc) {
+  for(size_t i = 0; i < cc->n; ++i)
+    qpms_tmatrix_apply_operation_inplace(cc->ops[i], T);
+  return T;
+}
+
+static qpms_tmatrix_t *qtao_scmulz_inplace(qpms_tmatrix_t *T,
+    const struct qpms_tmatrix_operation_scmulz *s) {
+  for(size_t i = 0; i < SQ(T->spec->n); ++i)
+    T->m[i] *= s->m[i];
+  return T;
+}
+
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(
+    const qpms_tmatrix_operation_t *f, qpms_tmatrix_t *T) {
+  switch(f->typ) {
+    case QPMS_TMATRIX_OPERATION_LRMATRIX:
+      return qpms_tmatrix_apply_symop_inplace(T, f->op.lrmatrix.m);
+    case QPMS_TMATRIX_OPERATION_IROT3:
+      return qpms_tmatrix_symmetrise_irot3arr_inplace(T, 1, &(f->op.irot3));
+    case QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE:
+      return qpms_tmatrix_symmetrise_finite_group_inplace(T, f->op.finite_group);
+    case QPMS_TMATRIX_OPERATION_COMPOSE_SUM:
+      return qtao_compose_sum_inplace(T, &(f->op.compose_sum));
+    case QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN:
+      return qtao_compose_chain_inplace(T, &(f->op.compose_chain));
+    case QPMS_TMATRIX_OPERATION_SCMULZ:
+      return qtao_scmulz_inplace(T, &(f->op.scmulz));
     default:
       QPMS_WTF;
   }

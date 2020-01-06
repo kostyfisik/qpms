@@ -3,6 +3,9 @@ find_package(GSL 2.0 REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
+# disable an annoying warning that gives false positives probably due to a bug in gcc
+# and other not very relevant warnings
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-int-in-bool-context -Wno-comment")
 
 #includes
 set (DIRS ${GSL_INCLUDE_DIRS} ${GSLCBLAS_INCLUDE_DIRS})

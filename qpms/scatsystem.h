@@ -122,9 +122,10 @@ typedef struct qpms_ss_particle_orbitinfo {
 } qpms_ss_particle_orbitinfo_t;
 
 struct qpms_trans_calculator;
+struct qpms_epsmu_generator_t;
 
 typedef struct qpms_scatsys_t {
-	qpms_qpms_epsmu_generator_t *medium; ///< Optical properties of the background medium.
+	struct qpms_qpms_epsmu_generator_t *medium; ///< Optical properties of the background medium.
 	qpms_abstract_tmatrix_t **tm; ///< T-matrices in the system
 	qpms_ss_tmi_t tm_count; ///< Number of all different T-matrices
 	qpms_ss_tmi_t tm_capacity; ///< Capacity of tm[].
