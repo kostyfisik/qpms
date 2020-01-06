@@ -518,10 +518,104 @@ typedef struct qpms_tmatrix_function_t {
         const qpms_tmatrix_generator_t *gen; ///< A T-matrix generator function.
 } qpms_tmatrix_function_t;
 
-/// A recepy to create another T-matrices from qpms_tmatrix_fuction_t by symmetry operations.
+/// Specifies different kinds of operations done on T-matrices
+typedef enum {
+	QPMS_TMATRIX_OPERATION_LRMATRIX, ///< General matrix transformation \f[ T' = MTM^\dagger \f]; see @ref qpms_tmatrix_operation_lrmatrix.
+	QPMS_TMATRIX_OPERATION_IROT3, ///< Single rotoreflection specified by a qpms_irot3_t.
+	QPMS_TMATRIX_OPERATION_IROT3ARR, ///< Symmetrise using an array of rotoreflection; see @ref qpms_tmatrix_operation_irot3arr.
+	QPMS_TMATRIX_OPERATION_COMPOSE_SUM, ///< Apply several transformations and sum the results, see @ref qpms_tmatrix_operation_compose_sum.
+	QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN, ///< Chain several different transformations; see @ref qpms_tmatrix_operation_compose_chain.
+	QPMS_TMATRIX_OPERATION_SCMULZ, ///< Elementwise scalar multiplication with a complex matrix; see @ref qpms_tmatrix_operation_scmulz.
+	//QPMS_TMATRIX_OPERATION_POINTGROUP, ///< TODO the new point group in pointgroup.h
+	QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE ///< Legacy qpms_finite_group_t with filled rep3d; see @ref qpms_tmatrix_operation_finite_group.
+} qpms_tmatrix_operation_kind_t;
+
+/// General matrix transformation \f[ T' = MTM^\dagger \f] spec for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_lrmatrix {
+	/// Raw matrix data of \a M in row-major order.
+	/** The matrix must be taylored for the given bspec! */
+	const complex double *m; 
+	bool owns_m; ///< Whether \a m is owned by this;
+};
+
+struct qpms_tmatrix_operation_t; // Forward declaration for the composed operations.
+
+/// Specifies a composed operation of type \f$ T' = c\Sum_i f_i'(T) \f$ for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_compose_sum {
+	size_t n; ///< Number of operations in ops;
+	const struct qpms_tmatrix_operation_t **ops; ///< Operations array. (Pointers array \a ops[] always owned by this.)
+	double factor; ///< Overall factor \a c.
+	/// (Optional) operations buffer into which elements of \a ops point.
+	/** Owned by this or NULL. If not NULL, all \a ops members are assumed to point into 
+	 * the memory held by \a opmem and to be properly initialised.
+	 * Each \a ops member has to point to _different_ elements of \a opmem.
+	 */ 
+	qpms_tmatrix_operation_t *opmem; 
+};
+
+/// Specifies a composed operation of type \f$ T' =  f_{n-1}(f_{n-2}(\dots f_0(T)\dots))) \f$ for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_compose_chain {
+	size_t n; ///< Number of operations in ops;
+	const struct qpms_tmatrix_operation_t **ops; ///< Operations array. (Pointers owned by this.)
+	qpms_tmatrix_operation_t *opmem; ///< (Optional) operations buffer into which elements of \a ops point. (Owned by this or NULL.)
+};
+
+/// Specifies an elementwise complex multiplication of type \f$ T'_{ij} = M_{ij}T_{ij} \f$ for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_scmulz {
+	/// Raw matrix data of \a M in row-major order.
+	/** The matrix must be taylored for the given bspec! */
+	const complex double *m; 
+	bool owns_m; ///< Whether \a m is owned by this.
+};
+
+/// Specifies a symmetrisation using a set of rotoreflections (with equal weights) for qpms_tmatrix_operation_t.
+/** Internally, this is evaluated using a call to qpms_symmetrise_tmdata_irot3arr()
+ * or qpms_symmetrise_tmdata_irot3arr_inplace(). */
+struct qpms_tmatrix_operation_irot3arr {
+	size_t n; ///< Number of rotoreflections;
+	const qpms_irot3_t *ops; ///< Rotoreflection array of size \a n.
+	bool owns_ops; ///< Whether \a ops array is owned by this.
+};
+
+/// A generic T-matrix transformation operator.
+typedef struct qpms_tmatrix_operation_t {
+	/// Specifies the operation kind to be performed and which type \op actually contains.
+	qpms_tmatrix_operation_kind_t typ;
+	union {
+		struct qpms_tmatrix_operation_lrmatrix lrmatrix;
+		struct qpms_tmatrix_operation_scmulz scmulz;
+		qpms_irot3 irot3; ///< Single rotoreflection; \a typ = QPMS_TMATRIX_OPERATION_IROT3
+		struct qpms_tmatrix_operation_finite_group finite_group;
+		struct qpms_tmatrix_operation_irot3arr irot3arr;
+		struct qpms_tmatrix_operation_compose_sum compose_sum;
+		struct qpms_tmatrix_operation_compose_chain compose_chain;
+		/// Finite group for QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE.
+		/** Not owned by this; \a rep3d must be filled. */
+		const qpms_finite_group_t *finitegroup; 
+	} op; ///< Operation data; actual type is determined by \a typ.
+} qpms_tmatrix_operation_t;
+
+/// Apply an operation on a T-matrix, returning a newly allocated result.
+// TODO IMPLEMENT
+qpms_tmatrix_t *qpms_tmatrix_apply_operation(const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig);
+
+/// Apply an operation on a T-matrix and replace it with the result.
+// TODO IMPLEMENT
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(const qpms_tmatrix_operation_t *op, qpms_tmatrix_t *orig);
+
+/// (Recursively) deallocates internal data of qpms_tmatrix_operation_t.
+/** It does NOT clear the memory pointed to by op it self, but only
+ * heap-allocated data of certain operations, if labeled as owned by it.
+ * In case of compose operations, the recursion stops if the children are
+ * not owned by them (the opmem pointer is NULL).
+ */
+void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f);
+
+/// A recepy to create another T-matrices from qpms_tmatrix_fuction_t by symmetry (or other) operations.
 typedef struct qpms_derived_tmatrix_function_t {
 	const qpms_tmatrix_function_t *t;
-}
+	const qpms_tmatrix_operation_t *op;
+} qpms_derived_tmatrix_function_t;
 
 
 #if 0

@@ -991,3 +991,49 @@ qpms_errno_t qpms_tmatrix_generator_constant(qpms_tmatrix_t *t,
   return QPMS_SUCCESS;
 }
 
+void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
+  switch(f->typ) {
+    case QPMS_TMATRIX_OPERATION_LRMATRIX:
+      if(f->op.lrmatrix.owns_m)
+        free(f->op.lrmatrix.m);
+      break;
+    case QPMS_TMATRIX_OPERATION_SCMULZ:
+      if(f->op.scmulz.owns_m)
+        free(f->op.scmulz.m);
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3:
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3ARR:
+      if(f->op.irot3arr.owns_ops)
+        free(f->op.irot3arr.ops);
+      break;
+    case QPMS_TMATRIX_OPERATION_FINITE_GROUP: // Group never owned
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_SUM:
+      {
+        struct qpms_tmatrix_operation_compose_sum * const o = 
+          &(f->op.compose_sum);
+        if(o->opmem) {
+          for(size_t i = 0; i < o->n; ++i) 
+            qpms_tmatrix_operation_clear(o->ops[i]);
+          free(o->opmem);
+        }
+        free(o->ops);
+      }
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN:
+      {
+        struct qpms_tmatrix_operation_compose_chain * const o = 
+          &(f->op.compose_chain);
+        if(o->opmem) {
+          for(size_t i = 0; i < o->n; ++i) 
+            qpms_tmatrix_operation_clear(o->ops[i]);
+          free(o->opmem);
+        }
+        free(o->ops);
+      }
+      break;
+    default:
+      QPMS_WTF;
+  }
+}
