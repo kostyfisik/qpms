@@ -993,6 +993,8 @@ qpms_errno_t qpms_tmatrix_generator_constant(qpms_tmatrix_t *t,
 
 void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
   switch(f->typ) {
+    case QPMS_TMATRIX_OPERATION_NOOP:
+      break;
     case QPMS_TMATRIX_OPERATION_LRMATRIX:
       if(f->op.lrmatrix.owns_m)
         free(f->op.lrmatrix.m);
@@ -1080,6 +1082,8 @@ static qpms_tmatrix_t *qtao_scmulz_inplace(qpms_tmatrix_t *T,
 qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(
     const qpms_tmatrix_operation_t *f, qpms_tmatrix_t *T) {
   switch(f->typ) {
+    case QPMS_TMATRIX_OPERATION_NOOP:
+      return f;
     case QPMS_TMATRIX_OPERATION_LRMATRIX:
       return qpms_tmatrix_apply_symop_inplace(T, f->op.lrmatrix.m);
     case QPMS_TMATRIX_OPERATION_IROT3:

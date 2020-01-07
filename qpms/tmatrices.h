@@ -520,6 +520,7 @@ typedef struct qpms_tmatrix_function_t {
 
 /// Specifies different kinds of operations done on T-matrices
 typedef enum {
+	QPMS_TMATRIX_OPERATION_NOOP, ///< Identity operation.
 	QPMS_TMATRIX_OPERATION_LRMATRIX, ///< General matrix transformation \f$ T' = MTM^\dagger \f$; see @ref qpms_tmatrix_operation_lrmatrix.
 	QPMS_TMATRIX_OPERATION_IROT3, ///< Single rotoreflection specified by a qpms_irot3_t.
 	QPMS_TMATRIX_OPERATION_IROT3ARR, ///< Symmetrise using an array of rotoreflection; see @ref qpms_tmatrix_operation_irot3arr.
@@ -609,12 +610,6 @@ qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(const qpms_tmatrix_operatio
  * not owned by them (the opmem pointer is NULL).
  */
 void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f);
-
-/// A recepy to create another T-matrices from qpms_tmatrix_fuction_t by symmetry (or other) operations.
-typedef struct qpms_derived_tmatrix_function_t {
-	const qpms_tmatrix_function_t *t;
-	const qpms_tmatrix_operation_t *op;
-} qpms_derived_tmatrix_function_t;
 
 
 #if 0

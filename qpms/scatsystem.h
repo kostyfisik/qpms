@@ -121,14 +121,32 @@ typedef struct qpms_ss_particle_orbitinfo {
 	qpms_ss_orbit_pi_t p; ///< Order (sija, ei rankki) of the particle inside that orbit type.
 } qpms_ss_particle_orbitinfo_t;
 
+/// Auxillary type used in qpms_scatsys_t: A recepy to create another T-matrices by symmetry operations.
+typedef struct qpms_ss_derived_tmatrix {
+	qpms_ss_tmgi_t tmgi; ///< Index of the corresponding qpms_scatsys_t::tm element.
+	qpms_tmatrix_operation_t *op; ///< Operation to derive this particular T-matrix.
+} qpms_ss_derived_tmatrix_t;
+
+
 struct qpms_trans_calculator;
 struct qpms_epsmu_generator_t;
 
 typedef struct qpms_scatsys_t {
 	struct qpms_qpms_epsmu_generator_t *medium; ///< Optical properties of the background medium.
-	qpms_abstract_tmatrix_t **tm; ///< T-matrices in the system
-	qpms_ss_tmi_t tm_count; ///< Number of all different T-matrices
+	
+	/// (Template) T-matrix functions in the system.
+	/** The qpms_abstract_tmatrix_t objects (onto which this array member point)
+	 *  are NOT owned by this and must be kept alive for the whole lifetime
+	 *  of all qpms_scatsys_t objects that are built upon them.
+	 */
+	qpms_abstract_tmatrix_t **tmg;
+	qpms_ss_tmgi_t tmg_count; ///< Number of all different original T-matrix generators in the system.
+
+	/// All the different T-matrix functions in the system, including those derived from \a tmg elements by symmetries.
+	qpms_ss_derived_tmatrix_t *tm; 
+	qpms_ss_tmi_t tm_count; ///< Number of all different T-matrices in the system (length of tm[]).
 	qpms_ss_tmi_t tm_capacity; ///< Capacity of tm[].
+	
 	qpms_particle_tid_t *p; ///< Particles.
 	qpms_ss_pi_t p_count; ///< Size of particles array.
 	qpms_ss_pi_t p_capacity; ///< Capacity of p[].
@@ -173,7 +191,7 @@ typedef struct qpms_scatsys_at_omega_t {
 	const qpms_scatsys_t *ss; ///< Parent scattering system.
 	/// T-matrices from \a ss, evaluated at \a omega.
 	/** The T-matrices are in the same order as in \a ss,
-	 * i.e in the order corresponding to TODO WHAT E7ACTLY??
+	 * i.e in the order corresponding to \a ss->tm.
 	 */
 	qpms_tmatrix_t **tm;
 	complex double omega; ///< Angular frequency
@@ -190,17 +208,31 @@ static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t 
 	return ss->tm[ss->p[pi].tmatrix_id]->spec;
 }
 
-/// Creates a new scatsys by applying a symmetry group, copying particles if needed.
-/** In fact, it copies everything except the vswf set specs, so keep them alive until scatsys is destroyed.
- * The following fields must be filled:
- * orig->tm
- * orig->tm_count
- * orig->p
- * orig->p_count
+#if 0 //TODO!!!
+/// Creates a new scatsys by applying a symmetry group onto a "proto-scatsys", copying particles if needed.
+/** In fact, it copies everything except the vswf set specs and qpms_abstract_tmatrix_t instances,
+ * so keep them alive until scatsys is destroyed.
+ *  
+ *  The following fields must be filled in the "proto- scattering system" \a orig:
+ *
+ *  * orig->tmg – The pointers are copied to the new qpms_scatsys_t instance; 
+ *    the target qpms_abstract_tmatrix_t objects must be kept alive before all the resulting 
+ *    qpms_scatsys_t instances are properly destroyed. The pointers from orig->tmg, however, are copied.
+ *  * orig->tmg_count
+ *  * orig->tm – Must be filled, although the operations will typically be identities
+ *    (QPMS_TMATRIX_OPERATION_NOOP). N.B. these NOOPs might be replaced with some symmetrisation operation
+ *    in the resulting "full" qpms_scatsys_t instance.
+ *  * orig->tm_count
+ *  * orig->p
+ *  * orig->p_count
  */
-qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym);
+qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym);
+#endif
 /// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.
 void qpms_scatsys_free(qpms_scatsys_t *s);
+
+/// Destroys the result of qpms_scatsys_eval_at_omega()
+void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega *so);
 
 /// Creates a "full" transformation matrix U that takes a full vector and projects it onto an symmetry adapted basis.
 /** Mostly as a reference and a debugging tool, as multiplicating these big matrices would be inefficient.

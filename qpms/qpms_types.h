@@ -297,6 +297,9 @@ typedef struct qpms_vswf_set_spec_t {
 /// T-matrix index used in qpms_scatsys_t and related structures.
 typedef int32_t qpms_ss_tmi_t;
 
+/// T-matrix generator index used in qpms_scatsys_t and related structures.
+typedef int32_t qpms_ss_tmgi_t;
+
 /// Particle index used in qpms_scatsys_t and related structures.
 typedef int32_t qpms_ss_pi_t;
 
