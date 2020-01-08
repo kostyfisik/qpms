@@ -555,6 +555,7 @@ struct qpms_tmatrix_operation_lrmatrix {
 	/// Raw matrix data of \a M in row-major order.
 	/** The matrix must be taylored for the given bspec! */
 	complex double *m; 
+        size_t m_size; ///< Total size of \a m matrix in terms of sizeof(complex double).
 	bool owns_m; ///< Whether \a m is owned by this;
 };
 
@@ -584,7 +585,8 @@ struct qpms_tmatrix_operation_compose_chain {
 struct qpms_tmatrix_operation_scmulz {
 	/// Raw matrix data of \a M in row-major order.
 	/** The matrix must be taylored for the given bspec! */
-	complex double *m; 
+	complex double *m;
+        size_t m_size; ///< Total size of \a m matrix in terms of sizeof(complex double).
 	bool owns_m; ///< Whether \a m is owned by this.
 };
 
@@ -628,6 +630,9 @@ qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(const qpms_tmatrix_operatio
  */
 void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f);
 
+/// (Recursively) copies an qpms_tmatrix_operation_t.
+/** Makes copies of all the internal data and takes ownership over them if needed */
+void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *target, const qpms_tmatrix_operation_t *src);
 
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries

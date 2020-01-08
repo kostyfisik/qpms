@@ -1040,6 +1040,60 @@ void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
   }
 }
 
+void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *dest, const qpms_tmatrix_operation_t *src) {
+  memcpy(dest, src, sizeof(qpms_tmatrix_operation_t));
+  switch(dest->typ) {
+    case QPMS_TMATRIX_OPERATION_NOOP:
+      break;
+    case QPMS_TMATRIX_OPERATION_LRMATRIX:
+      QPMS_CRASHING_MALLOCPY(dest->op.lrmatrix.m, src->op.lrmatrix.m, 
+          sizeof(complex double) * src->op.lrmatrix.m_size);
+      dest->op.lrmatrix.owns_m = true;
+      break;
+    case QPMS_TMATRIX_OPERATION_SCMULZ:
+      QPMS_CRASHING_MALLOCPY(dest->op.scmulz.m, src->op.scmulz.m, 
+          sizeof(complex double) * src->op.scmulz.m_size);
+      dest->op.scmulz.owns_m = true;
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3:
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3ARR:
+      QPMS_CRASHING_MALLOCPY(dest->op.irot3arr.ops, src->op.irot3arr.ops,
+          src->op.irot3arr.n * sizeof(qpms_irot3_t));
+      dest->op.irot3arr.owns_ops = true;
+      break;
+    case QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE: // Group never owned
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_SUM:
+      {
+        struct qpms_tmatrix_operation_compose_sum * const o = 
+          &(dest->op.compose_sum);
+        QPMS_CRASHING_MALLOC(o->ops, o->n * sizeof(*(o->ops)));
+        QPMS_CRASHING_MALLOC(o->opmem, o->n * sizeof(*(o->opmem)));
+        for(size_t i = 0; i < o->n; ++i) {
+          qpms_tmatrix_operation_copy(o->opmem + i, src->op.compose_sum.ops[i]);
+          o->ops[i] = o->opmem + i;
+        }
+      }
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN:
+      {
+        struct qpms_tmatrix_operation_compose_chain * const o = 
+          &(dest->op.compose_chain);
+        QPMS_CRASHING_MALLOC(o->ops, o->n * sizeof(*(o->ops)));
+        QPMS_CRASHING_MALLOC(o->opmem, o->n * sizeof(*(o->opmem)));
+        for(size_t i = 0; i < o->n; ++i) {
+          qpms_tmatrix_operation_copy(o->opmem + i, src->op.compose_chain.ops[i]);
+          o->ops[i] = o->opmem + i;
+        }
+      }
+      break;
+    default:
+      QPMS_WTF;
+  }
+}
+
+
 qpms_tmatrix_t *qpms_tmatrix_apply_operation(
     const qpms_tmatrix_operation_t *f, const qpms_tmatrix_t *orig) {
   // Certain operations could be optimized, but the effect would be marginal.
