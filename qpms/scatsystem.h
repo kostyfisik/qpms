@@ -132,14 +132,14 @@ struct qpms_trans_calculator;
 struct qpms_epsmu_generator_t;
 
 typedef struct qpms_scatsys_t {
-	struct qpms_qpms_epsmu_generator_t *medium; ///< Optical properties of the background medium.
+	struct qpms_epsmu_generator_t *medium; ///< Optical properties of the background medium.
 	
 	/// (Template) T-matrix functions in the system.
 	/** The qpms_abstract_tmatrix_t objects (onto which this array member point)
 	 *  are NOT owned by this and must be kept alive for the whole lifetime
 	 *  of all qpms_scatsys_t objects that are built upon them.
 	 */
-	qpms_abstract_tmatrix_t **tmg;
+	qpms_tmatrix_function_t *tmg; 
 	qpms_ss_tmgi_t tmg_count; ///< Number of all different original T-matrix generators in the system.
 
 	/// All the different T-matrix functions in the system, including those derived from \a tmg elements by symmetries.
@@ -186,6 +186,10 @@ typedef struct qpms_scatsys_t {
 	struct qpms_trans_calculator *c;
 } qpms_scatsys_t;
 
+/// Retrieve the bspec of \a tmi'th element of \a ss->tm.
+static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_tmi(qpms_scatsys_t *ss, qpms_ss_tmi_t *tmi) {
+	return ss->tmg[ss->tm[tmi].tmgi]->spec;
+}
 
 typedef struct qpms_scatsys_at_omega_t {
 	const qpms_scatsys_t *ss; ///< Parent scattering system.
@@ -195,10 +199,8 @@ typedef struct qpms_scatsys_at_omega_t {
 	 */
 	qpms_tmatrix_t **tm;
 	complex double omega; ///< Angular frequency
-	complex double eps; ///< Background medium relative electric permittivity
-	complex double mu; ///< Background medium relative magnetic permeability
+	qpms_epsmu_t medium; ///< Background medium optical properties at the given frequency
 	complex double wavenumber; ///< Background medium wavenumber
-	complex double refractive_index; ///< Background medium refractive index
 } qpms_scatsys_at_omega_t;
 
 void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *);
@@ -208,13 +210,13 @@ static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t 
 	return ss->tm[ss->p[pi].tmatrix_id]->spec;
 }
 
-#if 0 //TODO!!!
 /// Creates a new scatsys by applying a symmetry group onto a "proto-scatsys", copying particles if needed.
 /** In fact, it copies everything except the vswf set specs and qpms_abstract_tmatrix_t instances,
  * so keep them alive until scatsys is destroyed.
  *  
  *  The following fields must be filled in the "proto- scattering system" \a orig:
- *
+ *  * orig->medium – The pointer is copied to the new qpms_scatsys_t instance; 
+ *    the target qpms_abstract_tmatrix_t objects must be kept alive before all the resulting 
  *  * orig->tmg – The pointers are copied to the new qpms_scatsys_t instance; 
  *    the target qpms_abstract_tmatrix_t objects must be kept alive before all the resulting 
  *    qpms_scatsys_t instances are properly destroyed. The pointers from orig->tmg, however, are copied.
@@ -225,9 +227,20 @@ static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t 
  *  * orig->tm_count
  *  * orig->p
  *  * orig->p_count
+ *
+ *  The resulting qpms_scatsys_t is obtained by actually evaluating the T-matrices
+ *  at the given frequency \a omega and where applicable, these are compared
+ *  by their values with given tolerances. The T-matrix generators are expected
+ *  to preserve the point group symmetries for all frequencies.
+ *
+ *  \returns An instance \a sso of qpms_scatsys_omega_t. Note that \a sso->ss
+ *  must be saved by the caller before destroying \a sso 
+ *  (with qpms_scatsys_at_omega_free(), and destroyed only afterwards with 
+ *  qpms_scatsys_free() when not needed anymore.
  */
-qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym);
-#endif
+qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym,
+		complex double omega, const qpms_tolerance_spec_t *tol);
+
 /// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.
 void qpms_scatsys_free(qpms_scatsys_t *s);
 
