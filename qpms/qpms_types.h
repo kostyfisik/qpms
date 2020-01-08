@@ -410,6 +410,7 @@ typedef struct qpms_epsmu_t {
 	complex double mu; ///< Relative permeability.
 } qpms_epsmu_t;
 
+struct qpms_tolerance_spec_t; // See tolerances.c
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES

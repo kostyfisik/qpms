@@ -19,7 +19,10 @@ static inline complex double *qpms_tmatrix_row(qpms_tmatrix_t *t, size_t rowno){
 }
 
 /// Initialises a zero T-matrix.
+/** \sa qpms_tmatrix_init_from_generator() 
+ *  \sa qpms_tmatrix_init_from_function() */
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec);
+
 
 /// Copies a T-matrix, allocating new array for the T-matrix data.
 qpms_tmatrix_t *qpms_tmatrix_copy(const qpms_tmatrix_t *T);
@@ -252,6 +255,16 @@ typedef struct qpms_tmatrix_generator_t {
 			);
 	const void *params; ///< Parameter pointer passed to the function.
 } qpms_tmatrix_generator_t;
+
+/// Initialises and evaluates a new T-matrix using a generator.
+static inline qpms_tmatrix_t *qpms_tmatrix_init_from_generator(
+		const qpms_vswf_set_spec_t *bspec,
+		qpms_tmatrix_generator_t gen,
+		complex double omega) {
+	qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
+	QPMS_ENSURE_SUCCESS(gen.function(t, omega, gen.params));
+	return t;
+}
 
 /// Implementation of qpms_matrix_generator_t that just copies a constant matrix.
 /** N.B. this does almost no checks at all, so use it only for t-matrices with
@@ -518,6 +531,12 @@ typedef struct qpms_tmatrix_function_t {
         const qpms_tmatrix_generator_t *gen; ///< A T-matrix generator function.
 } qpms_tmatrix_function_t;
 
+/// Convenience function to create a new T-matrix from qpms_tmatrix_function_t.
+// FIXME the name is not very intuitive.
+static inline qpms_tmatrix_t *qpms_tmatrix_init_from_function(qpms_tmatrix_function_t f, complex double omega) {
+	return qpms_tmatrix_init_from_generator(f.spec, omega, f.gen);
+}
+
 /// Specifies different kinds of operations done on T-matrices
 typedef enum {
 	QPMS_TMATRIX_OPERATION_NOOP, ///< Identity operation.
@@ -596,11 +615,9 @@ typedef struct qpms_tmatrix_operation_t {
 } qpms_tmatrix_operation_t;
 
 /// Apply an operation on a T-matrix, returning a newly allocated result.
-// TODO IMPLEMENT
 qpms_tmatrix_t *qpms_tmatrix_apply_operation(const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig);
 
 /// Apply an operation on a T-matrix and replace it with the result.
-// TODO IMPLEMENT
 qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(const qpms_tmatrix_operation_t *op, qpms_tmatrix_t *orig);
 
 /// (Recursively) deallocates internal data of qpms_tmatrix_operation_t.
