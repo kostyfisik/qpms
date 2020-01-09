@@ -53,6 +53,15 @@ qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
   return t;
 }
 
+qpms_tmatrix_t *qpms_tmatrix_init_from_generator(
+                const qpms_vswf_set_spec_t *bspec,
+                qpms_tmatrix_generator_t gen,
+                complex double omega) {
+        qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
+        QPMS_ENSURE_SUCCESS(gen.function(t, omega, gen.params));
+        return t;
+}
+
 qpms_tmatrix_t *qpms_tmatrix_copy(const qpms_tmatrix_t *T) {
   qpms_tmatrix_t *t = qpms_tmatrix_init(T->spec);
   size_t n = T->spec->n;
@@ -1107,7 +1116,7 @@ void qpms_tmatrix_operation_compose_chain_init(qpms_tmatrix_operation_t *dest,
   if (nops < opmem_size)
     QPMS_WARN("Allocating buffer for %zu operations, in a chained operation of"
      " only %zu elemens, that does not seem to make sense.", opmem_size, nops);
-  dest.typ = QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN;
+  dest->typ = QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN;
   struct qpms_tmatrix_operation_compose_chain * const o = 
           &(dest->op.compose_chain);
   o->n = nops;

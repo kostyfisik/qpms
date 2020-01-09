@@ -257,14 +257,11 @@ typedef struct qpms_tmatrix_generator_t {
 } qpms_tmatrix_generator_t;
 
 /// Initialises and evaluates a new T-matrix using a generator.
-static inline qpms_tmatrix_t *qpms_tmatrix_init_from_generator(
+qpms_tmatrix_t *qpms_tmatrix_init_from_generator(
 		const qpms_vswf_set_spec_t *bspec,
 		qpms_tmatrix_generator_t gen,
-		complex double omega) {
-	qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
-	QPMS_ENSURE_SUCCESS(gen.function(t, omega, gen.params));
-	return t;
-}
+		complex double omega);
+
 
 /// Implementation of qpms_matrix_generator_t that just copies a constant matrix.
 /** N.B. this does almost no checks at all, so use it only for t-matrices with
@@ -534,7 +531,7 @@ typedef struct qpms_tmatrix_function_t {
 /// Convenience function to create a new T-matrix from qpms_tmatrix_function_t.
 // FIXME the name is not very intuitive.
 static inline qpms_tmatrix_t *qpms_tmatrix_init_from_function(qpms_tmatrix_function_t f, complex double omega) {
-	return qpms_tmatrix_init_from_generator(f.spec, omega, f.gen);
+	return qpms_tmatrix_init_from_generator(f.spec, *f.gen, omega);
 }
 
 /// Specifies different kinds of operations done on T-matrices

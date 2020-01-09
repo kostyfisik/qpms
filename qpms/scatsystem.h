@@ -12,6 +12,7 @@
 #define QPMS_SCATSYSTEM_H
 #include "qpms_types.h"
 #include "vswf.h"
+#include "tmatrices.h"
 #include <stdbool.h>
 
 /// Overrides the number of threads spawned by the paralellized functions.
@@ -124,7 +125,7 @@ typedef struct qpms_ss_particle_orbitinfo {
 /// Auxillary type used in qpms_scatsys_t: A recepy to create another T-matrices by symmetry operations.
 typedef struct qpms_ss_derived_tmatrix {
 	qpms_ss_tmgi_t tmgi; ///< Index of the corresponding qpms_scatsys_t::tm element.
-	qpms_tmatrix_operation_t *op; ///< Operation to derive this particular T-matrix.
+	struct qpms_tmatrix_operation_t *op; ///< Operation to derive this particular T-matrix.
 } qpms_ss_derived_tmatrix_t;
 
 
@@ -132,7 +133,7 @@ struct qpms_trans_calculator;
 struct qpms_epsmu_generator_t;
 
 typedef struct qpms_scatsys_t {
-	struct qpms_epsmu_generator_t *medium; ///< Optical properties of the background medium.
+	struct qpms_epsmu_generator_t medium; ///< Optical properties of the background medium.
 	
 	/// (Template) T-matrix functions in the system.
 	/** The qpms_abstract_tmatrix_t objects (onto which this array member point)
@@ -187,8 +188,13 @@ typedef struct qpms_scatsys_t {
 } qpms_scatsys_t;
 
 /// Retrieve the bspec of \a tmi'th element of \a ss->tm.
-static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_tmi(qpms_scatsys_t *ss, qpms_ss_tmi_t *tmi) {
-	return ss->tmg[ss->tm[tmi].tmgi]->spec;
+static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_tmi(qpms_scatsys_t *ss, qpms_ss_tmi_t tmi) {
+	return ss->tmg[ss->tm[tmi].tmgi].spec;
+}
+
+/// Retrieve the bspec of \a pi'th particle in \a ss->p.
+static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(qpms_scatsys_t *ss, qpms_ss_pi_t pi) {
+	return ss->tmg[ss->tm[ss->p[pi].tmatrix_id].tmgi].spec;
 }
 
 typedef struct qpms_scatsys_at_omega_t {
@@ -204,11 +210,6 @@ typedef struct qpms_scatsys_at_omega_t {
 } qpms_scatsys_at_omega_t;
 
 void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *);
-
-/// Convenience function to access pi'th particle's bspec.
-static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi) {
-	return ss->tm[ss->p[pi].tmatrix_id]->spec;
-}
 
 /// Creates a new scatsys by applying a symmetry group onto a "proto-scatsys", copying particles if needed.
 /** In fact, it copies everything except the vswf set specs and qpms_abstract_tmatrix_t instances,
@@ -239,13 +240,13 @@ static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t 
  *  qpms_scatsys_free() when not needed anymore.
  */
 qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym,
-		complex double omega, const qpms_tolerance_spec_t *tol);
+		complex double omega, const struct qpms_tolerance_spec_t *tol);
 
 /// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.
 void qpms_scatsys_free(qpms_scatsys_t *s);
 
 /// Destroys the result of qpms_scatsys_eval_at_omega()
-void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega *so);
+void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw);
 
 /// Creates a "full" transformation matrix U that takes a full vector and projects it onto an symmetry adapted basis.
 /** Mostly as a reference and a debugging tool, as multiplicating these big matrices would be inefficient.
@@ -329,37 +330,36 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 		);
 
 /// Creates the full \f$ (I - TS) \f$ matrix of the scattering system.
-complex double *qpms_scatsys_build_modeproblem_matrix_full(
+complex double *qpms_scatsys_at_omega_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
-		const qpms_scatsys_t *ss,
-		complex double k ///< Wave number to use in the translation matrix.
+		const qpms_scatsys_at_omega_t *ssw
 		);
 /// Creates the mode problem matrix \f$ (I - TS) \f$ directly in the irrep-packed form.
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
-		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		complex double k ///< Wave number to use in the translation matrix.
+		const qpms_scatsys_at_omega_t *ssw,
+		qpms_iri_t iri
 		);
 /// Alternative implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
-		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		complex double k ///< Wave number to use in the translation matrix.
+		const qpms_scatsys_at_omega_t *ssw,
+		qpms_iri_t iri
 		);
 /// Alternative (serial reference) implementation of qpms_scatsys_build_modeproblem_matrix_irrep_packed().
 complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorder_serial(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
-		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		complex double k ///< Wave number to use in the translation matrix.
+		const qpms_scatsys_at_omega_t *ssw,
+		qpms_iri_t iri
 		);
 
 /// LU factorisation (LAPACKE_zgetrf) result holder.
 typedef struct qpms_ss_LU {
-	const qpms_scatsys_t *ss;
+	const qpms_scatsys_at_omega_t *ssw;
 	bool full; ///< true if full matrix; false if irrep-packed.
 	qpms_iri_t iri; ///< Irrep index if `full == false`.
 	/// LU decomposition array.
@@ -373,30 +373,30 @@ void qpms_ss_LU_free(qpms_ss_LU);
 qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(
 		complex double *target, ///< Pre-allocated target array. Optional (if NULL, new one is allocated).
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
-		const qpms_scatsys_t *ss,
-		complex double k ///< Wave number to use in the translation matrix.
+		const qpms_scatsys_at_omega_t *ssw
 		);
 
 /// Builds an irrep-packed LU-factorised mode/scattering problem matrix from scratch.
 qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
 		complex double *target, ///< Pre-allocated target array. Optional (if NULL, new one is allocated).
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
-		const qpms_scatsys_t *ss, qpms_iri_t iri,
-		complex double k ///< Wave number to use in the translation matrix.
+		const qpms_scatsys_at_omega_t *ssw,
+		qpms_iri_t iri
 		);
 
 /// Computes LU factorisation of a pre-calculated mode/scattering problem matrix, replacing its contents.
 qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(
 		complex double *modeproblem_matrix_full, ///< Pre-calculated mode problem matrix (I-TS). Mandatory.
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
-		const qpms_scatsys_t *ss
+		const qpms_scatsys_at_omega_t *ssw
 		);
 
 /// Computes LU factorisation of a pre-calculated irrep-packed mode/scattering problem matrix, replacing its contents.
 qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(
 		complex double *modeproblem_matrix_irrep_packed, ///< Pre-calculated mode problem matrix (I-TS). Mandatory.
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
-		const qpms_scatsys_t *ss, qpms_iri_t iri
+		const qpms_scatsys_at_omega_t *ssw,
+		qpms_iri_t iri
 		);
 
 /// Solves a (possibly partial, irrep-packed) scattering problem \f$ (I-TS)f = Ta_\mathrm{inc} \f$ using a pre-factorised \f$ (I-TS) \f$.
@@ -488,7 +488,7 @@ complex double *qpms_scatsys_incident_field_vector_full(
 complex double *qpms_scatsys_apply_Tmatrices_full(
 		complex double *target_full, /// Target vector array. If NULL, a new one is allocated.
 		const complex double *inc_full, /// Incident field coefficient vector. Must not be NULL.
-		const qpms_scatsys_t *ss
+		const qpms_scatsys_at_omega_t *ssw
 		);
 
 
