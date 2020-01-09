@@ -579,6 +579,7 @@ struct qpms_tmatrix_operation_compose_chain {
 	size_t n; ///< Number of operations in ops;
 	const struct qpms_tmatrix_operation_t **ops; ///< Operations array. (Pointers owned by this.)
 	struct qpms_tmatrix_operation_t *opmem; ///< (Optional) operations buffer into which elements of \a ops point. (Owned by this or NULL.)
+	_Bool *ops_owned; ///< True for all sub operations owned by this and saved in opmem. NULL if opmem is NULL.
 };
 
 /// Specifies an elementwise complex multiplication of type \f$ T'_{ij} = M_{ij}T_{ij} \f$ for qpms_tmatrix_operation_t.
@@ -616,6 +617,8 @@ typedef struct qpms_tmatrix_operation_t {
 	} op; ///< Operation data; actual type is determined by \a typ.
 } qpms_tmatrix_operation_t;
 
+static const qpms_tmatrix_operation_t qpms_tmatrix_operation_noop = {.typ = QPMS_TMATRIX_OPERATION_NOOP};
+
 /// Apply an operation on a T-matrix, returning a newly allocated result.
 qpms_tmatrix_t *qpms_tmatrix_apply_operation(const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig);
 
@@ -633,6 +636,13 @@ void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f);
 /// (Recursively) copies an qpms_tmatrix_operation_t.
 /** Makes copies of all the internal data and takes ownership over them if needed */
 void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *target, const qpms_tmatrix_operation_t *src);
+
+/// Inits a new "chain" of composed operations, some of which might be owned.
+void qpms_tmatrix_operation_compose_chain_init(
+		qpms_tmatrix_operation_t *target, ///< The operation structure that will be set to the chain.
+		size_t nops, ///< Number of chained operations (length of the \a ops array)
+		size_t opmem_size ///< Size of the own operations buffer (length of the \a opmem array)
+		);
 
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries

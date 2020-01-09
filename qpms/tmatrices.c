@@ -1028,9 +1028,11 @@ void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
         struct qpms_tmatrix_operation_compose_chain * const o = 
           &(f->op.compose_chain);
         if(o->opmem) {
-          for(size_t i = 0; i < o->n; ++i) 
-            qpms_tmatrix_operation_clear(&(o->opmem[i]));
+          for(size_t i = 0; i < o->n; ++i)
+            if(o->ops_owned[i])
+              qpms_tmatrix_operation_clear(o->ops[i]);
           free(o->opmem);
+          free(o->ops_owned);
         }
         free(o->ops);
       }
@@ -1081,10 +1083,12 @@ void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *dest, const qpms_tmat
         struct qpms_tmatrix_operation_compose_chain * const o = 
           &(dest->op.compose_chain);
         QPMS_CRASHING_MALLOC(o->ops, o->n * sizeof(*(o->ops)));
+        QPMS_CRASHING_MALLOC(o->ops_owned, o->n * sizeof(*(o->ops_owned)));
         QPMS_CRASHING_MALLOC(o->opmem, o->n * sizeof(*(o->opmem)));
         for(size_t i = 0; i < o->n; ++i) {
           qpms_tmatrix_operation_copy(o->opmem + i, src->op.compose_chain.ops[i]);
           o->ops[i] = o->opmem + i;
+          o->ops_owned[i] = true;
         }
       }
       break;
@@ -1092,6 +1096,31 @@ void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *dest, const qpms_tmat
       QPMS_WTF;
   }
 }
+
+void qpms_tmatrix_operation_compose_chain_init(qpms_tmatrix_operation_t *dest,
+    size_t nops, size_t opmem_size) {
+  if (nops == 0) {
+    QPMS_WARN("Tried to create a composed (chain) operation of zero size;"
+        "setting to no-op instead.");
+    *dest = qpms_tmatrix_operation_noop;
+  }
+  if (nops < opmem_size)
+    QPMS_WARN("Allocating buffer for %zu operations, in a chained operation of"
+     " only %zu elemens, that does not seem to make sense.", opmem_size, nops);
+  dest.typ = QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN;
+  struct qpms_tmatrix_operation_compose_chain * const o = 
+          &(dest->op.compose_chain);
+  o->n = nops;
+  QPMS_CRASHING_MALLOC(o->ops, nops * sizeof(*(o->ops)));
+  if (opmem_size != 0) {
+    QPMS_CRASHING_CALLOC(o->ops_owned, o->n, sizeof(_Bool));
+    QPMS_CRASHING_MALLOC(o->opmem, opmem_size * sizeof(*(o->opmem)));
+  } else {
+    o->ops_owned = NULL;
+    o->opmem = NULL;
+  }
+}
+
 
 
 qpms_tmatrix_t *qpms_tmatrix_apply_operation(

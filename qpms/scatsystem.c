@@ -176,7 +176,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
 
   // Copy the qpms_tmatrix_fuction_t from orig
   ss->tmg_count = orig->tmg_count;
-  QPMS_CRASHING_MALLOC(ss->tmg, ss->tmg_count * sizeof(*(ss->tmg))); //TODO free
+  QPMS_CRASHING_MALLOC(ss->tmg, ss->tmg_count * sizeof(*(ss->tmg)));
   memcpy(ss->tmg, orig->tmg, ss->tmg_count * sizeof(*(ss->tmg)));
 
   // Allocate T-matrix, particle and particle orbit info arrays
@@ -197,8 +197,8 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   }
 
   // Evaluate the original T-matrices at omega
-  qpms_tmatrix_t **tm_orig_omega;
-  QPMS_CRASHING_MALLOC(tm_orig_omega, orig->tmg_count * sizeof(*tm_orig_omega)); //TODO free
+  qpms_tmatrix_t **tm_orig_omega; 
+  QPMS_CRASHING_MALLOC(tm_orig_omega, orig->tmg_count * sizeof(*tm_orig_omega));
   for(qpms_ss_tmgi_t i = 0; i < orig->tmg_count; ++i) 
     tm_orig_omega[i] = qpms_tmatrix_init_from_function(orig->tmg[i], omega);
 
@@ -211,35 +211,42 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
   // we will be using ss->tm_capacity also for ssw->tm
   QPMS_CRASHING_MALLOC(ssw->tm, ss->tm_capacity * sizeof(*(ssw->tm))); // returned
-  for (qpms_ss_tmi_t i = 0; i < ss->tm_count; ++i)
-    ssw->tm[i] = qpms_tmatrix_apply_operation(ss->tm[i].op, tm_orig_omega[ss->tm[i].tmgi]);
 
-  // Copy T-matrices; checking for duplicities
+  // Evaluate T-matrices at omega; checking for duplicities
   
   ss->max_bspecn = 0; // We'll need it later.for memory alloc estimates.
 
   qpms_ss_tmi_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities; VLA!
   ss->tm_count = 0;
   for (qpms_ss_tmi_t i = 0; i < orig->tm_count; ++i) {
+    qpms_tmatrix_t *ti = qpms_tmatrix_apply_operation(orig->tm[i].op, tm_orig_omega[orig->tm[i].tmgi]);
     qpms_ss_tmi_t j;
     for (j = 0; j < ss->tm_count; ++j) 
-      if (qpms_tmatrix_isclose(orig->tm[i], ss->tm[j], tol->rtol, tol->atol)) {
+      if (qpms_tmatrix_isclose(ssw->tm[i], ssw->tm[j], tol->rtol, tol->atol)) {
         break;
       }
-    if (j == ss->tm_count) { // duplicity not found, copy the t-matrix
-      ss->tm[j] = qpms_tmatrix_copy(orig->tm[i]);
-      ss->max_bspecn = MAX(ss->tm[j]->spec->n, ss->max_bspecn);
+    if (j == ss->tm_count) { // duplicity not found, save both the "abstract" and "at omega" T-matrices
+      ss->tm[j].op = qpms_tmatrix_operation_copy(orig->tm[j].op);
+      ss->tm[j].tmgi = orig->tm[j].tmgi; // T-matrix functions are preserved.
+      ssw->tm[j] = ti;
+      ss->max_bspecn = MAX(ssw->tm[j]->spec->n, ss->max_bspecn);
       lMax = MAX(lMax, ss->tm[j]->spec->lMax);
       ++(ss->tm_count);
     } 
+    else qpms_tmatrix_free(ti);
     tm_dupl_remap[i] = j;
     if (normalisation == QPMS_NORMALISATION_UNDEF)
-      normalisation = ss->tm[i]->spec->norm;
+      normalisation = ssw->tm[i]->spec->norm;
     // We expect all bspec norms to be the same.
-    else QPMS_ENSURE(normalisation == ss->tm[j]->spec->norm,
+    else QPMS_ENSURE(normalisation == ssw->tm[j]->spec->norm,
         "Normalisation convention must be the same for all T-matrices."
-        " %d != %d\n", normalisation, ss->tm[j]->spec->norm);
+        " %d != %d\n", normalisation, ssw->tm[j]->spec->norm);
   }
+
+  // Free the original T-matrices at omega
+  for(qpms_ss_tmgi_t i = 0; i < orig->tmg_count; ++i)
+    qpms_tmatrix_free(tm_orig_omega[i]);
+  free(tm_orig_omega);
 
   // Copy particles, remapping the t-matrix indices
   for (qpms_ss_pi_t i = 0; i < orig->p_count; ++(i)) {
@@ -254,18 +261,29 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   // Extend the T-matrices list by the symmetry operations
   for (qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) 
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi){
-      const size_t d = ss->tm[tmi]->spec->n;
-      complex double M[d][d]; // transformation matrix
-      qpms_irot3_uvswfi_dense(M[0], ss->tm[tmi]->spec, sym->rep3d[gmi]);
+      const size_t d = ssw->tm[tmi]->spec->n;
+      complex double *m;
+      QPMS_CRASHING_MALLOC(m, d*d*sizeof(complex double));
+      qpms_irot3_uvswfi_dense(m, ssw->tm[tmi]->spec, sym->rep3d[gmi]);
       qpms_tmatrix_t *transformed = qpms_tmatrix_apply_symop(ss->tm[tmi], M[0]);
       qpms_ss_tmi_t tmj;
       for (tmj = 0; tmj < ss->tm_count; ++tmj)
         if (qpms_tmatrix_isclose(transformed, ss->tm[tmj], tol->rtol, tol->atol))
           break;
       if (tmj < ss->tm_count) { // HIT, transformed T-matrix already exists
+        //TODO some "rounding error cleanup" symmetrisation could be performed here?
         qpms_tmatrix_free(transformed);
-      } else { // MISS, save the matrix and increment the count
-        ss->tm[ss->tm_count] = transformed;
+      } else { // MISS, save the matrix (also the "abstract" one)
+        ssw->tm[ss->tm_count] = transformed;
+        qpms_tmatrix_operation_compose_chain_init(&(ss->tm[ss->tm_count].op), 2, 1);
+        struct qpms_tmatrix_operation_compose_chain * const o = &(ss->tm[ss->tm_count].op.compose_chain);
+        o->ops[0] = &(ss->tm[tmj].op); // Let's just borrow this
+        o->ops_owned[0] = false;
+        o->ops[1] = o->opmem[0];
+        o->ops[1]->typ = QPMS_TMATRIX_OPERATION_LRMATRIX;
+        o->ops[1]->op.lrmatrix.m = m;
+        o->ops[1]->op.lrmatrix.m_size = d * d;
+        o->ops_owned[1] = true;
         ++(ss->tm_count);
       }
       ss->tm_sym_map[gmi + tmi * sym->order] = tmj; // In any case, tmj now indexes the correct transformed matrix
@@ -404,7 +422,7 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   QPMS_CRASHING_MALLOC(ss->fecv_pstarts, ss->p_count * sizeof(size_t));
   for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
     ss->fecv_pstarts[pi] = ss->fecv_size;
-    ss->fecv_size += ss->tm[ss->p[pi].tmatrix_id]->spec->n; // That's a lot of dereferencing!
+    ss->fecv_size += ssw->tm[ss->p[pi].tmatrix_id]->spec->n; // That's a lot of dereferencing!
   }
 
   QPMS_CRASHING_MALLOC(ss->saecv_sizes, sizeof(size_t) * sym->nirreps);
@@ -435,13 +453,14 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   }
   
   ss->c = qpms_trans_calculator_init(lMax, normalisation);
-  return ss;
+  return ssw;
 }
 
 
 void qpms_scatsys_free(qpms_scatsys_t *ss) {
   if(ss) {
     free(ss->tm);
+    free(ss->tmg);
     free(ss->p);
     free(ss->fecv_pstarts);
     free(ss->tm_sym_map);
