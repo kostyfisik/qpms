@@ -576,6 +576,7 @@ struct qpms_tmatrix_operation_compose_chain {
 	size_t n; ///< Number of operations in ops;
 	const struct qpms_tmatrix_operation_t **ops; ///< Operations array. (Pointers owned by this.)
 	struct qpms_tmatrix_operation_t *opmem; ///< (Optional) operations buffer into which elements of \a ops point. (Owned by this or NULL.)
+	size_t opmem_size; ///< Length of the opmem array.
 	_Bool *ops_owned; ///< True for all sub operations owned by this and saved in opmem. NULL if opmem is NULL.
 };
 

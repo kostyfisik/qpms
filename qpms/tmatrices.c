@@ -1038,8 +1038,17 @@ void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
           &(f->op.compose_chain);
         if(o->opmem) {
           for(size_t i = 0; i < o->n; ++i)
-            if(o->ops_owned[i])
-              qpms_tmatrix_operation_clear(o->ops[i]);
+            if(o->ops_owned[i]) {
+              // A bit complicated yet imperfect sanity/bound check,
+              // but this way we at least get rid of the const discard warning.
+              ptrdiff_t d = o->ops[i] - o->opmem;
+              QPMS_ENSURE(d >= 0 && d < o->opmem_size, 
+                  "Bound check failed; is there a bug in the"
+                  " construction of compose_chain operation?\n"
+                  "opmem_size = %zu, o->ops[%zu] - o->opmem = %td.",
+                  o->opmem_size, i, d);
+              qpms_tmatrix_operation_clear(o->opmem + d);
+            }
           free(o->opmem);
           free(o->ops_owned);
         }
@@ -1128,6 +1137,7 @@ void qpms_tmatrix_operation_compose_chain_init(qpms_tmatrix_operation_t *dest,
     o->ops_owned = NULL;
     o->opmem = NULL;
   }
+  o->opmem_size = opmem_size;
 }
 
 
@@ -1175,7 +1185,7 @@ qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(
     const qpms_tmatrix_operation_t *f, qpms_tmatrix_t *T) {
   switch(f->typ) {
     case QPMS_TMATRIX_OPERATION_NOOP:
-      return f;
+      return T;
     case QPMS_TMATRIX_OPERATION_LRMATRIX:
       return qpms_tmatrix_apply_symop_inplace(T, f->op.lrmatrix.m);
     case QPMS_TMATRIX_OPERATION_IROT3:
