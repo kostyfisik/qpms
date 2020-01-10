@@ -102,6 +102,7 @@ cdef extern from "qpms_types.h":
         QPMS_VSWF_ELECTRIC
         QPMS_VSWF_MAGNETIC
         QPMS_VSWF_LONGITUDINAL
+    ctypedef int32_t qpms_ss_tmgi_t
     ctypedef int32_t qpms_ss_tmi_t
     ctypedef int32_t qpms_ss_pi_t
     ctypedef int qpms_gmi_t
@@ -149,6 +150,11 @@ cdef extern from "qpms_error.h":
         QPMS_DBGMSG_INTEGRATION
     qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types)
     qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types)
+
+cdef extern from "qpms/tolerances.h":
+    struct qpms_tolerance_spec_t:
+        pass # TODO
+    qpms_tolerance_spec_t QPMS_TOLERANCE_DEFAULT
 
 
 # This is due to the fact that cython apparently cannot nest the unnamed struct/unions in an obvious way
@@ -475,6 +481,23 @@ cdef extern from "tmatrices.h":
             double omega, cdouble epsilon_fg, cdouble epsilon_bg)
     qpms_errno_t qpms_tmatrix_generator_axialsym_RQ_transposed_fill(cdouble *target, cdouble omega,
             const qpms_tmatrix_generator_axialsym_param_t *param, qpms_normalisation_t norm, qpms_bessel_t J)
+    struct qpms_tmatrix_function_t:
+        const qpms_vswf_set_spec_t *spec
+        const qpms_tmatrix_generator_t *gen
+    ctypedef enum qpms_tmatrix_operation_kind_t:
+        QPMS_TMATRIX_OPERATION_NOOP
+        QPMS_TMATRIX_OPERATION_LRMATRIX
+        QPMS_TMATRIX_OPERATION_IROT3
+        QPMS_TMATRIX_OPERATION_IROT3ARR
+        QPMS_TMATRIX_OPERATION_COMPOSE_SUM
+        QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN
+        QPMS_TMATRIX_OPERATION_SCMULZ
+        QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE
+    
+    struct qpms_tmatrix_operation_t:
+        qpms_tmatrix_operation_kind_t typ
+        pass # TODO add the op union later if needed
+    const qpms_tmatrix_operation_t qpms_tmatrix_operation_noop
 
 cdef extern from "pointgroups.h":
     bint qpms_pg_is_finite_axial(qpms_pointgroup_class cls)
@@ -499,8 +522,14 @@ cdef extern from "scatsystem.h":
     struct qpms_particle_tid_t:
         cart3_t pos
         qpms_ss_tmi_t tmatrix_id
+    struct qpms_ss_derived_tmatrix_t:
+        qpms_ss_tmgi_t tmgi
+        qpms_tmatrix_operation_t op
     struct qpms_scatsys_t:
-        qpms_tmatrix_t **tm
+        qpms_epsmu_generator_t medium
+        qpms_tmatrix_function_t *tmg
+        qpms_ss_tmgi_t tmg_count
+        qpms_ss_derived_tmatrix_t **tm
         qpms_ss_tmi_t tm_count
         qpms_particle_tid_t *p
         qpms_ss_pi_t p_count
@@ -508,10 +537,18 @@ cdef extern from "scatsystem.h":
         size_t fecv_size
         size_t *saecv_sizes
         const qpms_finite_group_t *sym
-    qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym)
     void qpms_scatsys_free(qpms_scatsys_t *s)
     qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path) #NI
     qpms_scatsys_t *qpms_scatsys_load(char *path) #NI
+    struct qpms_scatsys_at_omega_t:
+        const qpms_scatsys_t *ss
+        qpms_tmatrix_t **tm,
+        cdouble omega
+        qpms_epsmu_t medium
+        cdouble wavenumber
+    qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym,
+            cdouble omega, const qpms_tolerance_spec_t *tol)
+    void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw)
     cdouble *qpms_scatsys_irrep_pack_matrix(cdouble *target_packed,
             const cdouble *orig_full, const qpms_scatsys_t *ss, qpms_iri_t iri)
     cdouble *qpms_scatsys_irrep_unpack_matrix(cdouble *target_full, 
@@ -520,41 +557,43 @@ cdef extern from "scatsystem.h":
             const cdouble *orig_full, const qpms_scatsys_t *ss, qpms_iri_t iri)
     cdouble *qpms_scatsys_irrep_unpack_vector(cdouble *target_full,
             const cdouble *orig_packed, const qpms_scatsys_t *ss, qpms_iri_t iri, bint add)
-    cdouble *qpms_scatsys_build_modeproblem_matrix_full(cdouble *target,
-            const qpms_scatsys_t *ss, cdouble k)
+    cdouble *qpms_scatsysw_build_modeproblem_matrix_full(cdouble *target,
+            const qpms_scatsys_at_omega_t *ssw)
     cdouble *qpms_scatsys_build_translation_matrix_full(cdouble *target,
             const qpms_scatsys_t *ss, cdouble k)
     cdouble *qpms_scatsys_build_translation_matrix_e_full(cdouble *target,
             const qpms_scatsys_t *ss, cdouble k, qpms_bessel_t J)
-    cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed(cdouble *target,
-            const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k) nogil
+    cdouble *qpms_scatsysw_build_modeproblem_matrix_irrep_packed(cdouble *target,
+            const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri) nogil
     cdouble *qpms_scatsys_build_translation_matrix_e_irrep_packed(cdouble *target,
             const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k, qpms_bessel_t J) nogil
-    cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
-            cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k) nogil
-    cdouble *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
-            cdouble *target, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k) nogil
+    cdouble *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorderR(
+            cdouble *target, const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri) nogil
+    cdouble *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(
+            cdouble *target, const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri) nogil
     cdouble *qpms_scatsys_incident_field_vector_full(cdouble *target_full,
             const qpms_scatsys_t *ss, qpms_incfield_t field_at_point, 
             const void *args, bint add)
-    cdouble *qpms_scatsys_apply_Tmatrices_full(cdouble *target_full, const cdouble *inc_full,
-            const qpms_scatsys_t *ss)
+    cdouble *qpms_scatsysw_apply_Tmatrices_full(cdouble *target_full, const cdouble *inc_full,
+            const qpms_scatsys_at_omega_t *ssw)
     struct qpms_ss_LU:
-        const qpms_scatsys_t *ss
+        const qpms_scatsys_at_omega_t *ssw
         bint full
         qpms_iri_t iri
         cdouble *a
         int *ipiv
     void qpms_ss_LU_free(qpms_ss_LU lu)
-    qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(cdouble *target,
-            int *target_piv, const qpms_scatsys_t *ss, cdouble k)
-    qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(cdouble *target,
-            int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri, cdouble k)
-    qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(cdouble *modeproblem_matrix_full,
-            int *target_piv, const qpms_scatsys_t *ss)
-    qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(cdouble *modeproblem_matrix_full,
-            int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri)
+    qpms_ss_LU qpms_scatsysw_build_modeproblem_matrix_full_LU(cdouble *target,
+            int *target_piv, const qpms_scatsys_at_omega_t *ssw)
+    qpms_ss_LU qpms_scatsysw_build_modeproblem_matrix_irrep_packed_LU(cdouble *target,
+            int *target_piv, const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri)
+    qpms_ss_LU qpms_scatsysw_modeproblem_matrix_full_factorise(cdouble *modeproblem_matrix_full,
+            int *target_piv, const qpms_scatsys_at_omega_t *ssw)
+    qpms_ss_LU qpms_scatsysw_modeproblem_matrix_irrep_packed_factorise(cdouble *modeproblem_matrix_full,
+            int *target_piv, const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri)
     cdouble *qpms_scatsys_scatter_solve(cdouble *target_f, const cdouble *a_inc, qpms_ss_LU ludata)
+    const qpms_vswf_set_spec_t *qpms_ss_bspec_tmi(const qpms_scatsys_t *ss, qpms_ss_tmi_t tmi)
+    const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi)
 
 cdef extern from "ewald.h":
     struct qpms_csf_result:
