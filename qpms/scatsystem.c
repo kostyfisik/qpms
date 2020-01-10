@@ -1101,7 +1101,7 @@ complex double *qpms_scatsys_at_omega_build_modeproblem_matrix_full(
 }
 
 // Serial reference implementation.
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
+complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_at_omega_t *ssw,
@@ -1212,7 +1212,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
   return target_packed;
 }
 
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
+complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorderR(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri
@@ -1332,7 +1332,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
   return target_packed;
 }
 
-struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg{
+struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg{
   const qpms_scatsys_at_omega_t *ssw;
   qpms_ss_pi_t *opistartR_ptr;
   pthread_mutex_t *opistartR_mutex;
@@ -1340,9 +1340,9 @@ struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg{
   complex double *target_packed;
 };
 
-static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread(void *arg)
+static void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread(void *arg)
 {
-  const struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg 
+  const struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg 
     *a = arg;
   const qpms_scatsys_at_omega_t *ssw = a->ssw;
   const complex double k = ssw->wavenumber;
@@ -1656,7 +1656,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 
 
 // Parallel implementation, now default
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
+complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
     const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri
@@ -1672,7 +1672,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
   qpms_ss_pi_t opistartR = 0;
   pthread_mutex_t opistartR_mutex;
   QPMS_ENSURE_SUCCESS(pthread_mutex_init(&opistartR_mutex, NULL));
-  const struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg
+  const struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg
     arg = {ssw, &opistartR, &opistartR_mutex, iri, target_packed};
 
   // FIXME THIS IS NOT PORTABLE:
@@ -1694,7 +1694,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
   pthread_t thread_ids[nthreads];
   for(long thi = 0; thi < nthreads; ++thi)
     QPMS_ENSURE_SUCCESS(pthread_create(thread_ids + thi, NULL,
-      qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread,
+      qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread,
       (void *) &arg));
   for(long thi = 0; thi < nthreads; ++thi) {
     void *retval;
@@ -1732,7 +1732,7 @@ complex double *qpms_scatsys_incident_field_vector_irrep_packed(
 #endif
 
 
-complex double *qpms_scatsys_apply_Tmatrices_full(
+complex double *qpms_scatsysw_apply_Tmatrices_full(
 		complex double *target_full, const complex double *inc_full, 
 		const qpms_scatsys_at_omega_t *ssw) {
   QPMS_UNTESTED;
@@ -1826,11 +1826,11 @@ qpms_ss_LU qpms_scatsysw_build_modeproblem_matrix_full_LU(
   return qpms_scatsysw_modeproblem_matrix_full_factorise(target, target_piv, ssw);
 }
 
-qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
+qpms_ss_LU qpms_scatsysw_build_modeproblem_matrix_irrep_packed_LU(
     complex double *target, int *target_piv,
     const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri){
-  target = qpms_scatsys_build_modeproblem_matrix_irrep_packed(target, ssw, iri);
-  return qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(target, target_piv, ssw, iri);
+  target = qpms_scatsysw_build_modeproblem_matrix_irrep_packed(target, ssw, iri);
+  return qpms_scatsysw_modeproblem_matrix_irrep_packed_factorise(target, target_piv, ssw, iri);
 }
 
 complex double *qpms_scatsys_scatter_solve(
