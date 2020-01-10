@@ -315,8 +315,10 @@ cdef class ScatteringSystem:
     Wrapper over the C qpms_scatsys_t structure.
     '''
     cdef list basespecs # Here we keep the references to occuring basespecs
+    cdef list tmgens # here we keep the references to occuring TMatrixGenerators
     #cdef list Tmatrices # Here we keep the references to occuring T-matrices
     cdef qpms_scatsys_t *s
+    cdef qpms_tmatrix_function_t *tmg # this will ultimately contain pointers to stuff in basespecs and tmgens.
 
     def __cinit__(self, particles, FinitePointGroup sym):
         '''TODO doc.
@@ -341,7 +343,7 @@ cdef class ScatteringSystem:
         for tm in tmobjs: # create references to BaseSpec objects
             self.basespecs.append(tm.spec)
         try:
-            orig.tm = <qpms_tmatrix_t **>malloc(orig.tm_count * sizeof(orig.tm[0]))
+            orig.tm = <qpms_ss_derived_tmatrix_t **>malloc(orig.tm_count * sizeof(orig.tm[0]))
             if not orig.tm: raise MemoryError
             orig.p = <qpms_particle_tid_t *>malloc(orig.p_count * sizeof(orig.p[0]))
             if not orig.p: raise MemoryError

@@ -231,10 +231,6 @@ cdef class __AxialSymParams:
 
 
 cdef class TMatrixGenerator:
-    cdef qpms_tmatrix_generator_t g
-    cdef object holder
-    cdef qpms_tmatrix_generator_t raw(self):
-        return self.g
     def __init__(self, what):
         if isinstance(what, __MieParams):
             self.holder = what
