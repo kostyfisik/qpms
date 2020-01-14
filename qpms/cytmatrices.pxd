@@ -1,5 +1,5 @@
 cimport numpy as np
-from .qpms_cdefs cimport qpms_tmatrix_t, cdouble, qpms_tmatrix_interpolator_t
+from .qpms_cdefs cimport qpms_tmatrix_t, cdouble, qpms_tmatrix_interpolator_t, qpms_tmatrix_generator_t
 from .cybspec cimport BaseSpec
 
 cdef class TMatrixInterpolator:

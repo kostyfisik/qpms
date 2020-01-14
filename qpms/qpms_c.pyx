@@ -320,7 +320,7 @@ cdef class ScatteringSystem:
     cdef qpms_scatsys_t *s
     cdef qpms_tmatrix_function_t *tmg # this will ultimately contain pointers to stuff in basespecs and tmgens.
 
-    def __cinit__(self, particles, FinitePointGroup sym):
+    def __cinit__(self, particles, FinitePointGroup sym, omega):
         '''TODO doc.
         Takes the particles (which have to be a sequence of instances of Particle),
         fills them together with their t-matrices to the "proto-qpms_scatsys_t"
@@ -539,6 +539,16 @@ cdef class ScatteringSystem:
 
     def scatter_solver(self, double k, iri=None):
         return ScatteringMatrix(self, k, iri)
+
+cdef class ScatteringSystemAtOmega:
+    '''
+    Wrapper over the C qpms_scatsys_at_omega_t structure
+    that keeps the T-matrix and background data evaluated
+    at specific frequency.
+    '''
+    cdef qpms_scatsys_at_omega_t ssw
+
+    pass #TODO
 
 cdef class ScatteringMatrix:
     '''
