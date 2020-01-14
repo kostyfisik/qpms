@@ -414,6 +414,7 @@ cdef extern from "tmatrices.h":
     qpms_errno_t qpms_tmatrix_generator_axialsym(qpms_tmatrix_t *t, cdouble omega, const void *params)
     qpms_errno_t qpms_tmatrix_generator_interpolator(qpms_tmatrix_t *t, cdouble omega, const void *params)
     qpms_errno_t qpms_tmatrix_generator_sphere(qpms_tmatrix_t *t, cdouble omega, const void *params)
+    qpms_errno_t qpms_tmatrix_generator_constant(qpms_tmatrix_t *t, cdouble omega, const void *params)
     struct qpms_tmatrix_generator_sphere_param_t:
         qpms_epsmu_generator_t outside
         qpms_epsmu_generator_t inside
