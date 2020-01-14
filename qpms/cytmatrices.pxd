@@ -22,6 +22,16 @@ cdef class TMatrixGenerator:
     cdef inline qpms_tmatrix_generator_t *rawpointer(self):
         return &(self.g)
 
+cdef class TMatrixFunction:
+    cdef readonly qpms_tmatrix_function_t f
+    cdef readonly TMatrixGenerator generator # reference holder
+    cdef readonly BaseSpec spec # reference holder
+    cdef inline qpms_tmatrix_function_t raw(self):
+        return self.f
+    cdef inline qpms_tmatrix_function_t *rawpointer(self):
+        return &self.f
+
+
 cdef class TMatrixGeneratorTransformed:
     pass
 

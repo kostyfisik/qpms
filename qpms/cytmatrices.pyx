@@ -228,6 +228,28 @@ cdef class __AxialSymParams:
         qpms_tmatrix_generator_axialsym_RQ_transposed_fill(&arrview[0][0], omega, &self.p, norm, QPMS_BESSEL_REGULAR)
         return arr
 
+cdef class TMatrixFunction:
+    '''
+    Wrapper over qpms_tmatrix_function_t. The main functional difference between this
+    and TMatrixGenerator is that this remembers a specific BaseSpec
+    and its __call__ method takes only one mandatory argument (in addition to self).
+    '''
+    def __init__(self, TMatrixGenerator tmg, BaseSpec spec):
+        self.generator = tmg
+        self.spec = spec
+        self.f.spec = self.generator.rawpointer()
+        self.f.gen = self.spec.rawpointer()
+
+    def __call__(self, cdouble omega, fill = None):
+        cdef CTMatrix tm
+        if fill is None: # make a new CTMatrix
+            tm = CTMatrix(self.spec, None)
+        else: # TODO check whether fill has the same bspec as self?
+            tm = fill
+        if self.g.function(tm.rawpointer(), omega, self.f.gen.params) != 0:
+            raise ValueError("Something went wrong")
+        else:
+            return tm
 
 
 cdef class TMatrixGenerator:
