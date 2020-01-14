@@ -232,10 +232,15 @@ typedef struct qpms_scatsys_at_omega_t {
  *  by their values with given tolerances. The T-matrix generators are expected
  *  to preserve the point group symmetries for all frequencies.
  *
+ *  This particular function will likely change in the future.
+ *
  *  \returns An instance \a sso of qpms_scatsys_omega_t. Note that \a sso->ss
  *  must be saved by the caller before destroying \a sso 
  *  (with qpms_scatsys_at_omega_free(), and destroyed only afterwards with 
  *  qpms_scatsys_free() when not needed anymore.
+ *  \a sso->ss can be reused for different frequency by a
+ *  qpms_scatsys_at_omega() call.
+ *
  */
 qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const struct qpms_finite_group_t *sym,
 		complex double omega, const struct qpms_tolerance_spec_t *tol);
@@ -243,8 +248,14 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
 /// Destroys the result of qpms_scatsys_apply_symmetry or qpms_scatsys_load.
 void qpms_scatsys_free(qpms_scatsys_t *s);
 
-/// Destroys the result of qpms_scatsys_eval_at_omega()
+/// Destroys a qpms_scatsys_at_omega_t.
+/** Used on results of qpms_scatsys_apply_symmetry() and qpms_scatsys_at_omega(). */
 void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw);
+
+/// Evaluates scattering system T-matrices at a given frequency.
+/** Free the result using qpms_scatsys_at_omega_free() when done. */
+qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
+		complex double omega);
 
 /// Creates a "full" transformation matrix U that takes a full vector and projects it onto an symmetry adapted basis.
 /** Mostly as a reference and a debugging tool, as multiplicating these big matrices would be inefficient.
