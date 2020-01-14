@@ -244,6 +244,10 @@ cdef class TMatrixGenerator:
             self.holder = what
             self.g.function = qpms_tmatrix_generator_axialsym
             self.g.params = (<__AxialSymParams?>self.holder).rawpointer()
+        elif isinstance(what, CTMatrix):
+            self.holder = what
+            self.g.function = qpms_tmatrix_generator_constant
+            self.g.params = <void*>(<CTMatrix?>self.holder).rawpointer()
         # TODO INTERPOLATOR
         else:
             raise TypeError("Can't construct TMatrixGenerator from that")
