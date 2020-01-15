@@ -237,8 +237,8 @@ cdef class TMatrixFunction:
     def __init__(self, TMatrixGenerator tmg, BaseSpec spec):
         self.generator = tmg
         self.spec = spec
-        self.f.spec = self.generator.rawpointer()
-        self.f.gen = self.spec.rawpointer()
+        self.f.gen = self.generator.rawpointer()
+        self.f.spec = self.spec.rawpointer()
 
     def __call__(self, cdouble omega, fill = None):
         cdef CTMatrix tm
@@ -246,7 +246,7 @@ cdef class TMatrixFunction:
             tm = CTMatrix(self.spec, None)
         else: # TODO check whether fill has the same bspec as self?
             tm = fill
-        if self.g.function(tm.rawpointer(), omega, self.f.gen.params) != 0:
+        if self.f.gen.function(tm.rawpointer(), omega, self.f.gen.params) != 0:
             raise ValueError("Something went wrong")
         else:
             return tm

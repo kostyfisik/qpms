@@ -20,10 +20,13 @@
 void qpms_scatsystem_set_nthreads(long n);
 
 /// A particle, defined by its T-matrix and position.
+/** This is rather only an auxillary intermediate structure to ultimately 
+ * build an qpms_scatsys_t instance */
 typedef struct qpms_particle_t {
 	// Does it make sense to ever use other than cartesian coords for this?
 	cart3_t pos; ///< Particle position in cartesian coordinates.
-	const qpms_tmatrix_t *tmatrix; ///< T-matrix; not owned by qpms_particle_t.
+	const qpms_tmatrix_function_t *tmg; ///< T-matrix function; not owned by qpms_particle_t.
+	qpms_tmatrix_operation_t op; ///< T-matrix transformation operation w.r.t. \a tmg.
 } qpms_particle_t;
 
 struct qpms_finite_group_t;
@@ -123,7 +126,7 @@ typedef struct qpms_ss_particle_orbitinfo {
 } qpms_ss_particle_orbitinfo_t;
 
 /// Auxillary type used in qpms_scatsys_t: A recepy to create another T-matrices by symmetry operations.
-typedef struct qpms_ss_derived_tmatrix {
+typedef struct qpms_ss_derived_tmatrix_t {
 	qpms_ss_tmgi_t tmgi; ///< Index of the corresponding qpms_scatsys_t::tm element.
 	struct qpms_tmatrix_operation_t op; ///< Operation to derive this particular T-matrix.
 } qpms_ss_derived_tmatrix_t;
@@ -216,6 +219,7 @@ typedef struct qpms_scatsys_at_omega_t {
  *  The following fields must be filled in the "proto- scattering system" \a orig:
  *  * orig->medium – The pointer is copied to the new qpms_scatsys_t instance; 
  *    the target qpms_abstract_tmatrix_t objects must be kept alive before all the resulting 
+ *    qpms_scatsys_t instances are properly destroyed.
  *  * orig->tmg – The pointers are copied to the new qpms_scatsys_t instance; 
  *    the target qpms_abstract_tmatrix_t objects must be kept alive before all the resulting 
  *    qpms_scatsys_t instances are properly destroyed. The pointers from orig->tmg, however, are copied.

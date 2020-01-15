@@ -151,10 +151,10 @@ cdef extern from "qpms_error.h":
     qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types)
     qpms_dbgmsg_flags qpms_dbgmsg_disable(qpms_dbgmsg_flags types)
 
-cdef extern from "qpms/tolerances.h":
+cdef extern from "tolerances.h":
     struct qpms_tolerance_spec_t:
         pass # TODO
-    qpms_tolerance_spec_t QPMS_TOLERANCE_DEFAULT
+    const qpms_tolerance_spec_t QPMS_TOLERANCE_DEFAULT
 
 
 # This is due to the fact that cython apparently cannot nest the unnamed struct/unions in an obvious way
@@ -499,6 +499,7 @@ cdef extern from "tmatrices.h":
         qpms_tmatrix_operation_kind_t typ
         pass # TODO add the op union later if needed
     const qpms_tmatrix_operation_t qpms_tmatrix_operation_noop
+    void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *)
 
 cdef extern from "pointgroups.h":
     bint qpms_pg_is_finite_axial(qpms_pointgroup_class cls)
@@ -519,7 +520,8 @@ cdef extern from "scatsystem.h":
     void qpms_scatsystem_set_nthreads(long n)
     struct qpms_particle_t:
         cart3_t pos
-        const qpms_tmatrix_t *tmatrix
+        const qpms_tmatrix_function_t *tmg
+        qpms_tmatrix_operation_t op
     struct qpms_particle_tid_t:
         cart3_t pos
         qpms_ss_tmi_t tmatrix_id
@@ -530,7 +532,7 @@ cdef extern from "scatsystem.h":
         qpms_epsmu_generator_t medium
         qpms_tmatrix_function_t *tmg
         qpms_ss_tmgi_t tmg_count
-        qpms_ss_derived_tmatrix_t **tm
+        qpms_ss_derived_tmatrix_t *tm
         qpms_ss_tmi_t tm_count
         qpms_particle_tid_t *p
         qpms_ss_pi_t p_count
@@ -549,6 +551,7 @@ cdef extern from "scatsystem.h":
         cdouble wavenumber
     qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym,
             cdouble omega, const qpms_tolerance_spec_t *tol)
+    qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss, cdouble omega)
     void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw)
     cdouble *qpms_scatsys_irrep_pack_matrix(cdouble *target_packed,
             const cdouble *orig_full, const qpms_scatsys_t *ss, qpms_iri_t iri)
