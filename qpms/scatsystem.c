@@ -224,7 +224,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
     qpms_tmatrix_t *ti = qpms_tmatrix_apply_operation(&(orig->tm[i].op), tm_orig_omega[orig->tm[i].tmgi]);
     qpms_ss_tmi_t j;
     for (j = 0; j < ss->tm_count; ++j) 
-      if (qpms_tmatrix_isclose(ssw->tm[i], ssw->tm[j], tol->rtol, tol->atol)) {
+      if (qpms_tmatrix_isclose(ti, ssw->tm[j], tol->rtol, tol->atol)) {
         break;
       }
     if (j == ss->tm_count) { // duplicity not found, save both the "abstract" and "at omega" T-matrices

@@ -66,7 +66,7 @@ qpms_tmatrix_t *qpms_tmatrix_copy(const qpms_tmatrix_t *T) {
   qpms_tmatrix_t *t = qpms_tmatrix_init(T->spec);
   size_t n = T->spec->n;
   for(size_t i = 0; i < n*n; ++i)
-    t->m = T->m;
+    t->m[i] = T->m[i];
   return t;
 }
 
