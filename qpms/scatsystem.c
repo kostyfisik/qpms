@@ -476,7 +476,58 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
   free(ss);
 }
 
+void qpms_scatsys_at_omega_refill(qpms_scatsys_at_omega_t *ssw, 
+    complex double omega) {
+  const qpms_scatsys_t * const ss = ssw->ss;
+  ssw->omega = omega;
+  ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
+  ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
+  qpms_tmatrix_t **tmatrices_preop;
+  QPMS_CRASHING_CALLOC(tmatrices_preop, ss->tmg_count, sizeof(*tmatrices_preop));
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi) 
+    tmatrices_preop[tmgi] = qpms_tmatrix_init_from_function(ss->tmg[tmgi], omega);
+  for (qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) 
+    qpms_tmatrix_apply_operation_replace(ssw->tm[tmi], &ss->tm[tmi].op,
+        tmatrices_preop[ss->tm[tmi].tmgi]);
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi)
+    qpms_tmatrix_free(tmatrices_preop[tmgi]);
+  free(tmatrices_preop);
+}
 
+qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
+    complex double omega) {
+  // TODO
+  qpms_scatsys_at_omega_t *ssw;
+  QPMS_CRASHING_MALLOC(ssw, sizeof(*ssw));
+  ssw->omega = omega;
+  ssw->ss = ss;
+  ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
+  ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
+  qpms_tmatrix_t **tmatrices_preop;
+  QPMS_CRASHING_CALLOC(tmatrices_preop, ss->tmg_count, sizeof(*tmatrices_preop));
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi) 
+    tmatrices_preop[tmgi] = qpms_tmatrix_init_from_function(ss->tmg[tmgi], omega);
+  for (qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) {
+    ssw->tm[tmi] = qpms_tmatrix_apply_operation(&ss->tm[tmi].op,
+        tmatrices_preop[ss->tm[tmi].tmgi]); //<- main difference to .._refill()
+    QPMS_ENSURE(ssw->tm[tmi], 
+        "Got NULL pointer from qpms_tmatrix_apply_operation");
+  }
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi)
+    qpms_tmatrix_free(tmatrices_preop[tmgi]);
+  free(tmatrices_preop);
+  return ssw;
+}
+
+void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw) {
+  if (ssw) {
+    if(ssw->tm) 
+     for(qpms_ss_tmi_t i = 0; i < ssw->ss->tm_count; ++i) 
+      qpms_tmatrix_free(ssw->tm[i]); 
+    free(ssw->tm);
+  }
+  free(ssw);
+}
 
 // (copypasta from symmetries.c)
 // TODO at some point, maybe support also other norms.
@@ -1050,7 +1101,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
 
 
 
-complex double *qpms_scatsys_at_omega_build_modeproblem_matrix_full(
+complex double *qpms_scatsysw_build_modeproblem_matrix_full(
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,
     const qpms_scatsys_at_omega_t *ssw

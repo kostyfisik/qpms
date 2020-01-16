@@ -27,6 +27,13 @@ qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec);
 /// Copies a T-matrix, allocating new array for the T-matrix data.
 qpms_tmatrix_t *qpms_tmatrix_copy(const qpms_tmatrix_t *T);
 
+/// Copies a T-matrix contents between two pre-allocated T-matrices.
+/** orig->spec and dest->spec must be identical.
+ *
+ * \returns \a dest 
+ */ 
+qpms_tmatrix_t *qpms_tmatrix_mv(qpms_tmatrix_t *dest, const qpms_tmatrix_t *orig);
+
 /// Destroys a T-matrix.
 void qpms_tmatrix_free(qpms_tmatrix_t *t);
 
@@ -622,6 +629,10 @@ qpms_tmatrix_t *qpms_tmatrix_apply_operation(const qpms_tmatrix_operation_t *op,
 
 /// Apply an operation on a T-matrix and replace it with the result.
 qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(const qpms_tmatrix_operation_t *op, qpms_tmatrix_t *orig);
+
+/// Apply an operation on a T-matrix and replace another one it with the result.
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_replace(qpms_tmatrix_t *dest, 
+		const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig);
 
 /// (Recursively) deallocates internal data of qpms_tmatrix_operation_t.
 /** It does NOT clear the memory pointed to by op it self, but only

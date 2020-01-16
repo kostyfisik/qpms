@@ -1140,7 +1140,25 @@ void qpms_tmatrix_operation_compose_chain_init(qpms_tmatrix_operation_t *dest,
   o->opmem_size = opmem_size;
 }
 
+qpms_tmatrix_t *qpms_tmatrix_mv(qpms_tmatrix_t *dest,
+    const qpms_tmatrix_t *orig) {
+  QPMS_ENSURE(qpms_vswf_set_spec_isidentical(dest->spec, orig->spec),
+     "Basis specifications must be identical!");
+  memcpy(dest->m, orig->m, SQ(orig->spec->n)*sizeof(complex double));
+  return dest;
+}
 
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_replace(qpms_tmatrix_t *dest,
+    const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig) {
+  //QPMS_ENSURE(qpms_vswf_set_spec_isidentical(dest->spec, orig->spec),
+  //    "Basis specifications must be identical!");
+  // TODO should I check also for dest->owns_m?
+  // FIXME this is highly inoptimal; the hierarchy should be such
+  // that _operation() and operation_inplace() call this, and not the
+  // other way around
+  qpms_tmatrix_mv(dest, orig);
+  return qpms_tmatrix_apply_operation_inplace(op, dest);
+}
 
 qpms_tmatrix_t *qpms_tmatrix_apply_operation(
     const qpms_tmatrix_operation_t *f, const qpms_tmatrix_t *orig) {
