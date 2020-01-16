@@ -217,7 +217,7 @@ typedef struct qpms_scatsys_at_omega_t {
  * so keep them alive until scatsys is destroyed.
  *  
  *  The following fields must be filled in the "proto- scattering system" \a orig:
- *  * orig->medium – The pointer is copied to the new qpms_scatsys_t instance; 
+ *  * orig->medium – The pointers are copied to the new qpms_scatsys_t instance; 
  *    the target qpms_abstract_tmatrix_t objects must be kept alive before all the resulting 
  *    qpms_scatsys_t instances are properly destroyed.
  *  * orig->tmg – The pointers are copied to the new qpms_scatsys_t instance; 

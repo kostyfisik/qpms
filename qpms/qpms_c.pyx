@@ -13,6 +13,7 @@ from .cybspec cimport BaseSpec
 from .cycommon cimport make_c_string
 from .cycommon import string_c2py, PointGroupClass
 from .cytmatrices cimport CTMatrix, TMatrixFunction, TMatrixGenerator
+from .cymaterials cimport EpsMuGenerator
 from libc.stdlib cimport malloc, free, calloc
 import warnings
 
@@ -337,6 +338,7 @@ cdef class ScatteringSystem:
     '''
     cdef list tmgobjs # here we keep the references to occuring TMatrixFunctions (and hence BaseSpecs and TMatrixGenerators)
     #cdef list Tmatrices # Here we keep the references to occuring T-matrices
+    cdef EpsMuGenerator medium_holder # Here we keep the reference to medium generator
     cdef qpms_scatsys_t *s
 
     def check_s(self): # cdef instead?
@@ -345,7 +347,7 @@ cdef class ScatteringSystem:
         #TODO is there a way to disable the constructor outside this module?
 
     @staticmethod # We don't have any "standard" constructor for this right now
-    def create(particles, FinitePointGroup sym, cdouble omega): # TODO tolerances
+    def create(particles, medium, FinitePointGroup sym, cdouble omega): # TODO tolerances
         # These we are going to construct
         cdef ScatteringSystem self
         cdef _ScatteringSystemAtOmega pyssw
@@ -378,7 +380,8 @@ cdef class ScatteringSystem:
                 tmindices[tm_derived_key] = tm_count
                 tmlist.append(tm_derived_key)
                 tm_count += 1
-            
+        cdef EpsMuGenerator mediumgen = EpsMuGenerator(medium)
+        orig.medium = mediumgen.g
         orig.tmg_count = tmg_count
         orig.tm_count = tm_count
         orig.p_count = p_count
@@ -393,7 +396,7 @@ cdef class ScatteringSystem:
                 orig.tmg[tmgi] = (<TMatrixFunction?>tmgobjs[tmgi]).raw()
             for tmi in range(tm_count):
                 tm_derived_key = tmlist[tmi]
-                tmgi = tmgindices[tmg_key[0]]
+                tmgi = tmgindices[tm_derived_key[0]]
                 orig.tm[tmi].tmgi = tmgi
                 orig.tm[tmi].op = qpms_tmatrix_operation_noop # TODO adjust when notrivial operations allowed
             for pi in range(p_count):
@@ -409,6 +412,7 @@ cdef class ScatteringSystem:
             free(orig.tm)
             free(orig.p)
         self = ScatteringSystem()
+        self.medium_holder = mediumgen
         self.s = ss
         self.tmgobjs = tmgobjs
         pyssw = _ScatteringSystemAtOmega()

@@ -180,6 +180,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   QPMS_CRASHING_MALLOC(ss, sizeof(qpms_scatsys_t));     
   ss->lenscale = lenscale;
   ss->sym = sym;
+  ss->medium = orig->medium;
 
   // Copy the qpms_tmatrix_fuction_t from orig
   ss->tmg_count = orig->tmg_count;
