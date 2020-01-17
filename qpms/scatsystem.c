@@ -228,8 +228,8 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
         break;
       }
     if (j == ss->tm_count) { // duplicity not found, save both the "abstract" and "at omega" T-matrices
-      qpms_tmatrix_operation_copy(&ss->tm[j].op, &orig->tm[j].op);
-      ss->tm[j].tmgi = orig->tm[j].tmgi; // T-matrix functions are preserved.
+      qpms_tmatrix_operation_copy(&ss->tm[j].op, &orig->tm[i].op);
+      ss->tm[j].tmgi = orig->tm[i].tmgi; // T-matrix functions are preserved.
       ssw->tm[j] = ti;
       ss->max_bspecn = MAX(ssw->tm[j]->spec->n, ss->max_bspecn);
       lMax = MAX(lMax, ssw->tm[j]->spec->lMax);
