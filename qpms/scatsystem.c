@@ -277,6 +277,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
         qpms_tmatrix_free(transformed);
       } else { // MISS, save the matrix (also the "abstract" one)
         ssw->tm[ss->tm_count] = transformed;
+	ss->tm[ss->tm_count].tmgi = ss->tm[tmi].tmgi;
         qpms_tmatrix_operation_compose_chain_init(&(ss->tm[ss->tm_count].op), 2, 1);
         struct qpms_tmatrix_operation_compose_chain * const o = &(ss->tm[ss->tm_count].op.op.compose_chain);
         o->ops[0] = & ss->tm[tmj].op; // Let's just borrow this
@@ -1091,7 +1092,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
         }
         fullvec_offsetC += bspecC->n;
       }
-      assert(fullvec_offsetC = full_len);
+      assert(fullvec_offsetC == full_len);
       fullvec_offsetR += bspecR->n;
     }
     assert(fullvec_offsetR == full_len);

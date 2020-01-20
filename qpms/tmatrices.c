@@ -1113,6 +1113,7 @@ void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *dest, const qpms_tmat
     default:
       QPMS_WTF;
   }
+  dest->typ = src->typ;
 }
 
 void qpms_tmatrix_operation_compose_chain_init(qpms_tmatrix_operation_t *dest,
