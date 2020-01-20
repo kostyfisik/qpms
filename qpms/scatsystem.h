@@ -363,7 +363,7 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorderR(
 		qpms_iri_t iri
 		);
 /// Alternative (serial reference) implementation of qpms_scatsysw_build_modeproblem_matrix_irrep_packed().
-complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorder_serial(
+complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_at_omega_t *ssw,
