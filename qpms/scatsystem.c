@@ -1675,7 +1675,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
   pthread_mutex_t opistartR_mutex;
   QPMS_ENSURE_SUCCESS(pthread_mutex_init(&opistartR_mutex, NULL));
   const struct qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thread_arg
-    arg = {ss, &opistartR, &opistartR_mutex, iri, target_packed, J};
+    arg = {ss, &opistartR, &opistartR_mutex, iri, target_packed, k, J};
 
   // FIXME THIS IS NOT PORTABLE:
   long nthreads;

@@ -622,7 +622,7 @@ cdef class _ScatteringSystemAtOmega:
     cdef qpms_scatsys_at_omega_t *rawpointer(self):
         return self.ssw
 
-    def scatter_solver(self, double k, iri=None):
+    def scatter_solver(self, iri=None):
         self.check()
         return ScatteringMatrix(self, iri)
 
@@ -637,7 +637,7 @@ cdef class _ScatteringSystemAtOmega:
 
     def modeproblem_matrix_full(self):
         self.check()
-        cdef size_t flen = self.s[0].fecv_size
+        cdef size_t flen = self.ss_pyref.s[0].fecv_size
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (flen,flen),dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
