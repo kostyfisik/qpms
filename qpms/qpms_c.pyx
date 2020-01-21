@@ -425,6 +425,7 @@ cdef class ScatteringSystem:
         cdef _ScatteringSystemAtOmega pyssw = _ScatteringSystemAtOmega()
         pyssw.ssw = qpms_scatsys_at_omega(self.s, omega)
         pyssw.ss_pyref = self
+        return pyssw
 
     def __dealloc__(self):
         if(self.s):

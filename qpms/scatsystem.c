@@ -280,7 +280,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
 	ss->tm[ss->tm_count].tmgi = ss->tm[tmi].tmgi;
         qpms_tmatrix_operation_compose_chain_init(&(ss->tm[ss->tm_count].op), 2, 1);
         struct qpms_tmatrix_operation_compose_chain * const o = &(ss->tm[ss->tm_count].op.op.compose_chain);
-        o->ops[0] = & ss->tm[tmj].op; // Let's just borrow this
+        o->ops[0] = & ss->tm[tmi].op; // Let's just borrow this
         o->ops_owned[0] = false;
         o->opmem[0].typ = QPMS_TMATRIX_OPERATION_LRMATRIX;
         o->opmem[0].op.lrmatrix.m = m;
@@ -505,6 +505,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
   ssw->ss = ss;
   ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
   ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
+  QPMS_CRASHING_CALLOC(ssw->tm, ss->tm_count, sizeof(*ssw->tm));
   qpms_tmatrix_t **tmatrices_preop;
   QPMS_CRASHING_CALLOC(tmatrices_preop, ss->tmg_count, sizeof(*tmatrices_preop));
   for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi) 
