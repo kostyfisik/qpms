@@ -24,6 +24,12 @@ typedef struct qpms_epsmu_generator_t {
 	const void *params;
 } qpms_epsmu_generator_t;
 
+/// Convenience function for generating material properties at given frequency.
+static inline qpms_epsmu_t qpms_epsmu_generator_eval(
+		qpms_epsmu_generator_t gen, complex double omega) {
+	return gen.function(omega, gen.params);
+}
+
 /// Constant optical property "generator" for qpms_epsmu_generator_t.
 qpms_epsmu_t qpms_epsmu_const_g(complex double omega, ///< Frequency ignored.
 	const void *epsmu ///< Points to the qpms_epsmu_t to be returned.

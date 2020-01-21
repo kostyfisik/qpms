@@ -8,6 +8,8 @@
 #include "materials.h"
 #include <stdio.h>
 
+
+
 struct qpms_finite_group_t;
 typedef struct qpms_finite_group_t qpms_finite_group_t;
 
@@ -17,10 +19,20 @@ static inline complex double *qpms_tmatrix_row(qpms_tmatrix_t *t, size_t rowno){
 }
 
 /// Initialises a zero T-matrix.
+/** \sa qpms_tmatrix_init_from_generator() 
+ *  \sa qpms_tmatrix_init_from_function() */
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec);
+
 
 /// Copies a T-matrix, allocating new array for the T-matrix data.
 qpms_tmatrix_t *qpms_tmatrix_copy(const qpms_tmatrix_t *T);
+
+/// Copies a T-matrix contents between two pre-allocated T-matrices.
+/** orig->spec and dest->spec must be identical.
+ *
+ * \returns \a dest 
+ */ 
+qpms_tmatrix_t *qpms_tmatrix_mv(qpms_tmatrix_t *dest, const qpms_tmatrix_t *orig);
 
 /// Destroys a T-matrix.
 void qpms_tmatrix_free(qpms_tmatrix_t *t);
@@ -233,7 +245,7 @@ qpms_tmatrix_t *qpms_tmatrix_symmetrise_finite_group_inplace(
 complex double *qpms_apply_tmatrix(
 		complex double *f_target, ///< Scattered field coefficient array of size T->spec->n; if NULL, a new one is allocated.
 		const complex double *a, ///< Incident field coefficient array of size T->spec->n.
-		const qpms_tmatrix_t *T
+		const qpms_tmatrix_t *T ///< T-matrix \a T to apply.
 		);
 
 /// Generic T-matrix generator function that fills a pre-initialised qpms_tmatrix_t given a frequency.
@@ -250,6 +262,13 @@ typedef struct qpms_tmatrix_generator_t {
 			);
 	const void *params; ///< Parameter pointer passed to the function.
 } qpms_tmatrix_generator_t;
+
+/// Initialises and evaluates a new T-matrix using a generator.
+qpms_tmatrix_t *qpms_tmatrix_init_from_generator(
+		const qpms_vswf_set_spec_t *bspec,
+		qpms_tmatrix_generator_t gen,
+		complex double omega);
+
 
 /// Implementation of qpms_matrix_generator_t that just copies a constant matrix.
 /** N.B. this does almost no checks at all, so use it only for t-matrices with
@@ -427,7 +446,7 @@ qpms_arc_function_retval_t qpms_arc_cylinder(double theta,
 		);
 
 /// Arc parametrisation of spherical particle; for qpms_arc_function_t.
-/** Useful mostly only for benchmarks, as one can use the Mie-Lorentz solution. */
+/** Useful mostly only for benchmarks or debugging, as one can use the Mie-Lorentz solution. */
 qpms_arc_function_retval_t qpms_arc_sphere(double theta,
 		const void *R; ///< Points to double containing particle's radius.
 		);
@@ -502,6 +521,137 @@ qpms_errno_t qpms_tmatrix_axialsym_RQ_transposed_fill(complex double *target,
 		qpms_bessel_t J ///< Use QPMS_BESSEL_REGULAR to calculate \f$ R^T\f$ or QPMS_HANKEL_PLUS to calculate \f$ Q^T\f$.
 		);
 
+
+/// An "abstract" T-matrix, contains a T-matrix generator instead of actual data.
+typedef struct qpms_tmatrix_function_t {
+        /** \brief VSWF basis specification, NOT owned by qpms_tmatrix_t by default.
+         *
+         *  Usually not checked for meaningfulness by the functions (methods),
+         *  so the caller should take care that \a spec->ilist does not
+         *  contain any duplicities and that for each wave with order \a m
+         *  there is also one with order \a −m.
+         */
+        const qpms_vswf_set_spec_t *spec;
+        const qpms_tmatrix_generator_t *gen; ///< A T-matrix generator function.
+} qpms_tmatrix_function_t;
+
+/// Convenience function to create a new T-matrix from qpms_tmatrix_function_t.
+// FIXME the name is not very intuitive.
+static inline qpms_tmatrix_t *qpms_tmatrix_init_from_function(qpms_tmatrix_function_t f, complex double omega) {
+	return qpms_tmatrix_init_from_generator(f.spec, *f.gen, omega);
+}
+
+/// Specifies different kinds of operations done on T-matrices
+typedef enum {
+	QPMS_TMATRIX_OPERATION_NOOP, ///< Identity operation.
+	QPMS_TMATRIX_OPERATION_LRMATRIX, ///< General matrix transformation \f$ T' = MTM^\dagger \f$; see @ref qpms_tmatrix_operation_lrmatrix.
+	QPMS_TMATRIX_OPERATION_IROT3, ///< Single rotoreflection specified by a qpms_irot3_t.
+	QPMS_TMATRIX_OPERATION_IROT3ARR, ///< Symmetrise using an array of rotoreflection; see @ref qpms_tmatrix_operation_irot3arr.
+	QPMS_TMATRIX_OPERATION_COMPOSE_SUM, ///< Apply several transformations and sum the results, see @ref qpms_tmatrix_operation_compose_sum.
+	QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN, ///< Chain several different transformations; see @ref qpms_tmatrix_operation_compose_chain.
+	QPMS_TMATRIX_OPERATION_SCMULZ, ///< Elementwise scalar multiplication with a complex matrix; see @ref qpms_tmatrix_operation_scmulz.
+	//QPMS_TMATRIX_OPERATION_POINTGROUP, ///< TODO the new point group in pointgroup.h
+	QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE ///< Legacy qpms_finite_group_t with filled rep3d; see @ref qpms_tmatrix_operation_finite_group.
+} qpms_tmatrix_operation_kind_t;
+
+/// General matrix transformation \f[ T' = MTM^\dagger \f] spec for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_lrmatrix {
+	/// Raw matrix data of \a M in row-major order.
+	/** The matrix must be taylored for the given bspec! */
+	complex double *m; 
+        size_t m_size; ///< Total size of \a m matrix in terms of sizeof(complex double).
+	bool owns_m; ///< Whether \a m is owned by this;
+};
+
+struct qpms_tmatrix_operation_t; // Forward declaration for the composed operations.
+
+/// Specifies a composed operation of type \f$ T' = c\sum_i f_i'(T) \f$ for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_compose_sum {
+	size_t n; ///< Number of operations in ops;
+	const struct qpms_tmatrix_operation_t **ops; ///< Operations array. (Pointers array \a ops[] always owned by this.)
+	double factor; ///< Overall factor \a c.
+	/// (Optional) operations buffer into which elements of \a ops point.
+	/** Owned by this or NULL. If not NULL, all \a ops members are assumed to point into 
+	 * the memory held by \a opmem and to be properly initialised.
+	 * Each \a ops member has to point to _different_ elements of \a opmem.
+	 */ 
+	struct qpms_tmatrix_operation_t *opmem; 
+};
+
+/// Specifies a composed operation of type \f$ T' =  f_{n-1}(f_{n-2}(\dots f_0(T)\dots))) \f$ for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_compose_chain {
+	size_t n; ///< Number of operations in ops;
+	const struct qpms_tmatrix_operation_t **ops; ///< Operations array. (Pointers owned by this.)
+	struct qpms_tmatrix_operation_t *opmem; ///< (Optional) operations buffer into which elements of \a ops point. (Owned by this or NULL.)
+	size_t opmem_size; ///< Length of the opmem array.
+	_Bool *ops_owned; ///< True for all sub operations owned by this and saved in opmem. NULL if opmem is NULL.
+};
+
+/// Specifies an elementwise complex multiplication of type \f$ T'_{ij} = M_{ij}T_{ij} \f$ for qpms_tmatrix_operation_t.
+struct qpms_tmatrix_operation_scmulz {
+	/// Raw matrix data of \a M in row-major order.
+	/** The matrix must be taylored for the given bspec! */
+	complex double *m;
+        size_t m_size; ///< Total size of \a m matrix in terms of sizeof(complex double).
+	bool owns_m; ///< Whether \a m is owned by this.
+};
+
+/// Specifies a symmetrisation using a set of rotoreflections (with equal weights) for qpms_tmatrix_operation_t.
+/** Internally, this is evaluated using a call to qpms_symmetrise_tmdata_irot3arr()
+ * or qpms_symmetrise_tmdata_irot3arr_inplace(). */
+struct qpms_tmatrix_operation_irot3arr {
+	size_t n; ///< Number of rotoreflections;
+	qpms_irot3_t *ops; ///< Rotoreflection array of size \a n.
+	bool owns_ops; ///< Whether \a ops array is owned by this.
+};
+
+/// A generic T-matrix transformation operator.
+typedef struct qpms_tmatrix_operation_t {
+	/// Specifies the operation kind to be performed and which type \op actually contains.
+	qpms_tmatrix_operation_kind_t typ;
+	union {
+		struct qpms_tmatrix_operation_lrmatrix lrmatrix;
+		struct qpms_tmatrix_operation_scmulz scmulz;
+		qpms_irot3_t irot3; ///< Single rotoreflection; \a typ = QPMS_TMATRIX_OPERATION_IROT3
+		struct qpms_tmatrix_operation_irot3arr irot3arr;
+		struct qpms_tmatrix_operation_compose_sum compose_sum;
+		struct qpms_tmatrix_operation_compose_chain compose_chain;
+		/// Finite group for QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE.
+		/** Not owned by this; \a rep3d must be filled. */
+		const qpms_finite_group_t *finite_group; 
+	} op; ///< Operation data; actual type is determined by \a typ.
+} qpms_tmatrix_operation_t;
+
+static const qpms_tmatrix_operation_t qpms_tmatrix_operation_noop = {.typ = QPMS_TMATRIX_OPERATION_NOOP};
+
+/// Apply an operation on a T-matrix, returning a newly allocated result.
+qpms_tmatrix_t *qpms_tmatrix_apply_operation(const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig);
+
+/// Apply an operation on a T-matrix and replace it with the result.
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(const qpms_tmatrix_operation_t *op, qpms_tmatrix_t *orig);
+
+/// Apply an operation on a T-matrix and replace another one it with the result.
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_replace(qpms_tmatrix_t *dest, 
+		const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig);
+
+/// (Recursively) deallocates internal data of qpms_tmatrix_operation_t.
+/** It does NOT clear the memory pointed to by op it self, but only
+ * heap-allocated data of certain operations, if labeled as owned by it.
+ * In case of compose operations, the recursion stops if the children are
+ * not owned by them (the opmem pointer is NULL).
+ */
+void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f);
+
+/// (Recursively) copies an qpms_tmatrix_operation_t.
+/** Makes copies of all the internal data and takes ownership over them if needed */
+void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *target, const qpms_tmatrix_operation_t *src);
+
+/// Inits a new "chain" of composed operations, some of which might be owned.
+void qpms_tmatrix_operation_compose_chain_init(
+		qpms_tmatrix_operation_t *target, ///< The operation structure that will be set to the chain.
+		size_t nops, ///< Number of chained operations (length of the \a ops array)
+		size_t opmem_size ///< Size of the own operations buffer (length of the \a opmem array)
+		);
 
 #if 0
 // Abstract types that describe T-matrix/particle/scatsystem symmetries

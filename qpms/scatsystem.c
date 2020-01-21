@@ -21,6 +21,7 @@
 #include "tmatrices.h"
 #include <pthread.h>
 #include "kahansum.h"
+#include "tolerances.h"
 
 #ifdef QPMS_SCATSYSTEM_USE_OWN_BLAS
 #include "qpmsblas.h"
@@ -80,7 +81,7 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
   qpms_ss_orbit_type_t * const ot_new = & (ss->orbit_types[ss->orbit_type_count]);
   ot_new->size = ot_current->size;
 
-  const qpms_vswf_set_spec_t *bspec = ss->tm[ot_current->tmatrices[0]]->spec;
+  const qpms_vswf_set_spec_t *bspec = qpms_ss_bspec_tmi(ss, ot_current->tmatrices[0]);
   const size_t bspecn = bspec->n;
   ot_new->bspecn = bspecn;
   
@@ -143,7 +144,9 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
 
 
 // Almost 200 lines. This whole thing deserves a rewrite!
-qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym) {
+qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
+    const qpms_finite_group_t *sym, complex double omega, 
+    const qpms_tolerance_spec_t *tol) {
   // TODO check data sanity
 
   qpms_l_t lMax = 0; // the overall lMax of all base specs.
@@ -171,48 +174,81 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
     for (qpms_ss_pi_t j = 0; j < i; ++j)
       assert(!cart3_isclose(orig->p[i].pos, orig->p[j].pos, 0, QPMS_SCATSYS_LEN_RTOL * lenscale));
 
+
   // Allocate T-matrix, particle and particle orbit info arrays
-  qpms_scatsys_t *ss = malloc(sizeof(qpms_scatsys_t));
+  qpms_scatsys_t *ss;
+  QPMS_CRASHING_MALLOC(ss, sizeof(qpms_scatsys_t));     
   ss->lenscale = lenscale;
   ss->sym = sym;
+  ss->medium = orig->medium;
+
+  // Copy the qpms_tmatrix_fuction_t from orig
+  ss->tmg_count = orig->tmg_count;
+  QPMS_CRASHING_MALLOC(ss->tmg, ss->tmg_count * sizeof(*(ss->tmg)));
+  memcpy(ss->tmg, orig->tmg, ss->tmg_count * sizeof(*(ss->tmg)));
 
   ss->tm_capacity = sym->order * orig->tm_count;
-  ss->tm = malloc(ss->tm_capacity * sizeof(qpms_tmatrix_t *));
+  QPMS_CRASHING_MALLOC(ss->tm, ss->tm_capacity * sizeof(*(ss->tm)));
 
   ss->p_capacity = sym->order * orig->p_count;
-  ss->p = malloc(ss->p_capacity * sizeof(qpms_particle_tid_t));
-  ss->p_orbitinfo = malloc(ss->p_capacity * sizeof(qpms_ss_particle_orbitinfo_t));
+  QPMS_CRASHING_MALLOC(ss->p, ss->p_capacity * sizeof(qpms_particle_tid_t));
+  QPMS_CRASHING_MALLOC(ss->p_orbitinfo, ss->p_capacity * sizeof(qpms_ss_particle_orbitinfo_t));
   for (qpms_ss_pi_t pi = 0; pi < ss->p_capacity; ++pi) {
     ss->p_orbitinfo[pi].t = QPMS_SS_P_ORBITINFO_UNDEF;
     ss->p_orbitinfo[pi].p = QPMS_SS_P_ORBITINFO_UNDEF;
   }
 
-  // Copy T-matrices; checking for duplicities
+  // Evaluate the original T-matrices at omega
+  qpms_tmatrix_t **tm_orig_omega; 
+  QPMS_CRASHING_MALLOC(tm_orig_omega, orig->tmg_count * sizeof(*tm_orig_omega));
+  for(qpms_ss_tmgi_t i = 0; i < orig->tmg_count; ++i) 
+    tm_orig_omega[i] = qpms_tmatrix_init_from_function(orig->tmg[i], omega);
+
+  // Evaluate the medium and derived T-matrices at omega.
+  qpms_scatsys_at_omega_t *ssw;
+  QPMS_CRASHING_MALLOC(ssw, sizeof(*ssw)); // returned
+  ssw->ss = ss;
+  ssw->omega = omega;
+  ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
+  ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
+  // we will be using ss->tm_capacity also for ssw->tm
+  QPMS_CRASHING_MALLOC(ssw->tm, ss->tm_capacity * sizeof(*(ssw->tm))); // returned
+
+  // Evaluate T-matrices at omega; checking for duplicities
   
   ss->max_bspecn = 0; // We'll need it later.for memory alloc estimates.
 
-  qpms_ss_tmi_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities
+  qpms_ss_tmi_t tm_dupl_remap[ss->tm_capacity]; // Auxilliary array to label remapping the indices after ignoring t-matrix duplicities; VLA!
   ss->tm_count = 0;
   for (qpms_ss_tmi_t i = 0; i < orig->tm_count; ++i) {
+    qpms_tmatrix_t *ti = qpms_tmatrix_apply_operation(&(orig->tm[i].op), tm_orig_omega[orig->tm[i].tmgi]);
     qpms_ss_tmi_t j;
     for (j = 0; j < ss->tm_count; ++j) 
-      if (qpms_tmatrix_isclose(orig->tm[i], ss->tm[j], QPMS_SCATSYS_TMATRIX_RTOL, QPMS_SCATSYS_TMATRIX_ATOL)) {
+      if (qpms_tmatrix_isclose(ti, ssw->tm[j], tol->rtol, tol->atol)) {
         break;
       }
-    if (j == ss->tm_count) { // duplicity not found, copy the t-matrix
-      ss->tm[j] = qpms_tmatrix_copy(orig->tm[i]);
-      ss->max_bspecn = MAX(ss->tm[j]->spec->n, ss->max_bspecn);
-      lMax = MAX(lMax, ss->tm[j]->spec->lMax);
+    if (j == ss->tm_count) { // duplicity not found, save both the "abstract" and "at omega" T-matrices
+      qpms_tmatrix_operation_copy(&ss->tm[j].op, &orig->tm[i].op);
+      ss->tm[j].tmgi = orig->tm[i].tmgi; // T-matrix functions are preserved.
+      ssw->tm[j] = ti;
+      ss->max_bspecn = MAX(ssw->tm[j]->spec->n, ss->max_bspecn);
+      lMax = MAX(lMax, ssw->tm[j]->spec->lMax);
       ++(ss->tm_count);
     } 
+    else qpms_tmatrix_free(ti);
     tm_dupl_remap[i] = j;
     if (normalisation == QPMS_NORMALISATION_UNDEF)
-      normalisation = ss->tm[i]->spec->norm;
+      normalisation = ssw->tm[i]->spec->norm;
     // We expect all bspec norms to be the same.
-    else QPMS_ENSURE(normalisation == ss->tm[j]->spec->norm,
+    else QPMS_ENSURE(normalisation == ssw->tm[j]->spec->norm,
         "Normalisation convention must be the same for all T-matrices."
-        " %d != %d\n", normalisation, ss->tm[j]->spec->norm);
+        " %d != %d\n", normalisation, ssw->tm[j]->spec->norm);
   }
+
+  // Free the original T-matrices at omega
+  for(qpms_ss_tmgi_t i = 0; i < orig->tmg_count; ++i)
+    qpms_tmatrix_free(tm_orig_omega[i]);
+  free(tm_orig_omega);
 
   // Copy particles, remapping the t-matrix indices
   for (qpms_ss_pi_t i = 0; i < orig->p_count; ++(i)) {
@@ -222,44 +258,57 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   ss->p_count = orig->p_count;
 
   // allocate t-matrix symmetry map
-  ss->tm_sym_map = malloc(sizeof(qpms_ss_tmi_t) * sym->order * sym->order * ss->tm_count);
+  QPMS_CRASHING_MALLOC(ss->tm_sym_map, sizeof(qpms_ss_tmi_t) * sym->order * sym->order * ss->tm_count);
 
   // Extend the T-matrices list by the symmetry operations
   for (qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) 
     for (qpms_gmi_t gmi = 0; gmi < sym->order; ++gmi){
-      const size_t d = ss->tm[tmi]->spec->n;
-      complex double M[d][d]; // transformation matrix
-      qpms_irot3_uvswfi_dense(M[0], ss->tm[tmi]->spec, sym->rep3d[gmi]);
-      qpms_tmatrix_t *transformed = qpms_tmatrix_apply_symop(ss->tm[tmi], M[0]);
+      const size_t d = ssw->tm[tmi]->spec->n;
+      complex double *m;
+      QPMS_CRASHING_MALLOC(m, d*d*sizeof(complex double)); // ownership passed to ss->tm[ss->tm_count].op
+      qpms_irot3_uvswfi_dense(m, ssw->tm[tmi]->spec, sym->rep3d[gmi]);
+      qpms_tmatrix_t *transformed = qpms_tmatrix_apply_symop(ssw->tm[tmi], m);
       qpms_ss_tmi_t tmj;
       for (tmj = 0; tmj < ss->tm_count; ++tmj)
-        if (qpms_tmatrix_isclose(transformed, ss->tm[tmj], QPMS_SCATSYS_TMATRIX_RTOL, QPMS_SCATSYS_TMATRIX_ATOL))
+        if (qpms_tmatrix_isclose(transformed, ssw->tm[tmj], tol->rtol, tol->atol))
           break;
       if (tmj < ss->tm_count) { // HIT, transformed T-matrix already exists
+        //TODO some "rounding error cleanup" symmetrisation could be performed here?
         qpms_tmatrix_free(transformed);
-      } else { // MISS, save the matrix and increment the count
-        ss->tm[ss->tm_count] = transformed;
+      } else { // MISS, save the matrix (also the "abstract" one)
+        ssw->tm[ss->tm_count] = transformed;
+	ss->tm[ss->tm_count].tmgi = ss->tm[tmi].tmgi;
+        qpms_tmatrix_operation_compose_chain_init(&(ss->tm[ss->tm_count].op), 2, 1);
+        struct qpms_tmatrix_operation_compose_chain * const o = &(ss->tm[ss->tm_count].op.op.compose_chain);
+        o->ops[0] = & ss->tm[tmi].op; // Let's just borrow this
+        o->ops_owned[0] = false;
+        o->opmem[0].typ = QPMS_TMATRIX_OPERATION_LRMATRIX;
+        o->opmem[0].op.lrmatrix.m = m;
+        o->opmem[0].op.lrmatrix.m_size = d * d;
+        o->ops[1] = o->opmem;
+        o->ops_owned[1] = true;
         ++(ss->tm_count);
       }
       ss->tm_sym_map[gmi + tmi * sym->order] = tmj; // In any case, tmj now indexes the correct transformed matrix
     }
   // Possibly free some space using the new ss->tm_count instead of (old) ss->tm_count*sym->order
-  ss->tm_sym_map = realloc(ss->tm_sym_map, sizeof(qpms_ss_tmi_t) * sym->order * ss->tm_count);
+  QPMS_CRASHING_REALLOC(ss->tm_sym_map, sizeof(qpms_ss_tmi_t) * sym->order * ss->tm_count);
   // tm could be realloc'd as well, but those are just pointers, not likely many.
  
 
   // allocate particle symmetry map
-  ss->p_sym_map = malloc(sizeof(qpms_ss_pi_t) * sym->order * sym->order * ss->p_count);
+  QPMS_CRASHING_MALLOC(ss->p_sym_map, sizeof(qpms_ss_pi_t) * sym->order * sym->order * ss->p_count);
   // allocate orbit type array (TODO realloc later if too long)
   ss->orbit_type_count = 0;
-  ss->orbit_types = calloc(ss->p_count, sizeof(qpms_ss_orbit_type_t));
+  QPMS_CRASHING_CALLOC(ss->orbit_types, ss->p_count, sizeof(qpms_ss_orbit_type_t));
 
-  ss->otspace_end = ss->otspace = malloc( // reallocate later
+  QPMS_CRASHING_MALLOC(ss->otspace, // reallocate later
       (sizeof(qpms_ss_orbit_pi_t) * sym->order * sym->order
        + sizeof(qpms_ss_tmi_t) * sym->order
        + 3*sizeof(size_t) * sym->nirreps
        + sizeof(complex double) * SQ(sym->order * ss->max_bspecn)) * ss->p_count
        );
+  ss->otspace_end = ss->otspace;
   
   // Workspace for the orbit type determination
   qpms_ss_orbit_type_t ot_current;
@@ -348,15 +397,15 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
     }
   }
   // Possibly free some space using the new ss->p_count instead of (old) ss->p_count*sym->order
-  ss->p_sym_map = realloc(ss->p_sym_map, sizeof(qpms_ss_pi_t) * sym->order * ss->p_count);
-  ss->p = realloc(ss->p, sizeof(qpms_particle_tid_t) * ss->p_count); 
-  ss->p_orbitinfo = realloc(ss->p_orbitinfo, sizeof(qpms_ss_particle_orbitinfo_t)*ss->p_count);
+  QPMS_CRASHING_REALLOC(ss->p_sym_map, sizeof(qpms_ss_pi_t) * sym->order * ss->p_count);
+  QPMS_CRASHING_REALLOC(ss->p, sizeof(qpms_particle_tid_t) * ss->p_count); 
+  QPMS_CRASHING_REALLOC(ss->p_orbitinfo, sizeof(qpms_ss_particle_orbitinfo_t)*ss->p_count);
   ss->p_capacity = ss->p_count;
 
   {  // Reallocate the orbit type data space and update the pointers if needed.
     size_t otspace_sz = ss->otspace_end - ss->otspace;
     char *old_otspace = ss->otspace;
-    ss->otspace = realloc(ss->otspace, otspace_sz);
+    QPMS_CRASHING_REALLOC(ss->otspace, otspace_sz);
     ptrdiff_t shift = ss->otspace - old_otspace;
     if(shift) {
       for (size_t oi = 0; oi < ss->orbit_type_count; ++oi) {
@@ -373,15 +422,14 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
 
   // Set ss->fecv_size and ss->fecv_pstarts
   ss->fecv_size = 0;
-  ss->fecv_pstarts = malloc(ss->p_count * sizeof(size_t));
+  QPMS_CRASHING_MALLOC(ss->fecv_pstarts, ss->p_count * sizeof(size_t));
   for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
     ss->fecv_pstarts[pi] = ss->fecv_size;
-    ss->fecv_size += ss->tm[ss->p[pi].tmatrix_id]->spec->n; // That's a lot of dereferencing!
+    ss->fecv_size += ssw->tm[ss->p[pi].tmatrix_id]->spec->n; // That's a lot of dereferencing!
   }
 
-  ss->saecv_sizes = malloc(sizeof(size_t) * sym->nirreps); if (!ss->saecv_sizes) abort();
-  ss->saecv_ot_offsets = malloc(sizeof(size_t) * sym->nirreps * ss->orbit_type_count);
-  if (!ss->saecv_ot_offsets) abort();
+  QPMS_CRASHING_MALLOC(ss->saecv_sizes, sizeof(size_t) * sym->nirreps);
+  QPMS_CRASHING_MALLOC(ss->saecv_ot_offsets, sizeof(size_t) * sym->nirreps * ss->orbit_type_count);
   for(qpms_iri_t iri = 0; iri < sym->nirreps; ++iri) {
     ss->saecv_sizes[iri] = 0;
     for(qpms_ss_oti_t oti = 0; oti < ss->orbit_type_count; ++oti) {
@@ -408,13 +456,14 @@ qpms_scatsys_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qp
   }
   
   ss->c = qpms_trans_calculator_init(lMax, normalisation);
-  return ss;
+  return ssw;
 }
 
 
 void qpms_scatsys_free(qpms_scatsys_t *ss) {
   if(ss) {
     free(ss->tm);
+    free(ss->tmg);
     free(ss->p);
     free(ss->fecv_pstarts);
     free(ss->tm_sym_map);
@@ -429,7 +478,59 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
   free(ss);
 }
 
+void qpms_scatsys_at_omega_refill(qpms_scatsys_at_omega_t *ssw, 
+    complex double omega) {
+  const qpms_scatsys_t * const ss = ssw->ss;
+  ssw->omega = omega;
+  ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
+  ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
+  qpms_tmatrix_t **tmatrices_preop;
+  QPMS_CRASHING_CALLOC(tmatrices_preop, ss->tmg_count, sizeof(*tmatrices_preop));
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi) 
+    tmatrices_preop[tmgi] = qpms_tmatrix_init_from_function(ss->tmg[tmgi], omega);
+  for (qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) 
+    qpms_tmatrix_apply_operation_replace(ssw->tm[tmi], &ss->tm[tmi].op,
+        tmatrices_preop[ss->tm[tmi].tmgi]);
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi)
+    qpms_tmatrix_free(tmatrices_preop[tmgi]);
+  free(tmatrices_preop);
+}
 
+qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
+    complex double omega) {
+  // TODO
+  qpms_scatsys_at_omega_t *ssw;
+  QPMS_CRASHING_MALLOC(ssw, sizeof(*ssw));
+  ssw->omega = omega;
+  ssw->ss = ss;
+  ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
+  ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
+  QPMS_CRASHING_CALLOC(ssw->tm, ss->tm_count, sizeof(*ssw->tm));
+  qpms_tmatrix_t **tmatrices_preop;
+  QPMS_CRASHING_CALLOC(tmatrices_preop, ss->tmg_count, sizeof(*tmatrices_preop));
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi) 
+    tmatrices_preop[tmgi] = qpms_tmatrix_init_from_function(ss->tmg[tmgi], omega);
+  for (qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) {
+    ssw->tm[tmi] = qpms_tmatrix_apply_operation(&ss->tm[tmi].op,
+        tmatrices_preop[ss->tm[tmi].tmgi]); //<- main difference to .._refill()
+    QPMS_ENSURE(ssw->tm[tmi], 
+        "Got NULL pointer from qpms_tmatrix_apply_operation");
+  }
+  for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi)
+    qpms_tmatrix_free(tmatrices_preop[tmgi]);
+  free(tmatrices_preop);
+  return ssw;
+}
+
+void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw) {
+  if (ssw) {
+    if(ssw->tm) 
+     for(qpms_ss_tmi_t i = 0; i < ssw->ss->tm_count; ++i) 
+      qpms_tmatrix_free(ssw->tm[i]); 
+    free(ssw->tm);
+  }
+  free(ssw);
+}
 
 // (copypasta from symmetries.c)
 // TODO at some point, maybe support also other norms.
@@ -442,7 +543,7 @@ static inline void check_norm_compat(const qpms_vswf_set_spec_t *s)
     case QPMS_NORMALISATION_NORM_SPHARM:
       break;
     default:
-      abort(); // Only SPHARM and POWER norms are supported right now.
+      QPMS_WTF; // Only SPHARM and POWER norms are supported right now.
   }
 }
 
@@ -455,9 +556,8 @@ complex double *qpms_orbit_action_matrix(complex double *target,
   // check_norm_compat(bspec); not needed here, the qpms_irot3_uvswfi_dense should complain if necessary
   const size_t n = bspec->n;
   const qpms_gmi_t N = ot->size;
-  if (target == NULL)
-    target = malloc(n*n*N*N*sizeof(complex double));
-  if (target == NULL) abort();
+  if (target == NULL) 
+    QPMS_CRASHING_MALLOC(target, n*n*N*N*sizeof(complex double));
   memset(target, 0, n*n*N*N*sizeof(complex double));
   complex double tmp[n][n]; // this is the 'per-particle' action
   qpms_irot3_uvswfi_dense(tmp[0], bspec, sym->rep3d[g]); 
@@ -500,8 +600,7 @@ complex double *qpms_orbit_irrep_projector_matrix(complex double *target,
   const size_t n = bspec->n;
   const qpms_gmi_t N = ot->size;
   if (target == NULL)
-    target = malloc(n*n*N*N*sizeof(complex double));
-  if (target == NULL) abort();
+    QPMS_CRASHING_MALLOC(target, n*n*N*N*sizeof(complex double));
   memset(target, 0, n*n*N*N*sizeof(complex double));
   // Workspace for the orbit group action matrices
   complex double *tmp = malloc(n*n*N*N*sizeof(complex double));
@@ -556,7 +655,6 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   const bool newtarget = (target == NULL);
   if (newtarget)
     QPMS_CRASHING_MALLOC(target,n*n*N*N*sizeof(complex double));
-  if (target == NULL) abort();
   memset(target, 0, n*n*N*N*sizeof(complex double));
 
   // Get the projector (also workspace for right sg. vect.)
@@ -564,12 +662,10 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
     ot, bspec, sym, iri);
   if(!projector) abort();
   // Workspace for the right singular vectors.
-  complex double *V_H = malloc(n*n*N*N*sizeof(complex double));
-  if(!V_H) abort();
+  complex double *V_H; QPMS_CRASHING_MALLOC(V_H, n*n*N*N*sizeof(complex double));
   // THIS SHOULD NOT BE NECESSARY
-  complex double *U = malloc(n*n*N*N*sizeof(complex double));
-  if(!U) abort();
-  double *s = malloc(n*N*sizeof(double)); if(!s) abort();
+  complex double *U; QPMS_CRASHING_MALLOC(U, n*n*N*N*sizeof(complex double));
+  double *s; QPMS_CRASHING_MALLOC(s, n*N*sizeof(double));
 
   int info = LAPACKE_zgesdd(LAPACK_ROW_MAJOR,
       'A', // jobz; overwrite projector with left sg.vec. and write right into V_H
@@ -646,8 +742,7 @@ complex double *qpms_scatsys_irrep_pack_matrix_stupid(complex double *target_pac
     return target_packed; 
   const size_t full_len = ss->fecv_size;
   if (target_packed == NULL)
-    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
-  if (target_packed == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_packed, SQ(packedlen)*sizeof(complex double));
   memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
 
   // Workspace for the intermediate matrix
@@ -684,8 +779,7 @@ complex double *qpms_scatsys_irrep_unpack_matrix_stupid(complex double *target_f
   const size_t packedlen = ss->saecv_sizes[iri];
   const size_t full_len = ss->fecv_size;
   if (target_full == NULL)
-    target_full = malloc(SQ(full_len)*sizeof(complex double));
-  if (target_full == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_full, SQ(full_len)*sizeof(complex double));
   if(!add) memset(target_full, 0, SQ(full_len)*sizeof(complex double));
 
   if(!packedlen) return target_full; // Empty irrep, do nothing.
@@ -724,13 +818,12 @@ complex double *qpms_scatsys_irrep_pack_matrix(complex double *target_packed,
     return target_packed; 
   const size_t full_len = ss->fecv_size;
   if (target_packed == NULL)
-    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
-  if (target_packed == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_packed, SQ(packedlen)*sizeof(complex double));
   memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
 
   // Workspace for the intermediate particle-orbit matrix result
-  complex double *tmp = malloc(sizeof(complex double) * SQ(ss->max_bspecn)
-      * ss->sym->order); if (!tmp) abort();
+  complex double *tmp;
+  QPMS_CRASHING_MALLOC(tmp, sizeof(complex double) * SQ(ss->max_bspecn) * ss->sym->order);
 
   const complex double one = 1, zero = 0;
 
@@ -806,15 +899,14 @@ complex double *qpms_scatsys_irrep_unpack_matrix(complex double *target_full,
   const size_t packedlen = ss->saecv_sizes[iri];
   const size_t full_len = ss->fecv_size;
   if (target_full == NULL)
-    target_full = malloc(SQ(full_len)*sizeof(complex double));
-  if (target_full == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_full, SQ(full_len)*sizeof(complex double));
   if(!add) memset(target_full, 0, SQ(full_len)*sizeof(complex double));
 
   if(!packedlen) return target_full; // Empty irrep, do nothing.
 
   // Workspace for the intermediate particle-orbit matrix result
-  complex double *tmp = malloc(sizeof(complex double) * SQ(ss->max_bspecn)
-      * ss->sym->order); if (!tmp) abort();
+  complex double *tmp;
+  QPMS_CRASHING_MALLOC(tmp, sizeof(complex double) * SQ(ss->max_bspecn) * ss->sym->order);
 
   const complex double one = 1, zero = 0;
 
@@ -889,8 +981,7 @@ complex double *qpms_scatsys_irrep_pack_vector(complex double *target_packed,
   const size_t packedlen = ss->saecv_sizes[iri];
   if (!packedlen) return target_packed; // Empty irrep
   if (target_packed == NULL)
-    target_packed = malloc(packedlen*sizeof(complex double));
-  if (target_packed == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_packed, packedlen*sizeof(complex double));
   memset(target_packed, 0, packedlen*sizeof(complex double));
 
   const complex double one = 1;
@@ -928,8 +1019,7 @@ complex double *qpms_scatsys_irrep_unpack_vector(complex double *target_full,
 		const qpms_iri_t iri, bool add) {
   const size_t full_len = ss->fecv_size;
   if (target_full == NULL)
-    target_full = malloc(full_len*sizeof(complex double));
-  if (target_full == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_full, full_len*sizeof(complex double));
   if (!add) memset(target_full, 0, full_len*sizeof(complex double));
 
   const complex double one = 1;
@@ -989,11 +1079,11 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
   { // Non-diagonal part; M[piR, piC] = T[piR] S(piR<-piC)
     size_t fullvec_offsetR = 0;
     for(qpms_ss_pi_t piR = 0; piR < ss->p_count; ++piR) {
-      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[piR].tmatrix_id]->spec;
+      const qpms_vswf_set_spec_t *bspecR = qpms_ss_bspec_pi(ss, piR); 
       const cart3_t posR = ss->p[piR].pos;
       size_t fullvec_offsetC = 0;
       for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) {
-        const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+        const qpms_vswf_set_spec_t *bspecC = qpms_ss_bspec_pi(ss, piC);
         if(piC != piR)  { // The diagonal will be dealt with later.
           const cart3_t posC = ss->p[piC].pos;
           QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
@@ -1003,7 +1093,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
         }
         fullvec_offsetC += bspecC->n;
       }
-      assert(fullvec_offsetC = full_len);
+      assert(fullvec_offsetC == full_len);
       fullvec_offsetR += bspecR->n;
     }
     assert(fullvec_offsetR == full_len);
@@ -1014,13 +1104,14 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
 
 
 
-complex double *qpms_scatsys_build_modeproblem_matrix_full(
+complex double *qpms_scatsysw_build_modeproblem_matrix_full(
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,
-    const qpms_scatsys_t *ss,
-    complex double k ///< Wave number to use in the translation matrix.
+    const qpms_scatsys_at_omega_t *ssw
     )
 {
+  const complex double k = ssw->wavenumber;
+  const qpms_scatsys_t *ss = ssw->ss;
   const size_t full_len = ss->fecv_size;
   if(!target)
     QPMS_CRASHING_MALLOC(target, SQ(full_len) * sizeof(complex double));
@@ -1031,13 +1122,13 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
   { // Non-diagonal part; M[piR, piC] = -T[piR] S(piR<-piC)
     size_t fullvec_offsetR = 0;
     for(qpms_ss_pi_t piR = 0; piR < ss->p_count; ++piR) {
-      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[piR].tmatrix_id]->spec;
+      const qpms_vswf_set_spec_t *bspecR = ssw->tm[ss->p[piR].tmatrix_id]->spec;
       const cart3_t posR = ss->p[piR].pos;
       size_t fullvec_offsetC = 0;
       // dest particle T-matrix
-      const complex double *tmmR = ss->tm[ss->p[piR].tmatrix_id]->m;
+      const complex double *tmmR = ssw->tm[ss->p[piR].tmatrix_id]->m;
       for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) {
-        const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+        const qpms_vswf_set_spec_t *bspecC = ssw->tm[ss->p[piC].tmatrix_id]->spec;
         if(piC != piR) { // The diagonal will be dealt with later.
           const cart3_t posC = ss->p[piC].pos;
           QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
@@ -1064,19 +1155,20 @@ complex double *qpms_scatsys_build_modeproblem_matrix_full(
 }
 
 // Serial reference implementation.
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
+complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
-    const qpms_scatsys_t *ss, qpms_iri_t iri,
-    complex double k ///< Wave number to use in the translation matrix.
+    const qpms_scatsys_at_omega_t *ssw,
+    qpms_iri_t iri
     )
 {
+  const qpms_scatsys_t *ss = ssw->ss;
+  const complex double k = ssw->wavenumber;
   const size_t packedlen = ss->saecv_sizes[iri];
   if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
     return target_packed; 
   if (target_packed == NULL)
-    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
-  if (target_packed == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_packed, SQ(packedlen)*sizeof(complex double));
   memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
 
   // some of the following workspaces are probably redundant; TODO optimize later.
@@ -1102,7 +1194,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
     const size_t packed_orbit_offsetR =
       ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiR] 
       + osnR * otR->irbase_sizes[iri];
-    const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[piR].tmatrix_id]->spec;
+    const qpms_vswf_set_spec_t *bspecR = ssw->tm[ss->p[piR].tmatrix_id]->spec;
     // Orbit coeff vector's full size:
     const size_t orbit_fullsizeR = otR->size * otR->bspecn;
     const size_t particle_fullsizeR = otR->bspecn; // == bspecR->n
@@ -1112,7 +1204,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
     const cart3_t posR = ss->p[piR].pos;
     if(orbit_packedsizeR) { // avoid zgemm crash on empty irrep
       // dest particle T-matrix
-      const complex double *tmmR = ss->tm[ss->p[piR].tmatrix_id]->m;
+      const complex double *tmmR = ssw->tm[ss->p[piR].tmatrix_id]->m;
       for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) { //Column loop
         const qpms_ss_oti_t otiC = ss->p_orbitinfo[piC].t;
         const qpms_ss_orbit_type_t *const otC = ss->orbit_types + otiC;
@@ -1122,7 +1214,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
         const size_t packed_orbit_offsetC = 
           ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiC]
           + osnC * otC->irbase_sizes[iri];
-        const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+        const qpms_vswf_set_spec_t *bspecC = ssw->tm[ss->p[piC].tmatrix_id]->spec;
         // Orbit coeff vector's full size:
         const size_t orbit_fullsizeC = otC->size * otC->bspecn;
         const size_t particle_fullsizeC = otC->bspecn; // == bspecC->n
@@ -1174,19 +1266,19 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(
   return target_packed;
 }
 
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
+complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorderR(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
-    const qpms_scatsys_t *ss, qpms_iri_t iri,
-    complex double k ///< Wave number to use in the translation matrix.
+    const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri
     )
 {
+  const qpms_scatsys_t *ss = ssw->ss;
+  const complex double k = ssw->wavenumber;
   const size_t packedlen = ss->saecv_sizes[iri];
   if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
     return target_packed; 
   if (target_packed == NULL)
-    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
-  if (target_packed == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_packed, SQ(packedlen)*sizeof(complex double));
   memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
 
   // some of the following workspaces are probably redundant; TODO optimize later.
@@ -1215,7 +1307,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
 
     if(orbit_packedsizeR) { // avoid zgemm crash on empty irrep
       const size_t particle_fullsizeR = otR->bspecn; // == bspecR->n
-      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[orbitstartpiR].tmatrix_id]->spec;
+      const qpms_vswf_set_spec_t *bspecR = ssw->tm[ss->p[orbitstartpiR].tmatrix_id]->spec;
       // This is the orbit-level matrix projecting the whole orbit onto the irrep.
       const complex double *omR = otR->irbases + otR->irbase_offsets[iri];
       // Orbit coeff vector's full size:
@@ -1231,7 +1323,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
         assert(ss->p_orbitinfo[piR].osn == osnR);
         const cart3_t posR = ss->p[piR].pos;
         // dest particle T-matrix
-        const complex double *tmmR = ss->tm[ss->p[piR].tmatrix_id]->m;
+        const complex double *tmmR = ssw->tm[ss->p[piR].tmatrix_id]->m;
         for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) { //Column loop
           const qpms_ss_oti_t otiC = ss->p_orbitinfo[piC].t;
           const qpms_ss_orbit_type_t *const otC = ss->orbit_types + otiC;
@@ -1241,7 +1333,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
           const size_t packed_orbit_offsetC = 
             ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiC]
             + osnC * otC->irbase_sizes[iri];
-          const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+          const qpms_vswf_set_spec_t *bspecC = ssw->tm[ss->p[piC].tmatrix_id]->spec;
           // Orbit coeff vector's full size:
           const size_t orbit_fullsizeC = otC->size * otC->bspecn;
           const size_t particle_fullsizeC = otC->bspecn; // == bspecC->n
@@ -1294,20 +1386,21 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(
   return target_packed;
 }
 
-struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg{
-  const qpms_scatsys_t *ss;
+struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg{
+  const qpms_scatsys_at_omega_t *ssw;
   qpms_ss_pi_t *opistartR_ptr;
   pthread_mutex_t *opistartR_mutex;
   qpms_iri_t iri;
   complex double *target_packed;
-  complex double k;
 };
 
-static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread(void *arg)
+static void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread(void *arg)
 {
-  const struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg 
+  const struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg 
     *a = arg;
-  const qpms_scatsys_t *ss = a->ss;
+  const qpms_scatsys_at_omega_t *ssw = a->ssw;
+  const complex double k = ssw->wavenumber;
+  const qpms_scatsys_t *ss = ssw->ss;
   const qpms_iri_t iri = a->iri;
   const size_t packedlen = ss->saecv_sizes[iri];
 
@@ -1347,7 +1440,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
 
     if(orbit_packedsizeR) { // avoid zgemm crash on empty irrep
       const size_t particle_fullsizeR = otR->bspecn; // == bspecR->n
-      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[orbitstartpiR].tmatrix_id]->spec;
+      const qpms_vswf_set_spec_t *bspecR = ssw->tm[ss->p[orbitstartpiR].tmatrix_id]->spec;
       // This is the orbit-level matrix projecting the whole orbit onto the irrep.
       const complex double *omR = otR->irbases + otR->irbase_offsets[iri];
       // Orbit coeff vector's full size:
@@ -1363,7 +1456,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
         assert(ss->p_orbitinfo[piR].osn == osnR);
         const cart3_t posR = ss->p[piR].pos;
         // dest particle T-matrix
-        const complex double *tmmR = ss->tm[ss->p[piR].tmatrix_id]->m;
+        const complex double *tmmR = ssw->tm[ss->p[piR].tmatrix_id]->m;
         for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) { //Column loop
           const qpms_ss_oti_t otiC = ss->p_orbitinfo[piC].t;
           const qpms_ss_orbit_type_t *const otC = ss->orbit_types + otiC;
@@ -1373,7 +1466,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
           const size_t packed_orbit_offsetC = 
             ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiC]
             + osnC * otC->irbase_sizes[iri];
-          const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+          const qpms_vswf_set_spec_t *bspecC = ssw->tm[ss->p[piC].tmatrix_id]->spec;
           // Orbit coeff vector's full size:
           const size_t orbit_fullsizeC = otC->size * otC->bspecn;
           const size_t particle_fullsizeC = otC->bspecn; // == bspecC->n
@@ -1387,7 +1480,7 @@ static void *qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread
               QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
                     Sblock, // Sblock is S(piR->piC)
                     bspecR, bspecC->n, bspecC, 1,
-                    a->k, posR, posC, QPMS_HANKEL_PLUS));
+                    k, posR, posC, QPMS_HANKEL_PLUS));
 
               SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                   bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
@@ -1484,7 +1577,7 @@ static void *qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thre
 
     if(orbit_packedsizeR) { // avoid zgemm crash on empty irrep
       const size_t particle_fullsizeR = otR->bspecn; // == bspecR->n
-      const qpms_vswf_set_spec_t *bspecR = ss->tm[ss->p[orbitstartpiR].tmatrix_id]->spec;
+      const qpms_vswf_set_spec_t *bspecR = qpms_ss_bspec_pi(ss, orbitstartpiR);
       // This is the orbit-level matrix projecting the whole orbit onto the irrep.
       const complex double *omR = otR->irbases + otR->irbase_offsets[iri];
       // Orbit coeff vector's full size:
@@ -1508,7 +1601,7 @@ static void *qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thre
           const size_t packed_orbit_offsetC = 
             ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiC]
             + osnC * otC->irbase_sizes[iri];
-          const qpms_vswf_set_spec_t *bspecC = ss->tm[ss->p[piC].tmatrix_id]->spec;
+          const qpms_vswf_set_spec_t *bspecC = qpms_ss_bspec_pi(ss, piC);
           // Orbit coeff vector's full size:
           const size_t orbit_fullsizeC = otC->size * otC->bspecn;
           const size_t particle_fullsizeC = otC->bspecn; // == bspecC->n
@@ -1567,7 +1660,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 		complex double *target_packed,
 		const qpms_scatsys_t *ss,
 		qpms_iri_t iri,
-		complex double k, ///< Wave number to use in the translation matrix.
+    const complex double k,
 		qpms_bessel_t J
 		)
 {
@@ -1576,8 +1669,7 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
   if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
     return target_packed; 
   if (target_packed == NULL)
-    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
-  if (target_packed == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_packed, SQ(packedlen)*sizeof(complex double));
   memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
 
   qpms_ss_pi_t opistartR = 0;
@@ -1618,26 +1710,24 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 
 
 // Parallel implementation, now default
-complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
+complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed(
     /// Target memory with capacity for ss->saecv_sizes[iri]**2 elements. If NULL, new will be allocated.
     complex double *target_packed,
-    const qpms_scatsys_t *ss, qpms_iri_t iri,
-    complex double k ///< Wave number to use in the translation matrix.
+    const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri
     )
 {
-  const size_t packedlen = ss->saecv_sizes[iri];
+  const size_t packedlen = ssw->ss->saecv_sizes[iri];
   if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
     return target_packed; 
   if (target_packed == NULL)
-    target_packed = malloc(SQ(packedlen)*sizeof(complex double));
-  if (target_packed == NULL) abort();
+    QPMS_CRASHING_MALLOC(target_packed,SQ(packedlen)*sizeof(complex double));
   memset(target_packed, 0, SQ(packedlen)*sizeof(complex double));
 
   qpms_ss_pi_t opistartR = 0;
   pthread_mutex_t opistartR_mutex;
   QPMS_ENSURE_SUCCESS(pthread_mutex_init(&opistartR_mutex, NULL));
-  const struct qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg
-    arg = {ss, &opistartR, &opistartR_mutex, iri, target_packed, k};
+  const struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg
+    arg = {ssw, &opistartR, &opistartR_mutex, iri, target_packed};
 
   // FIXME THIS IS NOT PORTABLE:
   long nthreads;
@@ -1658,7 +1748,7 @@ complex double *qpms_scatsys_build_modeproblem_matrix_irrep_packed(
   pthread_t thread_ids[nthreads];
   for(long thi = 0; thi < nthreads; ++thi)
     QPMS_ENSURE_SUCCESS(pthread_create(thread_ids + thi, NULL,
-      qpms_scatsys_build_modeproblem_matrix_irrep_packed_parallelR_thread,
+      qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread,
       (void *) &arg));
   for(long thi = 0; thi < nthreads; ++thi) {
     void *retval;
@@ -1696,18 +1786,18 @@ complex double *qpms_scatsys_incident_field_vector_irrep_packed(
 #endif
 
 
-complex double *qpms_scatsys_apply_Tmatrices_full(
+complex double *qpms_scatsysw_apply_Tmatrices_full(
 		complex double *target_full, const complex double *inc_full, 
-		const qpms_scatsys_t *ss) {
+		const qpms_scatsys_at_omega_t *ssw) {
   QPMS_UNTESTED;
+  const qpms_scatsys_t *ss = ssw->ss;
   if (!target_full) QPMS_CRASHING_CALLOC(target_full, ss->fecv_size,
       sizeof(complex double));
   for(qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
     complex double *ptarget = target_full + ss->fecv_pstarts[pi];
     const complex double *psrc = inc_full + ss->fecv_pstarts[pi];
-    const qpms_vswf_set_spec_t *bspec = qpms_ss_bspec_pi(ss, pi);
     // TODO check whether T-matrix is non-virtual after virtual t-matrices are implemented.
-    const qpms_tmatrix_t *T = ss->tm[ss->p[pi].tmatrix_id];
+    const qpms_tmatrix_t *T = ssw->tm[ss->p[pi].tmatrix_id];
     qpms_apply_tmatrix(ptarget, psrc, T);
   }
   return target_full;
@@ -1751,8 +1841,9 @@ void qpms_ss_LU_free(qpms_ss_LU lu) {
   free(lu.ipiv);
 }
 
-qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(complex double *mpmatrix_full,
-    int *target_piv, const qpms_scatsys_t *ss) {
+qpms_ss_LU qpms_scatsysw_modeproblem_matrix_full_factorise(complex double *mpmatrix_full,
+    int *target_piv, const qpms_scatsys_at_omega_t *ssw) {
+  const qpms_scatsys_t *ss = ssw->ss;
   QPMS_ENSURE(mpmatrix_full, "A non-NULL pointer to the pre-calculated mode matrix is required");
   if (!target_piv) QPMS_CRASHING_MALLOC(target_piv, ss->fecv_size * sizeof(int));
   QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR, ss->fecv_size, ss->fecv_size,
@@ -1760,45 +1851,45 @@ qpms_ss_LU qpms_scatsys_modeproblem_matrix_full_factorise(complex double *mpmatr
   qpms_ss_LU lu;
   lu.a = mpmatrix_full;
   lu.ipiv = target_piv;
-  lu.ss = ss;
+  lu.ssw = ssw;
   lu.full = true;
   lu.iri = -1;
   return lu;
 }
 
-qpms_ss_LU qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(complex double *mpmatrix_packed,
-    int *target_piv, const qpms_scatsys_t *ss, qpms_iri_t iri) {
+qpms_ss_LU qpms_scatsysw_modeproblem_matrix_irrep_packed_factorise(complex double *mpmatrix_packed,
+    int *target_piv, const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri) {
   QPMS_ENSURE(mpmatrix_packed, "A non-NULL pointer to the pre-calculated mode matrix is required");
-  size_t n = ss->saecv_sizes[iri];
+  size_t n = ssw->ss->saecv_sizes[iri];
   if (!target_piv) QPMS_CRASHING_MALLOC(target_piv, n * sizeof(int));
   QPMS_ENSURE_SUCCESS(LAPACKE_zgetrf(LAPACK_ROW_MAJOR, n, n,
         mpmatrix_packed, n, target_piv));
   qpms_ss_LU lu;
   lu.a = mpmatrix_packed;
   lu.ipiv = target_piv;
-  lu.ss = ss;
+  lu.ssw = ssw;
   lu.full = false;
   lu.iri = iri;
   return lu;
 }
 
-qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_full_LU(
+qpms_ss_LU qpms_scatsysw_build_modeproblem_matrix_full_LU(
     complex double *target, int *target_piv,
-    const qpms_scatsys_t *ss, complex double k){
-  target = qpms_scatsys_build_modeproblem_matrix_full(target, ss, k);
-  return qpms_scatsys_modeproblem_matrix_full_factorise(target, target_piv, ss);
+    const qpms_scatsys_at_omega_t *ssw){
+  target = qpms_scatsysw_build_modeproblem_matrix_full(target, ssw);
+  return qpms_scatsysw_modeproblem_matrix_full_factorise(target, target_piv, ssw);
 }
 
-qpms_ss_LU qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
+qpms_ss_LU qpms_scatsysw_build_modeproblem_matrix_irrep_packed_LU(
     complex double *target, int *target_piv,
-    const qpms_scatsys_t *ss, qpms_iri_t iri, complex double k){
-  target = qpms_scatsys_build_modeproblem_matrix_irrep_packed(target, ss, iri, k);
-  return qpms_scatsys_modeproblem_matrix_irrep_packed_factorise(target, target_piv, ss, iri);
+    const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri){
+  target = qpms_scatsysw_build_modeproblem_matrix_irrep_packed(target, ssw, iri);
+  return qpms_scatsysw_modeproblem_matrix_irrep_packed_factorise(target, target_piv, ssw, iri);
 }
 
 complex double *qpms_scatsys_scatter_solve(
     complex double *f, const complex double *a_inc, qpms_ss_LU lu) {
-  const size_t n = lu.full ? lu.ss->fecv_size : lu.ss->saecv_sizes[lu.iri];
+  const size_t n = lu.full ? lu.ssw->ss->fecv_size : lu.ssw->ss->saecv_sizes[lu.iri];
   if (!f) QPMS_CRASHING_MALLOC(f, n * sizeof(complex double));
   memcpy(f, a_inc, n*sizeof(complex double)); // It will be rewritten by zgetrs
   QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,  n /*n*/, 1 /*nrhs number of right hand sides*/,

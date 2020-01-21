@@ -53,6 +53,15 @@ qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
   return t;
 }
 
+qpms_tmatrix_t *qpms_tmatrix_init_from_generator(
+                const qpms_vswf_set_spec_t *bspec,
+                qpms_tmatrix_generator_t gen,
+                complex double omega) {
+        qpms_tmatrix_t *t = qpms_tmatrix_init(bspec);
+        QPMS_ENSURE_SUCCESS(gen.function(t, omega, gen.params));
+        return t;
+}
+
 qpms_tmatrix_t *qpms_tmatrix_copy(const qpms_tmatrix_t *T) {
   qpms_tmatrix_t *t = qpms_tmatrix_init(T->spec);
   size_t n = T->spec->n;
@@ -991,3 +1000,224 @@ qpms_errno_t qpms_tmatrix_generator_constant(qpms_tmatrix_t *t,
   return QPMS_SUCCESS;
 }
 
+void qpms_tmatrix_operation_clear(qpms_tmatrix_operation_t *f) {
+  switch(f->typ) {
+    case QPMS_TMATRIX_OPERATION_NOOP:
+      break;
+    case QPMS_TMATRIX_OPERATION_LRMATRIX:
+      if(f->op.lrmatrix.owns_m)
+        free(f->op.lrmatrix.m);
+      break;
+    case QPMS_TMATRIX_OPERATION_SCMULZ:
+      if(f->op.scmulz.owns_m)
+        free(f->op.scmulz.m);
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3:
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3ARR:
+      if(f->op.irot3arr.owns_ops)
+        free(f->op.irot3arr.ops);
+      break;
+    case QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE: // Group never owned
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_SUM:
+      {
+        struct qpms_tmatrix_operation_compose_sum * const o = 
+          &(f->op.compose_sum);
+        if(o->opmem) {
+          for(size_t i = 0; i < o->n; ++i) 
+            qpms_tmatrix_operation_clear(&(o->opmem[i]));
+          free(o->opmem);
+        }
+        free(o->ops);
+      }
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN:
+      {
+        struct qpms_tmatrix_operation_compose_chain * const o = 
+          &(f->op.compose_chain);
+        if(o->opmem) {
+          for(size_t i = 0; i < o->n; ++i)
+            if(o->ops_owned[i]) {
+              // A bit complicated yet imperfect sanity/bound check,
+              // but this way we at least get rid of the const discard warning.
+              ptrdiff_t d = o->ops[i] - o->opmem;
+              QPMS_ENSURE(d >= 0 && d < o->opmem_size, 
+                  "Bound check failed; is there a bug in the"
+                  " construction of compose_chain operation?\n"
+                  "opmem_size = %zu, o->ops[%zu] - o->opmem = %td.",
+                  o->opmem_size, i, d);
+              qpms_tmatrix_operation_clear(o->opmem + d);
+            }
+          free(o->opmem);
+          free(o->ops_owned);
+        }
+        free(o->ops);
+      }
+      break;
+    default:
+      QPMS_WTF;
+  }
+}
+
+void qpms_tmatrix_operation_copy(qpms_tmatrix_operation_t *dest, const qpms_tmatrix_operation_t *src) {
+  memcpy(dest, src, sizeof(qpms_tmatrix_operation_t));
+  switch(dest->typ) {
+    case QPMS_TMATRIX_OPERATION_NOOP:
+      break;
+    case QPMS_TMATRIX_OPERATION_LRMATRIX:
+      QPMS_CRASHING_MALLOCPY(dest->op.lrmatrix.m, src->op.lrmatrix.m, 
+          sizeof(complex double) * src->op.lrmatrix.m_size);
+      dest->op.lrmatrix.owns_m = true;
+      break;
+    case QPMS_TMATRIX_OPERATION_SCMULZ:
+      QPMS_CRASHING_MALLOCPY(dest->op.scmulz.m, src->op.scmulz.m, 
+          sizeof(complex double) * src->op.scmulz.m_size);
+      dest->op.scmulz.owns_m = true;
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3:
+      break;
+    case QPMS_TMATRIX_OPERATION_IROT3ARR:
+      QPMS_CRASHING_MALLOCPY(dest->op.irot3arr.ops, src->op.irot3arr.ops,
+          src->op.irot3arr.n * sizeof(qpms_irot3_t));
+      dest->op.irot3arr.owns_ops = true;
+      break;
+    case QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE: // Group never owned
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_SUM:
+      {
+        struct qpms_tmatrix_operation_compose_sum * const o = 
+          &(dest->op.compose_sum);
+        QPMS_CRASHING_MALLOC(o->ops, o->n * sizeof(*(o->ops)));
+        QPMS_CRASHING_MALLOC(o->opmem, o->n * sizeof(*(o->opmem)));
+        for(size_t i = 0; i < o->n; ++i) {
+          qpms_tmatrix_operation_copy(o->opmem + i, src->op.compose_sum.ops[i]);
+          o->ops[i] = o->opmem + i;
+        }
+      }
+      break;
+    case QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN:
+      {
+        struct qpms_tmatrix_operation_compose_chain * const o = 
+          &(dest->op.compose_chain);
+        QPMS_CRASHING_MALLOC(o->ops, o->n * sizeof(*(o->ops)));
+        QPMS_CRASHING_MALLOC(o->ops_owned, o->n * sizeof(*(o->ops_owned)));
+        QPMS_CRASHING_MALLOC(o->opmem, o->n * sizeof(*(o->opmem)));
+        for(size_t i = 0; i < o->n; ++i) {
+          qpms_tmatrix_operation_copy(o->opmem + i, src->op.compose_chain.ops[i]);
+          o->ops[i] = o->opmem + i;
+          o->ops_owned[i] = true;
+        }
+      }
+      break;
+    default:
+      QPMS_WTF;
+  }
+  dest->typ = src->typ;
+}
+
+void qpms_tmatrix_operation_compose_chain_init(qpms_tmatrix_operation_t *dest,
+    size_t nops, size_t opmem_size) {
+  if (nops == 0) {
+    QPMS_WARN("Tried to create a composed (chain) operation of zero size;"
+        "setting to no-op instead.");
+    *dest = qpms_tmatrix_operation_noop;
+  }
+  if (nops < opmem_size)
+    QPMS_WARN("Allocating buffer for %zu operations, in a chained operation of"
+     " only %zu elemens, that does not seem to make sense.", opmem_size, nops);
+  dest->typ = QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN;
+  struct qpms_tmatrix_operation_compose_chain * const o = 
+          &(dest->op.compose_chain);
+  o->n = nops;
+  QPMS_CRASHING_MALLOC(o->ops, nops * sizeof(*(o->ops)));
+  if (opmem_size != 0) {
+    QPMS_CRASHING_CALLOC(o->ops_owned, o->n, sizeof(_Bool));
+    QPMS_CRASHING_MALLOC(o->opmem, opmem_size * sizeof(*(o->opmem)));
+  } else {
+    o->ops_owned = NULL;
+    o->opmem = NULL;
+  }
+  o->opmem_size = opmem_size;
+}
+
+qpms_tmatrix_t *qpms_tmatrix_mv(qpms_tmatrix_t *dest,
+    const qpms_tmatrix_t *orig) {
+  QPMS_ENSURE(qpms_vswf_set_spec_isidentical(dest->spec, orig->spec),
+     "Basis specifications must be identical!");
+  memcpy(dest->m, orig->m, SQ(orig->spec->n)*sizeof(complex double));
+  return dest;
+}
+
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_replace(qpms_tmatrix_t *dest,
+    const qpms_tmatrix_operation_t *op, const qpms_tmatrix_t *orig) {
+  //QPMS_ENSURE(qpms_vswf_set_spec_isidentical(dest->spec, orig->spec),
+  //    "Basis specifications must be identical!");
+  // TODO should I check also for dest->owns_m?
+  // FIXME this is highly inoptimal; the hierarchy should be such
+  // that _operation() and operation_inplace() call this, and not the
+  // other way around
+  qpms_tmatrix_mv(dest, orig);
+  return qpms_tmatrix_apply_operation_inplace(op, dest);
+}
+
+qpms_tmatrix_t *qpms_tmatrix_apply_operation(
+    const qpms_tmatrix_operation_t *f, const qpms_tmatrix_t *orig) {
+  // Certain operations could be optimized, but the effect would be marginal.
+  qpms_tmatrix_t *res = qpms_tmatrix_copy(orig); 
+  return qpms_tmatrix_apply_operation_inplace(f, res);
+}
+
+static qpms_tmatrix_t *qtao_compose_sum_inplace(qpms_tmatrix_t *T, 
+    const struct qpms_tmatrix_operation_compose_sum *cs) {
+  qpms_tmatrix_t *tmp_target = qpms_tmatrix_init(T->spec);
+  qpms_tmatrix_t *sum = qpms_tmatrix_init(T->spec);
+  for (size_t i = 0; i < cs->n; ++i) {
+    memcpy(tmp_target->m, T->m, SQ(T->spec->n) * sizeof(complex double));
+    QPMS_ENSURE(qpms_tmatrix_apply_operation_inplace(cs->ops[i] , tmp_target),
+        "Got NULL pointer from qpms_tmatrix_apply_operation_inplace, hupsis!");
+    for (size_t j = 0; j < SQ(T->spec->n); ++j)
+      sum->m[j] += tmp_target->m[j];
+  }
+  for(size_t j = 0; j < SQ(T->spec->n); ++j)
+    T->m[j] = sum->m[j] * cs->factor;
+  qpms_tmatrix_free(sum);
+  qpms_tmatrix_free(tmp_target);
+  return T;
+}
+
+static qpms_tmatrix_t *qtao_compose_chain_inplace(qpms_tmatrix_t *T,
+    const struct qpms_tmatrix_operation_compose_chain *cc) {
+  for(size_t i = 0; i < cc->n; ++i)
+    qpms_tmatrix_apply_operation_inplace(cc->ops[i], T);
+  return T;
+}
+
+static qpms_tmatrix_t *qtao_scmulz_inplace(qpms_tmatrix_t *T,
+    const struct qpms_tmatrix_operation_scmulz *s) {
+  for(size_t i = 0; i < SQ(T->spec->n); ++i)
+    T->m[i] *= s->m[i];
+  return T;
+}
+
+qpms_tmatrix_t *qpms_tmatrix_apply_operation_inplace(
+    const qpms_tmatrix_operation_t *f, qpms_tmatrix_t *T) {
+  switch(f->typ) {
+    case QPMS_TMATRIX_OPERATION_NOOP:
+      return T;
+    case QPMS_TMATRIX_OPERATION_LRMATRIX:
+      return qpms_tmatrix_apply_symop_inplace(T, f->op.lrmatrix.m);
+    case QPMS_TMATRIX_OPERATION_IROT3:
+      return qpms_tmatrix_symmetrise_irot3arr_inplace(T, 1, &(f->op.irot3));
+    case QPMS_TMATRIX_OPERATION_FINITE_GROUP_SYMMETRISE:
+      return qpms_tmatrix_symmetrise_finite_group_inplace(T, f->op.finite_group);
+    case QPMS_TMATRIX_OPERATION_COMPOSE_SUM:
+      return qtao_compose_sum_inplace(T, &(f->op.compose_sum));
+    case QPMS_TMATRIX_OPERATION_COMPOSE_CHAIN:
+      return qtao_compose_chain_inplace(T, &(f->op.compose_chain));
+    case QPMS_TMATRIX_OPERATION_SCMULZ:
+      return qtao_scmulz_inplace(T, &(f->op.scmulz));
+    default:
+      QPMS_WTF;
+  }
+}

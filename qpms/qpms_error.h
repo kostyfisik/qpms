@@ -56,6 +56,15 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 			(size_t) (size));\
 }
 
+#define QPMS_CRASHING_MALLOCPY(dest, src, size) {\
+	(dest) = malloc(size);\
+       	if(QPMS_UNLIKELY(!(dest) && (size)))\
+       		qpms_pr_debug_at_flf(__FILE__,__LINE__,__func__,\
+			"Allocation of %zd bytes for " #dest " failed.",\
+			(size_t) (size));\
+	memcpy((dest), (src), (size));\
+}
+
 #define QPMS_CRASHING_CALLOC(pointer, nmemb, size) {\
 	(pointer) = calloc((nmemb), (size));\
        	if(QPMS_UNLIKELY(!(pointer) && (nmemb) && (size)))\

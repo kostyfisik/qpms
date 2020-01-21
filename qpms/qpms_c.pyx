@@ -12,7 +12,8 @@ from .cyquaternions cimport IRot3, CQuat
 from .cybspec cimport BaseSpec
 from .cycommon cimport make_c_string
 from .cycommon import string_c2py, PointGroupClass
-from .cytmatrices cimport CTMatrix
+from .cytmatrices cimport CTMatrix, TMatrixFunction, TMatrixGenerator
+from .cymaterials cimport EpsMuGenerator
 from libc.stdlib cimport malloc, free, calloc
 import warnings
 
@@ -256,17 +257,37 @@ cdef class Particle:
     Wrapper over the qpms_particle_t structure.
     '''
     cdef qpms_particle_t p
-    cdef readonly CTMatrix t # We hold the reference to the T-matrix to ensure correct reference counting
+    cdef readonly TMatrixFunction f # Reference to ensure correct reference counting
 
-    def __cinit__(Particle self, pos, CTMatrix t):
+
+    def __cinit__(Particle self, pos, t, bspec = None):
+        cdef TMatrixGenerator tgen
+        cdef BaseSpec spec
         if(len(pos)>=2 and len(pos) < 4):
             self.p.pos.x = pos[0]
             self.p.pos.y = pos[1]
             self.p.pos.z = pos[2] if len(pos)==3 else 0
         else:
             raise ValueError("Position argument has to contain 3 or 2 cartesian coordinates")
-        self.t = t
-        self.p.tmatrix = self.t.rawpointer()
+        if isinstance(t, CTMatrix):
+            tgen = TMatrixGenerator(t)
+        elif isinstance(t, TMatrixGenerator):
+            tgen = <TMatrixGenerator>t
+        else: raise TypeError('t must be either CTMatrix or TMatrixGenerator, was %s' % str(type(t)))
+        if bspec is not None:
+            spec = bspec
+        else:
+            if isinstance(tgen.holder, CTMatrix):
+                spec = (<CTMatrix>tgen.holder).spec
+            else:
+                raise ValueError("bspec argument must be specified separately for str(type(t))")
+        self.f = TMatrixFunction(tgen, spec)
+        self.p.tmg = self.f.rawpointer()
+        # TODO non-trivial transformations later; if modified, do not forget to update ScatteringSystem constructor
+        self.p.op = qpms_tmatrix_operation_noop
+
+    def __dealloc__(self):
+        qpms_tmatrix_operation_clear(&self.p.op)
 
     cdef qpms_particle_t *rawpointer(Particle self):
         '''Pointer to the qpms_particle_p structure.
@@ -310,56 +331,109 @@ cpdef void scatsystem_set_nthreads(long n):
     qpms_scatsystem_set_nthreads(n)
     return
 
+
 cdef class ScatteringSystem:
     '''
     Wrapper over the C qpms_scatsys_t structure.
     '''
-    cdef list basespecs # Here we keep the references to occuring basespecs
+    cdef list tmgobjs # here we keep the references to occuring TMatrixFunctions (and hence BaseSpecs and TMatrixGenerators)
     #cdef list Tmatrices # Here we keep the references to occuring T-matrices
+    cdef EpsMuGenerator medium_holder # Here we keep the reference to medium generator
     cdef qpms_scatsys_t *s
 
-    def __cinit__(self, particles, FinitePointGroup sym):
-        '''TODO doc.
-        Takes the particles (which have to be a sequence of instances of Particle),
-        fills them together with their t-matrices to the "proto-qpms_scatsys_t"
-        orig and calls qpms_scatsys_apply_symmetry
-        (and then cleans orig)
-        '''
+    def check_s(self): # cdef instead?
+        if self.s == <qpms_scatsys_t *>NULL:
+            raise ValueError("ScatteringSystem's s-pointer not set. You must not use the default constructor; use the create() method instead")
+        #TODO is there a way to disable the constructor outside this module?
+
+    @staticmethod # We don't have any "standard" constructor for this right now
+    def create(particles, medium, FinitePointGroup sym, cdouble omega): # TODO tolerances
+        # These we are going to construct
+        cdef ScatteringSystem self
+        cdef _ScatteringSystemAtOmega pyssw
+        
         cdef qpms_scatsys_t orig # This should be automatically init'd to 0 (CHECKME)
-        cdef qpms_ss_pi_t p_count = len(particles)
-        cdef qpms_ss_tmi_t tm_count = 0
+        cdef qpms_ss_pi_t pi, p_count = len(particles)
+        cdef qpms_ss_tmi_t tmi, tm_count = 0
+        cdef qpms_ss_tmgi_t tmgi, tmg_count = 0
+
+        cdef qpms_scatsys_at_omega_t *ssw
+        cdef qpms_scatsys_t *ss
+
+        cdef Particle p
+        
+        tmgindices = dict()
+        tmgobjs = list()
         tmindices = dict()
-        tmobjs = list()
-        self.basespecs=list()
-        for p in particles: # find and enumerate unique t-matrices
-            if id(p.t) not in tmindices:
-                tmindices[id(p.t)] = tm_count
-                tmobjs.append(p.t)
+        tmlist = list()
+        for p in particles: # find and enumerate unique t-matrix generators
+            if p.p.op.typ != QPMS_TMATRIX_OPERATION_NOOP:
+                raise NotImplementedError("currently, only no-op T-matrix operations are allowed in ScatteringSystem constructor")
+            tmg_key = id(p.f)
+            if tmg_key not in tmgindices:
+                tmgindices[tmg_key] = tmg_count
+                tmgobjs.append(p.f) # Save the references on BaseSpecs and TMatrixGenerators (via TMatrixFunctions)
+                tmg_count += 1
+            # Following lines have to be adjusted when nontrivial operations allowed:
+            tm_derived_key = (tmg_key, None) # TODO unique representation of p.p.op instead of None
+            if tm_derived_key not in tmindices:
+                tmindices[tm_derived_key] = tm_count
+                tmlist.append(tm_derived_key)
                 tm_count += 1
+        cdef EpsMuGenerator mediumgen = EpsMuGenerator(medium)
+        orig.medium = mediumgen.g
+        orig.tmg_count = tmg_count
         orig.tm_count = tm_count
         orig.p_count = p_count
-        for tm in tmobjs: # create references to BaseSpec objects
-            self.basespecs.append(tm.spec)
         try:
-            orig.tm = <qpms_tmatrix_t **>malloc(orig.tm_count * sizeof(orig.tm[0]))
+            orig.tmg = <qpms_tmatrix_function_t *>malloc(orig.tmg_count * sizeof(orig.tmg[0]))
+            if not orig.tmg: raise MemoryError
+            orig.tm = <qpms_ss_derived_tmatrix_t *>malloc(orig.tm_count * sizeof(orig.tm[0]))
             if not orig.tm: raise MemoryError
             orig.p = <qpms_particle_tid_t *>malloc(orig.p_count * sizeof(orig.p[0]))
             if not orig.p: raise MemoryError
+            for tmgi in range(orig.tmg_count):
+                orig.tmg[tmgi] = (<TMatrixFunction?>tmgobjs[tmgi]).raw()
             for tmi in range(tm_count):
-                orig.tm[tmi] = (<CTMatrix?>(tmobjs[tmi])).rawpointer()
+                tm_derived_key = tmlist[tmi]
+                tmgi = tmgindices[tm_derived_key[0]]
+                orig.tm[tmi].tmgi = tmgi
+                orig.tm[tmi].op = qpms_tmatrix_operation_noop # TODO adjust when notrivial operations allowed
             for pi in range(p_count):
-                orig.p[pi].pos = (<Particle?>(particles[pi])).cval().pos
-                orig.p[pi].tmatrix_id = tmindices[id(particles[pi].t)]
-            self.s = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer())
+                p = particles[pi]
+                tmg_key = id(p.f)
+                tm_derived_key = (tmg_key, None) # TODO unique representation of p.p.op instead of None
+                orig.p[pi].pos = p.cval().pos
+                orig.p[pi].tmatrix_id = tmindices[tm_derived_key]
+            ssw = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer(), omega, &QPMS_TOLERANCE_DEFAULT)
+            ss = ssw[0].ss
         finally:
+            free(orig.tmg)
             free(orig.tm)
             free(orig.p)
+        self = ScatteringSystem()
+        self.medium_holder = mediumgen
+        self.s = ss
+        self.tmgobjs = tmgobjs
+        pyssw = _ScatteringSystemAtOmega()
+        pyssw.ssw = ssw
+        pyssw.ss_pyref = self
+        return self, pyssw
+
+    def __call__(self, cdouble omega):
+        self.check_s()
+        cdef _ScatteringSystemAtOmega pyssw = _ScatteringSystemAtOmega()
+        pyssw.ssw = qpms_scatsys_at_omega(self.s, omega)
+        pyssw.ss_pyref = self
+        return pyssw
 
     def __dealloc__(self):
-        qpms_scatsys_free(self.s)
+        if(self.s):
+            qpms_scatsys_free(self.s)
 
     property particles_tmi:
       def __get__(self):
+        self.check_s()
         r = list()
         cdef qpms_ss_pi_t pi
         for pi in range(self.s[0].p_count):
@@ -367,20 +441,27 @@ cdef class ScatteringSystem:
         return r
 
     property fecv_size: 
-        def __get__(self): return self.s[0].fecv_size
+        def __get__(self): 
+            self.check_s()
+            return self.s[0].fecv_size
     property saecv_sizes: 
         def __get__(self): 
+            self.check_s()
             return [self.s[0].saecv_sizes[i] 
                 for i in range(self.s[0].sym[0].nirreps)]
     property irrep_names: 
         def __get__(self): 
+            self.check_s()
             return [string_c2py(self.s[0].sym[0].irreps[iri].name) 
                     if (self.s[0].sym[0].irreps[iri].name) else None
                 for iri in range(self.s[0].sym[0].nirreps)]
     property nirreps: 
-        def __get__(self): return self.s[0].sym[0].nirreps
+        def __get__(self): 
+            self.check_s()
+            return self.s[0].sym[0].nirreps
 
     def pack_vector(self, vect, iri):
+        self.check_s()
         if len(vect) != self.fecv_size: 
             raise ValueError("Length of a full vector has to be %d, not %d" 
                     % (self.fecv_size, len(vect)))
@@ -392,6 +473,7 @@ cdef class ScatteringSystem:
         qpms_scatsys_irrep_pack_vector(&target_view[0], &vect_view[0], self.s, iri)
         return target_np
     def unpack_vector(self, packed, iri):
+        self.check_s()
         if len(packed) != self.saecv_sizes[iri]: 
             raise ValueError("Length of %d. irrep-packed vector has to be %d, not %d"
                     % (iri, self.saecv_sizes, len(packed)))
@@ -404,6 +486,7 @@ cdef class ScatteringSystem:
                 self.s, iri, 0)
         return target_np
     def pack_matrix(self, fullmatrix, iri):
+        self.check_s()
         cdef size_t flen = self.s[0].fecv_size
         cdef size_t rlen = self.saecv_sizes[iri]
         fullmatrix = np.array(fullmatrix, dtype=complex, copy=False, order='C')
@@ -418,6 +501,7 @@ cdef class ScatteringSystem:
                 self.s, iri)
         return target_np
     def unpack_matrix(self, packedmatrix, iri):
+        self.check_s()
         cdef size_t flen = self.s[0].fecv_size
         cdef size_t rlen = self.saecv_sizes[iri]
         packedmatrix = np.array(packedmatrix, dtype=complex, copy=False, order='C')
@@ -432,29 +516,8 @@ cdef class ScatteringSystem:
                 self.s, iri, 0)
         return target_np
 
-    def modeproblem_matrix_full(self, double k):
-        cdef size_t flen = self.s[0].fecv_size
-        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
-                (flen,flen),dtype=complex, order='C')
-        cdef cdouble[:,::1] target_view = target
-        qpms_scatsys_build_modeproblem_matrix_full(&target_view[0][0], self.s, k)
-        return target
-
-    def modeproblem_matrix_packed(self, double k, qpms_iri_t iri, version='pR'):
-        cdef size_t rlen = self.saecv_sizes[iri]
-        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
-                (rlen,rlen),dtype=complex, order='C')
-        cdef cdouble[:,::1] target_view = target
-        if (version == 'R'):
-            qpms_scatsys_build_modeproblem_matrix_irrep_packed_orbitorderR(&target_view[0][0], self.s, iri, k)
-        elif (version == 'pR'):
-          with nogil:
-            qpms_scatsys_build_modeproblem_matrix_irrep_packed(&target_view[0][0], self.s, iri, k)
-        else:
-            qpms_scatsys_build_modeproblem_matrix_irrep_packed_serial(&target_view[0][0], self.s, iri, k)
-        return target
-
     def translation_matrix_full(self, double k, J = QPMS_HANKEL_PLUS):
+        self.check_s()
         cdef size_t flen = self.s[0].fecv_size
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (flen,flen),dtype=complex, order='C')
@@ -463,6 +526,7 @@ cdef class ScatteringSystem:
         return target
 
     def translation_matrix_packed(self, double k, qpms_iri_t iri, J = QPMS_HANKEL_PLUS):
+        self.check_s()
         cdef size_t rlen = self.saecv_sizes[iri]
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (rlen,rlen),dtype=complex, order='C')
@@ -473,6 +537,7 @@ cdef class ScatteringSystem:
     
     property fullvec_psizes:
       def __get__(self):
+        self.check_s()
         cdef np.ndarray[int32_t, ndim=1] ar = np.empty((self.s[0].p_count,), dtype=np.int32)
         cdef int32_t[::1] ar_view = ar
         for pi in range(self.s[0].p_count):
@@ -482,6 +547,7 @@ cdef class ScatteringSystem:
 
     property fullvec_poffsets:
       def __get__(self):
+        self.check_s()
         cdef np.ndarray[intptr_t, ndim=1] ar = np.empty((self.s[0].p_count,), dtype=np.intp)
         cdef intptr_t[::1] ar_view = ar
         cdef intptr_t offset = 0
@@ -492,6 +558,7 @@ cdef class ScatteringSystem:
 
     property positions:
       def __get__(self):
+        self.check_s()
         cdef np.ndarray[np.double_t, ndim=2] ar = np.empty((self.s[0].p_count, 3), dtype=float)
         cdef np.double_t[:,::1] ar_view = ar
         for pi in range(self.s[0].p_count):
@@ -501,6 +568,7 @@ cdef class ScatteringSystem:
         return ar
    
     def planewave_full(self, k_cart, E_cart):
+        self.check_s()
         k_cart = np.array(k_cart)
         E_cart = np.array(E_cart)
         if k_cart.shape != (3,) or E_cart.shape != (3,):
@@ -520,7 +588,27 @@ cdef class ScatteringSystem:
                 self.s, qpms_incfield_planewave, <void *>&p, 0)
         return target_np
 
+cdef class _ScatteringSystemAtOmega:
+    '''
+    Wrapper over the C qpms_scatsys_at_omega_t structure
+    that keeps the T-matrix and background data evaluated
+    at specific frequency.
+    '''
+    cdef qpms_scatsys_at_omega_t *ssw
+    cdef ScatteringSystem ss_pyref
+    
+    def check(self): # cdef instead?
+        if not self.ssw:
+            raise ValueError("_ScatteringSystemAtOmega's ssw-pointer not set. You must not use the default constructor; ScatteringSystem.create() instead")
+        self.ss_pyref.check_s()
+        #TODO is there a way to disable the constructor outside this module?
+
+    def __dealloc__(self):
+        if (self.ssw):
+            qpms_scatsys_at_omega_free(self.ssw)
+
     def apply_Tmatrices_full(self, a):
+        self.check()
         if len(a) != self.fecv_size: 
             raise ValueError("Length of a full vector has to be %d, not %d" 
                     % (self.fecv_size, len(a)))
@@ -529,31 +617,67 @@ cdef class ScatteringSystem:
         cdef np.ndarray[np.complex_t, ndim=1] target_np = np.empty(
                 (self.fecv_size,), dtype=complex, order='C')
         cdef cdouble[::1] target_view = target_np
-        qpms_scatsys_apply_Tmatrices_full(&target_view[0], &a_view[0], self.s)
+        qpms_scatsysw_apply_Tmatrices_full(&target_view[0], &a_view[0], self.ssw)
         return target_np
     
-    cdef qpms_scatsys_t *rawpointer(self):
-        return self.s
+    cdef qpms_scatsys_at_omega_t *rawpointer(self):
+        return self.ssw
 
-    def scatter_solver(self, double k, iri=None):
-        return ScatteringMatrix(self, k, iri)
+    def scatter_solver(self, iri=None):
+        self.check()
+        return ScatteringMatrix(self, iri)
+
+    property fecv_size: 
+        def __get__(self): return self.ss_pyref.fecv_size
+    property saecv_sizes: 
+        def __get__(self): return self.ss_pyref.saecv_sizes
+    property irrep_names: 
+        def __get__(self): return self.ss_pyref.irrep_names
+    property nirreps: 
+        def __get__(self): return self.ss_pyref.nirreps
+
+    def modeproblem_matrix_full(self):
+        self.check()
+        cdef size_t flen = self.ss_pyref.s[0].fecv_size
+        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
+                (flen,flen),dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target
+        qpms_scatsysw_build_modeproblem_matrix_full(&target_view[0][0], self.ssw)
+        return target
+
+    def modeproblem_matrix_packed(self, qpms_iri_t iri, version='pR'):
+        self.check()
+        cdef size_t rlen = self.saecv_sizes[iri]
+        cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
+                (rlen,rlen),dtype=complex, order='C')
+        cdef cdouble[:,::1] target_view = target
+        if (version == 'R'):
+            qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorderR(&target_view[0][0], self.ssw, iri)
+        elif (version == 'pR'):
+          with nogil:
+            qpms_scatsysw_build_modeproblem_matrix_irrep_packed(&target_view[0][0], self.ssw, iri)
+        else:
+            qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(&target_view[0][0], self.ssw, iri)
+        return target
+
 
 cdef class ScatteringMatrix:
     '''
     Wrapper over the C qpms_ss_LU structure that keeps the factorised mode problem matrix.
     '''
-    cdef ScatteringSystem ss # Here we keep the reference to the parent scattering system
+    cdef _ScatteringSystemAtOmega ssw # Here we keep the reference to the parent scattering system
     cdef qpms_ss_LU lu
 
-    def __cinit__(self, ScatteringSystem ss, double k, iri=None):
-        self.ss = ss
+    def __cinit__(self, _ScatteringSystemAtOmega ssw, iri=None):
+        ssw.check()
+        self.ssw = ssw
         # TODO? pre-allocate the matrix with numpy to make it transparent?
         if iri is None:
-            self.lu = qpms_scatsys_build_modeproblem_matrix_full_LU(
-                    NULL, NULL, ss.rawpointer(), k)
+            self.lu = qpms_scatsysw_build_modeproblem_matrix_full_LU(
+                    NULL, NULL, ssw.rawpointer())
         else:
-            self.lu = qpms_scatsys_build_modeproblem_matrix_irrep_packed_LU(
-                    NULL, NULL, ss.rawpointer(), iri, k)
+            self.lu = qpms_scatsysw_build_modeproblem_matrix_irrep_packed_LU(
+                    NULL, NULL, ssw.rawpointer(), iri)
 
     def __dealloc__(self):
         qpms_ss_LU_free(self.lu)
@@ -566,13 +690,13 @@ cdef class ScatteringMatrix:
         cdef size_t vlen
         cdef qpms_iri_t iri = -1;
         if self.lu.full:
-            vlen = self.lu.ss[0].fecv_size
+            vlen = self.lu.ssw[0].ss[0].fecv_size
             if len(a_inc) != vlen:
                 raise ValueError("Length of a full coefficient vector has to be %d, not %d"
                         % (vlen, len(a_inc)))
         else:
             iri = self.lu.iri
-            vlen = self.lu.ss[0].saecv_sizes[iri]
+            vlen = self.lu.ssw[0].ss[0].saecv_sizes[iri]
             if len(a_inc) != vlen:
                 raise ValueError("Length of a %d. irrep packed coefficient vector has to be %d, not %d"
                         % (iri, vlen, len(a_inc)))

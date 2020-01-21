@@ -3,6 +3,9 @@ find_package(GSL 2.0 REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
 
+# disable an annoying warning that gives false positives probably due to a bug in gcc
+# and other not very relevant warnings
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-int-in-bool-context -Wno-comment")
 
 #includes
 set (DIRS ${GSL_INCLUDE_DIRS} ${GSLCBLAS_INCLUDE_DIRS})
@@ -26,7 +29,7 @@ target_link_libraries (qpms
 	)
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_compile_options(qpms PRIVATE -Wall -Wno-return-type)
+target_compile_options(qpms PRIVATE -Wall -Wno-return-type -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-label)
 target_compile_definitions(qpms PRIVATE LATTICESUMS32 QPMS_VECTORS_NICE_TRANSFORMATIONS
 	EWALD_AUTO_CUTOFF
 	)

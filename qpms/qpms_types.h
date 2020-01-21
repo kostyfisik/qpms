@@ -297,6 +297,9 @@ typedef struct qpms_vswf_set_spec_t {
 /// T-matrix index used in qpms_scatsys_t and related structures.
 typedef int32_t qpms_ss_tmi_t;
 
+/// T-matrix generator index used in qpms_scatsys_t and related structures.
+typedef int32_t qpms_ss_tmgi_t;
+
 /// Particle index used in qpms_scatsys_t and related structures.
 typedef int32_t qpms_ss_pi_t;
 
@@ -407,6 +410,7 @@ typedef struct qpms_epsmu_t {
 	complex double mu; ///< Relative permeability.
 } qpms_epsmu_t;
 
+struct qpms_tolerance_spec_t; // See tolerances.h
 
 #define lmcheck(l,m) assert((l) >= 1 && abs(m) <= (l))
 #endif // QPMS_TYPES

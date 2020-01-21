@@ -1,5 +1,5 @@
 cimport numpy as np
-from .qpms_cdefs cimport qpms_tmatrix_t, cdouble, qpms_tmatrix_interpolator_t
+from .qpms_cdefs cimport qpms_tmatrix_t, cdouble, qpms_tmatrix_interpolator_t, qpms_tmatrix_generator_t, qpms_tmatrix_function_t
 from .cybspec cimport BaseSpec
 
 cdef class TMatrixInterpolator:
@@ -13,6 +13,27 @@ cdef class TMatrixInterpolator:
     cdef qpms_tmatrix_interpolator_t *interp
     cdef inline qpms_tmatrix_interpolator_t *rawpointer(self):
         return self.interp
+
+cdef class TMatrixGenerator:
+    cdef qpms_tmatrix_generator_t g
+    cdef object holder
+    cdef inline qpms_tmatrix_generator_t raw(self):
+        return self.g
+    cdef inline qpms_tmatrix_generator_t *rawpointer(self):
+        return &(self.g)
+
+cdef class TMatrixFunction:
+    cdef qpms_tmatrix_function_t f
+    cdef readonly TMatrixGenerator generator # reference holder
+    cdef readonly BaseSpec spec # reference holder
+    cdef inline qpms_tmatrix_function_t raw(self):
+        return self.f
+    cdef inline qpms_tmatrix_function_t *rawpointer(self):
+        return &self.f
+
+
+cdef class TMatrixGeneratorTransformed:
+    pass
 
 cdef class CTMatrix: # N.B. there is another type called TMatrix in tmatrices.py!
     cdef readonly np.ndarray m # Numpy array holding the matrix data
