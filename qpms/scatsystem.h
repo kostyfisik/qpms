@@ -343,31 +343,43 @@ complex double *qpms_scatsys_build_translation_matrix_e_irrep_packed(
 		);
 
 /// Creates the full \f$ (I - TS) \f$ matrix of the scattering system.
+/**
+ * \returns \a target on success, NULL on error.
+ */
 complex double *qpms_scatsysw_build_modeproblem_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_at_omega_t *ssw
 		);
 /// Creates the mode problem matrix \f$ (I - TS) \f$ directly in the irrep-packed form.
+/**
+ * \returns \a target on success, NULL on error.
+ */
 complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_at_omega_t *ssw,
-		qpms_iri_t iri
+		qpms_iri_t iri ///< Index of the irreducible representation in ssw->ss->sym
 		);
 /// Alternative implementation of qpms_scatsysw_build_modeproblem_matrix_irrep_packed().
+/**
+ * \returns \a target on success, NULL on error.
+ */
 complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorderR(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_at_omega_t *ssw,
-		qpms_iri_t iri
+		qpms_iri_t iri ///< Index of the irreducible representation in ssw->ss->sym
 		);
 /// Alternative (serial reference) implementation of qpms_scatsysw_build_modeproblem_matrix_irrep_packed().
+/**
+ * \returns \a target on success, NULL on error.
+ */
 complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
 		const qpms_scatsys_at_omega_t *ssw,
-		qpms_iri_t iri
+		qpms_iri_t iri ///< Index of the irreducible representation in ssw->ss->sym
 		);
 
 /// LU factorisation (LAPACKE_zgetrf) result holder.
@@ -502,6 +514,31 @@ complex double *qpms_scatsysw_apply_Tmatrices_full(
 		complex double *target_full, /// Target vector array. If NULL, a new one is allocated.
 		const complex double *inc_full, /// Incident field coefficient vector. Must not be NULL.
 		const qpms_scatsys_at_omega_t *ssw
+		);
+
+struct beyn_result_t; // See beyn.h for full definition
+
+/// Searches for scattering system's eigenmodes using Beyn's algorithm.
+/**
+ * Currently, elliptical contour is used.
+ *
+ * TODO In the future, this will probably support irrep decomposition as well,
+ * but it does not make much sense for periodic / small systems, as in their
+ * case the bottleneck is the T-matrix and translation matrix evaluation
+ * rather than the linear algebra.
+ */
+
+struct beyn_result_t *qpms_scatsys_find_eigenmodes(
+		const qpms_scatsys_t *ss,
+		double eta, ///< Ewald sum parameter
+		const double *beta_, ///< k-vector of corresponding dimensionality, NULL/ignored for finite system.
+		complex double omega_centre, ///< Center of the ellipse inside which the eigenfreqs are searched for.
+		double omega_rr, ///< Real half-axis of the ellipse inside which the eigenfreqs are searched for.
+		double omega_ri, ///< Imaginary half-axis of the ellipse inside which the eigenfreqs are searched for.
+		size_t contour_npoints, ///< Number of elliptic contour discretisation points (preferably even number)
+		double rank_tol, ///< (default: `1e-4`) TODO DOC.
+		size_t rank_sel_min, ///< Minimum number of eigenvalue candidates, even if they don't pass \a rank_tol.
+		double res_tol ///< (default: `0.0`) TODO DOC.
 		);
 
 
