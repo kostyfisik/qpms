@@ -589,6 +589,56 @@ cdef class ScatteringSystem:
                 self.s, qpms_incfield_planewave, <void *>&p, 0)
         return target_np
 
+    def find_modes(self, cdouble omega_centre, double omega_rr, double omega_ri,
+            size_t contour_points = 20, double rank_tol = 1e-4, size_t rank_min_sel=1,
+            double res_tol = 0):
+        """
+        Attempts to find the eigenvalues and eigenvectors using Beyn's algorithm.
+        """
+
+        cdef beyn_result_t *res = qpms_scatsys_finite_find_eigenmodes(self.s, 
+                omega_centre, omega_rr, omega_ri, contour_points, 
+                rank_tol, rank_min_sel, res_tol)
+        if res == NULL: raise RuntimeError
+
+        cdef size_t neig = res[0].neig
+        cdef size_t vlen = res[0].vlen # should be equal to self.s.fecv_size
+
+        cdef np.ndarray[complex, ndim=1] eigval = np.empty((neig,), dtype=complex)
+        cdef cdouble[::1] eigval_v = eigval
+        cdef np.ndarray[complex, ndim=1] eigval_err = np.empty((neig,), dtype=complex)
+        cdef cdouble[::1] eigval_err_v = eigval_err
+        cdef np.ndarray[double, ndim=1] residuals = np.empty((neig,), dtype=np.double)
+        cdef double[::1] residuals_v = residuals
+        cdef np.ndarray[complex, ndim=2] eigvec = np.empty((neig,vlen),dtype=complex)
+        cdef cdouble[:,::1] eigvec_v = eigvec
+        cdef np.ndarray[double, ndim=1] ranktest_SV = np.empty((vlen), dtype=np.double)
+        cdef double[::1] ranktest_SV_v = ranktest_SV
+
+        for i in range(neig):
+            eigval_v[i] = res[0].eigval[i]
+            eigval_err_v[i] = res[0].eigval_err[i]
+            residuals_v[i] = res[0].residuals[i]
+            for j in range(vlen):
+                eigvec_v[i,j] = res[0].eigvec[i*vlen + j]
+        for i in range(vlen):
+            ranktest_SV_v[i] = res[0].ranktest_SV[i]
+
+        zdist = eigval - omega_centre
+        eigval_inside_metric = np.hypot(zdist.real / omega_rr, zdist.imag / omega_ri)
+
+        beyn_result_free(res)
+        retdict = {
+                'eigval':eigval,
+                'eigval_inside_metric':eigval_inside_metric,
+                'eigvec':eigvec,
+                'residuals':residuals,
+                'eigval_err':eigval_err,
+                'ranktest_SV':ranktest_SV,
+        }
+
+        return retdict
+
 cdef class _ScatteringSystemAtOmega:
     '''
     Wrapper over the C qpms_scatsys_at_omega_t structure
