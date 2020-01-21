@@ -22,6 +22,7 @@
 #include <pthread.h>
 #include "kahansum.h"
 #include "tolerances.h"
+#include "beyn.h"
 
 #ifdef QPMS_SCATSYSTEM_USE_OWN_BLAS
 #include "qpmsblas.h"
@@ -1895,5 +1896,35 @@ complex double *qpms_scatsys_scatter_solve(
   QPMS_ENSURE_SUCCESS(LAPACKE_zgetrs(LAPACK_ROW_MAJOR, 'N' /*trans*/,  n /*n*/, 1 /*nrhs number of right hand sides*/,
         lu.a /*a*/, n /*lda*/, lu.ipiv /*ipiv*/, f/*b*/, 1 /*ldb; CHECKME*/));
   return f;
+}
+
+/// Wrapper for Beyn algorithm (non-periodic system)
+static int qpms_scatsys_finite_eval_Beyn_ImTS(complex double *target,
+    size_t m, complex double omega, void *params) {
+  const qpms_scatsys_t *ss = params;
+  qpms_scatsys_at_omega_t *ssw = qpms_scatsys_at_omega(ss, omega);
+  QPMS_ENSURE(ssw != NULL, "qpms_scatsys_at_omega() returned NULL");
+  QPMS_ENSURE(NULL != qpms_scatsysw_build_modeproblem_matrix_full(target, ssw),
+    "qpms_scatsysw_build_modeproblem_matrix_full() returned NULL");
+  qpms_scatsys_at_omega_free(ssw);
+  return QPMS_SUCCESS;
+}
+
+beyn_result_t *qpms_scatsys_finite_find_eigenmodes(const qpms_scatsys_t *ss,
+    complex double omega_centre, double omega_rr, double omega_ri, 
+    size_t contour_npoints, 
+    double rank_tol, size_t rank_sel_min, double res_tol) {
+
+  beyn_contour_t *contour = beyn_contour_ellipse(omega_centre,
+      omega_rr, omega_ri, contour_npoints);
+
+  beyn_result_t *result = beyn_solve(ss->fecv_size, 
+      ss->fecv_size /* possibly make smaller? */,
+      qpms_scatsys_finite_eval_Beyn_ImTS, NULL, (void *) ss,
+      contour, rank_tol, rank_sel_min, res_tol);
+  QPMS_ENSURE(result != NULL, "beyn_solve() returned NULL");
+
+  free(contour);
+  return result;
 }
 
