@@ -72,7 +72,7 @@ typedef struct beyn_result_gsl_t {
 	gsl_vector_complex *eigval;
 	gsl_vector_complex *eigval_err;
 	gsl_vector *residuals;
-	gsl_matrix_complex *eigvec;
+	gsl_matrix_complex *eigvec; // Rows are the eigenvectors
 	gsl_vector *ranktest_SV;
 } beyn_result_gsl_t;
 
@@ -85,7 +85,7 @@ typedef struct beyn_result_t {
 	complex double *eigval;
 	complex double *eigval_err;
 	double *residuals;
-	complex double *eigvec;
+	complex double *eigvec; // Rows are the eigenvectors
 	double *ranktest_SV;
 
 	/// Private, we wrap it around beyn_result_gsl_t for now.
@@ -109,6 +109,7 @@ beyn_result_gsl_t *beyn_solve_gsl(
 		void *params, ///< Parameter pointer passed to M() and M_inv_Vhat().
 		const beyn_contour_t *contour, ///< Integration contour.
 		double rank_tol, ///< (default: `1e-4`) TODO DOC.
+		size_t rank_min_sel, ///< Minimum number of eigenvalue candidates, even if they don't pass \a rank_tol.
 		double res_tol ///< (default: `0.0`) TODO DOC.
 	      );
 
@@ -120,6 +121,7 @@ beyn_result_t *beyn_solve(
 		void *params, ///< Parameter pointer passed to M() and M_inv_Vhat().
 		const beyn_contour_t *contour, ///< Integration contour.
 		double rank_tol, ///< (default: `1e-4`) TODO DOC.
+		size_t rank_min_sel, ///< Minimum number of eigenvalue candidates, even if they don't pass \a rank_tol.
 		double res_tol ///< (default: `0.0`) TODO DOC.
 	      );
 

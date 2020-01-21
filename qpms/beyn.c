@@ -345,7 +345,7 @@ void BeynSolver_srandom(BeynSolver *solver, unsigned int RandSeed)
 static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_function, 
     void *Params,
     gsl_matrix_complex *A0, gsl_matrix_complex *A1, double complex z0,
-    gsl_vector_complex *eigenvalues, gsl_matrix_complex *eigenvectors, const double rank_tol, const double res_tol)
+    gsl_vector_complex *eigenvalues, gsl_matrix_complex *eigenvectors, const double rank_tol, size_t rank_sel_min, const double res_tol)
 {
   const size_t m = solver->M;
   const size_t l = solver->L;
@@ -379,7 +379,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
   int K=0;
   for (int k=0; k<Sigma->size /* this is l, actually */; k++) { 
     if (verbose) printf("Beyn: SV(%d)=%e\n",k,gsl_vector_get(Sigma, k));
-    if (gsl_vector_get(Sigma, k) > rank_tol)
+    if (k < rank_sel_min || gsl_vector_get(Sigma, k) > rank_tol)
       K++;
   }
   if (verbose)printf(" Beyn: %d/%zd relevant singular values\n",K,l);
@@ -494,7 +494,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 
     gsl_vector_complex_set(eigenvalues, KRetained, zgsl);
     if(eigenvectors) {
-      gsl_matrix_complex_set_col(eigenvectors, KRetained, &(Vk.vector));
+      gsl_matrix_complex_set_row(eigenvectors, KRetained, &(Vk.vector));
       gsl_vector_set(solver->residuals, KRetained, residual);
     }
     ++KRetained;
@@ -513,7 +513,7 @@ static int beyn_process_matrices(BeynSolver *solver, beyn_function_M_gsl_t M_fun
 beyn_result_gsl_t *beyn_solve_gsl(const size_t m, const size_t l,
     beyn_function_M_gsl_t M_function, beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat_function,
     void *params, const beyn_contour_t *contour,
-    double rank_tol, double res_tol)
+    double rank_tol, size_t rank_sel_min, double res_tol)
 {  
   BeynSolver *solver = BeynSolver_create(m, l);
 
@@ -583,13 +583,13 @@ beyn_result_gsl_t *beyn_solve_gsl(const size_t m, const size_t l,
   gsl_vector_complex *eigenvalue_errors     = solver->eigenvalue_errors;
   gsl_matrix_complex *eigenvectors = solver->eigenvectors;
 
-  // Beyn Steps 3–6
-  int K = beyn_process_matrices(solver, M_function, params, A0, A1, z0, eigenvalues, eigenvectors, rank_tol, res_tol);
   // Repeat Steps 3–6 with rougher contour approximation to get an error estimate.
-  int K_coarse = beyn_process_matrices(solver, M_function, params, A0_coarse, A1_coarse, z0, eigenvalue_errors, eigenvectors, rank_tol, res_tol);
-
-  gsl_blas_zaxpy(gsl_complex_rect(-1,0), eigenvalues, eigenvalue_errors);
+  int K_coarse = beyn_process_matrices(solver, M_function, params, A0_coarse, A1_coarse, z0, eigenvalue_errors, /*eigenvectors_coarse*/ NULL, rank_tol, rank_sel_min, res_tol);
   // Reid did also fabs on the complex and real parts ^^^.
+
+  // Beyn Steps 3–6
+  int K = beyn_process_matrices(solver, M_function, params, A0, A1, z0, eigenvalues, eigenvectors, rank_tol, rank_sel_min, res_tol);
+  gsl_blas_zaxpy(gsl_complex_rect(-1,0), eigenvalues, eigenvalue_errors);
 
   beyn_result_gsl_t *result;
   QPMS_CRASHING_MALLOC(result, sizeof(beyn_result_gsl_t));
@@ -636,12 +636,12 @@ static int beyn_function_M_inv_Vhat_carr2gsl(gsl_matrix_complex *target,
 }
 
 beyn_result_t *beyn_solve(size_t m, size_t l, beyn_function_M_t M, beyn_function_M_inv_Vhat_t M_inv_Vhat,
-    void *params, const beyn_contour_t *contour, double rank_tol, double res_tol) {
+    void *params, const beyn_contour_t *contour, double rank_tol, size_t rank_sel_min, double res_tol) {
   struct beyn_function_M_carr2gsl_param p = {M, M_inv_Vhat, params};
   return beyn_result_from_beyn_result_gsl(
     beyn_solve_gsl(m, l, beyn_function_M_carr2gsl,
       (p.M_inv_Vhat_function) ? beyn_function_M_inv_Vhat_carr2gsl : NULL, 
-      (void *) &p, contour, rank_tol, res_tol)
+      (void *) &p, contour, rank_tol, rank_sel_min, res_tol)
     );
 }
 
