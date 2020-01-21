@@ -674,11 +674,11 @@ cdef extern from "beyn.h":
 
     beyn_result_gsl_t *beyn_solve_gsl(size_t m, size_t l, beyn_function_M_gsl_t M,
             beyn_function_M_inv_Vhat_gsl_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
-            double rank_tol, double res_tol)
+            double rank_tol, size_t rank_min_sel, double res_tol)
 
     beyn_result_t *beyn_solve(size_t m, size_t l, beyn_function_M_t M,
             beyn_function_M_inv_Vhat_t M_inv_Vhat, void *params, const beyn_contour_t *contour,
-            double rank_tol, double res_tol)
+            double rank_tol, size_t rank_min_sel, double res_tol)
 
     beyn_contour_t *beyn_contour_ellipse(cdouble centre, double halfax_re, double halfax_im, size_t npoints)
     beyn_contour_t *beyn_contour_halfellipse(cdouble centre, double halfax_re, double halfax_im, size_t npoints,
