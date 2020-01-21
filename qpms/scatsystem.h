@@ -518,6 +518,27 @@ complex double *qpms_scatsysw_apply_Tmatrices_full(
 
 struct beyn_result_t; // See beyn.h for full definition
 
+/// Searches for finite scattering system's eigenmodes using Beyn's algorithm.
+/**
+ * Currently, elliptical contour is used.
+ *
+ * TODO In the future, this will probably support irrep decomposition as well,
+ * but it does not make much sense for periodic / small systems, as in their
+ * case the bottleneck is the T-matrix and translation matrix evaluation
+ * rather than the linear algebra.
+ */
+struct beyn_result_t *qpms_scatsys_finite_find_eigenmodes(
+		const qpms_scatsys_t *ss,
+		complex double omega_centre, ///< Center of the ellipse inside which the eigenfreqs are searched for.
+		double omega_rr, ///< Real half-axis of the ellipse inside which the eigenfreqs are searched for.
+		double omega_ri, ///< Imaginary half-axis of the ellipse inside which the eigenfreqs are searched for.
+		size_t contour_npoints, ///< Number of elliptic contour discretisation points (preferably even number)
+		double rank_tol, ///< (default: `1e-4`) TODO DOC.
+		size_t rank_sel_min, ///< Minimum number of eigenvalue candidates, even if they don't pass \a rank_tol.
+		double res_tol ///< (default: `0.0`) TODO DOC.
+		);
+
+#if 0
 /// Searches for scattering system's eigenmodes using Beyn's algorithm.
 /**
  * Currently, elliptical contour is used.
@@ -527,7 +548,6 @@ struct beyn_result_t; // See beyn.h for full definition
  * case the bottleneck is the T-matrix and translation matrix evaluation
  * rather than the linear algebra.
  */
-
 struct beyn_result_t *qpms_scatsys_find_eigenmodes(
 		const qpms_scatsys_t *ss,
 		double eta, ///< Ewald sum parameter
@@ -540,6 +560,7 @@ struct beyn_result_t *qpms_scatsys_find_eigenmodes(
 		size_t rank_sel_min, ///< Minimum number of eigenvalue candidates, even if they don't pass \a rank_tol.
 		double res_tol ///< (default: `0.0`) TODO DOC.
 		);
+#endif
 
 
 #if 0
