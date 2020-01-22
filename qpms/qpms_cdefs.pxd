@@ -107,6 +107,7 @@ cdef extern from "qpms_types.h":
     ctypedef int32_t qpms_ss_pi_t
     ctypedef int qpms_gmi_t
     ctypedef int qpms_iri_t
+    qpms_iri_t QPMS_NO_IRREP
     ctypedef const char * qpms_permutation_t
     struct qpms_tmatrix_t:
         qpms_vswf_set_spec_t *spec
@@ -598,9 +599,9 @@ cdef extern from "scatsystem.h":
     cdouble *qpms_scatsys_scatter_solve(cdouble *target_f, const cdouble *a_inc, qpms_ss_LU ludata)
     const qpms_vswf_set_spec_t *qpms_ss_bspec_tmi(const qpms_scatsys_t *ss, qpms_ss_tmi_t tmi)
     const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi)
-    beyn_result_t *qpms_scatsys_finite_find_eigenmodes(const qpms_scatsys_t *ss, cdouble omega_centre,
-            double omega_rr, double omega_ri, size_t contour_npoints, double rank_tol, size_t rank_sel_min,
-            double res_tol)
+    beyn_result_t *qpms_scatsys_finite_find_eigenmodes(const qpms_scatsys_t *ss, qpms_iri_t iri,
+            cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 
+            double rank_tol, size_t rank_sel_min, double res_tol)
 
 cdef extern from "ewald.h":
     struct qpms_csf_result:

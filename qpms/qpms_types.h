@@ -309,6 +309,8 @@ typedef int qpms_gmi_t;
 
 /// Irreducible representation index. See also groups.h.
 typedef int qpms_iri_t;
+/// Constant labeling that no irrep decomposition is done (full system solved instead).
+#define QPMS_NO_IRREP ((qpms_iri_t) -1)
 
 /// Permutation representation of a group element.
 /** For now, it's just a string of the form "(0,1)(3,4,5)"

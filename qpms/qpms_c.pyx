@@ -280,7 +280,7 @@ cdef class Particle:
             if isinstance(tgen.holder, CTMatrix):
                 spec = (<CTMatrix>tgen.holder).spec
             else:
-                raise ValueError("bspec argument must be specified separately for str(type(t))")
+                raise ValueError("bspec argument must be specified separately for %s" % str(type(t)))
         self.f = TMatrixFunction(tgen, spec)
         self.p.tmg = self.f.rawpointer()
         # TODO non-trivial transformations later; if modified, do not forget to update ScatteringSystem constructor
@@ -340,6 +340,16 @@ cdef class ScatteringSystem:
     #cdef list Tmatrices # Here we keep the references to occuring T-matrices
     cdef EpsMuGenerator medium_holder # Here we keep the reference to medium generator
     cdef qpms_scatsys_t *s
+    cdef FinitePointGroup sym
+
+    cdef qpms_iri_t iri_py2c(self, iri, allow_None = True):
+        if iri is None and allow_None:
+            return QPMS_NO_IRREP
+        cdef qpms_iri_t nir = self.nirreps
+        cdef qpms_iri_t ciri = iri
+        if ciri < 0 or ciri > nir:
+            raise ValueError("Invalid irrep index %s (of %d irreps)", str(iri), self.nirreps)
+        return ciri
 
     def check_s(self): # cdef instead?
         if self.s == <qpms_scatsys_t *>NULL:
@@ -415,6 +425,7 @@ cdef class ScatteringSystem:
         self.medium_holder = mediumgen
         self.s = ss
         self.tmgobjs = tmgobjs
+        self.sym = sym
         pyssw = _ScatteringSystemAtOmega()
         pyssw.ssw = ssw
         pyssw.ss_pyref = self
@@ -588,7 +599,7 @@ cdef class ScatteringSystem:
                 self.s, qpms_incfield_planewave, <void *>&p, 0)
         return target_np
 
-    def find_modes(self, cdouble omega_centre, double omega_rr, double omega_ri,
+    def find_modes(self, cdouble omega_centre, double omega_rr, double omega_ri, iri = None,
             size_t contour_points = 20, double rank_tol = 1e-4, size_t rank_min_sel=1,
             double res_tol = 0):
         """
@@ -596,6 +607,7 @@ cdef class ScatteringSystem:
         """
 
         cdef beyn_result_t *res = qpms_scatsys_finite_find_eigenmodes(self.s, 
+                self.iri_py2c(iri),
                 omega_centre, omega_rr, omega_ri, contour_points, 
                 rank_tol, rank_min_sel, res_tol)
         if res == NULL: raise RuntimeError
@@ -634,6 +646,7 @@ cdef class ScatteringSystem:
                 'residuals':residuals,
                 'eigval_err':eigval_err,
                 'ranktest_SV':ranktest_SV,
+                'iri': iri,
         }
 
         return retdict
