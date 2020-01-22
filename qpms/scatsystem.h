@@ -134,6 +134,9 @@ typedef struct qpms_ss_derived_tmatrix_t {
 
 struct qpms_trans_calculator;
 struct qpms_scatsys_translation_booster;
+void qpms_scatsys_translation_booster_free(struct qpms_scatsys_translation_booster *);
+struct qpms_scatsys_translation_booster *qpms_scatsys_translation_booster_create(
+		const qpms_scatsys_ss *ss);
 
 typedef struct qpms_scatsys_t {
 	struct qpms_epsmu_generator_t medium; ///< Optical properties of the background medium.

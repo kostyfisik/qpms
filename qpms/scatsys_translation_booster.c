@@ -27,8 +27,28 @@ static inline uoppid_t pairarr_len(qpms_ss_pi_t pn_total) {
 
 typedef struct qpms_scatsys_translation_booster {
     double *r; // Unique distances array, indices are ppid_t
-    ppid_t *r_map; // FIXME
+    size_t r_count; // Number of different interparticle distances (length of r[])
+    size_t *r_map; // maps pairs to the corresponding distances (index of uoppid_t type)
 } qpms_scatsys_translation_booster_t;
+
+struct uoppid_r_pair {
+	double r;
+	uoppid_t id;
+}
+
+size_t sort_and_eliminate(void *base, size_t nmemb, size_t size,
+		int (*compar)(const void *, const void *)) {
+	qsort(base, nmemb, size, compar);
+	_Bool eliminate;
+	QPMS_CRASHING_CALLOC(eliminate, nmemb, sizeof(_Bool));
+	size_t left = 0;
+	
+	TODO zde;
+
+	free(eliminate);
+	return left;
+}
+
 
 struct qpms_scatsys_translation_booster *qpms_scatsys_translation_booster_create(
         const qpms_scatsys_ss *ss) {
