@@ -206,6 +206,9 @@ static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t 
 	return ss->tmg[ss->tm[ss->p[pi].tmatrix_id].tmgi].spec;
 }
 
+struct qpms_scatsysw_translation_booster;
+void qpms_scatsysw_translation_booster_free(struct qpms_scatsysw_translation_booster *);
+
 typedef struct qpms_scatsys_at_omega_t {
 	const qpms_scatsys_t *ss; ///< Parent scattering system.
 	/// T-matrices from \a ss, evaluated at \a omega.
@@ -216,6 +219,8 @@ typedef struct qpms_scatsys_at_omega_t {
 	complex double omega; ///< Angular frequency
 	qpms_epsmu_t medium; ///< Background medium optical properties at the given frequency
 	complex double wavenumber; ///< Background medium wavenumber
+
+	struct qpms_scatsysw_translation_booster *translation_cache; ///< (private) cache to speedup tranlations
 } qpms_scatsys_at_omega_t;
 
 /// Creates a new scatsys by applying a symmetry group onto a "proto-scatsys", copying particles if needed.

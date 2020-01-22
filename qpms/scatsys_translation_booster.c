@@ -137,4 +137,10 @@ static qpms_errno_t qpms_scatsys_translation_booster_eval_bessels(
   return QPMS_SUCCESS;
 }
 
+typedef struct qpms_scatsysw_translation_booster {
+  // _Bool owned_by_ssw; // if False, this is not deallocated by parent ssw
+  const booster_t *b;
+  complex double *bessels;
+} boosterw_t;
+
 
