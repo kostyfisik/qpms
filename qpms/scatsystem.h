@@ -133,7 +133,7 @@ typedef struct qpms_ss_derived_tmatrix_t {
 
 
 struct qpms_trans_calculator;
-struct qpms_epsmu_generator_t;
+struct qpms_scatsys_translation_booster;
 
 typedef struct qpms_scatsys_t {
 	struct qpms_epsmu_generator_t medium; ///< Optical properties of the background medium.
@@ -188,6 +188,9 @@ typedef struct qpms_scatsys_t {
 	char *otspace_end;
 	double lenscale; // radius of the array, used as a relative tolerance measure
 	struct qpms_trans_calculator *c;
+	// Internal metadata for faster translation matrix evaluation
+	struct qpms_scatsys_translation_booster *tbooster;
+
 } qpms_scatsys_t;
 
 /// Retrieve the bspec of \a tmi'th element of \a ss->tm.

@@ -143,7 +143,6 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
   ss->orbit_type_count++;
 }
 
-
 // Almost 200 lines. This whole thing deserves a rewrite!
 qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
     const qpms_finite_group_t *sym, complex double omega, 
