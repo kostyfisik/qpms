@@ -81,6 +81,12 @@ static inline qpms_gmi_t qpms_finite_group_inv(const qpms_finite_group_t *G,
 	return G->invi[a];
 }
 
+static inline _Bool qpms_iri_is_valid(const qpms_finite_group_t *G, qpms_iri_t iri) {
+	return (iri > G->nirreps || iri < 0) ? 0 : 1;
+}
+
+
+
 /// NOT IMPLEMENTED Get irrep index by name.
 qpms_iri_t qpms_finite_group_find_irrep_by_name(qpms_finite_group_t *G, char *name);
 

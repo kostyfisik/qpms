@@ -1895,29 +1895,50 @@ complex double *qpms_scatsys_scatter_solve(
   return f;
 }
 
+struct qpms_scatsys_finite_eval_Beyn_ImTS_param {
+  const qpms_scatsys_t *ss;
+  qpms_iri_t iri;
+};
+
 /// Wrapper for Beyn algorithm (non-periodic system)
 static int qpms_scatsys_finite_eval_Beyn_ImTS(complex double *target,
     size_t m, complex double omega, void *params) {
-  const qpms_scatsys_t *ss = params;
-  qpms_scatsys_at_omega_t *ssw = qpms_scatsys_at_omega(ss, omega);
+  const struct qpms_scatsys_finite_eval_Beyn_ImTS_param *p = params;
+  qpms_scatsys_at_omega_t *ssw = qpms_scatsys_at_omega(p->ss, omega);
   QPMS_ENSURE(ssw != NULL, "qpms_scatsys_at_omega() returned NULL");
-  QPMS_ENSURE(NULL != qpms_scatsysw_build_modeproblem_matrix_full(target, ssw),
-    "qpms_scatsysw_build_modeproblem_matrix_full() returned NULL");
+  if (p->iri == QPMS_NO_IRREP) {
+    QPMS_ASSERT(m == p->ss->fecv_size);
+    QPMS_ENSURE(NULL != qpms_scatsysw_build_modeproblem_matrix_full(
+          target, ssw),
+      "qpms_scatsysw_build_modeproblem_matrix_full() returned NULL");
+  } else {
+    QPMS_ASSERT(m == p->ss->saecv_sizes[p->iri]);
+    QPMS_ENSURE(NULL != qpms_scatsysw_build_modeproblem_matrix_irrep_packed(
+          target, ssw, p->iri),
+      "qpms_scatsysw_build_modeproblem_matrix_irrep_packed() returned NULL");
+  }
   qpms_scatsys_at_omega_free(ssw);
   return QPMS_SUCCESS;
 }
 
-beyn_result_t *qpms_scatsys_finite_find_eigenmodes(const qpms_scatsys_t *ss,
+beyn_result_t *qpms_scatsys_finite_find_eigenmodes(
+    const qpms_scatsys_t * const ss, const qpms_iri_t iri,
     complex double omega_centre, double omega_rr, double omega_ri, 
     size_t contour_npoints, 
     double rank_tol, size_t rank_sel_min, double res_tol) {
+  size_t n; // matrix dimension
+  if (qpms_iri_is_valid(ss->sym, iri)) {
+    n = ss->saecv_sizes[iri];
+  } else if (iri == QPMS_NO_IRREP) {
+    n = ss->fecv_size;
+  } else QPMS_WTF;
 
   beyn_contour_t *contour = beyn_contour_ellipse(omega_centre,
       omega_rr, omega_ri, contour_npoints);
-
-  beyn_result_t *result = beyn_solve(ss->fecv_size, 
-      ss->fecv_size /* possibly make smaller? */,
-      qpms_scatsys_finite_eval_Beyn_ImTS, NULL, (void *) ss,
+  
+  struct qpms_scatsys_finite_eval_Beyn_ImTS_param p = {ss, iri};
+  beyn_result_t *result = beyn_solve(n, n /* possibly make smaller? */,
+      qpms_scatsys_finite_eval_Beyn_ImTS, NULL, (void *) &p,
       contour, rank_tol, rank_sel_min, res_tol);
   QPMS_ENSURE(result != NULL, "beyn_solve() returned NULL");
 

@@ -528,7 +528,9 @@ struct beyn_result_t; // See beyn.h for full definition
  * rather than the linear algebra.
  */
 struct beyn_result_t *qpms_scatsys_finite_find_eigenmodes(
-		const qpms_scatsys_t *ss,
+		const qpms_scatsys_t *ss, 
+		/// A valid irrep index to search only in one irrep, or QPMS_NO_IRREP for solving the full system.
+		qpms_iri_t iri,
 		complex double omega_centre, ///< Center of the ellipse inside which the eigenfreqs are searched for.
 		double omega_rr, ///< Real half-axis of the ellipse inside which the eigenfreqs are searched for.
 		double omega_ri, ///< Imaginary half-axis of the ellipse inside which the eigenfreqs are searched for.
