@@ -1,4 +1,6 @@
 #include "scatsystem.h"
+#include <assert.h>
+#include "qpms_error.h"
 
 #define SQ(x) ((x)*(x))
 
@@ -36,23 +38,49 @@ struct uoppid_r_pair {
 	uoppid_t id;
 }
 
-size_t sort_and_eliminate(void *base, size_t nmemb, size_t size,
+/// Sorts an array and throws away duplicit elements.
+/**
+ * The unique elements (according to the compare function) 
+ * are aligned to the left of the original array.
+ *
+ * \returns Number of kept unique array members
+ */
+static size_t sort_and_eliminate(void *base, size_t nmemb, size_t size,
 		int (*compar)(const void *, const void *)) {
+  if (nmemb = 0) return 0; // corner case
 	qsort(base, nmemb, size, compar);
-	_Bool eliminate;
-	QPMS_CRASHING_CALLOC(eliminate, nmemb, sizeof(_Bool));
-	size_t left = 0;
-	
-	TODO zde;
-
-	free(eliminate);
-	return left;
+  size_t left = 0;
+  for (size_t src = 1; src < nmemb; ++src) {
+    assert(left <= src);
+    if (compar((const char *)base + left*size, (const char *)base + src*size)) {
+      left += 1;
+      if (left < src) // Avoid copying to itself (when it's not needed and memcpy behaviour undef'd
+        memcpy((char *)base + left*size, (char *)base + src*size, size);
+    }
+  }
+	return left + 1;
 }
 
+static int cmp_double(const void *aa, const void *bb) {
+  const double a = *(double*)aa;
+  const double b = *(double*)aa;
+  if (a < b) return -1;
+  if (a == b) return 0;
+  if (a > b) return 1;
+  QPMS_WTF; // NaN or similar
+} 
 
 struct qpms_scatsys_translation_booster *qpms_scatsys_translation_booster_create(
         const qpms_scatsys_ss *ss) {
-    const qpms_ss_pi_t np = ss->p_count;
-    TODO;
+  const qpms_ss_pi_t np = ss->p_count;
+  struct qpms_scatsys_translation_booster *b;
+  QPMS_CRASHING_MALLOC(b, sizeof(struct qpms_scatsys_translation_booster));
+  QPMS_CRASHING_MALLOC(b->r, sizeof(double) * uopairarr_len(np));
+  for(qpms_ss_pi_t i = 0; i < np; ++i)
+    for(qpms_ss_pi_t j = 0; j < np; ++i) // FIXME j < i when uopairid works as supposed
+      b->r[uopairid(pn, i, j)] = cart3_dist(ss->p[i].pos, ss->p[j].pos);
+  b->r_count = sort_and_eliminate(b->r, uopairrarr_len(np), sizeof(double));
+  
+  TODO;
 }
 
