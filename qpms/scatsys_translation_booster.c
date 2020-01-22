@@ -1,37 +1,58 @@
+// Functionality to speedup translation matrix computations in large finite arrays
+// by caching Bessel function values etc.
 #include "scatsystem.h"
 #include <assert.h>
+#include <stdlib.h>
 #include "qpms_error.h"
 
 #define SQ(x) ((x)*(x))
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
 typedef size_t ppid_t;
 typedef size_t uoppid_t;
 
-// Unordered pair ID. TODO get rid of redundancies
-static inline uoppid_t uopairid(qpms_ss_pi_t pn_total, qpms_ss_pi_t p1, qpms_ss_pi_t p2) {
-  return pn_total * p1 + p2;
+
+// Unordered exclusive pair ID count. 
+static inline uoppid_t uopairarr_len(qpms_ss_pi_t pn_total) {
+  return pn_total * (pn_total - 1) / 2;
 }
 
-// Unordered pair ID count. TODO get rid of redundancies.
-static inline uoppid_t uopairarr_len(qpms_ss_pi_t pn_total) {
-  return SQ(pn_total);
+// Unordered exclusive pair ID.
+static inline uoppid_t uopairid(qpms_ss_pi_t pn_total, qpms_ss_pi_t p1, qpms_ss_pi_t p2) {
+  qpms_ss_pi_t hi, lo;
+  QPMS_ASSERT(p1 != p2);
+  if (p1 < p2) {
+    lo = p1;
+    hi = p2;
+  } else {
+    lo = p2;
+    hi = p1;
+  }
+  QPMS_ASSERT(lo >= 0);
+  QPMS_ASSERT(hi < pn_total);
+  return lo + hi * (hi - 1) / 2;
 }
 
 // Ordered pair ID.
-static inline uoppid_t pairid(qpms_ss_pi_t pn_total, qpms_ss_pi_t p1, qpms_ss_pi_t p2) {
+static inline ppid_t pairid(qpms_ss_pi_t pn_total, qpms_ss_pi_t p1, qpms_ss_pi_t p2) {
   return pn_total * p1 + p2;
 }
 
 // Ordered pair ID count.
-static inline uoppid_t pairarr_len(qpms_ss_pi_t pn_total) {
+static inline ppid_t pairarr_len(qpms_ss_pi_t pn_total) {
   return SQ(pn_total);
 }
 
 typedef struct qpms_scatsys_translation_booster {
     double *r; // Unique distances array, indices are ppid_t
+    qpms_l_t *lMax_r; // lMaxes associated with the r's (use same indices as with r)
     size_t r_count; // Number of different interparticle distances (length of r[])
     size_t *r_map; // maps pairs to the corresponding distances (index of uoppid_t type)
-} qpms_scatsys_translation_booster_t;
+    // Offsets of the Bessel function values: bessel_offsets_r[i] has the cumulative sums
+    // of 2*lMax_r[j]+2, j < i. bessel_offsets_r[r_count] is the total length of the 
+    // Bessel function "cache"
+    size_t *bessel_offsets_r; 
+} booster_t;
 
 struct uoppid_r_pair {
 	double r;
@@ -70,17 +91,50 @@ static int cmp_double(const void *aa, const void *bb) {
   QPMS_WTF; // NaN or similar
 } 
 
-struct qpms_scatsys_translation_booster *qpms_scatsys_translation_booster_create(
+booster_t *qpms_scatsys_translation_booster_create(
         const qpms_scatsys_ss *ss) {
   const qpms_ss_pi_t np = ss->p_count;
-  struct qpms_scatsys_translation_booster *b;
-  QPMS_CRASHING_MALLOC(b, sizeof(struct qpms_scatsys_translation_booster));
+  booster_t *b;
+  QPMS_CRASHING_MALLOC(b, sizeof(*b));
   QPMS_CRASHING_MALLOC(b->r, sizeof(double) * uopairarr_len(np));
   for(qpms_ss_pi_t i = 0; i < np; ++i)
-    for(qpms_ss_pi_t j = 0; j < np; ++i) // FIXME j < i when uopairid works as supposed
+    for(qpms_ss_pi_t j = 0; j < i; ++j) 
       b->r[uopairid(pn, i, j)] = cart3_dist(ss->p[i].pos, ss->p[j].pos);
-  b->r_count = sort_and_eliminate(b->r, uopairrarr_len(np), sizeof(double));
+  b->r_count = sort_and_eliminate(b->r, uopairrarr_len(np), sizeof(*b->r), cmp_double);
   
-  TODO;
+  QPMS_CRASHING_REALLOC(b->r, b->r_count * sizeof(*b->r));
+  QPMS_CRASHING_CALLOC(b->lMax_r, b->r_count, sizeof(*b->lMax_r));
+  for(qpms_ss_pi_t i = 0; i < np; ++i)
+    for(qpms_ss_pi_t j = 0; j < i; ++j) { 
+      const uoppid_t pid = uopairid(pn, i, j);
+      const double r = cart3_dist(ss->p[i].pos, ss->p[j].pos);
+      double *rhit = bsearch(&r, b->r, b->r_count, sizeof(*b->r), cmp_double);
+      QPMS_ASSERT(rhit != NULL);
+      QPMS_ASSERT(rhit >= b->r);
+      const size_t ri = b->r_map[pid] = r_hit - b->r;
+      b->lMax_r[ri] = MAX(b->lMax_r[ri], 
+          MAX(qpms_ss_bspec_pi(ss, i)->lMax, qpms_ss_bspec_pi(ss, j)->lMax));
+    }
+  
+  QPMS_CRASHING_MALLOC(b->bessel_offset_r, (b->r_count + 1) * sizeof(*b->bessel_offset_r));
+  size_t bessel_offset = 0;
+  for(size_t ri = 0; ri < b->r_count; ++ri) {
+    b->bessel_offsets_r[ri] = bessel_offset;
+    bessel_offset += 2 * b->lMax_r[ri] + 2;
+  }
+  b->bessel_offsets_r[b->r_count] = bessel_offset;
+
+  return b;
 }
+
+static qpms_errno_t qpms_scatsys_translation_booster_eval_bessels(
+    const booster_t *b, complex double *target, complex double k // includes ref. ind. effect
+    ) {
+  for(size_t ri = 0; ri < b->r_count; ++ri) {
+    QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(QPMS_HANKEL_PLUS, // Is there a case for different J?
+          2*b->lMax_r[ri]+1, k * b->r[ri], 
+          target + b->bessel_offsets_r[ri]));
+  return QPMS_SUCCESS;
+}
+
 
