@@ -100,6 +100,13 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error (%d)", errorcode); \
 }
 
+// Same as previous, but with message.
+#define QPMS_ENSURE_SUCCESS_M(x, msg, ...) { \
+	int errorcode = (x); \
+	if(QPMS_UNLIKELY(errorcode)) \
+		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); \
+}
+
 
 #define QPMS_ENSURE(x, msg, ...) {if(QPMS_UNLIKELY(!(x))) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
 
@@ -108,6 +115,16 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
        		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,\
 			"Unexpected error. This is most certainly a bug.");\
 }
+
+#ifdef QPMS_EVALUATE_PARANOID_ASSERTS
+  #define QPMS_PARANOID_ASSERT(x) {\
+	if(QPMS_UNLIKELY(!(x)))\
+       		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,\
+			"Unexpected error. This is most certainly a bug.");\
+}
+#else
+  #define QPMS_PARANOID_ASSERT(x) {;}
+#endif
 
 #define QPMS_NOT_IMPLEMENTED(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__, \
 		"Not implemented:" msg, ##__VA_ARGS__)

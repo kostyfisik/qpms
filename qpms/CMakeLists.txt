@@ -31,7 +31,7 @@ target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_options(qpms PRIVATE -Wall -Wno-return-type -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-label)
 target_compile_definitions(qpms PRIVATE LATTICESUMS32 QPMS_VECTORS_NICE_TRANSFORMATIONS
-	EWALD_AUTO_CUTOFF
+	EWALD_AUTO_CUTOFF QPMS_EVALUATE_PARANOID_ASSERTS
 	)
 
 install(TARGETS qpms

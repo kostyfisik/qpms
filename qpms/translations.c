@@ -13,6 +13,7 @@
 #include <gsl/gsl_sf_coupling.h>
 #include "qpms_error.h"
 #include "normalisation.h"
+#include "translations_inlines.h"
 
 /*
  * Define macros with additional factors that "should not be there" according
@@ -717,20 +718,8 @@ qpms_errno_t qpms_trans_calculator_get_trans_array(const qpms_trans_calculator *
   qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays(c,
       A[0], B[0], c->nelem, 1,
       kdlj, r_ge_d, J);
-  for (size_t desti = 0; desti < destspec->n; ++desti) {
-    qpms_y_t desty; qpms_vswf_type_t destt;
-    if(QPMS_SUCCESS != qpms_uvswfi2ty(destspec->ilist[desti], &destt, &desty))
-        qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,
-          "Invalid u. vswf index %llx.", destspec->ilist[desti]);
-    for (size_t srci = 0; srci < srcspec->n; ++srci){
-      qpms_y_t srcy; qpms_vswf_type_t srct;
-      if(QPMS_SUCCESS != qpms_uvswfi2ty(srcspec->ilist[srci], &srct, &srcy))
-          qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,
-            "Invalid u. vswf index %llx.", srcspec->ilist[srci]);
-      target[srci * srcstride + desti * deststride]
-        = (srct == destt) ? A[desty][srcy] : B[desty][srcy];
-    }
-  }
+  qpms_trans_array_from_AB(target, destspec, deststride, srcspec, srcstride,
+      A[0], B[0], c->lMax);
   return retval;
 }
 
@@ -766,7 +755,8 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32_e(const qpms_trans_calcul
   qpms_errno_t retval = qpms_trans_calculator_get_AB_arrays_e32_e(c,
       A, Aerr, B, Berr, ldAB, 1, 
       eta, k, b1, b2, beta, particle_shift, maxR, maxK, parts);
-  for (size_t desti = 0; desti < destspec->n; ++desti) {
+  for (size_t desti = 0; desti < destspec->n; ++desti) { 
+    // TODO replace with (modified) qpms_trans_array_from_AB()
     qpms_y_t desty; qpms_vswf_type_t destt;
     if(QPMS_SUCCESS != qpms_uvswfi2ty(destspec->ilist[desti], &destt, &desty))
         qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,
