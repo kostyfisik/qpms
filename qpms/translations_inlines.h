@@ -34,5 +34,9 @@ static inline void qpms_trans_array_from_AB(
 	}
 }
 
-
+int qpms_trans_calculator_get_AB_arrays_precalcbuf(const qpms_trans_calculator *c,
+		qpms_y_t lMax, complex double *Adest, complex double *Bdest,
+		size_t deststride, size_t srcstride, double kdlj_phi,
+		const complex double *bessel_buf, const double *legendre_buf);
+ 
 #endif

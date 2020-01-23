@@ -610,12 +610,14 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
 }
 
 int qpms_trans_calculator_get_AB_arrays_precalcbuf(const qpms_trans_calculator *c,
-    complex double *Adest, complex double *Bdest,
+    qpms_y_t lMax, complex double *Adest, complex double *Bdest,
     size_t deststride, size_t srcstride, double kdlj_phi,
     const complex double *bessel_buf, const double *legendre_buf) {
+  if(lMax == 0) lMax = c->lMax;
+  QPMS_ASSERT(lMax <= c->lMax);
   size_t desti = 0, srci = 0;
-  for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
-    for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
+  for (int n = 1; n <= lMax; ++n) for (int m = -n; m <= n; ++m) {
+    for (int nu = 1; nu <= lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
 #ifndef NDEBUG
       size_t assertindex = qpms_trans_calculator_index_mnmunu(c,m,n,mu,nu);
 #endif
@@ -655,7 +657,7 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
           costheta,-1,legendre_buf));
     QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf));
   }
-  return qpms_trans_calculator_get_AB_arrays_precalcbuf(c, Adest, Bdest,
+  return qpms_trans_calculator_get_AB_arrays_precalcbuf(c, c->lMax, Adest, Bdest,
       deststride, srcstride, kdlj.phi, bessel_buf, legendre_buf);
 }
 
