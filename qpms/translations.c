@@ -509,8 +509,7 @@ qpms_trans_calculator
 }
 
 static inline complex double qpms_trans_calculator_get_A_precalcbuf(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, csph_t kdlj,
-    bool r_ge_d, qpms_bessel_t J,
+    int m, int n, int mu, int nu, double kdlj_phi,
     const complex double *bessel_buf, const double *legendre_buf) {
   TROPS_ONLY_EIMF_IMPLEMENTED(c->normalisation);
   size_t i = qpms_trans_calculator_index_mnmunu(c, m, n, mu, nu);
@@ -523,9 +522,9 @@ static inline complex double qpms_trans_calculator_get_A_precalcbuf(const qpms_t
     double Pp = legendre_buf[gsl_sf_legendre_array_index(p, abs(mu-m))];
     complex double zp = bessel_buf[p];
     complex double multiplier = c->A_multipliers[i][q];
-    ckahanadd(&sum, &kahanc, Pp * zp *  multiplier);
+    ckahanadd(&sum, &kahanc, Pp * zp * multiplier);
   }
-  complex double eimf =  cexp(I*(mu-m)*kdlj.phi);
+  complex double eimf =  cexp(I*(mu-m)*kdlj_phi);
   return sum * eimf;
 }
 
@@ -545,12 +544,11 @@ complex double qpms_trans_calculator_get_A_buf(const qpms_trans_calculator *c,
         costheta,csphase,legendre_buf));
   QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf));
   return qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
-      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+      kdlj.phi,bessel_buf,legendre_buf);
 }
 
 static inline complex double qpms_trans_calculator_get_B_precalcbuf(const qpms_trans_calculator *c,
-    int m, int n, int mu, int nu, csph_t kdlj,
-    bool r_ge_d, qpms_bessel_t J,
+    int m, int n, int mu, int nu, double kdlj_phi,
     const complex double *bessel_buf, const double *legendre_buf) {
   TROPS_ONLY_EIMF_IMPLEMENTED(c->normalisation);
   size_t i = qpms_trans_calculator_index_mnmunu(c, m, n, mu, nu);
@@ -565,7 +563,7 @@ static inline complex double qpms_trans_calculator_get_B_precalcbuf(const qpms_t
     complex double multiplier = c->B_multipliers[i][q-BQ_OFFSET];
     ckahanadd(&sum, &kahanc, Pp_ * zp_ * multiplier);
   }
-  complex double eimf =  cexp(I*(mu-m)*kdlj.phi);
+  complex double eimf =  cexp(I*(mu-m)*kdlj_phi);
   return sum * eimf;
 }
 
@@ -584,7 +582,7 @@ complex double qpms_trans_calculator_get_B_buf(const qpms_trans_calculator *c,
         costheta,csphase,legendre_buf));
   QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf));
   return qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
-      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+      kdlj.phi,bessel_buf,legendre_buf);
 }
 
 int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
@@ -604,12 +602,36 @@ int qpms_trans_calculator_get_AB_buf_p(const qpms_trans_calculator *c,
         costheta,-1,legendre_buf));
   QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, n+nu+1, kdlj.r, bessel_buf));
   *Adest = qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
-      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+      kdlj.phi,bessel_buf,legendre_buf);
   *Bdest = qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
-      kdlj,r_ge_d,J,bessel_buf,legendre_buf);
+      kdlj.phi,bessel_buf,legendre_buf);
   return 0;
 }
 
+int qpms_trans_calculator_get_AB_arrays_precalcbuf(const qpms_trans_calculator *c,
+    complex double *Adest, complex double *Bdest,
+    size_t deststride, size_t srcstride, double kdlj_phi,
+    const complex double *bessel_buf, const double *legendre_buf) {
+  size_t desti = 0, srci = 0;
+  for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
+    for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
+#ifndef NDEBUG
+      size_t assertindex = qpms_trans_calculator_index_mnmunu(c,m,n,mu,nu);
+#endif
+      assert(assertindex == desti*c->nelem + srci);
+      *(Adest + deststride * desti + srcstride * srci) = 
+        qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
+            kdlj_phi, bessel_buf, legendre_buf);
+      *(Bdest + deststride * desti + srcstride * srci) = 
+        qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
+            kdlj_phi,bessel_buf,legendre_buf);
+      ++srci;
+    }
+    ++desti;
+    srci = 0;
+  }
+  return 0;
+}
 
 int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
     complex double *Adest, complex double *Bdest,
@@ -631,26 +653,9 @@ int qpms_trans_calculator_get_AB_arrays_buf(const qpms_trans_calculator *c,
     QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,2*c->lMax+1,
           costheta,-1,legendre_buf));
     QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(J, 2*c->lMax+1, kdlj.r, bessel_buf));
-    size_t desti = 0, srci = 0;
-    for (int n = 1; n <= c->lMax; ++n) for (int m = -n; m <= n; ++m) {
-      for (int nu = 1; nu <= c->lMax; ++nu) for (int mu = -nu; mu <= nu; ++mu) {
-#ifndef NDEBUG
-        size_t assertindex = qpms_trans_calculator_index_mnmunu(c,m,n,mu,nu);
-#endif
-        assert(assertindex == desti*c->nelem + srci);
-        *(Adest + deststride * desti + srcstride * srci) = 
-          qpms_trans_calculator_get_A_precalcbuf(c,m,n,mu,nu,
-              kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-        *(Bdest + deststride * desti + srcstride * srci) = 
-          qpms_trans_calculator_get_B_precalcbuf(c,m,n,mu,nu,
-              kdlj,r_ge_d,J,bessel_buf,legendre_buf);
-        ++srci;
-      }
-      ++desti;
-      srci = 0;
-    }
-    return 0;
   }
+  return qpms_trans_calculator_get_AB_arrays_precalcbuf(c, Adest, Bdest,
+      deststride, srcstride, kdlj.phi, bessel_buf, legendre_buf);
 }
 
 complex double qpms_trans_calculator_get_A(const qpms_trans_calculator *c,
