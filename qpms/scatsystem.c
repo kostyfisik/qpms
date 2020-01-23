@@ -1110,6 +1110,8 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_full(
     const qpms_scatsys_at_omega_t *ssw
     )
 {
+  if (ssw->translation_cache)
+    return qpms_scatsysw_build_modeproblem_matrix_full_boosted(target, ssw);
   const complex double k = ssw->wavenumber;
   const qpms_scatsys_t *ss = ssw->ss;
   const size_t full_len = ss->fecv_size;

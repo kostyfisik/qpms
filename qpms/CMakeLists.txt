@@ -15,7 +15,7 @@ add_library (qpms SHARED translations.c tmatrices.c vecprint.c vswf.c wigner.c e
 	ewaldsf.c pointgroups.c latticegens.c
 	lattices2d.c gaunt.c error.c legendre.c symmetries.c vecprint.c
 	bessel.c own_zgemm.c parsing.c scatsystem.c materials.c drudeparam_data.c
-	lll.c beyn.c
+	lll.c beyn.c scatsys_translation_booster.c
 	)
 use_c99()
 
@@ -31,7 +31,7 @@ target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_options(qpms PRIVATE -Wall -Wno-return-type -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-label)
 target_compile_definitions(qpms PRIVATE LATTICESUMS32 QPMS_VECTORS_NICE_TRANSFORMATIONS
-	EWALD_AUTO_CUTOFF
+	EWALD_AUTO_CUTOFF QPMS_EVALUATE_PARANOID_ASSERTS
 	)
 
 install(TARGETS qpms
