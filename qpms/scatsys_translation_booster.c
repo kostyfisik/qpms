@@ -128,6 +128,30 @@ booster_t *qpms_scatsys_translation_booster_create(
   return b;
 }
 
+int qpms_ss_create_translation_cache(qpms_scatsys_t *ss, qpms_ss_caching_mode_t m) {
+QPMS_ASSERT(ss);
+  if (ss->tbooster) {
+    QPMS_WARN("Translation cache already created?");
+    return 0;
+  }
+  switch(m) {
+    case QPMS_SS_CACHE_NEVER:
+      return 0;
+    case QPMS_SS_CACHE_AUTO:
+      QPMS_WARN("Translation operator cache heuristics not implemented, creating the cache");
+    case QPMS_SS_CACHE_ALWAYS:
+      ss->tbooster = qpms_scatsys_translation_booster_create(ss);
+      if (ss->tbooster) return 0;
+      else {
+          QPMS_WARN("Failed to create tranlation operator cache");
+          return -1;
+      }
+    default:
+      QPMS_WTF;
+  }
+  QPMS_WTF;
+}
+
 static qpms_errno_t qpms_scatsys_translation_booster_eval_bessels(
     const booster_t *b, complex double *target, complex double k // includes ref. ind. effect
     ) {

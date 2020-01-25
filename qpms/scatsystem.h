@@ -220,6 +220,7 @@ typedef struct qpms_scatsys_at_omega_t {
 	struct qpms_scatsysw_translation_booster *translation_cache; ///< (private) cache to speedup tranlations
 } qpms_scatsys_at_omega_t;
 
+
 /// Creates a new scatsys by applying a symmetry group onto a "proto-scatsys", copying particles if needed.
 /** In fact, it copies everything except the vswf set specs and qpms_abstract_tmatrix_t instances,
  * so keep them alive until scatsys is destroyed.
@@ -268,6 +269,25 @@ void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw);
 /** Free the result using qpms_scatsys_at_omega_free() when done. */
 qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
 		complex double omega);
+
+/// Determines behaviour of qpms_ss_create_translation_cache().
+typedef enum qpms_ss_caching_mode {
+	/// Don't create the translation operator cache.
+	/** Use this if the particle positions are random. */
+	QPMS_SS_CACHE_NEVER, 
+	/// Always create the translation operator cache.
+	/** Use this for highly regular large finite structures. */
+	QPMS_SS_CACHE_ALWAYS, 
+	/// Evaluate the need of caching automatically.
+	QPMS_SS_CACHE_AUTO, 
+	QPMS_SS_CACHE_DEFAULT = QPMS_SS_CACHE_AUTO
+} qpms_ss_caching_mode_t;
+
+/// Creates some data structures for speeding up translation operator calculations.
+/** This is mostly useful for "finite lattices", where many pairs of nanoparticles
+ * share the same relative positions.
+ */
+int qpms_ss_create_translation_cache(qpms_scatsys_t *ss, qpms_ss_caching_mode_t m);
 
 /// Creates a "full" transformation matrix U that takes a full vector and projects it onto an symmetry adapted basis.
 /** Mostly as a reference and a debugging tool, as multiplicating these big matrices would be inefficient.
@@ -548,7 +568,9 @@ struct beyn_result_t *qpms_scatsys_finite_find_eigenmodes(
 		double res_tol ///< (default: `0.0`) TODO DOC.
 		);
 
+/// "private" destructor, called by qpms_scatsys_free()
 void qpms_scatsys_translation_booster_free(struct qpms_scatsys_translation_booster *);
+/// "private" constructor, use qpms_ss_create_translation_cache() instead.
 struct qpms_scatsys_translation_booster *qpms_scatsys_translation_booster_create(
 		const qpms_scatsys_t *ss);
 

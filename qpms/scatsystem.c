@@ -473,6 +473,8 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
     free(ss->orbit_types);
     free(ss->saecv_sizes);
     free(ss->p_by_orbit);
+    if(ss->tbooster)
+      qpms_scatsys_translation_booster_free(ss->tbooster);
     qpms_trans_calculator_free(ss->c);
   }
   free(ss);

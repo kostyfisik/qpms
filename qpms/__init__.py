@@ -7,7 +7,7 @@ from sys import platform as __platform
 import warnings as __warnings
 
 try:
-    from .qpms_c import PointGroup, FinitePointGroup, FinitePointGroupElement, Particle, scatsystem_set_nthreads, ScatteringSystem, ScatteringMatrix, pitau, set_gsl_pythonic_error_handling, pgsl_ignore_error, gamma_inc, lll_reduce
+    from .qpms_c import PointGroup, FinitePointGroup, FinitePointGroupElement, Particle, scatsystem_set_nthreads, ScatteringSystem, ScatteringMatrix, pitau, set_gsl_pythonic_error_handling, pgsl_ignore_error, gamma_inc, lll_reduce, ScatteringSystemCachingMode
 except ImportError as ex:
     if __platform == "linux" or __platform == "linux2":
         if 'LD_LIBRARY_PATH' not in __os.environ.keys():

@@ -550,10 +550,16 @@ cdef extern from "scatsystem.h":
         cdouble omega
         qpms_epsmu_t medium
         cdouble wavenumber
+    ctypedef enum qpms_ss_caching_mode_t:
+        QPMS_SS_CACHE_NEVER
+        QPMS_SS_CACHE_ALWAYS
+        QPMS_SS_CACHE_DEFAULT
+        QPMS_SS_CACHE_AUTO
     qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym,
             cdouble omega, const qpms_tolerance_spec_t *tol)
     qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss, cdouble omega)
     void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw)
+    int qpms_ss_create_translation_cache(qpms_scatsys_t *ss, qpms_caching_mode_t m)
     cdouble *qpms_scatsys_irrep_pack_matrix(cdouble *target_packed,
             const cdouble *orig_full, const qpms_scatsys_t *ss, qpms_iri_t iri)
     cdouble *qpms_scatsys_irrep_unpack_matrix(cdouble *target_full, 

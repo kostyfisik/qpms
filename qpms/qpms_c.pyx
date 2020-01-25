@@ -16,7 +16,7 @@ from .cytmatrices cimport CTMatrix, TMatrixFunction, TMatrixGenerator
 from .cymaterials cimport EpsMuGenerator
 from libc.stdlib cimport malloc, free, calloc
 import warnings
-
+import enum
 
 # Set custom GSL error handler. N.B. this is obviously not thread-safe.
 cdef char *pgsl_err_reason
@@ -331,6 +331,10 @@ cpdef void scatsystem_set_nthreads(long n):
     qpms_scatsystem_set_nthreads(n)
     return
 
+class ScatteringSystemCachingMode(enum.IntEnum):
+    NEVER = QPMS_SS_CACHE_NEVER
+    AUTO = QPMS_SS_CACHE_AUTO
+    ALWAYS = QPMS_SS_CACHE_ALWAYS
 
 cdef class ScatteringSystem:
     '''
@@ -357,7 +361,9 @@ cdef class ScatteringSystem:
         #TODO is there a way to disable the constructor outside this module?
 
     @staticmethod # We don't have any "standard" constructor for this right now
-    def create(particles, medium, FinitePointGroup sym, cdouble omega): # TODO tolerances
+    def create(particles, medium, FinitePointGroup sym, cdouble omega,
+            caching_mode = QPMS_SS_CACHE_DEFAULT): # TODO tolerances
+        caching_mode = ScatteringSystemCachingMode(caching_mode)
         # These we are going to construct
         cdef ScatteringSystem self
         cdef _ScatteringSystemAtOmega pyssw
@@ -416,6 +422,7 @@ cdef class ScatteringSystem:
                 orig.p[pi].pos = p.cval().pos
                 orig.p[pi].tmatrix_id = tmindices[tm_derived_key]
             ssw = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer(), omega, &QPMS_TOLERANCE_DEFAULT)
+            qpms_ss_create_translation_cache(ssw, caching_mode)
             ss = ssw[0].ss
         finally:
             free(orig.tmg)
