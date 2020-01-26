@@ -193,6 +193,11 @@ typedef struct qpms_scatsys_t {
 
 } qpms_scatsys_t;
 
+/// Returns true if ss has the translation caching metadata populated.
+static inline _Bool qpms_scatsys_has_translation_cache(const qpms_scatsys_t *ss) {
+	return ss->tbooster != NULL;
+}
+
 /// Retrieve the bspec of \a tmi'th element of \a ss->tm.
 static inline const qpms_vswf_set_spec_t *qpms_ss_bspec_tmi(const qpms_scatsys_t *ss, qpms_ss_tmi_t tmi) {
 	return ss->tmg[ss->tm[tmi].tmgi].spec;
@@ -217,7 +222,7 @@ typedef struct qpms_scatsys_at_omega_t {
 	qpms_epsmu_t medium; ///< Background medium optical properties at the given frequency
 	complex double wavenumber; ///< Background medium wavenumber
 
-	struct qpms_scatsysw_translation_booster *translation_cache; ///< (private) cache to speedup tranlations
+	struct qpms_scatsysw_translation_booster *translation_cache; ///< (private) cache to speedup translations
 } qpms_scatsys_at_omega_t;
 
 
@@ -282,6 +287,11 @@ typedef enum qpms_ss_caching_mode {
 	QPMS_SS_CACHE_AUTO, 
 	QPMS_SS_CACHE_DEFAULT = QPMS_SS_CACHE_AUTO
 } qpms_ss_caching_mode_t;
+
+/// Returns true if ssw has the translation operator cache populated.
+static inline _Bool qpms_scatsysw_has_translation_cache(const qpms_scatsys_at_omega_t *ssw) {
+	return ssw->translation_cache != NULL;
+}
 
 /// Creates some data structures for speeding up translation operator calculations.
 /** This is mostly useful for "finite lattices", where many pairs of nanoparticles

@@ -609,6 +609,8 @@ cdef extern from "scatsystem.h":
     beyn_result_t *qpms_scatsys_finite_find_eigenmodes(const qpms_scatsys_t *ss, qpms_iri_t iri,
             cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 
             double rank_tol, size_t rank_sel_min, double res_tol)
+    bint qpms_scatsysw_has_translation_cache(const qpms_scatsys_at_omega_t *ssw)
+    bint qpms_scatsys_has_translation_cache(const qpms_scatsys_t *ss)
 
 cdef extern from "ewald.h":
     struct qpms_csf_result:

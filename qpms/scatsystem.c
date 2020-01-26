@@ -210,6 +210,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   QPMS_CRASHING_MALLOC(ssw, sizeof(*ssw)); // returned
   ssw->ss = ss;
   ssw->omega = omega;
+  ssw->translation_cache = NULL;
   ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
   ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
   // we will be using ss->tm_capacity also for ssw->tm

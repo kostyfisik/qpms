@@ -422,8 +422,8 @@ cdef class ScatteringSystem:
                 orig.p[pi].pos = p.cval().pos
                 orig.p[pi].tmatrix_id = tmindices[tm_derived_key]
             ssw = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer(), omega, &QPMS_TOLERANCE_DEFAULT)
-            qpms_ss_create_translation_cache(ss, caching_mode)
             ss = ssw[0].ss
+            qpms_ss_create_translation_cache(ss, caching_mode)
         finally:
             free(orig.tmg)
             free(orig.tm)
@@ -606,6 +606,11 @@ cdef class ScatteringSystem:
                 self.s, qpms_incfield_planewave, <void *>&p, 0)
         return target_np
 
+    property has_translation_cache:
+        def __get__(self):
+            self.check_s()
+            return True if qpms_scatsys_has_translation_cache(self.s) else False
+
     def find_modes(self, cdouble omega_centre, double omega_rr, double omega_ri, iri = None,
             size_t contour_points = 20, double rank_tol = 1e-4, size_t rank_min_sel=1,
             double res_tol = 0):
@@ -632,6 +637,8 @@ cdef class ScatteringSystem:
         cdef cdouble[:,::1] eigvec_v = eigvec
         cdef np.ndarray[double, ndim=1] ranktest_SV = np.empty((vlen), dtype=np.double)
         cdef double[::1] ranktest_SV_v = ranktest_SV
+
+        cdef size_t i, j
 
         for i in range(neig):
             eigval_v[i] = res[0].eigval[i]
@@ -705,6 +712,10 @@ cdef class _ScatteringSystemAtOmega:
         def __get__(self): return self.ss_pyref.irrep_names
     property nirreps: 
         def __get__(self): return self.ss_pyref.nirreps
+    property has_translation_cache:
+        def __get__(self):
+            self.check()
+            return True if qpms_scatsysw_has_translation_cache(self.ssw) else False
 
     def add_translation_cache(self):
         '''
@@ -715,6 +726,7 @@ cdef class _ScatteringSystemAtOmega:
         '''
         self.check()
         qpms_ssw_create_translation_cache(self.ssw)
+        return self.has_translation_cache
 
     def modeproblem_matrix_full(self):
         self.check()
