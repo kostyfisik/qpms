@@ -1,7 +1,7 @@
 // Functionality to speedup translation matrix computations in large finite arrays
 // by caching Bessel function values etc.
 #include <cblas.h>
-#include "scatsystem.h"
+#include "scatsys_private.h"
 #include "translations_inlines.h"
 #include <assert.h>
 #include <stdlib.h>
@@ -126,6 +126,15 @@ booster_t *qpms_scatsys_translation_booster_create(
   b->bessel_offsets_r[b->r_count] = bessel_offset;
 
   return b;
+}
+
+void qpms_scatsys_translation_booster_free(booster_t *b) {
+  if (b) {
+    free(b->bessel_offsets_r);
+    free(b->lMax_r);
+    free(b->r);
+    free(b);
+  }
 }
 
 int qpms_ss_create_translation_cache(qpms_scatsys_t *ss, qpms_ss_caching_mode_t m) {

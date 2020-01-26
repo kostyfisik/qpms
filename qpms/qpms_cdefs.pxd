@@ -559,7 +559,8 @@ cdef extern from "scatsystem.h":
             cdouble omega, const qpms_tolerance_spec_t *tol)
     qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss, cdouble omega)
     void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw)
-    int qpms_ss_create_translation_cache(qpms_scatsys_t *ss, qpms_caching_mode_t m)
+    int qpms_ss_create_translation_cache(qpms_scatsys_t *ss, qpms_ss_caching_mode_t m)
+    int qpms_ssw_create_translation_cache(qpms_scatsys_at_omega_t *ssw)
     cdouble *qpms_scatsys_irrep_pack_matrix(cdouble *target_packed,
             const cdouble *orig_full, const qpms_scatsys_t *ss, qpms_iri_t iri)
     cdouble *qpms_scatsys_irrep_unpack_matrix(cdouble *target_full, 

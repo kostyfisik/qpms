@@ -422,7 +422,7 @@ cdef class ScatteringSystem:
                 orig.p[pi].pos = p.cval().pos
                 orig.p[pi].tmatrix_id = tmindices[tm_derived_key]
             ssw = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer(), omega, &QPMS_TOLERANCE_DEFAULT)
-            qpms_ss_create_translation_cache(ssw, caching_mode)
+            qpms_ss_create_translation_cache(ss, caching_mode)
             ss = ssw[0].ss
         finally:
             free(orig.tmg)
@@ -705,6 +705,16 @@ cdef class _ScatteringSystemAtOmega:
         def __get__(self): return self.ss_pyref.irrep_names
     property nirreps: 
         def __get__(self): return self.ss_pyref.nirreps
+
+    def add_translation_cache(self):
+        '''
+        Adds translation cache if the parent ScatteringSystem
+        contains the required metadata (this is not done automatically,
+        as the cache is not useful if no translation operators are to
+        be evaluated
+        '''
+        self.check()
+        qpms_ssw_create_translation_cache(self.ssw)
 
     def modeproblem_matrix_full(self):
         self.check()

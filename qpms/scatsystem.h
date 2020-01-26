@@ -289,6 +289,10 @@ typedef enum qpms_ss_caching_mode {
  */
 int qpms_ss_create_translation_cache(qpms_scatsys_t *ss, qpms_ss_caching_mode_t m);
 
+/// Pre-calculates the "translation cache" of a qpms_scatsys_at_omega_t.
+/** If ssw->ss->tbooster is NULL, does nothing. */
+int qpms_ssw_create_translation_cache(qpms_scatsys_at_omega_t *ssw);
+
 /// Creates a "full" transformation matrix U that takes a full vector and projects it onto an symmetry adapted basis.
 /** Mostly as a reference and a debugging tool, as multiplicating these big matrices would be inefficient.
  * 
@@ -568,11 +572,6 @@ struct beyn_result_t *qpms_scatsys_finite_find_eigenmodes(
 		double res_tol ///< (default: `0.0`) TODO DOC.
 		);
 
-/// "private" destructor, called by qpms_scatsys_free()
-void qpms_scatsys_translation_booster_free(struct qpms_scatsys_translation_booster *);
-/// "private" constructor, use qpms_ss_create_translation_cache() instead.
-struct qpms_scatsys_translation_booster *qpms_scatsys_translation_booster_create(
-		const qpms_scatsys_t *ss);
 
 #if 0
 /// Searches for scattering system's eigenmodes using Beyn's algorithm.

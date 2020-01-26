@@ -6,7 +6,7 @@
 #include <lapacke.h>
 #include <cblas.h>
 #include <lapacke.h>
-#include "scatsystem.h"
+#include "scatsys_private.h"
 #include "indexing.h"
 #include "vswf.h"
 #include "groups.h"
@@ -181,6 +181,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   ss->lenscale = lenscale;
   ss->sym = sym;
   ss->medium = orig->medium;
+  ss->tbooster = NULL;
 
   // Copy the qpms_tmatrix_fuction_t from orig
   ss->tmg_count = orig->tmg_count;
@@ -521,7 +522,16 @@ qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
   for (qpms_ss_tmgi_t tmgi = 0; tmgi < ss->tmg_count; ++tmgi)
     qpms_tmatrix_free(tmatrices_preop[tmgi]);
   free(tmatrices_preop);
+  ssw->translation_cache= NULL;
   return ssw;
+}
+
+int qpms_ssw_create_translation_cache(qpms_scatsys_at_omega_t *ssw) {
+  if(!ssw->translation_cache)
+    if(ssw->ss->tbooster) 
+      ssw->translation_cache = qpms_scatsysw_translation_booster_create(ssw);
+  QPMS_ASSERT(ssw->translation_cache);
+  return 0;
 }
 
 void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw) {
@@ -530,6 +540,8 @@ void qpms_scatsys_at_omega_free(qpms_scatsys_at_omega_t *ssw) {
      for(qpms_ss_tmi_t i = 0; i < ssw->ss->tm_count; ++i) 
       qpms_tmatrix_free(ssw->tm[i]); 
     free(ssw->tm);
+    if(ssw->translation_cache)
+      qpms_scatsysw_translation_booster_free(ssw->translation_cache);
   }
   free(ssw);
 }
