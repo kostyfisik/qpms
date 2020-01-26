@@ -1925,6 +1925,7 @@ static int qpms_scatsys_finite_eval_Beyn_ImTS(complex double *target,
   const struct qpms_scatsys_finite_eval_Beyn_ImTS_param *p = params;
   qpms_scatsys_at_omega_t *ssw = qpms_scatsys_at_omega(p->ss, omega);
   QPMS_ENSURE(ssw != NULL, "qpms_scatsys_at_omega() returned NULL");
+  if(p->ss->tbooster) qpms_ssw_create_translation_cache(ssw);
   if (p->iri == QPMS_NO_IRREP) {
     QPMS_ASSERT(m == p->ss->fecv_size);
     QPMS_ENSURE(NULL != qpms_scatsysw_build_modeproblem_matrix_full(
