@@ -85,7 +85,7 @@ static size_t sort_and_eliminate(void *base, size_t nmemb, size_t size,
 
 static int cmp_double(const void *aa, const void *bb) {
   const double a = *(double*)aa;
-  const double b = *(double*)aa;
+  const double b = *(double*)bb;
   if (a < b) return -1;
   if (a == b) return 0;
   if (a > b) return 1;
@@ -105,6 +105,7 @@ booster_t *qpms_scatsys_translation_booster_create(
 
   QPMS_CRASHING_REALLOC(b->r, b->r_count * sizeof(*b->r));
   QPMS_CRASHING_CALLOC(b->lMax_r, b->r_count, sizeof(*b->lMax_r));
+  QPMS_CRASHING_MALLOC(b->r_map, uopairarr_len(np) * sizeof(*b->r_map));
   for(qpms_ss_pi_t i = 0; i < np; ++i)
     for(qpms_ss_pi_t j = 0; j < i; ++j) { 
       const uoppid_t pid = uopairid(np, i, j);
@@ -133,6 +134,7 @@ void qpms_scatsys_translation_booster_free(booster_t *b) {
     free(b->bessel_offsets_r);
     free(b->lMax_r);
     free(b->r);
+    free(b->r_map);
     free(b);
   }
 }
@@ -242,7 +244,7 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_full_boosted(
           const sph_t dlj = cart2sph(cart3_substract(posR, posC));
           const size_t ri = b->r_map[pid];
           QPMS_PARANOID_ASSERT(dlj.r == b->r[ri]);
-          const qpms_l_t pair_lMax = b->lMax_r[pid];
+          const qpms_l_t pair_lMax = b->lMax_r[ri];
           const qpms_y_t pair_nelem = qpms_lMax2nelem(pair_lMax);
           { // this replaces qpms_trans_calculator_get_trans_array():
             // R is dest, C is src
