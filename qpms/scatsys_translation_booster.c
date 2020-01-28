@@ -251,15 +251,21 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_full_boosted(
       for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) {
         const qpms_vswf_set_spec_t *bspecC = ssw->tm[ss->p[piC].tmatrix_id]->spec;
         if(piC != piR) { // The diagonal will be dealt with later.
-          uoppid_t pid = uopairid(ss->p_count, piC, piR);
           const cart3_t posC = ss->p[piC].pos;
-          const sph_t dlj = cart2sph(cart3_substract(posR, posC));
-          const size_t ri = b->r_map[pid];
-          QPMS_PARANOID_ASSERT(dlj.r == b->r[ri]);
-          const qpms_l_t pair_lMax = b->lMax_r[ri];
-          const qpms_y_t pair_nelem = qpms_lMax2nelem(pair_lMax);
+#if 0
+          QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
+                tmp, // tmp is S(piR<-piC)
+                bspecR, bspecC->n, bspecC, 1,
+                k, posR, posC, QPMS_HANKEL_PLUS));
+#else
           { // this replaces qpms_trans_calculator_get_trans_array():
             // R is dest, C is src
+            const sph_t dlj = cart2sph(cart3_substract(posR, posC));
+            const uoppid_t pid = uopairid(ss->p_count, piC, piR);
+            const size_t ri = b->r_map[pid];
+            QPMS_PARANOID_ASSERT(dlj.r == b->r[ri]);
+            const qpms_l_t pair_lMax = b->lMax_r[ri];
+            const qpms_y_t pair_nelem = qpms_lMax2nelem(pair_lMax);
             QPMS_PARANOID_ASSERT(c->normalisation == bspecC->norm && c->normalisation == bspecR->norm);
             QPMS_PARANOID_ASSERT(c->lMax >= bspecC->lMax && c->lMax >= bspecR->lMax);
             QPMS_PARANOID_ASSERT(bspecC->lMax_L < 0 && bspecR->lMax_L < 0);
@@ -275,6 +281,7 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_full_boosted(
                   bspecR, bspecC->n, bspecC, 1, A, B, pair_lMax);
             }
           }
+#endif
           cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
               bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
               &minusone/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
@@ -298,18 +305,17 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_full_boosted(
 
 void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_boosted(void *arg)
 {
-  const struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg
+  const struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg 
     *a = arg;
   const qpms_scatsys_at_omega_t *ssw = a->ssw;
-  const complex double k = ssw->wavenumber;
-  const qpms_scatsys_t *ss = ssw->ss;
-  const qpms_iri_t iri = a->iri;
-  const size_t packedlen = ss->saecv_sizes[iri];
-
   QPMS_ASSERT(ssw->translation_cache && ssw->ss->tbooster);
+  const qpms_scatsys_t * const ss = ssw->ss;
+  const qpms_trans_calculator *const c = ss->c;
   const booster_t *const b = ss->tbooster;
   const boosterw_t *const bw = ssw->translation_cache;
-  const qpms_trans_calculator *const c = ss->c;
+  const complex double k = ssw->wavenumber;
+  const qpms_iri_t iri = a->iri;
+  const size_t packedlen = ss->saecv_sizes[iri];
 
   // some of the following workspaces are probably redundant; TODO optimize later.
 
@@ -318,15 +324,15 @@ void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_boost
   complex double *Sblock, *TSblock;
   QPMS_CRASHING_MALLOC(Sblock, sizeof(complex double)*SQ(ss->max_bspecn));
   QPMS_CRASHING_MALLOC(TSblock, sizeof(complex double)*SQ(ss->max_bspecn));
-  // Workspaces for the translation operator A and B matrices
-  complex double *A, *B;
-  QPMS_CRASHING_MALLOC(A, SQ(c->nelem) * sizeof(*A));
-  QPMS_CRASHING_MALLOC(B, SQ(c->nelem) * sizeof(*B));
-  double legendre_buf[gsl_sf_legendre_array_n(2*c->lMax + 1)]; //VLA, workspace for legendre arrays
 
   // Workspace for the intermediate particle-orbit matrix result
   complex double *tmp;
   QPMS_CRASHING_MALLOC(tmp, sizeof(complex double) * SQ(ss->max_bspecn) * ss->sym->order);
+  // Workspace for A, B arrays
+  complex double *A, *B;
+  QPMS_CRASHING_MALLOC(A, SQ(c->nelem) * sizeof(*A));
+  QPMS_CRASHING_MALLOC(B, SQ(c->nelem) * sizeof(*B));
+  double legendre_buf[gsl_sf_legendre_array_n(2*c->lMax + 1)]; //VLA, workspace for legendre arrays
 
   const complex double one = 1, zero = 0, minusone = -1;
 
@@ -335,13 +341,13 @@ void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_boost
     QPMS_ENSURE_SUCCESS(pthread_mutex_lock(a->opistartR_mutex));
     if(*(a->opistartR_ptr) >= ss->p_count) {// Everything is already done, end
       QPMS_ENSURE_SUCCESS(pthread_mutex_unlock(a->opistartR_mutex));
-      break;
+      break; 
     }
     const qpms_ss_pi_t opistartR = *(a->opistartR_ptr);
     // Now increment it for another thread:
     *(a->opistartR_ptr) += ss->orbit_types[ss->p_orbitinfo[ss->p_by_orbit[opistartR]].t].size;
     QPMS_ENSURE_SUCCESS(pthread_mutex_unlock(a->opistartR_mutex));
-
+    
     // Orbit picked (defined by opistartR), do the work.
     const qpms_ss_pi_t orbitstartpiR = ss->p_by_orbit[opistartR];
     const qpms_ss_oti_t otiR = ss->p_orbitinfo[orbitstartpiR].t;
@@ -359,102 +365,106 @@ void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_boost
       const size_t orbit_fullsizeR = otR->size * otR->bspecn;
       // This is where the orbit starts in the "packed" vector:
       const size_t packed_orbit_offsetR =
-        ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiR]
+        ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiR] 
         + osnR * otR->irbase_sizes[iri];
       for(qpms_ss_orbit_pi_t opiR = 0; opiR < orbit_p_countR; ++opiR) {
-        for(qpms_ss_orbit_pi_t opiR = 0; opiR < orbit_p_countR; ++opiR) {
-          qpms_ss_pi_t piR = ss->p_by_orbit[opistartR + opiR];
-          assert(opiR == ss->p_orbitinfo[piR].p);
-          assert(otiR == ss->p_orbitinfo[piR].t);
-          assert(ss->p_orbitinfo[piR].osn == osnR);
-          const cart3_t posR = ss->p[piR].pos;
-          // dest particle T-matrix
-          const complex double *tmmR = ssw->tm[ss->p[piR].tmatrix_id]->m;
-          for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) { //Column loop
-            const qpms_ss_oti_t otiC = ss->p_orbitinfo[piC].t;
-            const qpms_ss_orbit_type_t *const otC = ss->orbit_types + otiC;
-            const qpms_ss_osn_t osnC = ss->p_orbitinfo[piC].osn;
-            const qpms_ss_orbit_pi_t opiC = ss->p_orbitinfo[piC].p;
-            // This is where the particle's orbit starts in the "packed" vector:
-            const size_t packed_orbit_offsetC =
-              ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiC]
-              + osnC * otC->irbase_sizes[iri];
-            const qpms_vswf_set_spec_t *bspecC = ssw->tm[ss->p[piC].tmatrix_id]->spec;
-            // Orbit coeff vector's full size:
-            const size_t orbit_fullsizeC = otC->size * otC->bspecn;
-            const size_t particle_fullsizeC = otC->bspecn; // == bspecC->n
-            const size_t orbit_packedsizeC = otC->irbase_sizes[iri];
-            // This is the orbit-level matrix projecting the whole orbit onto the irrep.
-            const complex double *omC = otC->irbases + otC->irbase_offsets[iri];
+        qpms_ss_pi_t piR = ss->p_by_orbit[opistartR + opiR];
+        assert(opiR == ss->p_orbitinfo[piR].p);
+        assert(otiR == ss->p_orbitinfo[piR].t);
+        assert(ss->p_orbitinfo[piR].osn == osnR);
+        const cart3_t posR = ss->p[piR].pos;
+        // dest particle T-matrix
+        const complex double *tmmR = ssw->tm[ss->p[piR].tmatrix_id]->m;
+        for(qpms_ss_pi_t piC = 0; piC < ss->p_count; ++piC) { //Column loop
+          const qpms_ss_oti_t otiC = ss->p_orbitinfo[piC].t;
+          const qpms_ss_orbit_type_t *const otC = ss->orbit_types + otiC;
+          const qpms_ss_osn_t osnC = ss->p_orbitinfo[piC].osn;
+          const qpms_ss_orbit_pi_t opiC = ss->p_orbitinfo[piC].p;
+          // This is where the particle's orbit starts in the "packed" vector:
+          const size_t packed_orbit_offsetC = 
+            ss->saecv_ot_offsets[iri*ss->orbit_type_count + otiC]
+            + osnC * otC->irbase_sizes[iri];
+          const qpms_vswf_set_spec_t *bspecC = ssw->tm[ss->p[piC].tmatrix_id]->spec;
+          // Orbit coeff vector's full size:
+          const size_t orbit_fullsizeC = otC->size * otC->bspecn;
+          const size_t particle_fullsizeC = otC->bspecn; // == bspecC->n
+          const size_t orbit_packedsizeC = otC->irbase_sizes[iri];
+          // This is the orbit-level matrix projecting the whole orbit onto the irrep.
+          const complex double *omC = otC->irbases + otC->irbase_offsets[iri];
 
-            if(orbit_packedsizeC) { // avoid zgemm crash on empty irrep
-              if(piC != piR) { // non-diagonal, calculate TS
-                const cart3_t posC = ss->p[piC].pos;
+          if(orbit_packedsizeC) { // avoid zgemm crash on empty irrep
+            if(piC != piR) { // non-diagonal, calculate TS
+              const cart3_t posC = ss->p[piC].pos;
 #if 0
-                QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
-                      Sblock, // Sblock is S(piR->piC)
-                      bspecR, bspecC->n, bspecC, 1,
-                      k, posR, posC, QPMS_HANKEL_PLUS));
-#endif
-                { // this block replaces qpms_trans_calculator_get_trans_array():
-                  // R is dest, C is src
-                  const sph_t dlj = cart2sph(cart3_substract(posR, posC));
-                  const uoppid_t pid = uopairid(ss->p_count, piC, piR);
-                  const size_t ri  = b->r_map[pid];
-                  QPMS_PARANOID_ASSERT(dlj.r == b->r[ri]);
-                  const qpms_l_t pair_lMax = b->lMax_r[ri];
-                  const qpms_y_t pair_nelem = qpms_lMax2nelem(pair_lMax);
-
-                  { // this replaces qpms_trans_calculator_get_AB_arrays() and _buf()
-                    const double costheta = cos(dlj.theta);
-                    QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,
-                          2*pair_lMax+1, costheta, -1, legendre_buf));
-                    const double * const legendres = legendre_buf;
-                    const complex double * const bessels = bw->bessels + b->bessel_offsets_r[ri];
-                    qpms_trans_calculator_get_AB_arrays_precalcbuf(c, pair_lMax, A, B,
-                        /*deststride*/ pair_nelem, /*srcstride*/ 1, dlj.phi, bessels, legendres);
-                  }
-                  qpms_trans_array_from_AB(Sblock, // Sblock is S(piR->piC)
-                      bspecR, bspecC->n, bspecC, 1, A, B, pair_lMax);
+              QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(ss->c,
+                    Sblock, // Sblock is S(piR->piC)
+                    bspecR, bspecC->n, bspecC, 1,
+                    k, posR, posC, QPMS_HANKEL_PLUS));
+#else
+              { // this block replaces qpms_trans_calculator_get_trans_array():
+                // R is dest, C is src
+                const sph_t dlj = cart2sph(cart3_substract(posR, posC));
+                const uoppid_t pid = uopairid(ss->p_count, piC, piR);
+                const size_t ri  = b->r_map[pid];
+                QPMS_PARANOID_ASSERT(dlj.r == b->r[ri]);
+                const qpms_l_t pair_lMax = b->lMax_r[ri];
+                const qpms_y_t pair_nelem = qpms_lMax2nelem(pair_lMax);
+                QPMS_PARANOID_ASSERT(c->normalisation == bspecC->norm && c->normalisation == bspecR->norm);
+                QPMS_PARANOID_ASSERT(c->lMax >= bspecC->lMax && c->lMax >= bspecR->lMax);
+                QPMS_PARANOID_ASSERT(bspecC->lMax_L < 0 && bspecR->lMax_L < 0);
+                { // this replaces qpms_trans_calculator_get_AB_arrays() and _buf()
+                  const double costheta = cos(dlj.theta);
+                  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,
+                        2*pair_lMax+1, costheta, -1, legendre_buf));
+                  const double * const legendres = legendre_buf;
+                  const complex double * const bessels = bw->bessels + b->bessel_offsets_r[ri];
+                  qpms_trans_calculator_get_AB_arrays_precalcbuf(c, pair_lMax, A, B,
+                      /*deststride*/ pair_nelem, /*srcstride*/ 1, dlj.phi, bessels, legendres);
                 }
-
-                SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                    bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
-                    &minusone/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
-                    Sblock/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
-                    TSblock /*c*/, bspecC->n /*ldc*/);
-              } else { // diagonal, fill with diagonal +1
-                for (size_t row = 0; row < bspecR->n; ++row)
-                  for (size_t col = 0; col < bspecC->n; ++col)
-                    TSblock[row * bspecC->n + col] = (row == col)? +1 : 0;
+                qpms_trans_array_from_AB(Sblock, // Sblock is S(piR->piC)
+                    bspecR, bspecC->n, bspecC, 1, A, B, pair_lMax);
               }
 
-              // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]
-              SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasConjTrans,
-                  particle_fullsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeC /*K*/,
-                  &one /*alpha*/, TSblock/*A*/, particle_fullsizeC/*ldA*/,
-                  omC + opiC*particle_fullsizeC /*B*/,
-                  orbit_fullsizeC/*ldB*/, &zero /*beta*/,
-                  tmp /*C*/, orbit_packedsizeC /*LDC*/);
+#endif
 
-              // target[oiR|piR,oiC|piC] += U[...] tmp[...]
               SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                  orbit_packedsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeR /*K*/,
-                  &one /*alpha*/, omR + opiR*particle_fullsizeR/*A*/, orbit_fullsizeR/*ldA*/,
-                  tmp /*B*/, orbit_packedsizeC /*ldB*/, &one /*beta*/,
-                  a->target_packed + packedlen*packed_orbit_offsetR + packed_orbit_offsetC /*C*/,
-                  packedlen /*ldC*/);
+                  bspecR->n /*m*/, bspecC->n /*n*/, bspecR->n /*k*/,
+                  &minusone/*alpha*/, tmmR/*a*/, bspecR->n/*lda*/,
+                  Sblock/*b*/, bspecC->n/*ldb*/, &zero/*beta*/,
+                  TSblock /*c*/, bspecC->n /*ldc*/);
+            } else { // diagonal, fill with diagonal +1
+              for (size_t row = 0; row < bspecR->n; ++row)
+                for (size_t col = 0; col < bspecC->n; ++col)
+                  TSblock[row * bspecC->n + col] = (row == col)? +1 : 0;
             }
+
+            // tmp[oiR|piR,piC] = ∑_K M[piR,K] U*[K,piC]
+            SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasConjTrans,
+                particle_fullsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeC /*K*/,
+                &one /*alpha*/, TSblock/*A*/, particle_fullsizeC/*ldA*/, 
+                omC + opiC*particle_fullsizeC /*B*/,
+                orbit_fullsizeC/*ldB*/, &zero /*beta*/,
+                tmp /*C*/, orbit_packedsizeC /*LDC*/);
+
+            // target[oiR|piR,oiC|piC] += U[...] tmp[...]
+            SERIAL_ZGEMM(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                orbit_packedsizeR /*M*/, orbit_packedsizeC /*N*/, particle_fullsizeR /*K*/,
+                &one /*alpha*/, omR + opiR*particle_fullsizeR/*A*/, orbit_fullsizeR/*ldA*/,
+                tmp /*B*/, orbit_packedsizeC /*ldB*/, &one /*beta*/,
+                a->target_packed + packedlen*packed_orbit_offsetR + packed_orbit_offsetC /*C*/,
+                packedlen /*ldC*/);
           }
         }
       }
     }
   }
-  free(tmp);
   free(A);
   free(B);
+  free(tmp);
   free(Sblock);
   free(TSblock);
   return NULL;
 }
+
+
 

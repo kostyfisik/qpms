@@ -1647,9 +1647,6 @@ static void *qpms_scatsys_build_translation_matrix_e_irrep_packed_parallelR_thre
         }
       }
     }
-
-
-
   }
   free(tmp);
   free(Sblock);
@@ -1808,7 +1805,6 @@ complex double *qpms_scatsysw_apply_Tmatrices_full(
   }
   return target_full;
 }
-
 
 
 ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss, 
