@@ -1403,14 +1403,6 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_orbitorderR(
   return target_packed;
 }
 
-struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg{
-  const qpms_scatsys_at_omega_t *ssw;
-  qpms_ss_pi_t *opistartR_ptr;
-  pthread_mutex_t *opistartR_mutex;
-  qpms_iri_t iri;
-  complex double *target_packed;
-};
-
 static void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread(void *arg)
 {
   const struct qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_arg 
@@ -1529,9 +1521,6 @@ static void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_threa
         }
       }
     }
-
-
-
   }
   free(tmp);
   free(Sblock);
@@ -1733,6 +1722,7 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed(
     const qpms_scatsys_at_omega_t *ssw, qpms_iri_t iri
     )
 {
+  const _Bool use_translation_cache = (ssw->translation_cache != NULL);
   const size_t packedlen = ssw->ss->saecv_sizes[iri];
   if (!packedlen) // THIS IS A BIT PROBLEMATIC, TODO how to deal with empty irreps?
     return target_packed; 
@@ -1765,7 +1755,9 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed(
   pthread_t thread_ids[nthreads];
   for(long thi = 0; thi < nthreads; ++thi)
     QPMS_ENSURE_SUCCESS(pthread_create(thread_ids + thi, NULL,
-      qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread,
+      use_translation_cache 
+        ? qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_boosted
+        : qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread,
       (void *) &arg));
   for(long thi = 0; thi < nthreads; ++thi) {
     void *retval;
