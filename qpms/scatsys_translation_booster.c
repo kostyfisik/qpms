@@ -66,6 +66,18 @@ typedef struct qpms_scatsys_translation_booster {
   // of 2*lMax_r[j]+2, j < i. bessel_offsets_r[r_count] is the total length of the 
   // Bessel function "cache"
   size_t *bessel_offsets_r; 
+
+  double *theta;
+  qpms_l_t *lMax_theta;
+  size_t theta_count;
+  size_t *theta_map;
+  size_t *legendre_offsets_theta;
+  double *legendre_base;
+  
+  double *phi;
+  qpms_l_t *lMax_phi;
+  size_t phi_count;
+  size_t *phi_map;
 } booster_t;
 
 /// Sorts an array and throws away duplicit elements.
@@ -105,34 +117,99 @@ booster_t *qpms_scatsys_translation_booster_create(
   const qpms_ss_pi_t np = ss->p_count;
   booster_t *b;
   QPMS_CRASHING_MALLOC(b, sizeof(*b));
-  QPMS_CRASHING_MALLOC(b->r, sizeof(double) * uopairarr_len(np));
-  for(qpms_ss_pi_t i = 0; i < np; ++i)
-    for(qpms_ss_pi_t j = 0; j < i; ++j) 
-      b->r[uopairid(np, i, j)] = cart3_dist(ss->p[i].pos, ss->p[j].pos);
-  b->r_count = sort_and_eliminate(b->r, uopairarr_len(np), sizeof(*b->r), cmp_double);
 
-  QPMS_CRASHING_REALLOC(b->r, b->r_count * sizeof(*b->r));
-  QPMS_CRASHING_CALLOC(b->lMax_r, b->r_count, sizeof(*b->lMax_r));
-  QPMS_CRASHING_MALLOC(b->r_map, uopairarr_len(np) * sizeof(*b->r_map));
-  for(qpms_ss_pi_t i = 0; i < np; ++i)
-    for(qpms_ss_pi_t j = 0; j < i; ++j) { 
-      const uoppid_t pid = uopairid(np, i, j);
-      const double r = cart3_dist(ss->p[i].pos, ss->p[j].pos);
-      double *rhit = bsearch(&r, b->r, b->r_count, sizeof(*b->r), cmp_double);
-      QPMS_ASSERT(rhit != NULL);
-      QPMS_ASSERT(rhit >= b->r);
-      const size_t ri = b->r_map[pid] = rhit - b->r;
-      b->lMax_r[ri] = MAX(b->lMax_r[ri], 
-          MAX(qpms_ss_bspec_pi(ss, i)->lMax, qpms_ss_bspec_pi(ss, j)->lMax));
+  QPMS_CRASHING_MALLOC(b->r, sizeof(double) * uopairarr_len(np));
+  QPMS_CRASHING_MALLOC(b->theta, sizeof(double) * pairarr_len(np)); // TODO only one theta per pair
+  QPMS_CRASHING_MALLOC(b->phi, sizeof(double) * pairarr_len(np)); // TODO only one theta per pair
+  for(qpms_ss_pi_t di = 0; di < np; ++di)
+    for(qpms_ss_pi_t si = 0; si < np; ++si) {
+      const ppid_t opid = pairid(np, di, si);
+      if (si != di) {
+        const sph_t dlj = cart2sph(cart3_substract(ss->p[di].pos, ss->p[si].pos));
+        b->r[uopairid(np, di, si)] = dlj.r;
+        b->theta[opid] = dlj.theta;
+        b->phi[opid] = dlj.phi;
+      }
+      else {  // NOT USED IN ACTUAL CALCULATIONS, but must be valid doubles for sorting (infinities might be ok as well)
+        b->theta[opid] = M_PI_2;
+        b->phi[opid] = 0;
+      }
     }
 
-  QPMS_CRASHING_MALLOC(b->bessel_offsets_r, (b->r_count + 1) * sizeof(*b->bessel_offsets_r));
-  size_t bessel_offset = 0;
-  for(size_t ri = 0; ri < b->r_count; ++ri) {
-    b->bessel_offsets_r[ri] = bessel_offset;
-    bessel_offset += 2 * b->lMax_r[ri] + 2;
+  b->r_count = sort_and_eliminate(b->r, uopairarr_len(np), sizeof(*b->r), cmp_double);
+  QPMS_CRASHING_REALLOC(b->r, b->r_count * sizeof(*b->r));
+  b->theta_count = sort_and_eliminate(b->theta, pairarr_len(np), sizeof(*b->theta), cmp_double);
+  QPMS_CRASHING_REALLOC(b->theta, b->theta_count * sizeof(*b->theta));
+  b->phi_count = sort_and_eliminate(b->phi, pairarr_len(np), sizeof(*b->phi), cmp_double);
+  QPMS_CRASHING_REALLOC(b->phi, b->phi_count * sizeof(*b->phi));
+
+  QPMS_CRASHING_CALLOC(b->lMax_r, b->r_count, sizeof(*b->lMax_r));
+  QPMS_CRASHING_MALLOC(b->r_map, uopairarr_len(np) * sizeof(*b->r_map));
+  
+  QPMS_CRASHING_CALLOC(b->lMax_theta, b->theta_count, sizeof(*b->lMax_theta));
+  QPMS_CRASHING_MALLOC(b->theta_map, pairarr_len(np) * sizeof(*b->theta_map));
+  
+  QPMS_CRASHING_CALLOC(b->lMax_phi, b->phi_count, sizeof(*b->lMax_phi));
+  QPMS_CRASHING_MALLOC(b->phi_map, pairarr_len(np) * sizeof(*b->phi_map));
+  
+  for(qpms_ss_pi_t di = 0; di < np; ++di)
+    for(qpms_ss_pi_t si = 0; si < np; ++si) {
+      if (si != di) {
+        const ppid_t opid = pairid(np, di, si);
+        const uoppid_t uopid = uopairid(np, di, si);
+        const sph_t dlj = cart2sph(cart3_substract(ss->p[di].pos, ss->p[si].pos));
+        
+        double *hit = bsearch(&dlj.r, b->r, b->r_count, sizeof(*b->r), cmp_double);
+        QPMS_ASSERT(hit != NULL);
+        QPMS_ASSERT(hit >= b->r);
+        const size_t ri = b->r_map[uopid] = hit - b->r;
+        b->lMax_r[ri] = MAX(b->lMax_r[ri], 
+            MAX(qpms_ss_bspec_pi(ss, di)->lMax, qpms_ss_bspec_pi(ss, si)->lMax));
+
+        hit = bsearch(&dlj.theta, b->theta, b->theta_count, sizeof(*b->theta), cmp_double);
+        QPMS_ASSERT(hit != NULL);
+        QPMS_ASSERT(hit >= b->theta);
+        const size_t thi = b->theta_map[opid] = hit - b->theta;
+        b->lMax_theta[thi] = MAX(b->lMax_theta[thi], 
+            MAX(qpms_ss_bspec_pi(ss, di)->lMax, qpms_ss_bspec_pi(ss, si)->lMax));
+
+        hit = bsearch(&dlj.phi, b->phi, b->phi_count, sizeof(*b->phi), cmp_double);
+        QPMS_ASSERT(hit != NULL);
+        QPMS_ASSERT(hit >= b->phi);
+        const size_t phj = b->phi_map[opid] = hit - b->phi;
+        b->lMax_phi[phj] = MAX(b->lMax_phi[phj], 
+            MAX(qpms_ss_bspec_pi(ss, di)->lMax, qpms_ss_bspec_pi(ss, si)->lMax));
+
+        // TODO ri, thi, phj (+bspec?) -tuples here
+      }
+    }
+
+  { // Bessel offsets
+    QPMS_CRASHING_MALLOC(b->bessel_offsets_r, (b->r_count + 1) * sizeof(*b->bessel_offsets_r));
+    size_t bessel_offset = 0;
+    for(size_t ri = 0; ri < b->r_count; ++ri) {
+      b->bessel_offsets_r[ri] = bessel_offset;
+      bessel_offset += 2 * b->lMax_r[ri] + 2;
+    }
+    b->bessel_offsets_r[b->r_count] = bessel_offset;
   }
-  b->bessel_offsets_r[b->r_count] = bessel_offset;
+  
+  { // Legendres
+    QPMS_CRASHING_MALLOC(b->legendre_offsets_theta, (b->theta_count + 1) * sizeof(*b->legendre_offsets_theta));
+    size_t legendre_offset = 0;
+    for(size_t thi = 0; thi < b->theta_count; ++thi) {
+      b->legendre_offsets_theta[thi] = legendre_offset;
+      legendre_offset += gsl_sf_legendre_array_n(2*b->lMax_theta[thi] + 1);
+    }
+    b->legendre_offsets_theta[b->theta_count] = legendre_offset;
+    QPMS_CRASHING_MALLOC(b->legendre_base, legendre_offset * sizeof(*b->legendre_base));
+    for(size_t thi = 0; thi < b->theta_count; ++thi) {
+      const double costheta = cos(b->theta[thi]);
+      double *legendre_buf = b->legendre_base + b->legendre_offsets_theta[thi];
+      QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,
+            2*b->lMax_theta[thi]+1, costheta, -1, legendre_buf));
+    }
+  }
 
   return b;
 }
@@ -143,6 +220,14 @@ void qpms_scatsys_translation_booster_free(booster_t *b) {
     free(b->lMax_r);
     free(b->r);
     free(b->r_map);
+    free(b->legendre_base);
+    free(b->legendre_offsets_theta);
+    free(b->lMax_theta);
+    free(b->theta);
+    free(b->theta_map);
+    free(b->lMax_phi);
+    free(b->phi);
+    free(b->phi_map);
     free(b);
   }
 }
@@ -261,7 +346,7 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_full_boosted(
           { // this replaces qpms_trans_calculator_get_trans_array():
             // R is dest, C is src
             const sph_t dlj = cart2sph(cart3_substract(posR, posC));
-            const uoppid_t pid = uopairid(ss->p_count, piC, piR);
+            const uoppid_t pid = uopairid(ss->p_count, piR, piC);
             const size_t ri = b->r_map[pid];
             QPMS_PARANOID_ASSERT(dlj.r == b->r[ri]);
             const qpms_l_t pair_lMax = b->lMax_r[ri];
@@ -404,19 +489,26 @@ void *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_parallelR_thread_boost
               { // this block replaces qpms_trans_calculator_get_trans_array():
                 // R is dest, C is src
                 const sph_t dlj = cart2sph(cart3_substract(posR, posC));
-                const uoppid_t pid = uopairid(ss->p_count, piC, piR);
-                const size_t ri  = b->r_map[pid];
+                const uoppid_t uopid = uopairid(ss->p_count, piR, piC);
+                const ppid_t opid = pairid(ss->p_count, piR, piC);
+                const size_t ri  = b->r_map[uopid];
+                const size_t thi = b->theta_map[opid];
                 QPMS_PARANOID_ASSERT(dlj.r == b->r[ri]);
+                QPMS_PARANOID_ASSERT(dlj.theta == b->theta[thi]);
                 const qpms_l_t pair_lMax = b->lMax_r[ri];
                 const qpms_y_t pair_nelem = qpms_lMax2nelem(pair_lMax);
                 QPMS_PARANOID_ASSERT(c->normalisation == bspecC->norm && c->normalisation == bspecR->norm);
                 QPMS_PARANOID_ASSERT(c->lMax >= bspecC->lMax && c->lMax >= bspecR->lMax);
                 QPMS_PARANOID_ASSERT(bspecC->lMax_L < 0 && bspecR->lMax_L < 0);
                 { // this replaces qpms_trans_calculator_get_AB_arrays() and _buf()
+#if 0
                   const double costheta = cos(dlj.theta);
                   QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(GSL_SF_LEGENDRE_NONE,
                         2*pair_lMax+1, costheta, -1, legendre_buf));
                   const double * const legendres = legendre_buf;
+#else
+                  const double * const legendres = b->legendre_base + b->legendre_offsets_theta[thi];
+#endif
                   const complex double * const bessels = bw->bessels + b->bessel_offsets_r[ri];
                   qpms_trans_calculator_get_AB_arrays_precalcbuf(c, pair_lMax, A, B,
                       /*deststride*/ pair_nelem, /*srcstride*/ 1, dlj.phi, bessels, legendres);
