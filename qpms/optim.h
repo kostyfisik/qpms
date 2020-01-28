@@ -19,4 +19,10 @@
 #define QPMS_EXPECT(exp,c) (exp)
 #endif
 
+#if (defined(__GNUC__) && __GNUC__ >= 3) || \
+    (defined(__GNUC__) && defined(__GNUC_MINOR__) && __GNUC__ == 2 && __GNUC_MINOR__ >= 8) 
+// TODO clang
+#define QPMS_NORETURN __attribute__((noreturn))
+#endif
+
 #endif // OPTIM_H
