@@ -290,8 +290,8 @@ void qpms_trans_calculator_free(qpms_trans_calculator *c) {
   free(c->A_multipliers);
   free(c->B_multipliers[0]);
   free(c->B_multipliers);
-#ifdef LATTICESUMS
-  qpms_ewald3_constants_free(e3c);
+#ifdef LATTICESUMS32
+  qpms_ewald3_constants_free(c->e3c);
 #endif
   free(c->legendre0);
   free(c);

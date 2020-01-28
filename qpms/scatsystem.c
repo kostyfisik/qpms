@@ -133,8 +133,7 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
     bs_cumsum += lastbs;
     ot_new->irbase_cumsizes[iri] = bs_cumsum;
   }
-  if(bs_cumsum != ot_new->size * bspecn)
-    qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+  QPMS_ENSURE(bs_cumsum == ot_new->size * bspecn,
         "The cumulative size of the symmetry-adapted bases is wrong; "
         "expected %d = %d * %d, got %d.",
         ot_new->size * bspecn, ot_new->size, bspecn, bs_cumsum);
@@ -275,15 +274,17 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
       if (tmj < ss->tm_count) { // HIT, transformed T-matrix already exists
         //TODO some "rounding error cleanup" symmetrisation could be performed here?
         qpms_tmatrix_free(transformed);
+        free(m);
       } else { // MISS, save the matrix (also the "abstract" one)
         ssw->tm[ss->tm_count] = transformed;
 	ss->tm[ss->tm_count].tmgi = ss->tm[tmi].tmgi;
-        qpms_tmatrix_operation_compose_chain_init(&(ss->tm[ss->tm_count].op), 2, 1);
+        qpms_tmatrix_operation_compose_chain_init(&(ss->tm[ss->tm_count].op), 2, 1); // FIXME MEMLEAK
         struct qpms_tmatrix_operation_compose_chain * const o = &(ss->tm[ss->tm_count].op.op.compose_chain);
         o->ops[0] = & ss->tm[tmi].op; // Let's just borrow this
         o->ops_owned[0] = false;
         o->opmem[0].typ = QPMS_TMATRIX_OPERATION_LRMATRIX;
         o->opmem[0].op.lrmatrix.m = m;
+        o->opmem[0].op.lrmatrix.owns_m = true;
         o->opmem[0].op.lrmatrix.m_size = d * d;
         o->ops[1] = o->opmem;
         o->ops_owned[1] = true;
@@ -462,6 +463,9 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
 
 void qpms_scatsys_free(qpms_scatsys_t *ss) {
   if(ss) {
+    QPMS_ASSERT(ss->tm);
+    for(qpms_ss_tmi_t tmi = 0; tmi < ss->tm_count; ++tmi) 
+        qpms_tmatrix_operation_clear(&ss->tm[tmi].op); 
     free(ss->tm);
     free(ss->tmg);
     free(ss->p);
@@ -471,6 +475,7 @@ void qpms_scatsys_free(qpms_scatsys_t *ss) {
     free(ss->otspace);
     free(ss->p_orbitinfo);
     free(ss->orbit_types);
+    free(ss->saecv_ot_offsets);
     free(ss->saecv_sizes);
     free(ss->p_by_orbit);
     qpms_trans_calculator_free(ss->c);
@@ -665,27 +670,18 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   complex double *V_H; QPMS_CRASHING_MALLOC(V_H, n*n*N*N*sizeof(complex double));
   // THIS SHOULD NOT BE NECESSARY
   complex double *U; QPMS_CRASHING_MALLOC(U, n*n*N*N*sizeof(complex double));
-  double *s; QPMS_CRASHING_MALLOC(s, n*N*sizeof(double));
+  double *s; QPMS_CRASHING_MALLOC(s, n*N*sizeof(double)); 
 
-  int info = LAPACKE_zgesdd(LAPACK_ROW_MAJOR,
+  QPMS_ENSURE_SUCCESS(LAPACKE_zgesdd(LAPACK_ROW_MAJOR,
       'A', // jobz; overwrite projector with left sg.vec. and write right into V_H
       n*N /* m */, n*N /* n */, projector /* a */, n*N /* lda */,
       s /* s */, U /* u */, n*N /* ldu, irrelev. */, V_H /* vt */,
-      n*N /* ldvt */);
-  if (info) qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
-        "Something went wrong with the SVD.");
-
+      n*N /* ldvt */));
 
   size_t bs;
   for(bs = 0; bs < n*N; ++bs) {
-#if 0
-    qpms_pr_debug_at_flf(__FILE__, __LINE__, __func__,
-        "%d. irrep, %zd. SV: %.16lf", (int) iri, bs, s[bs]);
-#endif
-    if(s[bs] > 1 + SVD_ATOL) qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
-        "%zd. SV too large: %.16lf", bs, s[bs]);
-    if(s[bs] > SVD_ATOL && fabs(1-s[bs]) > SVD_ATOL) 
-      qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
+    QPMS_ENSURE(s[bs] <= 1 + SVD_ATOL, "%zd. SV too large: %.16lf", bs, s[bs]);
+    QPMS_ENSURE(!(s[bs] > SVD_ATOL && fabs(1-s[bs]) > SVD_ATOL),
         "%zd. SV in the 'wrong' interval: %.16lf", bs, s[bs]);
     if(s[bs] < SVD_ATOL) break;
   }
@@ -694,6 +690,7 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   if(newtarget) QPMS_CRASHING_REALLOC(target, bs*N*n*sizeof(complex double));
   if(basis_size) *basis_size = bs;
 
+  free(s);
   free(U);
   free(V_H);
   free(projector);
