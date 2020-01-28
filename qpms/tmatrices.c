@@ -429,12 +429,12 @@ qpms_errno_t qpms_read_scuff_tmatrix(
     switch(PAlpha) {
       case 0: TAlpha = QPMS_VSWF_MAGNETIC; break;
       case 1: TAlpha = QPMS_VSWF_ELECTRIC; break;
-      default: assert(0);
+      default: QPMS_WTF;
     }
     switch(PBeta) {
       case 0: TBeta = QPMS_VSWF_MAGNETIC; break;
       case 1: TBeta = QPMS_VSWF_ELECTRIC; break;
-      default: assert(0);
+      default: QPMS_WTF;
     }
     qpms_uvswfi_t srcui = qpms_tmn2uvswfi(TAlpha, MAlpha, LAlpha),
                   destui = qpms_tmn2uvswfi(TBeta, MBeta, LBeta);
