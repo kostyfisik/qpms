@@ -369,7 +369,8 @@ cdef class ScatteringSystem:
         for p in particles: # find and enumerate unique t-matrix generators
             if p.p.op.typ != QPMS_TMATRIX_OPERATION_NOOP:
                 raise NotImplementedError("currently, only no-op T-matrix operations are allowed in ScatteringSystem constructor")
-            tmg_key = id(p.f)
+            #tmg_key = id(p.f) # This causes a different generator for each particle -> SUPER SLOW
+            tmg_key = (id(p.f.generator), id(p.f.spec))
             if tmg_key not in tmgindices:
                 tmgindices[tmg_key] = tmg_count
                 tmgobjs.append(p.f) # Save the references on BaseSpecs and TMatrixGenerators (via TMatrixFunctions)
@@ -401,7 +402,7 @@ cdef class ScatteringSystem:
                 orig.tm[tmi].op = qpms_tmatrix_operation_noop # TODO adjust when notrivial operations allowed
             for pi in range(p_count):
                 p = particles[pi]
-                tmg_key = id(p.f)
+                tmg_key = (id(p.f.generator), id(p.f.spec))
                 tm_derived_key = (tmg_key, None) # TODO unique representation of p.p.op instead of None
                 orig.p[pi].pos = p.cval().pos
                 orig.p[pi].tmatrix_id = tmindices[tm_derived_key]
