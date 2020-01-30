@@ -20,7 +20,7 @@ ap.add_argument("--ai", type=float, default=0.05, help="Contour imaginary half-a
 ap.add_argument("--ar", type=float, default=0.05, help="Contour real half-axis in eV")
 ap.add_argument("-N", type=int, default="150", help="Integration contour discretisation size")
 
-ap.add_argument("--irrep", type=str, nargs=1, default="none", help="Irrep subspace (irrep index from 0 to 7, irrep label, or 'none' for no irrep decomposition")
+ap.add_argument("--irrep", type=str, default="none", help="Irrep subspace (irrep index from 0 to 7, irrep label, or 'none' for no irrep decomposition")
 
 a=ap.parse_args()
 
@@ -36,6 +36,13 @@ defaultprefix = "%s_p%gnmx%gnm_%dx%d_m%s_n%g_L%d_c(%s±%g±%gj)eV_cn%d" % (
     particlestr, px*1e9, py*1e9, Nx, Ny, str(a.material), a.refractive_index, a.lMax,
     str(a.centre), a.ai, a.ar, a.N)
 logging.info("Default file prefix: %s" % defaultprefix)
+
+def inside_ellipse(point_xy, centre_xy, halfaxes_xy):
+    x = point_xy[0] - centre_xy[0]
+    y = point_xy[1] - centre_xy[1]
+    ax = halfaxes_xy[0]
+    ay = halfaxes_xy[1]
+    return ((x/ax)**2 + (y/ay)**2) <= 1
 
 
 import numpy as np
@@ -75,7 +82,7 @@ else:
         iri = int(a.irrep)
     except ValueError:
         iri = ss.irrep_names.index(a.irrep)
-    irname = ss.irrep_names(iri)
+    irname = ss.irrep_names[iri]
     logging.info("Using irrep subspace %s (iri = %d) of dimension %d." % (irname, iri, ss.saecv_sizes[iri]))
 
 outfile_tmp = defaultprefix + ".tmp" if a.output is None else a.output + ".tmp"
@@ -83,7 +90,7 @@ outfile_tmp = defaultprefix + ".tmp" if a.output is None else a.output + ".tmp"
 logging.info("Starting Beyn's algorithm")
 results = ss.find_modes(iri=iri, omega_centre = a.centre*eh, omega_rr=a.ar*eh, omega_ri=a.ai*eh, contour_points=a.N,
         rank_tol=a.rank_tolerance, rank_min_sel=a.min_candidates, res_tol=a.residual_tolerance)
-results['inside_contour'] = inside_ellipse((results['eigval'].real, results['eigval'].imag)
+results['inside_contour'] = inside_ellipse((results['eigval'].real, results['eigval'].imag),
         (a.centre.real*eh, a.centre.imag*eh), (a.ar*eh, a.ai*eh))
 results['refractive_index_internal'] = [medium(om).n for om in results['eigval']]
 
