@@ -147,7 +147,10 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
 qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
     const qpms_finite_group_t *sym, complex double omega, 
     const qpms_tolerance_spec_t *tol) {
+  if(orig->lattice_dimension)
+    QPMS_NOT_IMPLEMENTED("Periodic systems not yet done");
   // TODO check data sanity
+
 
   qpms_l_t lMax = 0; // the overall lMax of all base specs.
   qpms_normalisation_t normalisation = QPMS_NORMALISATION_UNDEF;
@@ -178,6 +181,8 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   // Allocate T-matrix, particle and particle orbit info arrays
   qpms_scatsys_t *ss;
   QPMS_CRASHING_MALLOC(ss, sizeof(qpms_scatsys_t));     
+  ss->lattice_dimension = orig->lattice_dimension;
+  // TODO basic periodic lattices related stuff here.
   ss->lenscale = lenscale;
   ss->sym = sym;
   ss->medium = orig->medium;

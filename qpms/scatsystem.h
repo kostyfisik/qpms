@@ -135,7 +135,42 @@ typedef struct qpms_ss_derived_tmatrix_t {
 struct qpms_trans_calculator;
 struct qpms_epsmu_generator_t;
 
+/// Common "class" for system of scatterers, both periodic and non-periodic.
+/**
+ * Infinite periodic structures (those with \a lattice_dimension > 0) 
+ * have the following additional members filled:
+ *  - lattice_basis_csystem
+ *  - lattice_basis
+ *  - reciprocal_basis_csystem
+ *  - reciprocal_basis
+ *  - unitcell_volume
+ * These are ignored for finite systems (lattice_dimension == 0).
+ *
+ */
 typedef struct qpms_scatsys_t {
+	/// Number of dimensions in which the system is periodic from the range 0–3.
+	int lattice_dimension;
+	
+	/// Coordinate system for \a lattice_basis.
+	/** This is mandatory for \a lattice_dimension != 0 */
+	qpms_coord_system_t lattice_basis_csystem;
+	/// (Direct) lattice basis of the system (only \a lattice_dimension elements are used)
+	/** This is mandatory for \a lattice_dimension != 0 */
+	anycoord_point_t lattice_basis[3];
+
+	/// Coordinate system for \a reciprocal_basis.
+	qpms_coord_system_t reciprocal_basis_csystem;
+	/// Reciprocal lattice basis. 
+	/**(TODO specify whether it includes 2π or not) */
+	anycoord_point_t reciprocal_basis[3];
+
+	/// Unitcell volume (irrelevant for non-periodic systems).
+	/** The dimensionality of the volume corresponds to lattice_dimension, so
+	 * for lattice_dimension == 1, this will actually be lenght and for
+	 * lattice_dimension == 2, a 2D area.
+	 */
+	double unitcell_volume;
+
 	struct qpms_epsmu_generator_t medium; ///< Optical properties of the background medium.
 	
 	/// (Template) T-matrix functions in the system.
