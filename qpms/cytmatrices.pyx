@@ -266,7 +266,10 @@ cdef class TMatrixGenerator:
             self.holder = what
             self.g.function = qpms_tmatrix_generator_constant
             self.g.params = <void*>(<CTMatrix?>self.holder).rawpointer()
-        # TODO INTERPOLATOR
+        elif isinstance(what, TMatrixInterpolator):
+            self.holder = what
+            self.g.function = qpms_tmatrix_generator_interpolator
+            self.g.params = <void*>(<TMatrixInterpolator?>self.holder).rawpointer()
         else:
             raise TypeError("Can't construct TMatrixGenerator from that")
 

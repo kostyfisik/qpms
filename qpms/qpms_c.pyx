@@ -12,7 +12,7 @@ from .cyquaternions cimport IRot3, CQuat
 from .cybspec cimport BaseSpec
 from .cycommon cimport make_c_string
 from .cycommon import string_c2py, PointGroupClass
-from .cytmatrices cimport CTMatrix, TMatrixFunction, TMatrixGenerator
+from .cytmatrices cimport CTMatrix, TMatrixFunction, TMatrixGenerator, TMatrixInterpolator
 from .cymaterials cimport EpsMuGenerator
 from libc.stdlib cimport malloc, free, calloc
 import warnings
@@ -271,6 +271,9 @@ cdef class Particle:
             raise ValueError("Position argument has to contain 3 or 2 cartesian coordinates")
         if isinstance(t, CTMatrix):
             tgen = TMatrixGenerator(t)
+        elif isinstance(t, TMatrixInterpolator):
+            tgen = TMatrixGenerator(t)
+            warnings.warn("Initialising a particle with interpolated T-matrix values. Imaginary frequencies will be discarded and mode search algorithm will yield nonsense (just saying).")
         elif isinstance(t, TMatrixGenerator):
             tgen = <TMatrixGenerator>t
         else: raise TypeError('t must be either CTMatrix or TMatrixGenerator, was %s' % str(type(t)))
