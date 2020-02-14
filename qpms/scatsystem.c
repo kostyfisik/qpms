@@ -142,15 +142,68 @@ static void add_orbit_type(qpms_scatsys_t *ss, const qpms_ss_orbit_type_t *ot_cu
   ss->orbit_type_count++;
 }
 
+// Standardises the lattice base vectors, and fills the other contents of ss->per[0].
+// LPTODO split the functionality in smaller functions, these might be useful elsewhere.
+static void process_lattice_bases(qpms_scatsys_t *ss, const qpms_tolerance_spec_t *tol) {
+  switch(ss->lattice_dimension) {
+    case 1: {
+              double normsq;
+              normsq = cart3_normsq(ss->per->lattice_basis[0]);
+              ss->per->unitcell_volume = sqrt(normsq);
+              ss->per->reciprocal_basis[0] = cart3_divscale(ss->per->lattice_basis[0], normsq);
+      } break;
+    case 2: {
+              // (I) Create orthonormal basis of the plane in which the basis vectors lie
+              cart3_t onbasis[2];
+              double norm0 = cart3norm(ss->per->lattice_basis[0]);
+              // 0: Just normalised 0. basis vector
+              onbasis[0] = cart3_divscale(ss->per->lattice_basis[0], norm0); 
+              // 1: Gram-Schmidt complement of the other basis vector
+              const double b0norm_dot_b1 = cart3_dot(onbasis[0], ss->per->lattice_basis[1]);
+              onbasis[1] = cart3_substract(ss->per->lattice_basis[1],
+                  cart3_scale(b0norm_dot_b1, onbasis[0]));
+              onbasis[1] = cart3_divscale(onbasis[1], cart3norm(onbasis[1]));
+              // (II) Express the lattice basis in terms of the new 2d plane vector basis onbasis
+              cart2_t b2d[2] = {{.x = norm0, .y = 0}, 
+                {.x = b0norm_dot_b1, .y = cart3_dot(onbasis[1], ss->per->lattice_basis[1])}};
+              // (III) Reduce lattice basis and get reciprocal bases in the 2D plane
+              l2d_reduceBasis(b2d[0], b2d[1], &b2d[0], &b2d[1]);
+              ss->per->unitcell_volume = l2d_unitcell_area(b2d[0], b2d[1]);
+              cart2_t r2d[2];
+              QPMS_ENSURE_SUCCESS(l2d_reciprocalBasis1(b2d[0], b2d[1], &r2d[0], &r2d[1]));
+              // (IV) Rotate everything back to the original 3D space.
+              for(int i = 0; i < 2; ++i) {
+                ss->per->lattice_basis[i] = cart3_add(
+                    cart3_scale(b2d[i].x, onbasis[0]),
+                    cart3_scale(b2d[i].y, onbasis[1]));
+                ss->per->reciprocal_basis[i] = cart3_add(
+                    cart3_scale(r2d[i].x, onbasis[0]),
+                    cart3_scale(r2d[i].y, onbasis[1]));
+              }
+      } break;
+    case 3: {
+              l3d_reduceBasis(ss->per->lattice_basis, ss->per->lattice_basis); 
+              ss->per->unitcell_volume = fabs(l3d_reciprocalBasis1(ss->per->lattice_basis,
+                  ss->per->reciprocal_basis));
+              // TODO check unitcell_volume for sanity w.r.t tolerance
+      } break;
+    default:
+      QPMS_WTF;
+  }
+}
+
 
 // Almost 200 lines. This whole thing deserves a rewrite!
 qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
     const qpms_finite_group_t *sym, complex double omega, 
     const qpms_tolerance_spec_t *tol) {
-  if(orig->lattice_dimension)
-    QPMS_NOT_IMPLEMENTED("Periodic systems not yet done");
-  // TODO check data sanity
+  if (sym == NULL) {
+    QPMS_WARN("No symmetry group pointer provided, assuming trivial symmetry"
+        " (this is currently the only option for periodic systems).");
+    sym = &QPMS_FINITE_GROUP_TRIVIAL;
+  }
 
+  // TODO check data sanity
 
   qpms_l_t lMax = 0; // the overall lMax of all base specs.
   qpms_normalisation_t normalisation = QPMS_NORMALISATION_UNDEF;
@@ -180,9 +233,15 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
 
   // Allocate T-matrix, particle and particle orbit info arrays
   qpms_scatsys_t *ss;
-  QPMS_CRASHING_MALLOC(ss, sizeof(qpms_scatsys_t));     
+  QPMS_CRASHING_MALLOC(ss, sizeof(*ss) + !!orig->lattice_dimension * sizeof(ss->per[0]));
   ss->lattice_dimension = orig->lattice_dimension;
   // TODO basic periodic lattices related stuff here.
+  if (ss->lattice_dimension) {
+    ss->per[0] = orig->per[0];
+    process_lattice_bases(ss, tol);
+  }
+  for(int i = 0; i < ss->lattice_dimension; ++i)  // extend lenscale by basis vectors
+    lenscale = MAX(lenscale, cart3norm(ss->per->lattice_basis[i]));
   ss->lenscale = lenscale;
   ss->sym = sym;
   ss->medium = orig->medium;

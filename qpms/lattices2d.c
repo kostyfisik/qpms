@@ -849,6 +849,21 @@ int l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2) {
   return retval;
 };
 
+// 3D reciprocal bases; returns (direct) unit cell volume. Assumes direct lattice basis already reduced.
+double l3d_reciprocalBasis1(const cart3_t db[3], cart3_t rb[3]) {
+  double vol = cart3_tripleprod(db[0], db[1], db[2]);
+  for(int i = 0; i < 3; ++i)
+    rb[i] = cart3_divscale(cart3_vectorprod(db[(i+1) % 3], db[(i+2) % 3]), vol);
+  return vol;
+}
+
+double l3d_reciprocalBasis2pi(const cart3_t db[3], cart3_t rb[3]) {
+  double vol = l3d_reciprocalBasis1(db, rb);
+  for(int i = 1; i < 3; ++i)
+    rb[i] = cart3_scale(2 * M_PI, rb[i]);
+  return vol;
+}
+
 // returns the radius of inscribed circle of a hexagon (or rectangle/square if applicable) created by the shortest base triple
 double l2d_hexWebInCircleRadius(cart2_t i1, cart2_t i2) {
   cart2_t b1, b2, b3;

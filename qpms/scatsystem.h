@@ -132,18 +132,13 @@ typedef struct qpms_ss_derived_tmatrix_t {
 } qpms_ss_derived_tmatrix_t;
 
 typedef struct qpms_scatsys_periodic_info_t {	
-	/// Coordinate system for \a lattice_basis.
-	/** This is mandatory for \a lattice_dimension != 0 */
-	qpms_coord_system_t lattice_basis_csystem;
 	/// (Direct) lattice basis of the system (only \a lattice_dimension elements are used)
 	/** This is mandatory for \a lattice_dimension != 0 */
-	anycoord_point_t lattice_basis[3];
+	cart3_t lattice_basis[3];
 
-	/// Coordinate system for \a reciprocal_basis.
-	qpms_coord_system_t reciprocal_basis_csystem;
 	/// Reciprocal lattice basis. 
 	/**(TODO specify whether it includes 2π or not) */
-	anycoord_point_t reciprocal_basis[3];
+	cart3_t reciprocal_basis[3];
 
 	/// Unitcell volume (irrelevant for non-periodic systems).
 	/** The dimensionality of the volume corresponds to lattice_dimension, so
@@ -151,7 +146,7 @@ typedef struct qpms_scatsys_periodic_info_t {
 	 * lattice_dimension == 2, a 2D area.
 	 */
 	double unitcell_volume;
-} qpms_scatsys_pediodic_info_t;
+} qpms_scatsys_periodic_info_t;
 
 
 struct qpms_trans_calculator;
@@ -160,14 +155,8 @@ struct qpms_epsmu_generator_t;
 /// Common "class" for system of scatterers, both periodic and non-periodic.
 /**
  * Infinite periodic structures (those with \a lattice_dimension > 0) 
- * have the following additional members filled:
- *  - lattice_basis_csystem
- *  - lattice_basis
- *  - reciprocal_basis_csystem
- *  - reciprocal_basis
- *  - unitcell_volume
+ * have the \a per element allocated and filled.
  * These are ignored for finite systems (lattice_dimension == 0).
- *
  */
 typedef struct qpms_scatsys_t {
 	/// Number of dimensions in which the system is periodic from the range 0–3.
@@ -225,7 +214,7 @@ typedef struct qpms_scatsys_t {
 	double lenscale; // radius of the array, used as a relative tolerance measure
 	struct qpms_trans_calculator *c;
 
-	/// Periodic lattice metadata. Only allocated/used when lattice_dimension != 0.
+	/// Periodic lattice metadata. Only allocated/used when lattice_dimension != 0 (exactly one member).
 	qpms_scatsys_periodic_info_t per[];
 } qpms_scatsys_t;
 
@@ -256,6 +245,7 @@ typedef struct qpms_scatsys_at_omega_t {
  * so keep them alive until scatsys is destroyed.
  *  
  *  The following fields must be filled in the "proto- scattering system" \a orig:
+ *  * orig->lattice_dimension
  *  * orig->medium – The pointers are copied to the new qpms_scatsys_t instance; 
  *    the target qpms_abstract_tmatrix_t objects must be kept alive before all the resulting 
  *    qpms_scatsys_t instances are properly destroyed.
@@ -269,6 +259,12 @@ typedef struct qpms_scatsys_at_omega_t {
  *  * orig->tm_count
  *  * orig->p
  *  * orig->p_count
+ *
+ *  For periodic systems, the corresponding number of orig->per->lattice_basis[] elements
+ *  must be filled as well.
+ *
+ *  For periodic systems, only trivial group is currently supported. Non-trivial 
+ *  groups will cause undefined behaviour.
  *
  *  The resulting qpms_scatsys_t is obtained by actually evaluating the T-matrices
  *  at the given frequency \a omega and where applicable, these are compared

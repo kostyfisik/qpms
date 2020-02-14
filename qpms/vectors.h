@@ -104,6 +104,22 @@ static inline double cart3_dot(const cart3_t a, const cart3_t b) {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+
+/// 3D vector product a.k.a. cross product.
+static inline cart3_t cart3_vectorprod(const cart3_t a, const cart3_t b) {
+	cart3_t c = {
+		.x = a.y * b.z - a.z * b.y,
+		.y = a.z * b.x - a.x * b.z,
+		.z = a.x * b.y - a.y * b.x,
+	};
+	return c;
+}
+
+/// Scalar triple product \f$ a \cdot ( b \times c ) \f$.
+static inline double cart3_tripleprod(const cart3_t a, const cart3_t b, const cart3_t c) {
+	return cart3_dot(a, cart3_vectorprod(b, c));
+}
+
 /// 3D vector euclidian norm squared.
 static inline double cart3_normsq(const cart3_t a) {
 	return cart3_dot(a, a);
@@ -168,6 +184,12 @@ static inline cart3_t cart3_substract(const cart3_t a, const cart3_t b) {
 /// 3D vector scaling
 static inline cart3_t cart3_scale(const double c, const cart3_t v) {
 	cart3_t res = {c * v.x, c * v.y, c * v.z};
+	return res;
+}
+
+/// 3D vector division by scalar (N.B. argument order).
+static inline cart3_t cart3_divscale( const cart3_t v, const double c) {
+	cart3_t res = {v.x / c, v.y / c, v.z / c};
 	return res;
 }
 
@@ -478,6 +500,12 @@ static inline cart3_t anycoord2cart3(anycoord_point_t p, qpms_coord_system_t t) 
 			break;
 	}
 	QPMS_WTF;
+}
+
+/// Cartesian norm of anycoord_point_t.
+// The implementation is simple and stupid, do not use for heavy computations.
+static inline double anycoord_norm(anycoord_point_t p, qpms_coord_system_t t) {
+	return cart3norm(anycoord2cart3(p, t));
 }
 
 #if 0
@@ -846,7 +874,16 @@ static inline void anycoord_arr2something(void *dest, qpms_coord_system_t tdest,
   }
 }
 
+/// Converts cart3_t to array of doubles.
+static inline void cart3_to_double_array(double a[], cart3_t b) {
+	a[0] = b.x; a[1] = b.y; a[2] = b.z;
+}
 
+/// Converts array of doubles to cart3_t.
+static inline cart3_t cart3_from_double_array(const double a[]) {
+	cart3_t b = {.x = a[0], .y = a[1], .z = a[1]};
+	return b;
+}
 
 
 typedef double matrix3d[3][3];

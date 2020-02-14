@@ -726,6 +726,9 @@ int l2d_cellCornersWS_arr(cart2_t i1, cart2_t i2,  cart2_t *oarr, double rtol);
 // Reciprocal bases; returns 0 on success, possibly a non-zero if b1 and b2 are parallel
 int l2d_reciprocalBasis1(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
 int l2d_reciprocalBasis2pi(cart2_t b1, cart2_t b2, cart2_t *rb1, cart2_t *rb2);
+// 3D reciprocal bases; returns (direct) unit cell volume with possible sign. Assumes direct lattice basis already reduced.
+double l3d_reciprocalBasis1(const cart3_t direct_basis[3], cart3_t reciprocal_basis[3]);
+double l3d_reciprocalBasis2pi(const cart3_t direct_basis[3], cart3_t reciprocal_basis[3]);
 
 double l2d_unitcell_area(cart2_t b1, cart2_t b2);
 
