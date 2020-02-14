@@ -131,26 +131,7 @@ typedef struct qpms_ss_derived_tmatrix_t {
 	struct qpms_tmatrix_operation_t op; ///< Operation to derive this particular T-matrix.
 } qpms_ss_derived_tmatrix_t;
 
-
-struct qpms_trans_calculator;
-struct qpms_epsmu_generator_t;
-
-/// Common "class" for system of scatterers, both periodic and non-periodic.
-/**
- * Infinite periodic structures (those with \a lattice_dimension > 0) 
- * have the following additional members filled:
- *  - lattice_basis_csystem
- *  - lattice_basis
- *  - reciprocal_basis_csystem
- *  - reciprocal_basis
- *  - unitcell_volume
- * These are ignored for finite systems (lattice_dimension == 0).
- *
- */
-typedef struct qpms_scatsys_t {
-	/// Number of dimensions in which the system is periodic from the range 0–3.
-	int lattice_dimension;
-	
+typedef struct qpms_scatsys_periodic_info_t {	
 	/// Coordinate system for \a lattice_basis.
 	/** This is mandatory for \a lattice_dimension != 0 */
 	qpms_coord_system_t lattice_basis_csystem;
@@ -170,7 +151,27 @@ typedef struct qpms_scatsys_t {
 	 * lattice_dimension == 2, a 2D area.
 	 */
 	double unitcell_volume;
+} qpms_scatsys_pediodic_info_t;
 
+
+struct qpms_trans_calculator;
+struct qpms_epsmu_generator_t;
+
+/// Common "class" for system of scatterers, both periodic and non-periodic.
+/**
+ * Infinite periodic structures (those with \a lattice_dimension > 0) 
+ * have the following additional members filled:
+ *  - lattice_basis_csystem
+ *  - lattice_basis
+ *  - reciprocal_basis_csystem
+ *  - reciprocal_basis
+ *  - unitcell_volume
+ * These are ignored for finite systems (lattice_dimension == 0).
+ *
+ */
+typedef struct qpms_scatsys_t {
+	/// Number of dimensions in which the system is periodic from the range 0–3.
+	int lattice_dimension;
 	struct qpms_epsmu_generator_t medium; ///< Optical properties of the background medium.
 	
 	/// (Template) T-matrix functions in the system.
@@ -223,6 +224,9 @@ typedef struct qpms_scatsys_t {
 	char *otspace_end;
 	double lenscale; // radius of the array, used as a relative tolerance measure
 	struct qpms_trans_calculator *c;
+
+	/// Periodic lattice metadata. Only allocated/used when lattice_dimension != 0.
+	qpms_scatsys_periodic_info_t per[];
 } qpms_scatsys_t;
 
 /// Retrieve the bspec of \a tmi'th element of \a ss->tm.
