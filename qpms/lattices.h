@@ -627,6 +627,14 @@ size_t PGen_xyWeb_sizecap(cart2_t b1, cart2_t b2, double rtol, cart2_t offset,
 		double minR, bool inc_minR, double maxR, bool inc_maxR);
 
 
+extern const PGenClassInfo PGen_LatticeRadialHeap2D;
+extern const PGenClassInfo PGen_LatticeRadialHeap3D;
+PGen PGen_LatticeRadialHeap2D_new(cart2_t b1, cart2_t b2, cart2_t offset, 
+		double minR, bool inc_minR, double maxR, bool inc_maxR);
+PGen PGen_LatticeRadialHeap3D_new(const cart3_t *b1, const cart3_t *b2, const cart3_t *b3,
+	       	const cart3_t *offset, double minR, bool inc_minR, double maxR, bool inc_maxR);
+
+
 /*
  * THE NICE PART (adaptation of lattices2d.py)
  * ===========================================

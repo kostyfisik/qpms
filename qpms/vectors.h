@@ -885,6 +885,17 @@ static inline cart3_t cart3_from_double_array(const double a[]) {
 	return b;
 }
 
+/// Converts cart2_t to array of doubles.
+static inline void cart2_to_double_array(double a[], cart2_t b) {
+	a[0] = b.x; a[1] = b.y;
+}
+
+/// Converts array of doubles to cart2_t
+static inline cart2_t cart2_from_double_array(const double a[]) {
+	cart2_t b = {.x = a[0], .y = a[1]};
+	return b;
+}
+
 
 typedef double matrix3d[3][3];
 typedef double matrix2d[2][2];
