@@ -600,3 +600,255 @@ size_t PGen_xyWeb_sizecap(cart2_t b1, cart2_t b2, double rtol, cart2_t offset,
   // TODO less crude estimate (this one should be safe, however)
   return ((lf & ORTHOGONAL_01) ? 4 : 6) * (last_layer - layer + 1);
 }
+
+//==== PGen_LatticeRadialHeap ====
+
+extern const PGenClassInfo PGen_LatticeRadialHeap; // forward declaration needed by constructor (may be placed in header file instead)
+
+// Internal state structure
+typedef struct PGen_LatticeRadialHeap_StateData {
+  int ldim; // 2 or 3, must 
+  int sdim;
+  int layer;
+  // Minimal distance of a point from the origin in the last layer (if the top of the heap exceeds this, a new layer must be evaluated
+  double layer_min_r;
+  size_t heap_len;
+  size_t heap_capacity;
+  double *r_heap;
+  int *coord_heap;
+  double b[0]; // basis vectors and offset
+  double offset_r;
+  double minR, maxR;
+  bool inc_minR, inc_maxR;
+} PGen_LatticeRadialHeap_StateData;
+
+static inline double nd2norm(const double a[], int d) {
+  double n = 0;
+  for(int i = 0; i < d; ++i) 
+    n += a[i]*a[i];
+  return sqrt(n);
+}
+
+// Constructor
+PGen PGen_LatticeRadialHeap_new(int ldim, int sdim, double bvectors[], double offset[], double minR, double maxR,
+    bool inc_minR, bool inc_maxR) {
+  PGen_LatticeRadialHeap_StateData *s =
+       malloc(sizeof(PGen_LatticeRadialHeap_StateData) + (ldim + 1) * sdim * sizeof(double));
+  s->ldim = ldim;
+  s->sdim = sdim;
+  memcpy(s->b, bvectors, ldim * sdim * sizeof(double));
+  if (offset) {
+    memcpy(s->b + ldim * sdim, offset, sdim * sizeof(double));
+    s->offset_r = nd2norm(s->b + ldim*sdim, sdim);
+  } else { 
+    for (size_t i = 0; i < sdim; ++i) 
+      s->b[ldim*sdim + i] = 0;
+    s->offset_r = 0;
+  }
+  s->heap_len = 0;
+  s->heap_capacity = 1024;
+  QPMS_CRASHING_MALLOC(s->r_heap, sizeof(*s->r_heap) * s->heap_capacity);
+  QPMS_CRASHING_MALLOC(s->coord_heap, sizeof(*s->coord_heap) * ldim * s->heap_capacity);
+  s->layer = -1;
+  s->layer_min_r = -INFINITY;
+  s->inc_minR = inc_minR; s->inc_maxR = inc_maxR;
+  
+  PGen g = {&PGen_LatticeRadialHeap, (void *) s};
+  return g;
+}
+
+// Increment a counter array with constant sum; in the beginning, both counter[] and counter_cumsum[]
+// are expected to be init'd to {thesum, 0, 0, ..., 0}
+// Everything is expected to be positive (although the types are signed)
+static inline _Bool counter_increment(const int ldim, int counter[], 
+    int counter_cumsum[], const int thesum) {
+  for(int i = 1; i < ldim; ++i) {
+    if(counter_cumsum[i] < thesum) { // Can increment this, do it.
+      ++counter[i];
+      ++counter_cumsum[i];
+      for(int j = i - 1; j > 0; --j) { // Zero the preceding ones
+        counter[j] = 0;
+        counter_cumsum[j] = counter_cumsum[i];
+      }
+      // Determine the last digit
+      counter[0] = thesum - counter_cumsum[1];
+      return 1; // Incremented successfully
+    }
+  }
+  return 0; // Could not increment (counter exhausted)
+}
+
+// Assuming the counter is initialised to all non-negative values, step through 
+// all the possible sign combinations. In the end, return them back to non-negative
+// and return false.
+static inline _Bool counter_signcycle(const int ldim, int counter[]) {
+  for(int i = 0; i < ldim; ++i) { // Flip signs until a sign flipped to negative (cool, right?)
+    counter[i] = -counter[i];
+    if (counter[i] < 0)
+      return 1;
+  }
+  return 0;
+}
+
+static inline double PGen_LatticeRadialHeap_nextlayer(PGen_LatticeRadialHeap_StateData *s) {
+  double mindist = 0;
+  s->layer++;
+  double minr = +INFINITY;
+  const int ldim = s->ldim;
+  const int sdim = s->sdim;
+  int *counter, *counter_cumsum, *tmp;
+  QPMS_CRASHING_CALLOC(counter, s->ldim * 2 * sizeof(*counter));
+  counter_cumsum = counter + s->ldim;
+  counter[0] = s->layer;
+  counter_cumsum[0] = s->layer;
+
+  do {
+    if (s->heap_len >= s->heap_capacity - 1) { // Check heap capacity
+      s->heap_capacity = s->heap_capacity >= 1024 ? s->heap_capacity * 2 : 1024;
+      QPMS_CRASHING_REALLOC(s->r_heap, sizeof(*s->r_heap) * s->heap_capacity);
+      QPMS_CRASHING_REALLOC(s->coord_heap, sizeof(*s->coord_heap) * ldim * s->heap_capacity);
+    }
+    double r = 0;
+    for(int i = 0; i < s->sdim; ++i) { // calculate r
+      double component = s->b[ldim * sdim + i]; // offset
+      for (int j = 0; j < s->ldim; ++j)
+        component += s->b[j * sdim + i] * counter[j];
+      r += component * component;
+    }
+    r = sqrt(r);
+    minr = MIN(r, minr);
+    // Add to the heaps
+    int position = s->heap_len++;
+    s->r_heap[position] = r;
+    memcpy(&s->coord_heap[ldim * position], counter, sizeof(*s->coord_heap) * ldim);
+    // bubble-up
+    while(position > 0) {
+      int parent = (position - 1) / 2;
+      if  (s->r_heap[parent] > r)  { // swap
+        s->r_heap[position] = s->r_heap[parent];
+        memcpy(&s->coord_heap[ldim * position], &s->coord_heap[ldim * parent], sizeof(*s->coord_heap) * ldim);
+        s->r_heap[parent] = r;
+        memcpy(&s->coord_heap[ldim * parent], counter, sizeof(*s->coord_heap) * ldim);
+        position = parent;
+      } 
+      else break;
+    }
+  } while (counter_signcycle(s->ldim, counter)
+      || counter_increment(s->ldim, counter, counter_cumsum, s->layer));
+
+  free(counter);
+  return minr;
+}
+
+
+
+// sdim-independent generator method
+// N.B. This ALWAYS produces, not checking against maxR or destructing the generator itself
+// (although it does discard the points with distance smaller (or equal) than minR)
+int PGen_LatticeRadialHeap_fillNext(PGen *g, int target[]) {
+  if (g->stateData == NULL) // already destroyed
+    return -1; //TODO some better error code
+  else {
+    PGen_LatticeRadialHeap_StateData * const s = (PGen_LatticeRadialHeap_StateData *) g->stateData;
+    bool hit = false;
+    while(!hit) {
+      // Ensure that we have sufficiently filled heap
+      while (heap_len < 1 || s->r_heap[0] + s->offset_r > s->layer_min_r) 
+        s->layer_min_r = PGen_LatticeRadialHeap_nextlayer(s);
+      double r = s->r_heap[0];
+      hit = (r > s->minR || (s->inc_minR && r == s->minR));
+      if (hit) memcpy(target, coord_heap, s->ldim * sizeof(*target));
+      // Heap extract anyway
+      // Move last element to root
+      --(s->heap_len);
+      s->r_heap[0] = s->r_heap[s->heap_len];
+      memmove(s->coord_heap, &s->coord_heap[ldim * s->heap_len], ldim * sizeof(*s->coord_heap));
+      // Bubble down
+      int pos = 0;
+      while(1) {
+        int largest = pos, kidL = 2*pos+1, kidR = 2*pos+2;
+        if (kidL < s->heap_len && s->r_heap[kidL] > s->r_heap[largest])
+          largest = kidL;
+        if (kidR < s->heap_len && s->r_heap[kidR] > s->r_heap[largest])
+          largest = kidR;
+        if (largest == pos) 
+          break;
+        else { // swap
+          s->r_heap[pos] = s->r_heap[largest];
+          s->r_heap[largest] = r;
+          memcpy(&s->coord_heap[ldim * pos], &s->coord_heap[ldim * largest], ldim * sizeof(*s->coord_heap));
+          memcpy(&s->coord_heap[ldim * largest], &s->coord_heap[ldim * s->heap_len /*it's still there*/],
+              ldim * sizeof(*s->coord_heap));
+        }
+      }
+    }
+    return 0;
+  }
+}
+
+
+// Destructor
+void PGen_LatticeRadialHeap_dectructor(PGen *g) {
+  PGen_LatticeRadialHeap_StateData *s = g->stateData;
+  free(s->r_heap);
+  free(s->coord_heap);
+  free(g->stateData);
+  g->stateData = NULL;
+}
+
+// Extractor, spherical coordinate output
+PGenSphReturnData PGen_LatticeRadialHeap_next_sph(PGen *g) {
+  if (g->stateData == NULL) // already destroyed
+    return PGenSphDoneVal;
+  else {
+    PGen_LatticeRadialHeap_StateData *s = (PGen_LatticeRadialHeap_StateData *) g->stateData;
+    if (... /* there are still points to be generated */) {
+      ...
+      PGenSphReturnData retval = {.../*flags*/, .../*thePoint*/};
+      return retval;
+    } else {
+      PGen_destroy(g);
+      return PGenSphDoneVal;
+    }
+  }
+}
+
+// Extractor, 3D cartesian coordinate output
+PGenCart3ReturnData PGen_LatticeRadialHeap_next_cart3(PGen *g) {
+  if (g->stateData == NULL) // already destroyed
+    return PGenCart3DoneVal;
+  else {
+    PGen_LatticeRadialHeap_StateData *s = (PGen_LatticeRadialHeap_StateData *) g->stateData;
+    if (... /* there are still points to be generated */) {
+      ...
+      PGenCart3ReturnData retval = {.../*flags*/, .../*thePoint*/};
+      return retval;
+    } else {
+      PGen_destroy(g);
+      return PGenCart3DoneVal;
+    }
+  }
+}
+
+// Class metadata structure; TODO maybe this can rather be done by macro.
+const PGenClassInfo PGen_LatticeRadialHeap = {
+  "PGen_LatticeRadialHeap",
+  ?, //dimensionality
+  PGEN_COORDS_????, // native coordinate system
+  // some of the _next_... fun pointers can be NULL
+  PGen_LatticeRadialHeap_next,
+  PGen_LatticeRadialHeap_next_z,
+  PGen_LatticeRadialHeap_next_pol,
+  PGen_LatticeRadialHeap_next_sph,
+  PGen_LatticeRadialHeap_next_cart2,
+  PGen_LatticeRadialHeap_next_cart3,
+  PGen_LatticeRadialHeap_fetch,
+  PGen_LatticeRadialHeap_fetch_z,
+  PGen_LatticeRadialHeap_fetch_pol,
+  PGen_LatticeRadialHeap_fetch_sph,
+  PGen_LatticeRadialHeap_fetch_cart2,
+  PGen_LatticeRadialHeap_fetch_cart3,
+  PGen_LatticeRadialHeap_destructor
+};
+
+
