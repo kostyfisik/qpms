@@ -2128,7 +2128,7 @@ beyn_result_t *qpms_scatsys_finite_find_eigenmodes(
     complex double omega_centre, double omega_rr, double omega_ri, 
     size_t contour_npoints, 
     double rank_tol, size_t rank_sel_min, double res_tol) {
-  qpms_ss_ensure_nonperiodic(ss);
+  qpms_ss_ensure_nonperiodic_a(ss, "qpms_scatsys_periodic_find_eigenmodes()");
   size_t n; // matrix dimension
   if (qpms_iri_is_valid(ss->sym, iri)) {
     n = ss->saecv_sizes[iri];
@@ -2142,6 +2142,50 @@ beyn_result_t *qpms_scatsys_finite_find_eigenmodes(
   struct qpms_scatsys_finite_eval_Beyn_ImTS_param p = {ss, iri};
   beyn_result_t *result = beyn_solve(n, n /* possibly make smaller? */,
       qpms_scatsys_finite_eval_Beyn_ImTS, NULL, (void *) &p,
+      contour, rank_tol, rank_sel_min, res_tol);
+  QPMS_ENSURE(result != NULL, "beyn_solve() returned NULL");
+
+  free(contour);
+  return result;
+}
+
+struct qpms_scatsys_periodic_eval_Beyn_ImTW_param {
+  const qpms_scatsys_t *ss;
+  const double *k; ///< Wavevector in cartesian coordinates.
+};
+
+/// Wrapper for Beyn algorithm (periodic system)
+static int qpms_scatsys_periodic_eval_Beyn_ImTW(complex double *target,
+    size_t m, complex double omega, void *params){
+  const struct qpms_scatsys_periodic_eval_Beyn_ImTW_param *p = params;
+  qpms_scatsys_at_omega_t *ssw = qpms_scatsys_at_omega(p->ss, omega);
+  QPMS_ENSURE(ssw != NULL, "qpms_scatsys_at_omega() returned NULL");
+  qpms_scatsys_at_omega_k_t sswk = {
+    .ssw = ssw,
+    .k = {p->k[0], p->k[1], p->k[2]}
+  };
+  QPMS_ASSERT(m == p->ss->fecv_size);
+  QPMS_ENSURE(NULL != 
+      qpms_scatsyswk_build_modeproblem_matrix_full(target, &sswk),
+      "qpms_scatsyswk_build_modeproblem_matrix_full() returned NULL");
+  qpms_scatsys_at_omega_free(ssw);
+  return QPMS_SUCCESS;
+}
+
+beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(
+    const qpms_scatsys_t * const ss, const double k[3], 
+    complex double omega_centre, double omega_rr, double omega_ri, 
+    size_t contour_npoints, 
+    double rank_tol, size_t rank_sel_min, double res_tol) {
+  qpms_ss_ensure_nonperiodic_a(ss, "qpms_scatsys_finite_find_eigenmodes()");
+  size_t n = ss->fecv_size; // matrix dimension
+
+  beyn_contour_t *contour = beyn_contour_ellipse(omega_centre,
+      omega_rr, omega_ri, contour_npoints);
+
+  struct qpms_scatsys_periodic_eval_Beyn_ImTW_param p = {ss, k};
+  beyn_result_t *result = beyn_solve(n, n, 
+      qpms_scatsys_periodic_eval_Beyn_ImTW, NULL, (void *) &p,
       contour, rank_tol, rank_sel_min, res_tol);
   QPMS_ENSURE(result != NULL, "beyn_solve() returned NULL");
 

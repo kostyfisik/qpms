@@ -519,6 +519,28 @@ qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(
 		const qpms_scatsys_at_omega_k_t *sswk
 		);
 
+/// Searches for periodic scattering system's eigenmodes using Beyn's algorithm.
+/**
+ * Currently, elliptical contour is used.
+ *
+ * TODO In the future, this will probably support irrep decomposition as well,
+ * but for the case of periodic / small systems,
+ * the bottleneck is the T-matrix and translation matrix evaluation
+ * rather than the linear algebra.
+ */
+struct beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(
+		const qpms_scatsys_t *ss, 
+		/// Wavevector in cartesian coordinates (must lie in the lattice plane).
+		const double k[3],
+		complex double omega_centre, ///< Center of the ellipse inside which the eigenfreqs are searched for.
+		double omega_rr, ///< Real half-axis of the ellipse inside which the eigenfreqs are searched for.
+		double omega_ri, ///< Imaginary half-axis of the ellipse inside which the eigenfreqs are searched for.
+		size_t contour_npoints, ///< Number of elliptic contour discretisation points (preferably even number)
+		double rank_tol, ///< (default: `1e-4`) TODO DOC.
+		size_t rank_sel_min, ///< Minimum number of eigenvalue candidates, even if they don't pass \a rank_tol.
+		double res_tol ///< (default: `0.0`) TODO DOC.
+		);
+
 // ======================= Periodic system -only related stuff end =========================
 
 
