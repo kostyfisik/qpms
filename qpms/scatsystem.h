@@ -356,7 +356,7 @@ complex double *qpms_scatsys_build_translation_matrix_full(
 		complex double k ///< Wave number to use in the translation matrix.
 		);
 
-/// Creates the full \f$ (I - WS) \f$ matrix of the periodic scattering system. NI
+/// Creates the full \f$ (I - WS) \f$ matrix of the periodic scattering system.
 /**
  * \returns \a target on success, NULL on error.
  */
@@ -422,10 +422,11 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(
 		qpms_iri_t iri ///< Index of the irreducible representation in ssw->ss->sym
 		);
 
+struct qpms_scatsys_at_omega_k_t; // Defined below.
 /// LU factorisation (LAPACKE_zgetrf) result holder.
 typedef struct qpms_ss_LU {
 	const qpms_scatsys_at_omega_t *ssw;
-	const qpms_scatsys_at_omega_k_t *sswk; ///< Only for periodic systems, otherwise NULL.
+	const struct qpms_scatsys_at_omega_k_t *sswk; ///< Only for periodic systems, otherwise NULL.
 	bool full; ///< true if full matrix; false if irrep-packed.
 	qpms_iri_t iri; ///< Irrep index if `full == false`.
 	/// LU decomposition array.
@@ -455,7 +456,7 @@ qpms_ss_LU qpms_scatsysw_modeproblem_matrix_full_factorise(
 		complex double *modeproblem_matrix_full, ///< Pre-calculated mode problem matrix (I-TS). Mandatory.
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
 		const qpms_scatsys_at_omega_t *ssw, ///< Must be filled for non-periodic systems.
-		const qpms_scatsys_at_omega_k_t *sswk ///< Must be filled for periodic systems, otherwise must be NULL.
+		const struct qpms_scatsys_at_omega_k_t *sswk ///< Must be filled for periodic systems, otherwise must be NULL.
 		);
 
 /// Computes LU factorisation of a pre-calculated irrep-packed mode/scattering problem matrix, replacing its contents.
@@ -476,12 +477,15 @@ complex double *qpms_scatsys_scatter_solve(
 // ======================= Periodic system -only related stuff =============================
 
 /// Scattering system at a given frequency and k-vector. Used only with periodic systems.
+/**
+ * N.B. use as a stack variable now, but this might become heap-allocated in the future (with own con- and destructor)
+ */
 typedef struct qpms_scatsys_at_omega_k_t {
 	const qpms_scatsys_at_omega_t *ssw;
 	double k[3]; ///< The k-vector's cartesian coordinates.
 } qpms_scatsys_at_omega_k_t;
 
-/// Creates the full \f$ (I - WS) \f$ matrix of the periodic scattering system. NI
+/// Creates the full \f$ (I - WS) \f$ matrix of the periodic scattering system. 
 /**
  * \returns \a target on success, NULL on error.
  */
@@ -497,19 +501,19 @@ complex double *qpms_scatsys_periodic_build_translation_matrix_full(
 		complex double *target,
 		const qpms_scatsys_t *ss,
 		complex double wavenumber, ///< Wave number to use in the translation matrix.
-		const double wavevector[] ///< Wavevector / pseudomomentum in cartesian coordinates.
+		const cart3_t *wavevector ///< Wavevector / pseudomomentum in cartesian coordinates.
 		);
 
-/// Global translation matrix. NI
+/// Global translation matrix. 
 complex double *qpms_scatsyswk_build_translation_matrix_full(
 		/// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
 		complex double *target,
-		const qpms_scatsys_omega_k_t *sswk
+		const qpms_scatsys_at_omega_k_t *sswk
 		);
 
 
 /// Builds an LU-factorised mode/scattering problem \f$ (I - TS) \f$ matrix from scratch. Periodic systems only.
-qpms_ss_LU qpms_scatsysw_build_modeproblem_matrix_full_LU(
+qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(
 		complex double *target, ///< Pre-allocated target array. Optional (if NULL, new one is allocated).
 		int *target_piv, ///< Pre-allocated pivot array. Optional (if NULL, new one is allocated).
 		const qpms_scatsys_at_omega_k_t *sswk
