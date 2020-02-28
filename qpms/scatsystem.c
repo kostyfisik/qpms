@@ -164,46 +164,46 @@ static void process_lattice_bases(qpms_scatsys_t *ss, const qpms_tolerance_spec_
   switch(ss->lattice_dimension) {
     case 1: {
               double normsq;
-              normsq = cart3_normsq(ss->per->lattice_basis[0]);
-              ss->per->unitcell_volume = sqrt(normsq);
-              ss->per->reciprocal_basis[0] = cart3_divscale(ss->per->lattice_basis[0], normsq);
-              ss->per->eta = 2. / M_2_SQRTPI / ss->per->unitcell_volume;
+              normsq = cart3_normsq(ss->per.lattice_basis[0]);
+              ss->per.unitcell_volume = sqrt(normsq);
+              ss->per.reciprocal_basis[0] = cart3_divscale(ss->per.lattice_basis[0], normsq);
+              ss->per.eta = 2. / M_2_SQRTPI / ss->per.unitcell_volume;
       } break;
     case 2: {
               // (I) Create orthonormal basis of the plane in which the basis vectors lie
               cart3_t onbasis[2];
-              double norm0 = cart3norm(ss->per->lattice_basis[0]);
+              double norm0 = cart3norm(ss->per.lattice_basis[0]);
               // 0: Just normalised 0. basis vector
-              onbasis[0] = cart3_divscale(ss->per->lattice_basis[0], norm0); 
+              onbasis[0] = cart3_divscale(ss->per.lattice_basis[0], norm0); 
               // 1: Gram-Schmidt complement of the other basis vector
-              const double b0norm_dot_b1 = cart3_dot(onbasis[0], ss->per->lattice_basis[1]);
-              onbasis[1] = cart3_substract(ss->per->lattice_basis[1],
+              const double b0norm_dot_b1 = cart3_dot(onbasis[0], ss->per.lattice_basis[1]);
+              onbasis[1] = cart3_substract(ss->per.lattice_basis[1],
                   cart3_scale(b0norm_dot_b1, onbasis[0]));
               onbasis[1] = cart3_divscale(onbasis[1], cart3norm(onbasis[1]));
               // (II) Express the lattice basis in terms of the new 2d plane vector basis onbasis
               cart2_t b2d[2] = {{.x = norm0, .y = 0}, 
-                {.x = b0norm_dot_b1, .y = cart3_dot(onbasis[1], ss->per->lattice_basis[1])}};
+                {.x = b0norm_dot_b1, .y = cart3_dot(onbasis[1], ss->per.lattice_basis[1])}};
               // (III) Reduce lattice basis and get reciprocal bases in the 2D plane
               l2d_reduceBasis(b2d[0], b2d[1], &b2d[0], &b2d[1]);
-              ss->per->unitcell_volume = l2d_unitcell_area(b2d[0], b2d[1]);
-              ss->per->eta = 2. / M_2_SQRTPI / sqrt(ss->per->unitcell_volume);
+              ss->per.unitcell_volume = l2d_unitcell_area(b2d[0], b2d[1]);
+              ss->per.eta = 2. / M_2_SQRTPI / sqrt(ss->per.unitcell_volume);
               cart2_t r2d[2];
               QPMS_ENSURE_SUCCESS(l2d_reciprocalBasis1(b2d[0], b2d[1], &r2d[0], &r2d[1]));
               // (IV) Rotate everything back to the original 3D space.
               for(int i = 0; i < 2; ++i) {
-                ss->per->lattice_basis[i] = cart3_add(
+                ss->per.lattice_basis[i] = cart3_add(
                     cart3_scale(b2d[i].x, onbasis[0]),
                     cart3_scale(b2d[i].y, onbasis[1]));
-                ss->per->reciprocal_basis[i] = cart3_add(
+                ss->per.reciprocal_basis[i] = cart3_add(
                     cart3_scale(r2d[i].x, onbasis[0]),
                     cart3_scale(r2d[i].y, onbasis[1]));
               }
       } break;
     case 3: {
-              l3d_reduceBasis(ss->per->lattice_basis, ss->per->lattice_basis); 
-              ss->per->unitcell_volume = fabs(l3d_reciprocalBasis1(ss->per->lattice_basis,
-                  ss->per->reciprocal_basis));
-              ss->per->eta = 2. / M_2_SQRTPI / cbrt(ss->per->unitcell_volume);
+              l3d_reduceBasis(ss->per.lattice_basis, ss->per.lattice_basis); 
+              ss->per.unitcell_volume = fabs(l3d_reciprocalBasis1(ss->per.lattice_basis,
+                  ss->per.reciprocal_basis));
+              ss->per.eta = 2. / M_2_SQRTPI / cbrt(ss->per.unitcell_volume);
               // TODO check unitcell_volume for sanity w.r.t tolerance
       } break;
     default:
@@ -252,15 +252,15 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
 
   // Allocate T-matrix, particle and particle orbit info arrays
   qpms_scatsys_t *ss;
-  QPMS_CRASHING_MALLOC(ss, sizeof(*ss) + !!orig->lattice_dimension * sizeof(ss->per[0]));
+  QPMS_CRASHING_MALLOC(ss, sizeof(*ss));
   ss->lattice_dimension = orig->lattice_dimension;
   // TODO basic periodic lattices related stuff here.
   if (ss->lattice_dimension) {
-    ss->per[0] = orig->per[0];
+    ss->per = orig->per;
     process_lattice_bases(ss, tol);
   }
   for(int i = 0; i < ss->lattice_dimension; ++i)  // extend lenscale by basis vectors
-    lenscale = MAX(lenscale, cart3norm(ss->per->lattice_basis[i]));
+    lenscale = MAX(lenscale, cart3norm(ss->per.lattice_basis[i]));
   ss->lenscale = lenscale;
   ss->sym = sym;
   ss->medium = orig->medium;
@@ -1206,13 +1206,13 @@ static inline int qpms_ss_ppair_W32xy(const qpms_scatsys_t *ss,
   const qpms_vswf_set_spec_t *destspec = qpms_ss_bspec_pi(ss, pdest);
 
   // This might be a bit arbitrary, roughly "copied" from Unitcell constructor. TODO review.
-  const double maxR = sqrt(ss->per->unitcell_volume) * 32;
+  const double maxR = sqrt(ss->per.unitcell_volume) * 32;
   const double maxK = 1024 * 2 * M_PI / maxR;
 
   return qpms_trans_calculator_get_trans_array_e32_e(ss->c,
       target, NULL /*err*/, destspec, deststride, srcspec, srcstride,
-      ss->per->eta, wavenumber, 
-      cart3xy2cart2(ss->per->lattice_basis[0]), cart3xy2cart2(ss->per->lattice_basis[1]),
+      ss->per.eta, wavenumber, 
+      cart3xy2cart2(ss->per.lattice_basis[0]), cart3xy2cart2(ss->per.lattice_basis[1]),
       kvector, 
       cart2_substract(cart3xy2cart2(ss->p[pdest].pos), cart3xy2cart2(ss->p[psrc].pos)),
       maxR, maxK, parts);
@@ -1223,7 +1223,7 @@ static inline int qpms_ss_ppair_W(const qpms_scatsys_t *ss,
     complex double *target, const ptrdiff_t deststride, const ptrdiff_t srcstride,
     qpms_ewald_part parts) {
   if(ss->lattice_dimension == 2 && // Currently, we can only the xy-plane
-      !ss->per->lattice_basis[0].z && !ss->per->lattice_basis[1].z &&
+      !ss->per.lattice_basis[0].z && !ss->per.lattice_basis[1].z &&
       !wavevector[2]) 
     return qpms_ss_ppair_W32xy(ss, pdest, psrc, wavenumber, cart2_from_double_array(wavevector), 
               target + deststride * ss->fecv_pstarts[pdest] + srcstride * ss->fecv_pstarts[psrc],
@@ -1243,7 +1243,7 @@ complex double *qpms_scatsys_periodic_build_translation_matrix_full(
   const ptrdiff_t deststride = ss->fecv_size, srcstride = 1;
   // We have some limitations in the current implementation
   if(ss->lattice_dimension == 2 && // Currently, we can only the xy-plane
-      !ss->per->lattice_basis[0].z && !ss->per->lattice_basis[1].z &&
+      !ss->per.lattice_basis[0].z && !ss->per.lattice_basis[1].z &&
       !wavevector->z) {
     for (qpms_ss_pi_t pd = 0; pd < ss->p_count; ++pd) 
       for (qpms_ss_pi_t ps = 0; ps < ss->p_count; ++ps) {

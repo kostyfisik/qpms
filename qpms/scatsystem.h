@@ -217,8 +217,8 @@ typedef struct qpms_scatsys_t {
 	double lenscale; // radius of the array, used as a relative tolerance measure
 	struct qpms_trans_calculator *c;
 
-	/// Periodic lattice metadata. Only allocated/used when lattice_dimension != 0 (exactly one member).
-	qpms_scatsys_periodic_info_t per[];
+	/// Periodic lattice metadata.
+	qpms_scatsys_periodic_info_t per;
 } qpms_scatsys_t;
 
 /// Retrieve the bspec of \a tmi'th element of \a ss->tm.
