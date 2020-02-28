@@ -529,7 +529,11 @@ cdef extern from "scatsystem.h":
     struct qpms_ss_derived_tmatrix_t:
         qpms_ss_tmgi_t tmgi
         qpms_tmatrix_operation_t op
+    struct qpms_scatsys_periodic_info_t:
+        cart3_t lattice_basis[3]
+        #etc.
     struct qpms_scatsys_t:
+        int lattice_dimension
         qpms_epsmu_generator_t medium
         qpms_tmatrix_function_t *tmg
         qpms_ss_tmgi_t tmg_count
@@ -541,6 +545,9 @@ cdef extern from "scatsystem.h":
         size_t fecv_size
         size_t *saecv_sizes
         const qpms_finite_group_t *sym
+        qpms_scatsys_periodic_info_t per
+
+        # per[] and other stuff not currently needed in cython
     void qpms_scatsys_free(qpms_scatsys_t *s)
     qpms_errno_t qpms_scatsys_dump(qpms_scatsys_t *ss, char *path) #NI
     qpms_scatsys_t *qpms_scatsys_load(char *path) #NI
@@ -583,6 +590,7 @@ cdef extern from "scatsystem.h":
             const qpms_scatsys_at_omega_t *ssw)
     struct qpms_ss_LU:
         const qpms_scatsys_at_omega_t *ssw
+        const qpms_scatsys_at_omega_k_t *sswk
         bint full
         qpms_iri_t iri
         cdouble *a
@@ -600,6 +608,17 @@ cdef extern from "scatsystem.h":
     const qpms_vswf_set_spec_t *qpms_ss_bspec_tmi(const qpms_scatsys_t *ss, qpms_ss_tmi_t tmi)
     const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi)
     beyn_result_t *qpms_scatsys_finite_find_eigenmodes(const qpms_scatsys_t *ss, qpms_iri_t iri,
+            cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 
+            double rank_tol, size_t rank_sel_min, double res_tol)
+    # periodic-related funs
+    struct qpms_scatsys_at_omega_k_t:
+        const qpms_scatsys_at_omega_t *ssw
+        double k[3]
+    cdouble *qpms_scatsyswk_build_modeproblem_motrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
+    cdouble *qpms_scatsys_periodic_build_translation_matrix_full(cdouble *target, const qpms_scatsys_t *ss, cdouble wavenumber, const cart3_t *wavevector)
+    cdouble *qpms_scatsyswk_build_translation_matrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
+    qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(cdouble *target, int *target_piv, const qpms_scatsys_at_omega_t *sswk)
+    beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(const qpms_scatsys_t *ss, const double *k,
             cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 
             double rank_tol, size_t rank_sel_min, double res_tol)
 

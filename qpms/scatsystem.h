@@ -158,7 +158,7 @@ struct qpms_epsmu_generator_t;
 /// Common "class" for system of scatterers, both periodic and non-periodic.
 /**
  * Infinite periodic structures (those with \a lattice_dimension > 0) 
- * have the \a per element allocated and filled.
+ * have the \a per filled.
  * These are ignored for finite systems (lattice_dimension == 0).
  */
 typedef struct qpms_scatsys_t {

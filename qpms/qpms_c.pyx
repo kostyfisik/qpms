@@ -244,6 +244,16 @@ cdef class FinitePointGroup:
             self.G = <qpms_finite_group_t *>0
             self.owns_data = False
 
+    property order: # LPTODO might instead be __len__() if iterable at some point
+        def __get__(self):
+            return self.G[0].order
+
+    @staticmethod 
+    def TRIVIAL(): # quite ugly
+        from .symmetries import point_group_info
+        return FinitePointGroup(point_group_info['trivial_g'])
+
+
 cdef class FinitePointGroupElement:
     '''TODO'''
     cdef readonly FinitePointGroup G
@@ -360,7 +370,12 @@ cdef class ScatteringSystem:
         #TODO is there a way to disable the constructor outside this module?
 
     @staticmethod # We don't have any "standard" constructor for this right now
-    def create(particles, medium, FinitePointGroup sym, cdouble omega): # TODO tolerances
+    def create(particles, medium, cdouble omega, FinitePointGroup sym = FinitePointGroup.TRIVIAL(),
+            latticebasis = None): # TODO tolerances
+
+        if latticebasis is not None and sym.order != 1:
+            raise NotImplementedError("Periodic systems don't currently support nontrivial point group symmetries")
+
         # These we are going to construct
         cdef ScatteringSystem self
         cdef _ScatteringSystemAtOmega pyssw
@@ -419,6 +434,12 @@ cdef class ScatteringSystem:
                 tm_derived_key = (tmg_key, None) # TODO unique representation of p.p.op instead of None
                 orig.p[pi].pos = p.cval().pos
                 orig.p[pi].tmatrix_id = tmindices[tm_derived_key]
+            if latticebasis is not None: # periodic system
+                assert(len(latticebasis) <= 3 and len(latticebasis) > 0)
+                orig.lattice_dimension = len(latticebasis)
+                for d in range(len(latticebasis)):
+                    orig.per.lattice_basis[d] = {'x' : latticebasis[d][0], 'y' : latticebasis[d][1], 'z' : latticebasis[d][2]}
+            else: orig.lattice_dimension = 0
             ssw = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer(), omega, &QPMS_TOLERANCE_DEFAULT)
             ss = ssw[0].ss
         finally:
