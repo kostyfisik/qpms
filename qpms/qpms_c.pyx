@@ -438,7 +438,7 @@ cdef class ScatteringSystem:
                 assert(len(latticebasis) <= 3 and len(latticebasis) > 0)
                 orig.lattice_dimension = len(latticebasis)
                 for d in range(len(latticebasis)):
-                    orig.per.lattice_basis[d] = {'x' : latticebasis[d][0], 'y' : latticebasis[d][1], 'z' : latticebasis[d][2]}
+                    orig.per.lattice_basis[d] = {'x' : latticebasis[d][0], 'y' : latticebasis[d][1], 'z' : latticebasis[d][2] if len(latticebasis[d]) >= 3 else 0}
             else: orig.lattice_dimension = 0
             ssw = qpms_scatsys_apply_symmetry(&orig, sym.rawpointer(), omega, &QPMS_TOLERANCE_DEFAULT)
             ss = ssw[0].ss
@@ -495,6 +495,17 @@ cdef class ScatteringSystem:
         def __get__(self): 
             self.check_s()
             return self.s[0].sym[0].nirreps
+    property lattice_dimension:
+        def __get__(self):
+            return self.s[0].lattice_dimension
+
+    property unitcell_volume:
+        def __get__(self):
+            self.check_s()
+            if self.lattice_dimension:
+                return self.s[0].per.unitcell_volume
+            else:
+                return None
 
     def pack_vector(self, vect, iri):
         self.check_s()
@@ -552,13 +563,24 @@ cdef class ScatteringSystem:
                 self.s, iri, 0)
         return target_np
 
-    def translation_matrix_full(self, double k, J = QPMS_HANKEL_PLUS):
+    def translation_matrix_full(self, cdouble wavenumber, blochvector = None, J = QPMS_HANKEL_PLUS):
         self.check_s()
         cdef size_t flen = self.s[0].fecv_size
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (flen,flen),dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
-        qpms_scatsys_build_translation_matrix_e_full(&target_view[0][0], self.s, k, J)
+        cdef cart3_t blochvector_c
+        if self.lattice_dimension == 0:
+            if blochvector is None:
+                qpms_scatsys_build_translation_matrix_e_full(&target_view[0][0], self.s, wavenumber, J)
+            else: raise ValueError("Can't use blochvector with non-periodic system")
+        else:
+            if blochvector is None: raise ValueError("Valid blochvector must be specified for periodic system")
+            else:
+                if J != QPMS_HANKEL_PLUS:
+                    raise NotImplementedError("Translation operators based on other than Hankel+ functions not supperted in periodic systems")
+                blochvector_c = {'x': blochvector[0], 'y': blochvector[1], 'z': blochvector[2]}
+                qpms_scatsys_periodic_build_translation_matrix_full(&target_view[0][0], self.s, wavenumber, &blochvector_c)
         return target
 
     def translation_matrix_packed(self, double k, qpms_iri_t iri, J = QPMS_HANKEL_PLUS):
@@ -637,7 +659,7 @@ cdef class ScatteringSystem:
                 rank_tol, rank_min_sel, res_tol)
         if res == NULL: raise RuntimeError
 
-        cdef size_t neig = res[0].neig
+        cdef size_t neig = res[0].neig, i, j
         cdef size_t vlen = res[0].vlen # should be equal to self.s.fecv_size
 
         cdef np.ndarray[complex, ndim=1] eigval = np.empty((neig,), dtype=complex)
@@ -676,6 +698,16 @@ cdef class ScatteringSystem:
 
         return retdict
 
+cdef class _ScatteringSystemAtOmegaK:
+    '''
+    Wrapper over the C qpms_scatsys_at_omega_k_t structure
+    '''
+    cdef qpms_scatsys_at_omega_k_t sswk
+    cdef _ScatteringSystemAtOmega ssw_pyref
+
+    cdef qpms_scatsys_at_omega_k_t *rawpointer(self):
+        return &self.sswk
+
 cdef class _ScatteringSystemAtOmega:
     '''
     Wrapper over the C qpms_scatsys_at_omega_t structure
@@ -690,6 +722,11 @@ cdef class _ScatteringSystemAtOmega:
             raise ValueError("_ScatteringSystemAtOmega's ssw-pointer not set. You must not use the default constructor; ScatteringSystem.create() instead")
         self.ss_pyref.check_s()
         #TODO is there a way to disable the constructor outside this module?
+
+
+    def ensure_finite(self):
+        if self.ssw[0].ss[0].lattice_dimension != 0:
+            raise NotImplementedError("Operation not supported for periodic systems")
 
     def __dealloc__(self):
         if (self.ssw):
@@ -711,9 +748,20 @@ cdef class _ScatteringSystemAtOmega:
     cdef qpms_scatsys_at_omega_t *rawpointer(self):
         return self.ssw
 
-    def scatter_solver(self, iri=None):
+    def scatter_solver(self, iri=None, k=None):
         self.check()
-        return ScatteringMatrix(self, iri)
+        cdef _ScatteringSystemAtOmegaK sswk # used only for periodic systems
+        if(self.ssw[0].ss[0].lattice_dimension == 0):
+            return ScatteringMatrix(self, iri=iri)
+        else:
+            if iri is not None:
+                raise NotImplementedError("Irrep decomposition not (yet) supported for periodic systems")
+            sswk = _ScatteringSystemAtOmegaK()
+            sswk.sswk.ssw = self.ssw
+            sswk.sswk.k[0] = k[0]
+            sswk.sswk.k[1] = k[1]
+            sswk.sswk.k[2] = k[2]
+            return ScatteringMatrix(ssw=self, sswk=sswk, iri=None)
 
     property fecv_size: 
         def __get__(self): return self.ss_pyref.fecv_size
@@ -723,8 +771,11 @@ cdef class _ScatteringSystemAtOmega:
         def __get__(self): return self.ss_pyref.irrep_names
     property nirreps: 
         def __get__(self): return self.ss_pyref.nirreps
+    property wavenumber:
+        def __get__(self): return self.ssw[0].wavenumber
+        
 
-    def modeproblem_matrix_full(self):
+    def modeproblem_matrix_full(self, k=None):
         self.check()
         cdef size_t flen = self.ss_pyref.s[0].fecv_size
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
@@ -735,6 +786,7 @@ cdef class _ScatteringSystemAtOmega:
 
     def modeproblem_matrix_packed(self, qpms_iri_t iri, version='pR'):
         self.check()
+        self.ensure_finite()
         cdef size_t rlen = self.saecv_sizes[iri]
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (rlen,rlen),dtype=complex, order='C')
@@ -748,24 +800,35 @@ cdef class _ScatteringSystemAtOmega:
             qpms_scatsysw_build_modeproblem_matrix_irrep_packed_serial(&target_view[0][0], self.ssw, iri)
         return target
 
+    def translation_matrix_full(self, blochvector = None):
+        return self.ss_pyref.translation_matrix_full(wavenumber=self.wavenumber, blochvector=blochvector)
+
+
 
 cdef class ScatteringMatrix:
     '''
     Wrapper over the C qpms_ss_LU structure that keeps the factorised mode problem matrix.
     '''
     cdef _ScatteringSystemAtOmega ssw # Here we keep the reference to the parent scattering system
+    cdef _ScatteringSystemAtOmegaK sswk
     cdef qpms_ss_LU lu
 
-    def __cinit__(self, _ScatteringSystemAtOmega ssw, iri=None):
+    def __cinit__(self, _ScatteringSystemAtOmega ssw, sswk=None, iri=None):
         ssw.check()
         self.ssw = ssw
-        # TODO? pre-allocate the matrix with numpy to make it transparent?
-        if iri is None:
-            self.lu = qpms_scatsysw_build_modeproblem_matrix_full_LU(
-                    NULL, NULL, ssw.rawpointer())
+        if sswk is None:
+            ssw.ensure_finite()
+            # TODO? pre-allocate the matrix with numpy to make it transparent?
+            if iri is None:
+                self.lu = qpms_scatsysw_build_modeproblem_matrix_full_LU(
+                        NULL, NULL, ssw.rawpointer())
+            else:
+                self.lu = qpms_scatsysw_build_modeproblem_matrix_irrep_packed_LU(
+                        NULL, NULL, ssw.rawpointer(), iri)
         else:
-            self.lu = qpms_scatsysw_build_modeproblem_matrix_irrep_packed_LU(
-                    NULL, NULL, ssw.rawpointer(), iri)
+            # TODO check sswk validity
+            self.sswk = sswk
+            self.lu = qpms_scatsyswk_build_modeproblem_matrix_full_LU(NULL, NULL, self.sswk.rawpointer())
 
     def __dealloc__(self):
         qpms_ss_LU_free(self.lu)

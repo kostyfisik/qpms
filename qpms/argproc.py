@@ -91,8 +91,9 @@ class ArgParser:
     # Methods to initialise the related data structures:
 
     def _eval_background_epsmu(self): # feature: background
-        from .cymaterials import EpsMu
+        from .cymaterials import EpsMu, EpsMuGenerator
         self.background_epsmu = EpsMu(self.args.refractive_index**2)
+        self.background_emg = EpsMuGenerator(self.background_epsmu)
 
     def _eval_single_tmgen(self): # feature: single_particle
         a = self.args
@@ -110,9 +111,9 @@ class ArgParser:
             self.foreground_emg = EpsMuGenerator(EpsMu(a.material**2))
 
         if a.height is None:
-            self.tmgen = TMatrixGenerator.sphere(self.background_epsmu, self.foreground_emg, a.radius)
+            self.tmgen = TMatrixGenerator.sphere(self.background_emg, self.foreground_emg, a.radius)
         else:
-            self.tmgen = TMatrixGenerator.cylinder(self.background_epsmu, self.foreground_emg, a.radius, a.height, lMax_extend = a.lMax_extend)
+            self.tmgen = TMatrixGenerator.cylinder(self.background_emg, self.foreground_emg, a.radius, a.height, lMax_extend = a.lMax_extend)
 
     def _eval_single_omega(self): # feature: single_omega
         from .constants import eV, hbar

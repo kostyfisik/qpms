@@ -531,6 +531,7 @@ cdef extern from "scatsystem.h":
         qpms_tmatrix_operation_t op
     struct qpms_scatsys_periodic_info_t:
         cart3_t lattice_basis[3]
+        double unitcell_volume
         #etc.
     struct qpms_scatsys_t:
         int lattice_dimension
@@ -616,8 +617,7 @@ cdef extern from "scatsystem.h":
         double k[3]
     cdouble *qpms_scatsyswk_build_modeproblem_motrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
     cdouble *qpms_scatsys_periodic_build_translation_matrix_full(cdouble *target, const qpms_scatsys_t *ss, cdouble wavenumber, const cart3_t *wavevector)
-    cdouble *qpms_scatsyswk_build_translation_matrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
-    qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(cdouble *target, int *target_piv, const qpms_scatsys_at_omega_t *sswk)
+    qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(cdouble *target, int *target_piv, const qpms_scatsys_at_omega_k_t *sswk)
     beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(const qpms_scatsys_t *ss, const double *k,
             cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 
             double rank_tol, size_t rank_sel_min, double res_tol)

@@ -1266,7 +1266,7 @@ static inline complex double *qpms_scatsysw_scatsyswk_build_modeproblem_matrix_f
 {
   const complex double wavenumber = ssw->wavenumber;
   const qpms_scatsys_t *ss = ssw->ss;
-  qpms_ss_ensure_nonperiodic(ss);
+  qpms_ss_ensure_periodic(ss);
   const size_t full_len = ss->fecv_size;
   if(!target)
     QPMS_CRASHING_MALLOC(target, SQ(full_len) * sizeof(complex double));

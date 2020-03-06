@@ -15,7 +15,7 @@ add_library (qpms SHARED translations.c tmatrices.c vecprint.c vswf.c wigner.c e
 	ewaldsf.c pointgroups.c latticegens.c
 	lattices2d.c gaunt.c error.c legendre.c symmetries.c vecprint.c
 	bessel.c own_zgemm.c parsing.c scatsystem.c materials.c drudeparam_data.c
-	lll.c beyn.c
+	lll.c beyn.c trivialgroup.c
 	)
 use_c99()
 
