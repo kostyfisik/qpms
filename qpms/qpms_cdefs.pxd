@@ -10,6 +10,9 @@ cdef extern from "gsl/gsl_errno.h":
     gsl_error_handler_t *gsl_set_error_handler(gsl_error_handler_t *new_handler)
     gsl_error_handler_t *gsl_set_error_handler_off();
 
+cdef extern from "gsl/gsl_const_mksa.h":
+    const double GSL_CONST_MKSA_SPEED_OF_LIGHT
+
 cdef extern from "qpms_types.h":
     cdef struct cart3_t:
         double x

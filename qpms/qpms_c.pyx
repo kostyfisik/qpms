@@ -13,7 +13,7 @@ from .cybspec cimport BaseSpec
 from .cycommon cimport make_c_string
 from .cycommon import string_c2py, PointGroupClass
 from .cytmatrices cimport CTMatrix, TMatrixFunction, TMatrixGenerator, TMatrixInterpolator
-from .cymaterials cimport EpsMuGenerator
+from .cymaterials cimport EpsMuGenerator, EpsMu
 from libc.stdlib cimport malloc, free, calloc
 import warnings
 
@@ -647,16 +647,27 @@ cdef class ScatteringSystem:
         return target_np
 
     def find_modes(self, cdouble omega_centre, double omega_rr, double omega_ri, iri = None,
+            blochvector = None,
             size_t contour_points = 20, double rank_tol = 1e-4, size_t rank_min_sel=1,
             double res_tol = 0):
         """
         Attempts to find the eigenvalues and eigenvectors using Beyn's algorithm.
         """
 
-        cdef beyn_result_t *res = qpms_scatsys_finite_find_eigenmodes(self.s, 
-                self.iri_py2c(iri),
+        cdef beyn_result_t *res
+        cdef double blochvector_c[3]
+        if self.lattice_dimension == 0:
+            assert(blochvector is None)
+            res = qpms_scatsys_finite_find_eigenmodes(self.s, self.iri_py2c(iri),
                 omega_centre, omega_rr, omega_ri, contour_points, 
                 rank_tol, rank_min_sel, res_tol)
+        else:
+            if iri is not None: raise NotImplementedError("Irreps decomposition not yet supported for periodic systems")
+            blochvector_c[0] = blochvector[0]
+            blochvector_c[1] = blochvector[1]
+            blochvector_c[2] = blochvector[2] if len(blochvector) > 2 else 0
+            res = qpms_scatsys_periodic_find_eigenmodes(self.s, blochvector_c,
+                    omega_centre, omega_rr, omega_ri, contour_points, rank_tol, rank_min_sel, res_tol)
         if res == NULL: raise RuntimeError
 
         cdef size_t neig = res[0].neig, i, j
@@ -694,9 +705,39 @@ cdef class ScatteringSystem:
                 'eigval_err':eigval_err,
                 'ranktest_SV':ranktest_SV,
                 'iri': iri,
+                'blochvector': blochvector
         }
 
         return retdict
+
+
+def empty_lattice_modes_xy(EpsMu epsmu, reciprocal_basis, wavevector, double maxomega):
+    '''Empty (2D, xy-plane) lattice mode (diffraction order) frequencies of a non-dispersive medium.
+
+    reciprocal_basis is of the "mutliplied by 2п" type.
+    '''
+    cdef double *omegas_c
+    cdef size_t n
+    cdef cart2_t k_, b1, b2
+    k_.x = wavevector[0]
+    k_.y = wavevector[1]
+    b1.x = reciprocal_basis[0][0]
+    b1.y = reciprocal_basis[0][1]
+    b2.x = reciprocal_basis[1][0]
+    b2.y = reciprocal_basis[1][1]
+    if(epsmu.n.imag != 0):
+        warnings.warn("Got complex refractive index", epsmu.n, "ignoring the imaginary part")
+    refindex = epsmu.n.real
+    n = qpms_emptylattice2_modes_maxfreq(&omegas_c, b1, b2, BASIS_RTOL,
+	    k_, GSL_CONST_MKSA_SPEED_OF_LIGHT / refindex, maxomega)
+    cdef np.ndarray[double, ndim=1] omegas = np.empty((n,), dtype=np.double)
+    cdef double[::1] omegas_v = omegas
+    cdef size_t i
+    for i in range(n):
+        omegas_v[i] = omegas_c[i]
+    free(omegas_c)
+    return omegas
+
 
 cdef class _ScatteringSystemAtOmegaK:
     '''

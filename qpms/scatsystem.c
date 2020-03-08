@@ -2177,7 +2177,7 @@ beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(
     complex double omega_centre, double omega_rr, double omega_ri, 
     size_t contour_npoints, 
     double rank_tol, size_t rank_sel_min, double res_tol) {
-  qpms_ss_ensure_nonperiodic_a(ss, "qpms_scatsys_finite_find_eigenmodes()");
+  qpms_ss_ensure_periodic_a(ss, "qpms_scatsys_finite_find_eigenmodes()");
   size_t n = ss->fecv_size; // matrix dimension
 
   beyn_contour_t *contour = beyn_contour_ellipse(omega_centre,
