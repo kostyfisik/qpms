@@ -170,13 +170,13 @@ ctypedef union qpms_incfield_planewave_params_E:
     csphvec_t sph
 
 cdef extern from "vswf.h":
-    ctypedef qpms_errno_t (*qpms_incfield_t)(cdouble target, const qpms_vswf_set_spec_t *bspec,
+    ctypedef qpms_errno_t (*qpms_incfield_t)(cdouble *target, const qpms_vswf_set_spec_t *bspec,
             const cart3_t evalpoint, const void *args, bint add)
     ctypedef struct qpms_incfield_planewave_params_t:
         bint use_cartesian
         qpms_incfield_planewave_params_k k
         qpms_incfield_planewave_params_E E
-    qpms_errno_t qpms_incfield_planewave(cdouble target, const qpms_vswf_set_spec_t *bspec,
+    qpms_errno_t qpms_incfield_planewave(cdouble *target, const qpms_vswf_set_spec_t *bspec,
             const cart3_t evalpoint, const void *args, bint add)
     csphvec_t qpms_vswf_single_el_csph(qpms_m_t m, qpms_l_t n, csph_t kdlj, qpms_bessel_t btyp, qpms_normalisation_t norm)
     csphvec_t qpms_vswf_single_mg_csph(qpms_m_t m, qpms_l_t n, csph_t kdlj, qpms_bessel_t btyp, qpms_normalisation_t norm)
