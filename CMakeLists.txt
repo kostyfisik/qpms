@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-include(CMakeAddFortranSubdirectory)
+set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake-scripts")
 include(version.cmake)
 include(GNUInstallDirs)
 
@@ -22,10 +22,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set (QPMS_VERSION_MAJOR 0)
 #set (QPMS_VERSION_MINOR 3)
-cmake_add_fortran_subdirectory (amos
-	PROJECT amos
-	LIBRARIES amos
-	NO_EXTERNAL_INSTALL)
 add_subdirectory (qpms)
 
 

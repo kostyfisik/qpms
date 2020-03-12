@@ -2,6 +2,7 @@
 find_package(GSL 2.0 REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
+find_package(ZBESSEL REQUIRED)
 
 # disable an annoying warning that gives false positives probably due to a bug in gcc
 # and other not very relevant warnings
@@ -25,7 +26,7 @@ target_link_libraries (qpms
 	gsl
 	lapack
 	blas
-	amos
+	zbessel
 	)
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

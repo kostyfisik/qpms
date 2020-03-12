@@ -1,0 +1,17 @@
+# Try to find the ZBESSEL librairies
+#  ZBESSEL_FOUND - system has ZBESSEL lib
+#  ZBESSEL_INCLUDE_DIR - the ZBESSEL include directory
+#  ZBESSEL_LIBRARIES - Libraries needed to use ZBESSEL
+
+if (ZBESSEL_INCLUDE_DIR AND ZBESSEL_LIBRARIES)
+  # Already in cache, be silent
+  set(ZBESSEL_FIND_QUIETLY TRUE)
+endif (ZBESSEL_INCLUDE_DIR AND ZBESSEL_LIBRARIES)
+
+find_path(ZBESSEL_INCLUDE_DIR NAMES zbessel.h )
+find_library(ZBESSEL_LIBRARIES NAMES zbessel libzbessel)
+
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(ZBESSEL DEFAULT_MSG ZBESSEL_INCLUDE_DIR ZBESSEL_LIBRARIES)
+
+mark_as_advanced(ZBESSEL_INCLUDE_DIR ZBESSEL_LIBRARIES)

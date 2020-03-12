@@ -7,7 +7,7 @@
 #include <gsl/gsl_sf_bessel.h>
 #include <complex.h>
 #include "qpms_error.h"
-#include <amos.h>
+#include <zbessel.h>
 #include <math.h>
 
 #ifndef M_LN2
@@ -92,30 +92,30 @@ qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, complex doub
   else if (fpclassify(creal(x)) == FP_INFINITE) 
     for(qpms_l_t l = 0; l <= lmax; ++l) res[l] = INFINITY + I * INFINITY;
   else {
-    const DOUBLE_PRECISION_t zr = creal(x), zi = cimag(x), fnu = 0.5;
-    const INTEGER_t n = lmax + 1, kode = 1 /* No exponential scaling */;
-    DOUBLE_PRECISION_t cyr[n], cyi[n];
-    INTEGER_t ierr, nz;
+    const double zr = creal(x), zi = cimag(x), fnu = 0.5;
+    const int n = lmax + 1, kode = 1 /* No exponential scaling */;
+    double cyr[n], cyi[n];
+    int ierr, nz;
     unsigned int kindchar; // Only for error output
     const complex double prefac = csqrt(M_PI_2/x);
     switch(typ) {
       case QPMS_BESSEL_REGULAR:
         kindchar = 'j';
-        amos_zbesj(&zr, &zi, &fnu, &kode, &n, cyr, cyi, &nz, &ierr);
+        ierr = zbesj(zr, zi, fnu, kode, n, cyr, cyi, &nz);
         break;
       case QPMS_BESSEL_SINGULAR:
         kindchar = 'y';
         {
-          DOUBLE_PRECISION_t cwrkr[lmax + 1], cwrki[lmax + 1];
-          amos_zbesy(&zr, &zi, &fnu, &kode, &n, cyr, cyi, &nz, cwrkr, cwrki, &ierr);
+          double cwrkr[lmax+1], cwrki[lmax+1];
+          ierr = zbesy(zr, zi, fnu, kode, n, cyr, cyi, &nz, cwrkr, cwrki);
         }
         break;
       case QPMS_HANKEL_PLUS:
       case QPMS_HANKEL_MINUS: 
         kindchar = 'h';
         {
-          const INTEGER_t m = (typ == QPMS_HANKEL_PLUS) ? 1 : 2;
-          amos_zbesh(&zr, &zi, &fnu, &kode, &m, &n, cyr, cyi, &nz, &ierr);
+          const int m = (typ == QPMS_HANKEL_PLUS) ? 1 : 2;
+          ierr = zbesh(zr, zi, fnu, kode, m, n, cyr, cyi, &nz);
         }
         break;
       default:
