@@ -286,10 +286,18 @@ typedef struct qpms_irot3_t {
 typedef struct qpms_vswf_set_spec_t {
         size_t n; ///< Actual number of VSWF indices included in ilist.
         qpms_uvswfi_t *ilist; ///< List of wave indices.
-        qpms_l_t lMax; ///< Maximum degree of the waves specified in ilist.
-        qpms_l_t lMax_M, ///< Maximum degree of the magnetic (M-type) waves.
-                 lMax_N, ///< Maximum degree of the electric (N-type) waves.
-                 lMax_L; ///< Maximum degree of the longitudinal (L-type) waves.
+	/// Maximum degree of the waves specified in ilist overall.
+	/** `max(lMax_M, lMax_N, lMax_L)` */
+        qpms_l_t lMax; 
+	/// Maximum degree of the magnetic (M-type) waves. 
+	/** Set to 0 if no magnetic waves present. */
+        qpms_l_t lMax_M, 
+	/// Maximum degree of the electric (N-type) waves. 
+	/** Set to 0 if no electric waves present. */
+                 lMax_N,
+	/// Maximum degree of the longitudinal (L-type) waves. 
+	/** Set to -1 if no longitudinal waves present. */
+                 lMax_L;
         size_t capacity; ///< Allocated capacity of ilist.
         qpms_normalisation_t norm; ///< Normalisation convention. To be set manually if needed.
 } qpms_vswf_set_spec_t;

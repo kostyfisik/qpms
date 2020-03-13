@@ -207,7 +207,16 @@ qpms_errno_t qpms_vswf_fill_csph(
 	csph_t kdrj, //< VSWF evaluation point.
 	qpms_bessel_t btyp, qpms_normalisation_t norm);
 
-qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
+/// Evaluate vector spherical harmonics at \a dir.
+/**
+ * The length of each of the target arrays shall be `lMax * (lMax + 2)`.
+ * If any of the target arrays pointers is NULL, the corresponding VSH will not be evaluated.
+ * The "zeroth" radial VSH \f$ \vshrad_0^0 \f$ is not evaluated.
+ */
+qpms_errno_t qpms_vecspharm_fill(
+		csphvec_t *const a1target, ///< Target array for radial VSH \f$ \vshrad \f$.
+	       	csphvec_t *const a2target, ///< Target array for "rotational" VSH \f$ \vshrot \f$.
+	       	csphvec_t *const a3target, ///< Target array for "gradiental" VSH \f$ \vshgrad \f$.
 		qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
 qpms_errno_t qpms_vecspharm_dual_fill(csphvec_t *const a1target, csphvec_t *const a2target, csphvec_t *const a3target,
 		qpms_l_t lMax, sph_t dir, qpms_normalisation_t norm);
