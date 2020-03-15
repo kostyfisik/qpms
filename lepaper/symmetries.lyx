@@ -277,9 +277,9 @@ literal "false"
 
 
 \begin_inset Formula 
-\[
-\left(\groupop g\ush lm\right)\left(\uvec r\right)=\ush lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\ush l{m'}\left(\uvec r\right)
-\]
+\begin{equation}
+\left(\groupop g\ush lm\right)\left(\uvec r\right)=\ush lm\left(R_{g}^{-1}\uvec r\right)=\sum_{m'=-l}^{l}D_{m,m'}^{l}\left(g\right)\ush l{m'}\left(\uvec r\right)\label{eq:Wigner matrices}
+\end{equation}
 
 \end_inset
 

@@ -206,6 +206,11 @@ status open
 
 
 \begin_inset FormulaMacro
+\newcommand{\ushD}[2]{Y'_{#1,#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\vsh}[3]{\vect A_{#1,#2,#3}}
 \end_inset
 

@@ -446,7 +446,53 @@ TODO názornější definice.
 
 \end_inset
 
- 
+ For later use, we also introduce 
+\begin_inset Quotes eld
+\end_inset
+
+dual
+\begin_inset Quotes erd
+\end_inset
+
+ spherical harmonics 
+\begin_inset Formula $\ushD lm$
+\end_inset
+
+ defined by duality relation with the 
+\begin_inset Quotes eld
+\end_inset
+
+usual
+\begin_inset Quotes erd
+\end_inset
+
+ spherical harmonics 
+\begin_inset Formula 
+\begin{equation}
+\iint\ushD{l'}{m'}\left(\uvec r\right)\ush lm\left(\uvec r\right)\,\ud\Omega=\delta_{\tau'\tau}\delta_{l'l}\delta_{m'm}\label{eq:dual spherical harmonics}
+\end{equation}
+
+\end_inset
+
+ and corresponding dual vector spherical harmonics 
+\begin_inset Formula 
+\begin{equation}
+\iint\vshD{\tau'}{l'}{m'}\left(\uvec r\right)\cdot\vsh{\tau}lm\left(\uvec r\right)\,\ud\Omega=\delta_{\tau'\tau}\delta_{l'l}\delta_{m'm}\label{eq:dual vsh}
+\end{equation}
+
+\end_inset
+
+(complex conjugation not implied in the dot product here).
+ In our convention, we have
+\begin_inset Formula 
+\begin{align*}
+\ush lm\left(\uvec r\right) & =\left(\ush lm\left(\uvec r\right)\right)^{*}=\left(-1\right)^{m}\ush l{-m}\left(\uvec r\right).\\
+\vshD{\tau}lm\left(\uvec r\right) & =\left(\vsh{\tau}lm\left(\uvec r\right)\right)^{*}=\left(-1\right)^{m}\vsh{\tau}l{-m}\left(\uvec r\right).
+\end{align*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1209,49 +1255,13 @@ literal "false"
 
 \end_inset
 
-with expansion coefficients
+where the expansion coefficients are obtained from the scalar products of
+ the amplitude and corresponding dual vector spherical harmonics
 \begin_inset Formula 
 \begin{eqnarray}
 \rcoeffptlm{}1lm\left(\uvec k,\vect E_{0}\right) & = & 4\pi i^{l}\vshD 1lm\left(\uvec k\right)\cdot\vect E_{0},\nonumber \\
 \rcoeffptlm{}2lm\left(\uvec k,\vect E_{0}\right) & = & -4\pi i^{l+1}\vshD 2lm\left(\uvec k\right)\cdot\vect E_{0}.\label{eq:plane wave expansion}
 \end{eqnarray}
-
-\end_inset
-
-where 
-\begin_inset Formula $\vshD{\tau}lm$
-\end_inset
-
- are the 
-\begin_inset Quotes eld
-\end_inset
-
-dual
-\begin_inset Quotes erd
-\end_inset
-
- vector spherical harmonics defined by duality relation with the 
-\begin_inset Quotes eld
-\end_inset
-
-usual
-\begin_inset Quotes erd
-\end_inset
-
- vector spherical harmonics 
-\begin_inset Formula 
-\begin{equation}
-\iint\vshD{\tau'}{l'}{m'}\left(\uvec r\right)\cdot\vsh{\tau}lm\left(\uvec r\right)\,\ud\Omega=\delta_{\tau'\tau}\delta_{l'l}\delta_{m'm}\label{eq:dual vsh}
-\end{equation}
-
-\end_inset
-
-(complex conjugation not implied in the dot product here).
- In our convention, we have
-\begin_inset Formula 
-\[
-\vshD{\tau}lm\left(\uvec r\right)=\left(\vsh{\tau}lm\left(\uvec r\right)\right)^{*}=\left(-1\right)^{m}\vsh{\tau}{l-}m\left(\uvec r\right).
-\]
 
 \end_inset
 
@@ -2203,7 +2213,7 @@ better wording
 
 \end_inset
 
-, 
+ 
 \begin_inset Formula 
 \begin{equation}
 \troprp ac=\troprp ab\troprp bc\label{eq:regular translation composition}

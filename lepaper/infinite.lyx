@@ -992,7 +992,33 @@ For reader's reference, we list the Ewald-type formulae for lattice sums
 \begin_inset Formula $\sigma_{l,m}\left(\vect k,\vect s\right)$
 \end_inset
 
- from 
+ rewritten in a way that is independent on particular phase or normalisation
+ conventions of vector spherical harmonics.
+ The derivations of these formulae can otherwise be
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+except for eq.
+ xxx todo
+\end_layout
+
+\end_inset
+
+ found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "moroz_quasi-periodic_2006,linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset CommandInset citation
 LatexCommand cite
 key "linton_lattice_2010"
@@ -1000,8 +1026,40 @@ literal "false"
 
 \end_inset
 
- rewritten in a way that is independent on particular phase or normalisation
- conventions of vector spherical harmonics.
+ (case 
+\begin_inset Formula $\vect s=0$
+\end_inset
+
+, all lattice dimensionalities), 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+ (
+\begin_inset Formula $d=2$
+\end_inset
+
+) , 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "moroz_quasi-periodic_2006"
+literal "false"
+
+\end_inset
+
+ (
+\begin_inset Formula $d=1$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1113,11 +1171,108 @@ Poznámka ohledně zahození radiální části u kulových fcí?
 \end_layout
 
 \begin_layout Standard
-The long-range part for cases 
+The explicit form of the long-range part of Ewald sum depends on the lattice
+ dimensionality.
+ The long-range parts are calculated as sums over the reciprocal lattice
+ 
+\begin_inset Formula $\Lambda^{*}$
+\end_inset
+
+ with lattice vectors 
+\begin_inset Formula $\left\{ \vect b_{i}\right\} _{i=1}^{d}$
+\end_inset
+
+ lying in the same subspace as the direct lattice vectors 
+\begin_inset Formula $\left\{ \vect a_{i}\right\} _{i=1}^{d}$
+\end_inset
+
+ and satisfying 
+\begin_inset Formula $\vect a_{i}\cdot\vect b_{j}=\delta_{ij}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+For case 
+\begin_inset Formula $d=3$
+\end_inset
+
+,
+\begin_inset Formula 
+\begin{equation}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\frac{\left(\left|\vect k+\vect K\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right)\label{eq:Ewald in 3D long-range part 3D}
+\end{equation}
+
+\end_inset
+
+regardless of chosen coordinate axes.
+ Here 
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+ is the unit cell volume (or length/area in the following 1D/2D lattice
+ cases).
+\end_layout
+
+\begin_layout Standard
+For cases 
 \begin_inset Formula $d=1,2$
 \end_inset
 
- reads
+, reasonable explicit forms assume that the lattice lies inside the 
+\begin_inset Formula $xy$
+\end_inset
+
+-plane 
+\begin_inset Formula $\left(\theta=\pi/2\right)$
+\end_inset
+
+.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+If a different coordinate system for 
+\begin_inset Formula $\sigma_{l,m}\left(\vect k,\vect s\right)$
+\end_inset
+
+ is needed, one can always perform the lattice summation in the coordinate
+ system described here, and rotate the result a posteriori using Wigner
+ matrices, according to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Wigner matrices"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ Moreover, we require that the component of 
+\begin_inset Formula $\vect s$
+\end_inset
+
+ normal to the lattice is parallel to the 
+\begin_inset Formula $z$
+\end_inset
+
+ axis, 
+\begin_inset Formula $\vect s=\vect s_{\parallel}+\vect s_{\perp}=\vect s_{\parallel}+s_{\perp}\uvec z$
+\end_inset
+
+ (this holds automatically for 
+\begin_inset Formula $d=2$
+\end_inset
+
+).
+ With these assumptions
 \begin_inset Note Note
 status open
 
@@ -1135,42 +1290,26 @@ FP: check sign of
 \begin_inset Formula 
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
 \times\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
 \end{multline}
 
 \end_inset
 
-and for 
-\begin_inset Formula $d=3$
+and if the normal component 
+\begin_inset Formula $s_{\perp}$
 \end_inset
 
-
+ is zero,
 \begin_inset Formula 
-\begin{equation}
-\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\frac{\left(\left|\vect k+\vect K\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right).\label{eq:Ewald in 3D long-range part 3D}
-\end{equation}
+\begin{multline}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
+\times\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D z = 0}
+\end{multline}
 
 \end_inset
 
-Here 
-\begin_inset Formula $\mathcal{A}$
-\end_inset
-
- is the unit cell volume (or length/area in the 1D/2D lattice cases).
- The sums are taken over the reciprocal lattice 
-\begin_inset Formula $\Lambda^{*}$
-\end_inset
-
- with lattice vectors 
-\begin_inset Formula $\left\{ \vect b_{i}\right\} _{i=1}^{d}$
-\end_inset
-
- satisfying 
-\begin_inset Formula $\vect a_{i}\cdot\vect b_{j}=\delta_{ij}$
-\end_inset
-
-.
  The function 
 \begin_inset Formula $\gamma\left(z\right)$
 \end_inset
@@ -1178,7 +1317,7 @@ Here
  used in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:Ewald in 3D long-range part 1D 2D"
+reference "eq:Ewald in 3D long-range part 1D 2D z = 0"
 plural "false"
 caps "false"
 noprefix "false"
@@ -1325,7 +1464,7 @@ noprefix "false"
  function being used in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:Ewald in 3D long-range part 1D 2D"
+reference "eq:Ewald in 3D long-range part 1D 2D z = 0"
 plural "false"
 caps "false"
 noprefix "false"
