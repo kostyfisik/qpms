@@ -758,10 +758,6 @@ name "fig:ewald branch cuts"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -861,7 +857,7 @@ noprefix "false"
 \end_inset
 
 , because for them, fortunately, exponentially convergent Ewald-type summation
- formulae have been already developed 
+ techniques have been developed 
 \begin_inset Note Note
 status open
 
@@ -874,7 +870,7 @@ add refs
  
 \begin_inset CommandInset citation
 LatexCommand cite
-key "moroz_quasi-periodic_2006,linton_one-_2009,linton_lattice_2010"
+key "moroz_quasi-periodic_2006,linton_one-_2009,linton_lattice_2010,kambe_theory_1967,kambe_theory_1967-1,kambe_theory_1968"
 literal "false"
 
 \end_inset
@@ -1009,8 +1005,8 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
-In all three dimensionality cases, the lattice sums are divided into short-range
- and long-range parts, 
+In all three lattice dimensionality cases, the lattice sums are divided
+ into short-range and long-range parts, 
 \begin_inset Formula $\sigma_{l,m}\left(\vect k,\vect s\right)=\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)$
 \end_inset
 
@@ -1037,17 +1033,32 @@ FP: Check sign of s
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{\kappa^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\\
 \times\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-\kappa/4\xi^{2}}\xi^{2l}\ud\xi\\
-+\delta_{\vect{R_{n}},-\vect s}\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right).\label{eq:Ewald in 3D short-range part}
++\delta_{\vect{R_{n}},-\vect s}\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa^{2}}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right).\label{eq:Ewald in 3D short-range part}
 \end{multline}
 
 \end_inset
 
-Here 
-\begin_inset Formula $\Gamma(a,z)$
+The formal 
+\begin_inset Formula $\left(1-\delta_{\vect{R_{n}},-\vect s}\right)$
 \end_inset
 
- is the incomplete Gamma function.
- The last (
+ factor here accounts for leaving out the direct excitation of a particle
+ by itself, corresponding to the 
+\begin_inset Formula $\left(1-\delta_{\alpha\beta}\delta_{\vect m\vect 0}\right)$
+\end_inset
+
+ factor in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:W definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The leaving out then causes an additional (
 \begin_inset Quotes eld
 \end_inset
 
@@ -1055,7 +1066,7 @@ self-interaction
 \begin_inset Quotes erd
 \end_inset
 
-) term in 
+) term on the last line of 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:Ewald in 3D short-range part"
@@ -1069,8 +1080,26 @@ noprefix "false"
 \begin_inset Formula $\vect s$
 \end_inset
 
- coincides with a lattice point, is often noted separately in the literature.
+ coincides with a lattice point.
+ Strictly speaking, this is not a 
+\begin_inset Quotes eld
+\end_inset
+
+short-range
+\begin_inset Quotes erd
+\end_inset
+
+ term, hence it is often noted separately in the literature; however, we
+ keep it in 
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)$
+\end_inset
+
+ for formal convenience.
  
+\begin_inset Formula $\Gamma(a,z)$
+\end_inset
+
+ is the incomplete Gamma function.
 \begin_inset Note Note
 status open
 
@@ -1080,6 +1109,10 @@ Poznámka ohledně zahození radiální části u kulových fcí?
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Standard
 The long-range part for cases 
 \begin_inset Formula $d=1,2$
 \end_inset

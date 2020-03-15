@@ -313,5 +313,14 @@ Next, we study the eigenmode problem of the same rectangular arrays.
  as in [TODO REF].
 \end_layout
 
+\begin_layout Subsubsection
+lMax vs radius
+\end_layout
+
+\begin_layout Standard
+square lattice of spherical particles at gamma point, modes as a function
+ of particle radius for several different lMaxes.
+\end_layout
+
 \end_body
 \end_document

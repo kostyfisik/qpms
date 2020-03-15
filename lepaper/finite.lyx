@@ -193,7 +193,7 @@ status open
 frequency-space Maxwell's equations
 \begin_inset Formula 
 \begin{align*}
-\nabla\times\vect E\left(\vect r,\omega\right)-ik\eta_{0}\eta\vect H\left(\vect r,\omega\right) & =0,\\
+\nabla\times\vect E\left(\vect r,\omega\right)-i\kappa\eta_{0}\eta\vect H\left(\vect r,\omega\right) & =0,\\
 \eta_{0}\eta\nabla\times\vect H\left(\vect r,\omega\right)+ik\vect E\left(\vect r,\omega\right) & =0.
 \end{align*}
 
@@ -218,7 +218,35 @@ todo define
 
 \end_inset
 
- with 
+ with wave number
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Throughout this text, we use the letter 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ for wave number in order to avoid confusion with Bloch vector 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ and its magnitude, introduced in Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Infinite"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ 
 \begin_inset Formula $\kappa=\kappa\left(\omega\right)=\omega\sqrt{\mubg(\omega)\epsbg(\omega)}/c_{0}$
 \end_inset
 
@@ -268,18 +296,18 @@ regular
 outgoing
 \emph default
  vector spherical wavefunctions (VSWFs) 
-\begin_inset Formula $\vswfrtlm{\tau}lm\left(k\vect r\right)$
+\begin_inset Formula $\vswfrtlm{\tau}lm\left(\kappa\vect r\right)$
 \end_inset
 
  and 
-\begin_inset Formula $\vswfouttlm{\tau}lm\left(k\vect r\right)$
+\begin_inset Formula $\vswfouttlm{\tau}lm\left(\kappa\vect r\right)$
 \end_inset
 
 , respectively, defined as follows:
 \begin_inset Formula 
 \begin{align}
-\vswfrtlm 1lm\left(k\vect r\right) & =j_{l}\left(\kappa r\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfrtlm 2lm\left(k\vect r\right) & =\frac{1}{\kappa r}\frac{\ud\left(\kappa rj_{l}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(\kappa r\right)}{kr}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
+\vswfrtlm 1lm\left(\kappa\vect r\right) & =j_{l}\left(\kappa r\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
+\vswfrtlm 2lm\left(\kappa\vect r\right) & =\frac{1}{\kappa r}\frac{\ud\left(\kappa rj_{l}\left(\kappa r\right)\right)}{\ud\left(\kappa r\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(\kappa r\right)}{\kappa r}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
 \end{align}
 
 \end_inset
@@ -287,23 +315,59 @@ outgoing
 
 \begin_inset Formula 
 \begin{align}
-\vswfouttlm 1lm\left(k\vect r\right) & =h_{l}^{\left(1\right)}\left(kr\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfouttlm 2lm\left(k\vect r\right) & =\frac{1}{kr}\frac{\ud\left(krh_{l}^{\left(1\right)}\left(\kappa r\right)\right)}{\ud\left(kr\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(\kappa r\right)}{\kappa r}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
+\vswfouttlm 1lm\left(\kappa\vect r\right) & =h_{l}^{\left(1\right)}\left(\kappa r\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
+\vswfouttlm 2lm\left(\kappa\vect r\right) & =\frac{1}{kr}\frac{\ud\left(\kappa rh_{l}^{\left(1\right)}\left(\kappa r\right)\right)}{\ud\left(\kappa r\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(\kappa r\right)}{\kappa r}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
  & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,\nonumber 
 \end{align}
 
 \end_inset
 
 where 
-\begin_inset Formula $\vect r=r\uvec r$
+\begin_inset Formula $\vect r=r\uvec r=r\left(\sin\theta\left(\uvec x\cos\phi+\uvec y\sin\phi\right)+\uvec z\cos\theta\right)$
 \end_inset
 
-, 
+; 
 \begin_inset Formula $j_{l}\left(x\right),h_{l}^{\left(1\right)}\left(x\right)=j_{l}\left(x\right)+iy_{l}\left(x\right)$
 \end_inset
 
  are the regular spherical Bessel function and spherical Hankel function
- of the first kind, respectively, as in 
+ of the first kind
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+The interpretation of 
+\begin_inset Formula $\vswfouttlm{\tau}lm\left(\kappa\vect r\right)$
+\end_inset
+
+ containing spherical Hankel functions of the first kind as 
+\emph on
+outgoing
+\emph default
+ waves at positive frequencies is associated with a specific choice of sign
+ in the exponent of time-frequency transformation, 
+\begin_inset Formula $\psi\left(t\right)=\left(2\pi\right)^{-\pi/2}\int\psi\left(\omega\right)e^{-i\omega t}\,\ud\omega$
+\end_inset
+
+.
+ This matters especially when considering materials with gain or loss: in
+ this convention, lossy materials will have refractive index (and wavenumber
+ 
+\begin_inset Formula $\kappa$
+\end_inset
+
+, at a given positive frequency) with 
+\emph on
+positive
+\emph default
+ imaginary part, and gainy materials will have it negative and, for example,
+ Drude-Lorenz model of a lossy medium will have poles in the lower complex
+ half-plane.
+\end_layout
+
+\end_inset
+
+, respectively, as in 
 \begin_inset CommandInset citation
 LatexCommand cite
 after "§10.47"
@@ -346,12 +410,16 @@ literal "false"
 , i.e.
 \begin_inset Formula 
 \[
-\ush lm=\left(\frac{\left(l-m\right)!\left(2l+1\right)}{4\pi\left(l+m\right)!}\right)^{\frac{1}{2}}e^{im\phi}\dlmfFer lm\left(\cos\theta\right)
+\ush lm\left(\uvec r\right)=\left(\frac{\left(l-m\right)!\left(2l+1\right)}{4\pi\left(l+m\right)!}\right)^{\frac{1}{2}}e^{im\phi}\dlmfFer lm\left(\cos\theta\right)
 \]
 
 \end_inset
 
-where importantly, the Ferrers functions 
+where 
+\begin_inset Formula $ $
+\end_inset
+
+ importantly, the Ferrers functions 
 \begin_inset Formula $\dlmfFer lm$
 \end_inset
 
