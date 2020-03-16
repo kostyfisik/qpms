@@ -112,17 +112,6 @@ Finally, we present some results obtained with the QPMS suite as well as
 examples
 \family default
  directory of the QPMS source repository.
- The benchmarks require SCUFF-EM of version xxx
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-Add the version when possible.
-\end_layout
-
-\end_inset
-
- or newer.
 \end_layout
 
 \begin_layout Subsection
@@ -314,12 +303,251 @@ Next, we study the eigenmode problem of the same rectangular arrays.
 \end_layout
 
 \begin_layout Subsubsection
-lMax vs radius
+Effects of multipole cutoff
 \end_layout
 
 \begin_layout Standard
-square lattice of spherical particles at gamma point, modes as a function
- of particle radius for several different lMaxes.
+In order to demonstrate some of the consequences of multipole cutoff, we
+ consider a square lattice with periodicity 
+\begin_inset Formula $p_{x}=p_{y}=580\,\mathrm{nm}$
+\end_inset
+
+ filled with spherical golden nanoparticles (with Drude-Lorentz model for
+ permittivity; one sphere per unit cell) embedded in a medium with a constant
+ refractive index 
+\begin_inset Formula $n=1.52$
+\end_inset
+
+.
+ We vary the multipole cutoff 
+\begin_inset Formula $l_{\max}=1,\dots,5$
+\end_inset
+
+ and the particle radius 
+\begin_inset Formula $r=50\,\mathrm{nm},\dots,300\,\mathrm{nm}$
+\end_inset
+
+ (note that right end of this interval is unphysical, as the spheres touch
+ at 
+\begin_inset Formula $r=290\,\mathrm{nm}$
+\end_inset
+
+) We look at the lattice modes at the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point right below the diffracted order crossing at 1.406 eV using Beyn's
+ algorithm; the integration contour for Beyn's algorithm being a circle
+ with centre at 
+\begin_inset Formula $\omega=\left(1.335+0i\right)\mathrm{eV}/\hbar$
+\end_inset
+
+ and radius 
+\begin_inset Formula $70.3\,\mathrm{meV}/\hbar$
+\end_inset
+
+, and 410 sample points.
+ We classify each of the found modes as one of the ten irreducible representatio
+ns of the corresponding little group at the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point, 
+\begin_inset Formula $D_{4h}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The real and imaginary parts of the obtained mode frequencies are shown
+ in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "square lattice var lMax, r at gamma point Au"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The most obvious (and expected) effect of the cutoff is the reduction of
+ the number of modes found: the case 
+\begin_inset Formula $l_{\max}=1$
+\end_inset
+
+ (dipole-dipole approximation) contains only the modes with nontrivial dipole
+ excitations (
+\begin_inset Formula $x,y$
+\end_inset
+
+ dipoles in 
+\begin_inset Formula $\mathrm{E}'$
+\end_inset
+
+ and 
+\begin_inset Formula $z$
+\end_inset
+
+ dipole in 
+\begin_inset Formula $\mathrm{A_{2}''})$
+\end_inset
+
+.
+ For relatively small particle sizes, the main effect of increasing 
+\begin_inset Formula $l_{\max}$
+\end_inset
+
+ is making the higher multipolar modes accessible at all.
+ As the particle radius increases, there start to appear more non-negligible
+ elements in the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix, and the cutoff then affects the mode frequencies as well.
+\end_layout
+
+\begin_layout Standard
+Another effect related to mode finding is, that increasing 
+\begin_inset Formula $l_{\max}$
+\end_inset
+
+ leads to overall decrease of the lowest singular values of the mode problem
+ matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+, so that they are very close to zero for a large frequency area, making
+ it harder to determine the exact roots of the mode equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, which might lead to some spurious results: Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "square lattice var lMax, r at gamma point Au"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ shows modes with positive imaginary frequencies for 
+\begin_inset Formula $l_{\max}\ge3$
+\end_inset
+
+, which is unphysical (positive imaginary frequency means effective losses
+ of the medium, which, together with the lossy particles, prevent emergence
+ of propagating modes).
+ However, the spurious frequencies can be made disappear by tuning the parameter
+s of Beyn's algorithm (namely, stricter residual threshold), but that might
+ lead to losing legitimate results as well, especially if they are close
+ to the integration contour.
+ In such cases, it is often helpful to run Beyn's algorithm several times
+ with different contours enclosing smaller frequency areas.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figs/beyn_lMax_cutoff_Au_sphere.pdf
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Consequences of multipole degree cutoff: Eigenfrequencies found with Beyn's
+ algorithm for an infinite square lattice of golden spherical nanoparticles
+ with varying particle size.
+\begin_inset CommandInset label
+LatexCommand label
+name "square lattice var lMax, r at gamma point Au"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figs/beyn_lMax_cutoff_const_eps_sphere.pdf
+	width 100text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Consequences of multipole degree cutoff: Eigenfrequencies found with Beyn's
+ algorithm for an infinite square lattice of spherical nanoparticles with
+ constant relative permittivity 
+\begin_inset Formula $\epsilon=4.0+0.7i$
+\end_inset
+
+ and varying particle size.
+\begin_inset CommandInset label
+LatexCommand label
+name "square lattice var lMax, r at gamma point constant epsilon"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
