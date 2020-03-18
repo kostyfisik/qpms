@@ -611,7 +611,7 @@ cdef class ScatteringSystem:
         cdef intptr_t offset = 0
         for pi in range(self.s[0].p_count):
             ar_view[pi] = offset
-            offset += self.s[0].tm[self.s[0].p[pi].tmatrix_id].spec[0].n
+            offset += qpms_ss_bspec_pi(self.s, pi)[0].n
         return ar
 
     property positions:

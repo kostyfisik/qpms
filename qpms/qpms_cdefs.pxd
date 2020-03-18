@@ -624,6 +624,7 @@ cdef extern from "scatsystem.h":
     beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(const qpms_scatsys_t *ss, const double *k,
             cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 
             double rank_tol, size_t rank_sel_min, double res_tol)
+    const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi) 
 
 cdef extern from "ewald.h":
     struct qpms_csf_result:
