@@ -138,8 +138,9 @@ if a.plot or (a.plot_out is not None):
 
     import matplotlib
     matplotlib.use('pdf')
-    from matplotlib import pyplot as plt
+    from matplotlib import pyplot as plt, cm
     t, l, m = bspec.tlm()
+    phasecm = cm.twilight
 
     fig, axes = plt.subplots(nelem, 6, figsize=(figscale*6, figscale*nelem))
     axes[0,0].set_title("abs / E,1,−1")
@@ -153,12 +154,28 @@ if a.plot or (a.plot_out is not None):
         axes[y,0].set_ylabel("%s,%d,%+d"%('E' if t[y]==2 else 'M', l[y], m[y],))
         fulvec = scattered_full[y]
         vecgrid = fullvec2grid(fulvec)
-        axes[y,0].imshow(abs(vecgrid[...,0]))
-        axes[y,1].imshow(np.angle(vecgrid[...,0]))
-        axes[y,2].imshow(abs(vecgrid[...,1]))
-        axes[y,3].imshow(np.angle(vecgrid[...,1]))
-        axes[y,4].imshow(abs(vecgrid[...,2]))
-        axes[y,5].imshow(np.angle(vecgrid[...,2]))
+        lemax = np.amax(abs(vecgrid))
+        if(np.amax(abs(vecgrid[...,0])) > lemax*1e-5):
+            axes[y,0].imshow(abs(vecgrid[...,0]), vmin=0)
+            axes[y,0].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,0])), horizontalalignment='center', verticalalignment='center', transform=axes[y,0].transAxes)
+            axes[y,1].imshow(np.angle(vecgrid[...,0]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
+        else:
+            axes[y,0].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+            axes[y,1].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+        if(np.amax(abs(vecgrid[...,1])) > lemax*1e-5):
+            axes[y,2].imshow(abs(vecgrid[...,1]), vmin=0)
+            axes[y,2].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,1])), horizontalalignment='center', verticalalignment='center', transform=axes[y,2].transAxes)
+            axes[y,3].imshow(np.angle(vecgrid[...,1]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
+        else:
+            axes[y,2].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+            axes[y,3].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+        if(np.amax(abs(vecgrid[...,2])) > lemax*1e-5):
+            axes[y,4].imshow(abs(vecgrid[...,2]), vmin=0)
+            axes[y,4].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,2])), horizontalalignment='center', verticalalignment='center', transform=axes[y,4].transAxes)
+            axes[y,5].imshow(np.angle(vecgrid[...,2]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
+        else:
+            axes[y,4].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+            axes[y,5].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
     
     plotfile = defaultprefix + ".pdf" if a.plot_out is None else a.plot_out
     fig.savefig(plotfile)
