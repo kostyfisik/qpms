@@ -142,40 +142,29 @@ if a.plot or (a.plot_out is not None):
     t, l, m = bspec.tlm()
     phasecm = cm.twilight
 
-    fig, axes = plt.subplots(nelem, 6, figsize=(figscale*6, figscale*nelem))
-    axes[0,0].set_title("abs / E,1,−1")
-    axes[0,1].set_title("arg / E,1,−1")
-    axes[0,2].set_title("abs / E,1,0")
-    axes[0,3].set_title("arg / E,1,0")
-    axes[0,4].set_title("abs / E,1,+1")
-    axes[0,5].set_title("arg / E,1,+1")
+    fig, axes = plt.subplots(nelem, 12, figsize=(figscale*12, figscale*nelem))
+    for yp in range(0,3):
+        axes[0,4*yp+0].set_title("abs / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
+        axes[0,4*yp+1].set_title("arg / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
+        axes[0,4*yp+2].set_title("Fabs / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
+        axes[0,4*yp+3].set_title("Farg / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
 
     for y in range(nelem):
         axes[y,0].set_ylabel("%s,%d,%+d"%('E' if t[y]==2 else 'M', l[y], m[y],))
         fulvec = scattered_full[y]
         vecgrid = fullvec2grid(fulvec)
+        vecgrid_ff = np.fft.fftshift(np.fft.fft2(vecgrid, axes=(0,1)),axes=(0,1))
         lemax = np.amax(abs(vecgrid))
-        if(np.amax(abs(vecgrid[...,0])) > lemax*1e-5):
-            axes[y,0].imshow(abs(vecgrid[...,0]), vmin=0)
-            axes[y,0].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,0])), horizontalalignment='center', verticalalignment='center', transform=axes[y,0].transAxes)
-            axes[y,1].imshow(np.angle(vecgrid[...,0]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
-        else:
-            axes[y,0].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-            axes[y,1].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-        if(np.amax(abs(vecgrid[...,1])) > lemax*1e-5):
-            axes[y,2].imshow(abs(vecgrid[...,1]), vmin=0)
-            axes[y,2].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,1])), horizontalalignment='center', verticalalignment='center', transform=axes[y,2].transAxes)
-            axes[y,3].imshow(np.angle(vecgrid[...,1]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
-        else:
-            axes[y,2].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-            axes[y,3].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-        if(np.amax(abs(vecgrid[...,2])) > lemax*1e-5):
-            axes[y,4].imshow(abs(vecgrid[...,2]), vmin=0)
-            axes[y,4].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,2])), horizontalalignment='center', verticalalignment='center', transform=axes[y,4].transAxes)
-            axes[y,5].imshow(np.angle(vecgrid[...,2]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
-        else:
-            axes[y,4].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-            axes[y,5].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+        for yp in range(0,3):
+            if(np.amax(abs(vecgrid[...,yp])) > lemax*1e-5):
+                axes[y,yp*4].imshow(abs(vecgrid[...,yp]), vmin=0)
+                axes[y,yp*4].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,yp])), horizontalalignment='center', verticalalignment='center', transform=axes[y,yp*4].transAxes)
+                axes[y,yp*4+1].imshow(np.angle(vecgrid[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
+                axes[y,yp*4+2].imshow(abs(vecgrid_ff[...,yp]), vmin=0)
+                axes[y,yp*4+3].imshow(np.angle(vecgrid_ff[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
+            else:
+                for c in range(0,4):
+                    axes[y,yp*4+c].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
     
     plotfile = defaultprefix + ".pdf" if a.plot_out is None else a.plot_out
     fig.savefig(plotfile)
