@@ -201,10 +201,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
@@ -299,7 +295,15 @@ Next, we study the eigenmode problem of the same rectangular arrays.
  need to have a model of the material optical properties also for complex
  frequencies.
  So in this case we use the Drude-Lorentz model for gold with parameters
- as in [TODO REF].
+ as in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "rakic_optical_1998"
+literal "false"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsubsection

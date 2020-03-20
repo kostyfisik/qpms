@@ -411,6 +411,70 @@ CHECK!
  corresponding to the zero singular value.
 \end_layout
 
+\begin_layout Standard
+Loss in the scatterers causes the solutions of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ shift to complex frequencies.
+ If the background medium has constant real refractive index 
+\begin_inset Formula $n$
+\end_inset
+
+, negative (or positive) imaginary part of the frequency 
+\begin_inset Formula $\omega$
+\end_inset
+
+ causes an artificial gain (or loss) in the medium, which manifests itself
+ as exponential magnification (or attenuation) of the radial parts of the
+ translation operators, 
+\begin_inset Formula $h_{l}^{\left(1\right)}\left(rn\omega/c\right)$
+\end_inset
+
+, w.r.t.
+ the distance; the gain might then balance the losses in particles, resulting
+ in propagating 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+lepší slovo
+\end_layout
+
+\end_inset
+
+modes satisfying eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The gain in the system introduces some challenges, which we will discuss
+ in Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "subsec:Physical-interpretation-of"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsection
 Numerical solution
 \end_layout
@@ -853,10 +917,14 @@ noprefix "false"
 
  we demonstratively expressed the translation operator elements as linear
  combinations of (outgoing) scalar spherical wavefunctions 
-\begin_inset Formula $\sswfoutlm lm\left(\vect r\right)=h_{l}^{\left(1\right)}\left(r\right)\ush lm\left(\uvec r\right)$
+\begin_inset Formula 
+\begin{equation}
+\sswfoutlm lm\left(\vect r\right)=h_{l}^{\left(1\right)}\left(r\right)\ush lm\left(\uvec r\right),\label{eq:scalar spherical wavefunctions}
+\end{equation}
+
 \end_inset
 
-, because for them, fortunately, exponentially convergent Ewald-type summation
+ because for them, fortunately, exponentially convergent Ewald-type summation
  techniques have been developed 
 \begin_inset Note Note
 status open
@@ -1606,6 +1674,127 @@ literal "false"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsection
+Physical interpretation of wavenumber with negative imaginary part; screening
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Physical-interpretation-of"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Scattering cross sections and field intensities in periodic system
+\end_layout
+
+\begin_layout Standard
+Once the scattering 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem unit cell block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ or mode problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is solved, one can evaluate some useful related quantities, such as scattering
+ cross sections (coefficients) or field intensities.
+\end_layout
+
+\begin_layout Standard
+For plane wave scattering on 2D lattices, one can directly use the formulae
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:extincion CS multi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:absorption CS multi alternative"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, taking the sums over scatterers inside one unit cell, to get the extinction
+ and absorption cross sections per unit cell.
+ From these, quantities such as absorption, extinction coefficients are
+ obtained using suitable normalisation by unit cell size, depending on lattice
+ dimensionality.
+\end_layout
+
+\begin_layout Standard
+Ewald summation can be used for evaluating scattered field intensities outside
+ scatterers' circumscribing spheres: thes requires expressing VSWF cartesian
+ components in terms of scalar spherical wavefunctions defined in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:scalar spherical wavefunctions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Fortunately, these can be obtained easily from the expressions for the
+ translation operator: 
+\begin_inset Formula 
+\begin{align*}
+\vswfrtlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\tropr_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),\\
+\vswfouttlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),
+\end{align*}
+
+\end_inset
+
+where we used eqs.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:regular vswf translation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:singular vswf translation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and the fact that all the other regular VSWFs except for 
+\begin_inset Formula $\vswfrtlm 21{m'}$
+\end_inset
+
+ vanish at origin.
 \end_layout
 
 \end_body

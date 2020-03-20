@@ -394,7 +394,25 @@ vector spherical harmonics
 
 \end_inset
 
-In our convention, the (scalar) spherical harmonics 
+Note that the regular waves 
+\begin_inset Formula $\vswfrtlm{\tau}lm$
+\end_inset
+
+ (with fields expressed in cartesian coordinates) have all well-defined
+ limits in the origin, and except for the 
+\begin_inset Quotes eld
+\end_inset
+
+electric dipolar
+\begin_inset Quotes erd
+\end_inset
+
+ waves 
+\begin_inset Formula $\vswfrtlm 21m$
+\end_inset
+
+, they vanish.
+ In our convention, the (scalar) spherical harmonics 
 \begin_inset Formula $\ush lm$
 \end_inset
 
@@ -2443,10 +2461,10 @@ noprefix "false"
  cross sections suitable for numerical evaluation: 
 \begin_inset Formula 
 \begin{eqnarray}
-\sigma_{\mathrm{ext}}\left(\uvec k\right) & = & -\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\outcoeffp p=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\left(\Tp p+\Tp p^{\dagger}\right)\rcoeffp p,\label{eq:extincion CS multi}\\
-\sigma_{\mathrm{scat}}\left(\uvec k\right) & = & \frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q\nonumber \\
+\sigma_{\mathrm{ext}}\left(\uvec k,\hat{\vect E}_{0}\right) & = & -\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\outcoeffp p=-\frac{1}{2k^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\Re\sum_{p\in\mathcal{P}}\rcoeffincp p^{\dagger}\left(\Tp p+\Tp p^{\dagger}\right)\rcoeffp p,\label{eq:extincion CS multi}\\
+\sigma_{\mathrm{scat}}\left(\uvec k,\hat{\vect E}_{0}\right) & = & \frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\outcoeffp p^{\dagger}\troprp pq\outcoeffp q\nonumber \\
  &  & =\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\sum_{q\in\mathcal{P}}\rcoeffp p^{\dagger}\Tp p^{\dagger}\troprp pq\Tp q\rcoeffp q,\label{eq:scattering CS multi}\\
-\sigma_{\mathrm{abs}}\left(\uvec k\right) & = & -\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}}\troprp pq\outcoeffp q\right)\right).\nonumber \\
+\sigma_{\mathrm{abs}}\left(\uvec k,\hat{\vect E}_{0}\right) & = & -\frac{1}{\kappa^{2}\left\Vert \vect E_{0}\right\Vert ^{2}}\sum_{p\in\mathcal{P}}\Re\left(\outcoeffp p^{\dagger}\left(\rcoeffincp p+\sum_{q\in\mathcal{P}}\troprp pq\outcoeffp q\right)\right).\nonumber \\
 \label{eq:absorption CS multi}
 \end{eqnarray}
 
