@@ -26,7 +26,7 @@ int main() {
 
   beyn_result_t *result =
     beyn_solve(dim, L, M_function, NULL /*M_inv_Vhat_function*/, NULL /*params*/,
-      contour, 1e-4, 1e-4);
+      contour, 1e-4, 1, 1e-4);
   printf("Found %zd eigenvalues:\n", result->neig);
   for (size_t i = 0; i < result->neig; ++i) {
     complex double eig = result->eigval[i];

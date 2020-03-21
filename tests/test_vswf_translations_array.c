@@ -106,7 +106,7 @@ int test_sphwave_translation(const qpms_trans_calculator *c, qpms_bessel_t wavet
 
     complex double A_whole[nelem][nelem], B_whole[nelem][nelem];
     if (qpms_trans_calculator_get_AB_arrays(c,(complex double *) A_whole, (complex double *) B_whole,
-          1, nelem, ss, (w1s.r > ss.r), wavetype)) abort();
+          1, nelem, sph2csph(ss), (w1s.r > ss.r), wavetype)) abort();
 
 
 		for(qpms_y_t y1 = 0; y1 < nelem; ++y1) { //index of the wave originating in o1 that will be reconstructed in o2

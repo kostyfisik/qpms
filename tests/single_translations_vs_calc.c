@@ -22,7 +22,7 @@ int test_AB_single_vs_array(const qpms_trans_calculator *c, qpms_bessel_t wavety
     cart3_t kd_cart) 
 {
   int fails = 0;
-  sph_t kd_sph = cart2sph(kd_cart);
+  csph_t kd_sph = sph2csph(cart2sph(kd_cart));
 
   complex double A[ssq(c->nelem)], B[ssq(c->nelem)];
   QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_AB_arrays(c, A, B, c->nelem, 1, kd_sph, false, wavetype));
