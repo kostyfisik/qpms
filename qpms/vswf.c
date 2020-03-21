@@ -611,14 +611,13 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *bspec,
     const complex double *coeffs, const csph_t kr,
     const qpms_bessel_t btyp) {
   QPMS_UNTESTED;
-  const qpms_l_t lMax = bspec->lMax;
   complex double *cM = NULL, *cN = NULL, *cL = NULL, cL00 = 0;
   if (bspec->lMax_L > 0)
-    QPMS_CRASHING_CALLOC(cL, lMax, sizeof(complex double));
+    QPMS_CRASHING_CALLOC(cL, bspec->n, sizeof(complex double));
   if (bspec->lMax_M > 0)
-    QPMS_CRASHING_CALLOC(cM, lMax, sizeof(complex double));
+    QPMS_CRASHING_CALLOC(cM, bspec->n, sizeof(complex double));
   if (bspec->lMax_N > 0)
-    QPMS_CRASHING_CALLOC(cN, lMax, sizeof(complex double));
+    QPMS_CRASHING_CALLOC(cN, bspec->n, sizeof(complex double));
   for (size_t i = 0; i < bspec->n; ++i) {
     if (bspec->ilist[i] == 0) // L00, needs special care
       cL00 = coeffs[i];
@@ -644,7 +643,7 @@ csphvec_t qpms_eval_uvswf(const qpms_vswf_set_spec_t *bspec,
       }
     }
   }
-  csphvec_t result = qpms_eval_vswf_csph(kr, cL, cM, cN, lMax, btyp, bspec->norm);
+  csphvec_t result = qpms_eval_vswf_csph(kr, cL, cM, cN, bspec->lMax, btyp, bspec->norm);
   free(cM); free(cN); free(cL);
   if(cL00)
     result = csphvec_add(result,
