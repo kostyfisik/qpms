@@ -727,6 +727,37 @@ ccart3_t qpms_scatsysw_scattered_E(
 		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
 		);
 
+/// Evaluates scattered electric field at a point, given a full vector of scattered field coefficients.
+/**
+ * This is an alternative implementation of qpms_scatsys_scattered_E(), and should give the same results
+ * up to rounding errors.
+ *
+ * \return Complex electric field at the point defined by \a evalpoint.
+ *
+ * \see qpms_scatsys_scattered_E()
+ */
+ccart3_t qpms_scatsys_scattered_E__alt(
+		const qpms_scatsys_t *ss,
+		complex double wavenumber, ///< Wavenumber of the background medium.
+		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
+		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
+		);
+
+/// Evaluates scattered electric field at a point, given a full vector of scattered field coefficients.
+/**
+ * This is an alternative implementation of qpms_scatsys_scattered_E(), and should give the same results
+ * up to rounding errors.
+ *
+ * \return Complex electric field at the point defined by \a evalpoint.
+ *
+ * \see qpms_scatsysw_scattered_E()
+ */
+ccart3_t qpms_scatsysw_scattered_E__alt(
+		const qpms_scatsys_at_omega_t *ssw,
+		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
+		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
+		);
+
 #if 0
 /** Evaluates partial scattered fields (corresponding to a given irrep-reduced excitation vector)
  * at a given point.

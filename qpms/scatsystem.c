@@ -2018,6 +2018,69 @@ ccart3_t qpms_scatsysw_scattered_E(const qpms_scatsys_at_omega_t *ssw,
       cvf, where);
 }
 
+// Alternative implementation, using translation operator and regular dipole waves at zero
+ccart3_t qpms_scatsys_scattered_E__alt(const qpms_scatsys_t *ss, 
+    const complex double k,
+    const complex double *cvf, 
+    const cart3_t where
+    ) {
+  QPMS_UNTESTED;
+  ccart3_t res = {0,0,0};
+  ccart3_t res_kc = {0,0,0}; // kahan sum compensation
+
+  // bspec containing only electric dipoles
+  const qpms_vswf_set_spec_t dipspec = {
+    .n = 3,
+    .ilist = (qpms_uvswfi_t[]){
+      qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, -1, 1),
+      qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC,  0, 1),
+      qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, +1, 1),
+    },
+    .lMax=1, .lMax_M=0, .lMax_N=1, .lMax_L=-1,
+    .capacity=0,
+    .norm = ss->c->normalisation,
+  };
+
+  ccart3_t regdipoles_0[3]; {
+    const sph_t origin_sph = {.r = 0, .theta = M_PI_2, .phi=0}; // Should work with any theta/phi (TESTWORTHY)
+    csphvec_t regdipoles_0_sph[3];
+    QPMS_ENSURE_SUCCESS(qpms_uvswf_fill(regdipoles_0_sph, &dipspec,
+          sph2csph(origin_sph), QPMS_BESSEL_REGULAR));
+    for(int i = 0; i < 3; ++i)
+      regdipoles_0[i] = csphvec2ccart(regdipoles_0_sph[i], origin_sph);
+  }
+
+  complex double *s; // Translation matrix
+  QPMS_CRASHING_MALLOC(s, ss->max_bspecn * sizeof(*s) * dipspec.n);
+
+  for (qpms_ss_pi_t pi = 0; pi < ss->p_count; ++pi) {
+    const qpms_vswf_set_spec_t *bspec = qpms_ss_bspec_pi(ss, pi);
+    const cart3_t particle_pos = ss->p[pi].pos;
+    const complex double *particle_cv = cvf + ss->fecv_pstarts[pi];
+
+    const cart3_t origin_cart = {0, 0, 0};
+
+    QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(
+          ss->c, s, &dipspec, 1, bspec, 3, k, particle_pos, where,
+          QPMS_HANKEL_PLUS));
+
+    for(size_t i = 0; i < bspec->n; ++i)
+      for(size_t j = 0; j < 3; ++j){
+        ccart3_t summand = ccart3_scale(particle_cv[i] * s[3*i+j], regdipoles_0[j]);
+        ckahanadd(&(res.x), &(res_kc.x), summand.x);
+        ckahanadd(&(res.y), &(res_kc.y), summand.y);
+        ckahanadd(&(res.z), &(res_kc.z), summand.z);
+      }
+  }
+  free(s);
+  return res;
+}
+
+ccart3_t qpms_scatsysw_scattered_E__alt(const qpms_scatsys_at_omega_t *ssw, 
+    const complex double *cvf,  const cart3_t where) {
+  return qpms_scatsys_scattered_E__alt(ssw->ss, ssw->wavenumber,
+      cvf, where);
+}
 
 #if 0
 ccart3_t qpms_scatsys_scattered_E_irrep(const qpms_scatsys_t *ss,
