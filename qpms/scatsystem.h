@@ -240,7 +240,7 @@ typedef struct qpms_scatsys_at_omega_t {
 	qpms_tmatrix_t **tm;
 	complex double omega; ///< Angular frequency
 	qpms_epsmu_t medium; ///< Background medium optical properties at the given frequency
-	complex double wavenumber; ///< Background medium wavenumber
+	complex double wavenumber; ///< Background medium wave number
 } qpms_scatsys_at_omega_t;
 
 
@@ -692,19 +692,40 @@ complex double *qpms_scatsys_incident_field_vector_irrep_packed(
 		);
 #endif
 
-/// Evaluates scattered fields (corresponding to a given excitation vector) at a given point.
+/// Evaluates scattered electric field at a point, given a full vector of scattered field coefficients.
 /**
- * By scattered field, one assumes a linear combination of positive-Hankel-type
- * spherical waves.
+ * This function evaluates the field \f$ \vect E (\vect r ) \f$, with any given wavenumber of the
+ * background medium and any given vector of the excitation coefficients \f$ \wckcout \f$.
  *
- * \return Complex electric field at the point defined by \a where.
+ * \return Complex electric field at the point defined by \a evalpoint.
+ * 
+ * \see qpms_scatsysw_scattered_E()
+ *
+ * Not yet implemented for periodic systems.
  */
-ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss,
-		const complex double *coeff_vector, ///< A full-length excitation vector (outgoing wave coefficients).
-		cart3_t where, ///< Evaluation point.
-		complex double k ///< Wave number.
+ccart3_t qpms_scatsys_scattered_E(
+		const qpms_scatsys_t *ss,
+		complex double wavenumber, ///< Wavenumber of the background medium.
+		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
+		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
 		);
 
+/// Evaluates scattered electric field at a point, given a full vector of scattered field coefficients.
+/**
+ * This function evaluates the field \f$ \vect E (\vect r ) \f$, with any 
+ * given vector of the excitation coefficients \f$ \wckcout \f$.
+ *
+ * \return Complex electric field at the point defined by \a evalpoint.
+ * 
+ * \see qpms_scatsys_scattered_E()
+ *
+ * Not yet implemented for periodic systems.
+ */
+ccart3_t qpms_scatsysw_scattered_E(
+		const qpms_scatsys_at_omega_t *ssw,
+		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
+		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
+		);
 
 #if 0
 /** Evaluates partial scattered fields (corresponding to a given irrep-reduced excitation vector)
@@ -712,7 +733,7 @@ ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss,
  *
  * \return Complex electric field at the point defined by \a where.
  */
-ccart3_t qpms_scatsys_eval_E_irrep(const qpms_scatsys_t *ss,
+ccart3_t qpms_scatsys_scattered_E_irrep(const qpms_scatsys_t *ss,
 		qpms_iri_t iri, ///< Irreducible representation
 		const complex double *coeff_vector, ///< A reduced excitation vector, corresponding to \a iri.
 		cart3_t where, ///< Evaluation point.

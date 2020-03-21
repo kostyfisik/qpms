@@ -625,6 +625,10 @@ cdef extern from "scatsystem.h":
             cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 
             double rank_tol, size_t rank_sel_min, double res_tol)
     const qpms_vswf_set_spec_t *qpms_ss_bspec_pi(const qpms_scatsys_t *ss, qpms_ss_pi_t pi) 
+    ccart3_t qpms_scatsys_scattered_E(const qpms_scatsys_t *ss, cdouble wavenumber,
+            const cdouble *f_excitation_vector_full, cart3_t where)
+    ccart3_t qpms_scatsysw_scattered_E(const qpms_scatsys_at_omega_t *ssw,
+            const cdouble *f_excitation_vector_full, cart3_t where)
 
 cdef extern from "ewald.h":
     struct qpms_csf_result:

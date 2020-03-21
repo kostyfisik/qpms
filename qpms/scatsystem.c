@@ -1986,11 +1986,11 @@ complex double *qpms_scatsysw_apply_Tmatrices_full(
   return target_full;
 }
 
-
-
-ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss, 
-    const complex double *cvf, const cart3_t where,
-    const complex double k) {
+ccart3_t qpms_scatsys_scattered_E(const qpms_scatsys_t *ss, 
+    const complex double k,
+    const complex double *cvf, 
+    const cart3_t where
+    ) {
   QPMS_UNTESTED;
   ccart3_t res = {0,0,0};
   ccart3_t res_kc = {0,0,0}; // kahan sum compensation
@@ -2012,8 +2012,15 @@ ccart3_t qpms_scatsys_eval_E(const qpms_scatsys_t *ss,
   return res;
 }
 
+ccart3_t qpms_scatsysw_scattered_E(const qpms_scatsys_at_omega_t *ssw, 
+    const complex double *cvf,  const cart3_t where) {
+  return qpms_scatsys_scattered_E(ssw->ss, ssw->wavenumber,
+      cvf, where);
+}
+
+
 #if 0
-ccart3_t qpms_scatsys_eval_E_irrep(const qpms_scatsys_t *ss,
+ccart3_t qpms_scatsys_scattered_E_irrep(const qpms_scatsys_t *ss,
    qpms_iri_t iri, const complex double *cvr, cart3_t where) {
   TODO;
 }

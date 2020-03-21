@@ -710,6 +710,25 @@ cdef class ScatteringSystem:
 
         return retdict
 
+    def scattered_E(self, cdouble wavenumber, scatcoeffvector_full, evalpos):
+        evalpos = np.array(evalpos, copy=False)
+        cdef np.ndarray evalpos_a = evalpos
+        cdef np.ndarray[dtype=complex] scv = np.array(scatcoeffvector_full, copy=False)
+        cdef cdouble[::1] scv_view = scv
+        if evalpos.shape[-1] != 3:
+            raise ValueError("Last dimension of evalpos has to be 3")
+        cdef np.ndarray[complex] results = np.empty(evalpos.shape, dtype=complex)
+        cdef ccart3_t res
+        cdef cart3_t pos
+        for i in np.ndindex(evalpos.shape[:-1]):
+            pos.x = evalpos_a[i,0]
+            pos.y = evalpos_a[i,1]
+            pos.z = evalpos_a[i,2]
+            res = qpms_scatsys_scattered_E(self.s, wavenumber, &scv_view[0], pos)
+            results[i,0] = res.x
+            results[i,1] = res.y
+            results[i,2] = res.z
+        return results
 
 def empty_lattice_modes_xy(EpsMu epsmu, reciprocal_basis, wavevector, double maxomega):
     '''Empty (2D, xy-plane) lattice mode (diffraction order) frequencies of a non-dispersive medium.
@@ -844,6 +863,25 @@ cdef class _ScatteringSystemAtOmega:
     def translation_matrix_full(self, blochvector = None):
         return self.ss_pyref.translation_matrix_full(wavenumber=self.wavenumber, blochvector=blochvector)
 
+    def scattered_E(self, scatcoeffvector_full, evalpos):
+        evalpos = np.array(evalpos, copy=False)
+        cdef np.ndarray evalpos_a = evalpos
+        cdef np.ndarray[dtype=complex] scv = np.array(scatcoeffvector_full, copy=False)
+        cdef cdouble[::1] scv_view = scv
+        if evalpos.shape[-1] != 3:
+            raise ValueError("Last dimension of evalpos has to be 3")
+        cdef np.ndarray[complex] results = np.empty(evalpos.shape, dtype=complex)
+        cdef ccart3_t res
+        cdef cart3_t pos
+        for i in np.ndindex(evalpos.shape[:-1]):
+            pos.x = evalpos_a[i,0]
+            pos.y = evalpos_a[i,1]
+            pos.z = evalpos_a[i,2]
+            res = qpms_scatsysw_scattered_E(self.ssw, &scv_view[0], pos)
+            results[i,0] = res.x
+            results[i,1] = res.y
+            results[i,2] = res.z
+        return results
 
 
 cdef class ScatteringMatrix:
