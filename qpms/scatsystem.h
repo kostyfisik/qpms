@@ -705,6 +705,7 @@ complex double *qpms_scatsys_incident_field_vector_irrep_packed(
  */
 ccart3_t qpms_scatsys_scattered_E(
 		const qpms_scatsys_t *ss,
+		qpms_bessel_t typ, ///< Bessel function kind to use (for scattered fields, use QPMS_HANKEL_PLUS).
 		complex double wavenumber, ///< Wavenumber of the background medium.
 		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
 		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
@@ -723,6 +724,7 @@ ccart3_t qpms_scatsys_scattered_E(
  */
 ccart3_t qpms_scatsysw_scattered_E(
 		const qpms_scatsys_at_omega_t *ssw,
+		qpms_bessel_t typ, ///< Bessel function kind to use (for scattered fields, use QPMS_HANKEL_PLUS).
 		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
 		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
 		);
@@ -738,6 +740,7 @@ ccart3_t qpms_scatsysw_scattered_E(
  */
 ccart3_t qpms_scatsys_scattered_E__alt(
 		const qpms_scatsys_t *ss,
+		qpms_bessel_t typ, ///< Bessel function kind to use (for scattered fields, use QPMS_HANKEL_PLUS).
 		complex double wavenumber, ///< Wavenumber of the background medium.
 		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
 		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
@@ -754,6 +757,7 @@ ccart3_t qpms_scatsys_scattered_E__alt(
  */
 ccart3_t qpms_scatsysw_scattered_E__alt(
 		const qpms_scatsys_at_omega_t *ssw,
+		qpms_bessel_t typ, ///< Bessel function kind to use (for scattered fields, use QPMS_HANKEL_PLUS).
 		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
 		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
 		);

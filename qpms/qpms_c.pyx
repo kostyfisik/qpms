@@ -11,7 +11,7 @@ from .qpms_cdefs cimport *
 from .cyquaternions cimport IRot3, CQuat
 from .cybspec cimport BaseSpec
 from .cycommon cimport make_c_string
-from .cycommon import string_c2py, PointGroupClass
+from .cycommon import string_c2py, PointGroupClass, BesselType
 from .cytmatrices cimport CTMatrix, TMatrixFunction, TMatrixGenerator, TMatrixInterpolator
 from .cymaterials cimport EpsMuGenerator, EpsMu
 from libc.stdlib cimport malloc, free, calloc
@@ -710,7 +710,8 @@ cdef class ScatteringSystem:
 
         return retdict
 
-    def scattered_E(self, cdouble wavenumber, scatcoeffvector_full, evalpos, bint alt=False):
+    def scattered_E(self, cdouble wavenumber, scatcoeffvector_full, evalpos, bint alt=False, btyp=BesselType.HANKEL_PLUS):
+        cdef qpms_bessel_t btyp_c = BesselType(btyp)
         evalpos = np.array(evalpos, dtype=float, copy=False)
         if evalpos.shape[-1] != 3:
             raise ValueError("Last dimension of evalpos has to be 3")
@@ -726,9 +727,9 @@ cdef class ScatteringSystem:
             pos.y = evalpos_a[i,1]
             pos.z = evalpos_a[i,2]
             if alt:
-                res = qpms_scatsys_scattered_E__alt(self.s, wavenumber, &scv_view[0], pos)
+                res = qpms_scatsys_scattered_E__alt(self.s, btyp_c, wavenumber, &scv_view[0], pos)
             else:
-                res = qpms_scatsys_scattered_E(self.s, wavenumber, &scv_view[0], pos)
+                res = qpms_scatsys_scattered_E(self.s, btyp_c, wavenumber, &scv_view[0], pos)
             results[i,0] = res.x
             results[i,1] = res.y
             results[i,2] = res.z
@@ -867,7 +868,8 @@ cdef class _ScatteringSystemAtOmega:
     def translation_matrix_full(self, blochvector = None):
         return self.ss_pyref.translation_matrix_full(wavenumber=self.wavenumber, blochvector=blochvector)
 
-    def scattered_E(self, scatcoeffvector_full, evalpos, bint alt=False):
+    def scattered_E(self, scatcoeffvector_full, evalpos, bint alt=False, btyp=QPMS_HANKEL_PLUS):
+        cdef qpms_bessel_t btyp_c = BesselType(btyp)
         evalpos = np.array(evalpos, dtype=float, copy=False)
         if evalpos.shape[-1] != 3:
             raise ValueError("Last dimension of evalpos has to be 3")
@@ -883,9 +885,9 @@ cdef class _ScatteringSystemAtOmega:
             pos.y = evalpos_a[i,1]
             pos.z = evalpos_a[i,2]
             if alt:
-                res = qpms_scatsysw_scattered_E__alt(self.ssw, &scv_view[0], pos)
+                res = qpms_scatsysw_scattered_E__alt(self.ssw, btyp_c, &scv_view[0], pos)
             else:
-                res = qpms_scatsysw_scattered_E(self.ssw, &scv_view[0], pos)
+                res = qpms_scatsysw_scattered_E(self.ssw, btyp_c, &scv_view[0], pos)
             results[i,0] = res.x
             results[i,1] = res.y
             results[i,2] = res.z

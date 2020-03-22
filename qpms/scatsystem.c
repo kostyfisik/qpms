@@ -1987,6 +1987,7 @@ complex double *qpms_scatsysw_apply_Tmatrices_full(
 }
 
 ccart3_t qpms_scatsys_scattered_E(const qpms_scatsys_t *ss, 
+    qpms_bessel_t btyp,
     const complex double k,
     const complex double *cvf, 
     const cart3_t where
@@ -2002,8 +2003,7 @@ ccart3_t qpms_scatsys_scattered_E(const qpms_scatsys_t *ss,
 
     const csph_t kr = sph_cscale(k, cart2sph(
           cart3_substract(where, particle_pos)));
-    const csphvec_t E_sph = qpms_eval_uvswf(bspec, particle_cv, kr, 
-        QPMS_HANKEL_PLUS);
+    const csphvec_t E_sph = qpms_eval_uvswf(bspec, particle_cv, kr, btyp);
     const ccart3_t E_cart = csphvec2ccart_csph(E_sph, kr);
     ckahanadd(&(res.x), &(res_kc.x), E_cart.x);
     ckahanadd(&(res.y), &(res_kc.y), E_cart.y);
@@ -2013,13 +2013,15 @@ ccart3_t qpms_scatsys_scattered_E(const qpms_scatsys_t *ss,
 }
 
 ccart3_t qpms_scatsysw_scattered_E(const qpms_scatsys_at_omega_t *ssw, 
+    qpms_bessel_t btyp,
     const complex double *cvf,  const cart3_t where) {
-  return qpms_scatsys_scattered_E(ssw->ss, ssw->wavenumber,
+  return qpms_scatsys_scattered_E(ssw->ss, btyp, ssw->wavenumber,
       cvf, where);
 }
 
 // Alternative implementation, using translation operator and regular dipole waves at zero
 ccart3_t qpms_scatsys_scattered_E__alt(const qpms_scatsys_t *ss, 
+    qpms_bessel_t btyp,
     const complex double k,
     const complex double *cvf, 
     const cart3_t where
@@ -2028,25 +2030,26 @@ ccart3_t qpms_scatsys_scattered_E__alt(const qpms_scatsys_t *ss,
   ccart3_t res = {0,0,0};
   ccart3_t res_kc = {0,0,0}; // kahan sum compensation
 
+  static const int dipspecn = 3; // We have three basis vectors
   // bspec containing only electric dipoles
   const qpms_vswf_set_spec_t dipspec = {
-    .n = 3,
+    .n = dipspecn,
     .ilist = (qpms_uvswfi_t[]){
       qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, -1, 1),
       qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC,  0, 1),
       qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, +1, 1),
     },
-    .lMax=1, .lMax_M=0, .lMax_N=1, .lMax_L=-1,
+    .lMax=1, .lMax_M=1, .lMax_N=1, .lMax_L=-1,
     .capacity=0,
     .norm = ss->c->normalisation,
   };
 
-  ccart3_t regdipoles_0[3]; {
+  ccart3_t regdipoles_0[dipspecn]; {
     const sph_t origin_sph = {.r = 0, .theta = M_PI_2, .phi=0}; // Should work with any theta/phi (TESTWORTHY)
-    csphvec_t regdipoles_0_sph[3];
+    csphvec_t regdipoles_0_sph[dipspecn];
     QPMS_ENSURE_SUCCESS(qpms_uvswf_fill(regdipoles_0_sph, &dipspec,
           sph2csph(origin_sph), QPMS_BESSEL_REGULAR));
-    for(int i = 0; i < 3; ++i)
+    for(int i = 0; i < dipspecn; ++i)
       regdipoles_0[i] = csphvec2ccart(regdipoles_0_sph[i], origin_sph);
   }
 
@@ -2061,12 +2064,11 @@ ccart3_t qpms_scatsys_scattered_E__alt(const qpms_scatsys_t *ss,
     const cart3_t origin_cart = {0, 0, 0};
 
     QPMS_ENSURE_SUCCESS(qpms_trans_calculator_get_trans_array_lc3p(
-          ss->c, s, &dipspec, 1, bspec, 3, k, particle_pos, where,
-          QPMS_HANKEL_PLUS));
+          ss->c, s, &dipspec, 1, bspec, dipspecn, k, particle_pos, where, btyp));
 
     for(size_t i = 0; i < bspec->n; ++i)
-      for(size_t j = 0; j < 3; ++j){
-        ccart3_t summand = ccart3_scale(particle_cv[i] * s[3*i+j], regdipoles_0[j]);
+      for(size_t j = 0; j < dipspecn; ++j){
+        ccart3_t summand = ccart3_scale(particle_cv[i] * s[dipspecn*i+j], regdipoles_0[j]);
         ckahanadd(&(res.x), &(res_kc.x), summand.x);
         ckahanadd(&(res.y), &(res_kc.y), summand.y);
         ckahanadd(&(res.z), &(res_kc.z), summand.z);
@@ -2077,8 +2079,8 @@ ccart3_t qpms_scatsys_scattered_E__alt(const qpms_scatsys_t *ss,
 }
 
 ccart3_t qpms_scatsysw_scattered_E__alt(const qpms_scatsys_at_omega_t *ssw, 
-    const complex double *cvf,  const cart3_t where) {
-  return qpms_scatsys_scattered_E__alt(ssw->ss, ssw->wavenumber,
+    qpms_bessel_t btyp, const complex double *cvf,  const cart3_t where) {
+  return qpms_scatsys_scattered_E__alt(ssw->ss, btyp, ssw->wavenumber,
       cvf, where);
 }
 
