@@ -66,18 +66,6 @@ void qpms_warn_at_flf(const char *filename, unsigned int linenum,
   fflush(stderr);
 }
 
-void qpms_pr_debug_at_flf(const char *filename, unsigned int linenum,
-    const char *func,
-		const char *fmt, ...) {
-  fprintf(stderr, "%s:%u, %s: ", filename, linenum, func);
-  va_list ap;
-  va_start(ap, fmt);
-  vfprintf(stderr, fmt, ap);
-  va_end(ap);
-  fputc('\n', stderr);
-  fflush(stderr);
-}
-
 void qpms_debug_at_flf(const char *filename, unsigned int linenum,
     const char *func, qpms_dbgmsg_flags type,
 		const char *fmt, ...) {

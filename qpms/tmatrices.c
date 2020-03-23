@@ -487,10 +487,9 @@ qpms_errno_t qpms_load_scuff_tmatrix(
     ) {
   FILE *f = fopen(path, "r");
   if (!f) {
-    if (qpms_load_scuff_tmatrix_crash_on_failure)
-      qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
-          "Could not open T-matrix file %s", path); 
-    else return errno;
+    if (qpms_load_scuff_tmatrix_crash_on_failure) {
+      QPMS_PR_ERROR("Could not open T-matrix file %s", path);
+    } else return errno;
   }
   qpms_errno_t retval = 
     qpms_read_scuff_tmatrix(f, bs, n, freqs, freqs_su, tmatrices_array, tmdata);
@@ -502,9 +501,8 @@ qpms_errno_t qpms_load_scuff_tmatrix(
       break;
     }
 
-  if(fclose(f)) qpms_pr_error_at_line(__FILE__, __LINE__, __func__,
-        "Could not close the T-matrix file %s (well, that's weird, "
-        "since it's read only).", path); 
+  if(fclose(f)) { QPMS_PR_ERROR("Could not close the T-matrix file %s "
+      "(well, that's weird, since it's read only).", path); } 
 
   return retval;
 }
