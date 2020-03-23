@@ -83,6 +83,8 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_WTF qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error.")
 
+#define QPMS_INVALID_ENUM(x) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Invalid enum value (" #x " == %d)", (int) (x))
+
 #define QPMS_UNTESTED {\
 	static _Bool already_bitched = 0; \
 	if (QPMS_UNLIKELY(!already_bitched)) {\
@@ -93,9 +95,9 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 
 #define QPMS_PR_ERROR(msg, ...) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__)
 
-// TODO replace this macro with an inline function?
+/// Raises an error if \a x is not zero.
 #define QPMS_ENSURE_SUCCESS(x) { \
-	int errorcode = (x); \
+	int errorcode = (x); /* evaluate x only once */ \
 	if(QPMS_UNLIKELY(errorcode)) \
 		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error (%d)", errorcode); \
 }
@@ -107,6 +109,17 @@ qpms_dbgmsg_flags qpms_dbgmsg_enable(qpms_dbgmsg_flags types);
 		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); \
 }
 
+/// Raises an error if \a x is not zero or one of the values listed in arguments.
+#define QPMS_ENSURE_SUCCESS_OR(x, ...) { \
+	int errorcode = (x); /* evaluate x only once */ \
+	static const int allowed_errorcodes[] = {0, ##__VA_ARGS__};\
+	static const int n_allowed = sizeof(allowed_errorcodes) / sizeof(int); \
+	int i; \
+	for(i = 0; i < n_allowed; ++i) \
+		if (errorcode == allowed_errorcodes[i]) break; \
+	if (QPMS_UNLIKELY(i >= n_allowed))  \
+		qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,"Unexpected error (%d)", errorcode); \
+}
 
 #define QPMS_ENSURE(x, msg, ...) {if(QPMS_UNLIKELY(!(x))) qpms_pr_error_at_flf(__FILE__,__LINE__,__func__,msg, ##__VA_ARGS__); }
 

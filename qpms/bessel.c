@@ -59,6 +59,11 @@ qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double
       return retval;
       break;
     case QPMS_BESSEL_SINGULAR: //FIXME: is this precise enough? Would it be better to do it one-by-one?
+      if(QPMS_UNLIKELY(x == 0)) {
+        for (int l = 0; l <= lmax; ++l)
+          result_array[l] = NAN;
+        return QPMS_ESING; // GSL would have returned GSL_EDOM without setting NANs.
+      }
       retval = gsl_sf_bessel_yl_array(lmax,x,tmparr);
       for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
       return retval;
@@ -69,6 +74,11 @@ qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double
       for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
       if(retval) return retval;
       retval = gsl_sf_bessel_yl_array(lmax, x, tmparr);
+      if(QPMS_UNLIKELY(x == 0)) {
+        for (int l = 0; l <= lmax; ++l)
+          result_array[l] += I * NAN;
+        return QPMS_ESING; // GSL would have returned GSL_EDOM without setting NANs.
+      }
       if (typ==QPMS_HANKEL_PLUS)
         for (int l = 0; l <= lmax; ++l) result_array[l] += I * tmparr[l];
       else 
@@ -76,10 +86,9 @@ qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double
       return retval;
       break;
     default:
-      abort();
-      //return GSL_EDOM;
+      QPMS_INVALID_ENUM(typ);
   }
-  assert(0);
+  QPMS_WTF;
 }
 
 // TODO DOC
@@ -119,7 +128,7 @@ qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, complex doub
         }
         break;
       default:
-        QPMS_WTF;
+        QPMS_INVALID_ENUM(typ);
     }
     // TODO check for underflows? (nz != 0)
     if (ierr == 0 || ierr == 3) {

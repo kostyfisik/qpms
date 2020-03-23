@@ -231,7 +231,8 @@ qpms_errno_t qpms_vswf_fill_csph(csphvec_t *const longtarget,
     csph_t kr, qpms_bessel_t btyp, const qpms_normalisation_t norm) {
   assert(lMax >= 1);
   complex double *bessel = malloc((lMax+1)*sizeof(complex double));
-  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel));
+  qpms_errno_t bessel_retval = qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel);
+  QPMS_ENSURE_SUCCESS_OR(bessel_retval, QPMS_ESING);
   qpms_pitau_t pt = qpms_pitau_get(kr.theta, lMax, qpms_normalisation_t_csphase(norm));
   complex double const *pbes = bessel + 1; // starting from l = 1
   double const *pleg = pt.leg;
@@ -282,7 +283,7 @@ qpms_errno_t qpms_vswf_fill_csph(csphvec_t *const longtarget,
   }
   free(bessel);
   qpms_pitau_free(pt);
-  return QPMS_SUCCESS;
+  return bessel_retval;
 }
 
 qpms_errno_t qpms_vswf_fill(csphvec_t *const longtarget, 

@@ -177,6 +177,11 @@ csphvec_t qpms_vswf_L00(
  * 
  * Does not evaluate the zeroth-order wave \f$ \mathbf{L}_0^0 \f$. 
  * If you need that, use qpms_vswf_L00().
+ *
+ * If \a kdrj.r == 0 and \a btyp != QPMS_BESSEL_REGULAR, returns QPMS_ESING and fills
+ * targets with NaNs.
+ *
+ * \return 0 (QPMS_SUCCESS) on success, otherwise.
  */
 qpms_errno_t qpms_vswf_fill(
 	csphvec_t *resultL, //< Target array for longitudinal VSWFs.

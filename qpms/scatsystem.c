@@ -2039,7 +2039,7 @@ ccart3_t qpms_scatsys_scattered_E__alt(const qpms_scatsys_t *ss,
       qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC,  0, 1),
       qpms_tmn2uvswfi(QPMS_VSWF_ELECTRIC, +1, 1),
     },
-    .lMax=1, .lMax_M=1, .lMax_N=1, .lMax_L=-1,
+    .lMax=1, .lMax_M=0, .lMax_N=1, .lMax_L=-1,
     .capacity=0,
     .norm = ss->c->normalisation,
   };

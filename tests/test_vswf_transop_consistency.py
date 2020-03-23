@@ -6,6 +6,7 @@ waves at origin
 """
 
 from qpms import Particle, CTMatrix, lorentz_drude, EpsMuGenerator, TMatrixGenerator, BaseSpec, FinitePointGroup, ScatteringSystem, TMatrixInterpolator, EpsMu, dbgmsg_enable, dbgmsg_disable, dbgmsg_active, BesselType,eV, hbar
+from qpms.qpms_c import set_gsl_pythonic_error_handling
 from qpms.symmetries import point_group_info
 import numpy as np
 eh = eV/hbar
@@ -14,6 +15,8 @@ dbgmsg_enable(2)
 
 part_radius = 80e-9
 p = 1580e-9
+
+set_gsl_pythonic_error_handling()
 
 sym = FinitePointGroup(point_group_info['D4h'])
 bspec1 = BaseSpec(lMax=3)
@@ -36,7 +39,7 @@ for i in range(ss.fecv_size):
     E = ssw.scattered_E(fvc, points)
     E_alt = ssw.scattered_E(fvc, points,alt=True)
     diff = abs(E-E_alt)
-    reldiffavg = np.average(diff/(abs(E)+abs(E_alt)))
+    reldiffavg = np.nanmean(diff/(abs(E)+abs(E_alt)))
     fail = reldiffavg > 1e-3
     fails += fail
                                 

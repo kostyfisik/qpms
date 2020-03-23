@@ -78,13 +78,14 @@ typedef enum {
 typedef unsigned long long qpms_uvswfi_t; 
 
 /// Error codes / return values for certain numerical functions.
-/** These are de facto a subset of the GSL error codes. */
+/** Those with values between -2 and 32 are subset of the GSL error codes. */
 typedef enum {
 	QPMS_SUCCESS = 0, ///< Success.
-	QPMS_ERROR = 1, ///< Unspecified error.
+	QPMS_ERROR = -1, ///< Unspecified error.
+	QPMS_FAILURE = QPMS_ERROR,
 	QPMS_ENOMEM = 8, ///< Out of memory.
+	QPMS_ESING = 21, ///< Apparent singularity detected.
 	QPMS_NAN_ENCOUNTERED = 1024 ///< NaN value encountered in data processing.
-
 } qpms_errno_t;
 
 
