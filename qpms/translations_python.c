@@ -10,7 +10,6 @@
 #include "tiny_inlines.h"
 #include "assert_cython_workaround.h"
 #include "kahansum.h"
-#include <stdlib.h> //abort()
 #include <gsl/gsl_sf_coupling.h>
 #include "qpms_error.h"
 #include "normalisation.h"
@@ -110,7 +109,7 @@ int qpms_cython_trans_calculator_get_AB_arrays_loop(
             // these casts are not needed
             *((double *) r_p), *((double *) theta_p), *((double *)phi_p),
             (int)(*((npy_bool *) r_ge_d_p)), J);
-        if (errval_local) abort();
+        QPMS_ENSURE_SUCCESS(errval_local);
 
         // increment the last index 'digit' (ax is now resnd-1; we don't have do-while loop in python)
         ++local_indices[ax];

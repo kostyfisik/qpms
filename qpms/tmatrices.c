@@ -41,15 +41,12 @@
 #define MIN(x,y) ((x) > (y) ? (y) : (x))
 
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
-  qpms_tmatrix_t *t = malloc(sizeof(qpms_tmatrix_t));
-  if (!t) abort();
-  else {
-    t->spec = bspec;
-    size_t n = bspec->n;
-    t->m = calloc(n*n, sizeof(complex double));
-    if (!t->m) abort();
-    t->owns_m = true;
-  }
+  qpms_tmatrix_t *t;
+  QPMS_CRASHING_MALLOC(t, sizeof(qpms_tmatrix_t));
+  t->spec = bspec;
+  size_t n = bspec->n;
+  QPMS_CRASHING_CALLOC(t->m, n*n, sizeof(complex double));
+  t->owns_m = true;
   return t;
 }
 
@@ -296,11 +293,11 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(const size_t incou
 
   // check if all matrices have the same bspec
   for (size_t i = 0; i < incount; ++i)
-    if (!qpms_vswf_set_spec_isidentical(ip->bspec, ta[i].spec))
-      abort();
+    QPMS_ENSURE(qpms_vswf_set_spec_isidentical(ip->bspec, ta[i].spec), 
+        "All T-matrices for interpolation must have the same basis!");
 
-  if (!(ip->splines_real = calloc(n*n,sizeof(gsl_spline *)))) abort();
-  if (!(ip->splines_imag = calloc(n*n,sizeof(gsl_spline *)))) abort();
+  QPMS_CRASHING_CALLOC(ip->splines_real, n*n, sizeof(gsl_spline *));
+  QPMS_CRASHING_CALLOC(ip->splines_imag, n*n,sizeof(gsl_spline *));
   for (size_t row = 0; row < n; ++row)
     for (size_t col = 0; col < n; ++col) {
       double y_real[incount], y_imag[incount];
@@ -313,13 +310,13 @@ qpms_tmatrix_interpolator_t *qpms_tmatrix_interpolator_create(const size_t incou
       if (n0_real) {
         gsl_spline *s =
         ip->splines_real[n * row + col] = gsl_spline_alloc(iptype, incount);
-        if (gsl_spline_init(s, freqs, y_real, incount) != 0 /*GSL_SUCCESS*/) abort();
+        QPMS_ENSURE_SUCCESS(gsl_spline_init(s, freqs, y_real, incount));
       }
       else ip->splines_real[n * row + col] = NULL;
      if (n0_imag) {
         gsl_spline *s =
         ip->splines_imag[n * row + col] = gsl_spline_alloc(iptype, incount);
-        if (gsl_spline_init(s, freqs, y_imag, incount) != 0 /*GSL_SUCCESS*/) abort();
+        QPMS_ENSURE_SUCCESS(gsl_spline_init(s, freqs, y_imag, incount));
       }
       else ip->splines_imag[n * row + col] = NULL;
     }
@@ -403,21 +400,18 @@ qpms_errno_t qpms_read_scuff_tmatrix(
     if (linebuf[0] == '#') continue;
     int Alpha, LAlpha, MAlpha, PAlpha, Beta, LBeta, MBeta, PBeta;
     double currentfreq_su, tr, ti;
-    if (11 != sscanf(linebuf, "%lf %d %d %d %d %d %d %d %d %lf %lf",
+    QPMS_ENSURE(11 == sscanf(linebuf, "%lf %d %d %d %d %d %d %d %d %lf %lf",
           &currentfreq_su, &Alpha, &LAlpha, &MAlpha, &PAlpha,
-          &Beta, &LBeta, &MBeta, &PBeta, &tr, &ti))
-      abort(); // Malformed T-matrix file
+          &Beta, &LBeta, &MBeta, &PBeta, &tr, &ti),
+        "Malformed T-matrix file");
     if (currentfreq_su != lastfreq_su) { // New frequency -> new T-matrix
       ++*n;
       lastfreq_su = currentfreq_su;
       if(*n > n_alloc) {
         n_alloc *= 2;
-        *freqs = realloc(*freqs, n_alloc * sizeof(double));
-        if (freqs_su) *freqs_su = realloc(*freqs_su, n_alloc * sizeof(double));
-        *tmdata = realloc(*tmdata, sizeof(complex double) * bs->n * bs->n * n_alloc);
-        if (!*freqs || (!freqs_su != !*freqs_su) || !*tmdata)
-          qpms_pr_error_at_flf(__FILE__, __LINE__, __func__,
-              "realloc() failed.");
+        QPMS_CRASHING_REALLOC(*freqs, n_alloc * sizeof(double));
+        if (freqs_su) {QPMS_CRASHING_REALLOC(*freqs_su, n_alloc * sizeof(double));}
+        QPMS_CRASHING_REALLOC(*tmdata, sizeof(complex double) * bs->n * bs->n * n_alloc);
       }
       if (freqs_su) (*freqs_su)[*n-1] = currentfreq_su;
       (*freqs)[*n-1] = qpms_SU2SI(currentfreq_su);

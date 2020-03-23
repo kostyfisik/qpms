@@ -160,10 +160,8 @@ static inline qpms_errno_t qpms_sbessel_calculator_ensure_lMax(qpms_sbessel_calc
   if (lMax <= c->lMax)
     return QPMS_SUCCESS;
   else {
-    if ( NULL == (c->akn = realloc(c->akn, sizeof(double) * akn_index(lMax + 2, 0))))
-      abort();
-    //if ( NULL == (c->bkn = realloc(c->bkn, sizeof(complex double) * bkn_index(lMax + 1, 0))))
-    //	abort();
+    QPMS_CRASHING_REALLOC(c->akn, sizeof(double) * akn_index(lMax + 2, 0));
+    // QPMS_CRASHING_REALLOC(c->bkn, sizeof(complex double) * bkn_index(lMax + 1, 0));
     for(qpms_l_t n = c->lMax+1; n <= lMax + 1; ++n)
       for(qpms_l_t k = 0; k <= n; ++k)
         c->akn[akn_index(n,k)] = exp(lgamma(n + k + 1) - k*M_LN2 - lgamma(k + 1) - lgamma(n - k + 1));
@@ -174,8 +172,7 @@ static inline qpms_errno_t qpms_sbessel_calculator_ensure_lMax(qpms_sbessel_calc
 }
 
 complex double qpms_sbessel_calc_h1(qpms_sbessel_calculator_t *c, qpms_l_t n, complex double x) {
-  if(QPMS_SUCCESS != qpms_sbessel_calculator_ensure_lMax(c, n))
-    abort();
+  QPMS_ENSURE_SUCCESS(qpms_sbessel_calculator_ensure_lMax(c, n));
   complex double z = I/x; 
   complex double result = 0;
   for (qpms_l_t k = n; k >= 0; --k) 
@@ -188,8 +185,7 @@ complex double qpms_sbessel_calc_h1(qpms_sbessel_calculator_t *c, qpms_l_t n, co
 
 qpms_errno_t qpms_sbessel_calc_h1_fill(qpms_sbessel_calculator_t * const c,
     const qpms_l_t lMax, const complex double x, complex double * const target) {
-  if(QPMS_SUCCESS != qpms_sbessel_calculator_ensure_lMax(c, lMax))
-    abort();
+  QPMS_ENSURE_SUCCESS(qpms_sbessel_calculator_ensure_lMax(c, lMax));
   memset(target, 0, sizeof(complex double) * lMax);
   complex double kahancomp[lMax];
   memset(kahancomp, 0, sizeof(complex double) * lMax);

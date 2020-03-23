@@ -749,7 +749,7 @@ complex double *qpms_orbit_irrep_basis(size_t *basis_size,
   // Get the projector (also workspace for right sg. vect.)
   complex double *projector = qpms_orbit_irrep_projector_matrix(NULL,
     ot, bspec, sym, iri);
-  if(!projector) abort();
+  QPMS_ENSURE(projector != NULL, "got NULL from qpms_orbit_irrep_projector_matrix()");
   // Workspace for the right singular vectors.
   complex double *V_H; QPMS_CRASHING_MALLOC(V_H, n*n*N*N*sizeof(complex double));
   // THIS SHOULD NOT BE NECESSARY

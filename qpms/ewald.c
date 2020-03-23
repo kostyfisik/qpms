@@ -62,6 +62,7 @@ typedef enum {
 
 } ewald3_constants_option;
 
+// TODO perhaps rewrite everything as agnostic.
 static const ewald3_constants_option type = EWALD32_CONSTANTS_AGNOSTIC;
 
 qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, const ewald3_constants_option type */,
@@ -109,7 +110,7 @@ qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, cons
               / (factorial(j) * factorial((n-m)/2-j) * factorial((n+m)/2-j));
             break;
           default:
-            abort();
+            QPMS_INVALID_ENUM(type);
         }
       }
       s1_constfacs_sz_cumsum += 1 + c->s1_jMaxes[y];
@@ -139,7 +140,7 @@ qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, cons
             / (factorial(j) * pow(2, 2*j) * factorial(n - 2*j));
           break;
         default:
-          abort(); // wrong type argument or not implemented
+          QPMS_INVALID_ENUM(type); // wrong type argument or not implemented
       }
     }
     s1_constfacs_1Dz_sz_cumsum += 1 + n / 2;
@@ -154,12 +155,9 @@ qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, cons
   // N.B. here I use the GSL_SF_LEGENRE_NONE, in order to be consistent with translations.c
   c->legendre_normconv = GSL_SF_LEGENDRE_NONE;
   // Moreover, using this approach (i.e. gsl) takes about 64kB extra memory
-  if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, 0, csphase, c->legendre0))
-    abort();
-  if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, +1, csphase, c->legendre_plus1))
-    abort();
-  if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, -1, csphase, c->legendre_minus1))
-    abort();
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(c->legendre_normconv, lMax, 0, csphase, c->legendre0));
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(c->legendre_normconv, lMax, +1, csphase, c->legendre_plus1));
+  QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(c->legendre_normconv, lMax, -1, csphase, c->legendre_minus1));
   return c;
 }
 
@@ -182,11 +180,9 @@ int ewald3_sigma0(complex double *result, double *err,
 {
   qpms_csf_result gam;
   complex double z = -csq(k/(2*eta));
-  int retval = complex_gamma_inc_e(-0.5, z, 
+  QPMS_ENSURE_SUCCESS(complex_gamma_inc_e(-0.5, z, 
      // we take the branch which is principal for the Re z < 0, Im z < 0 quadrant, cf. [Linton, p. 642 in the middle]
-     QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, &gam);
-  if (0 != retval)
-    abort();
+     QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, &gam));
   *result = gam.val * c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI;
   if(err) 
     *err = gam.err * fabs(c->legendre0[gsl_sf_legendre_array_index(0,0)] / 2 / M_SQRTPI);
@@ -305,7 +301,7 @@ int ewald3_21_xy_sigma_long (
         int retval = complex_gamma_inc_e(0.5-j, z,
           // we take the branch which is principal for the Re z < 0, Im z < 0 quadrant, cf. [Linton, p. 642 in the middle]
           QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, Gamma_pq+j);
-        if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
+        QPMS_ENSURE_SUCCESS_OR(retval, GSL_EUNDRFLW);
       }
       if (latdim & LAT1D)
         factor1d =  M_SQRT1_2 * .5 * k * gamma_pq;
@@ -446,7 +442,7 @@ int ewald3_1_z_sigma_long (
       int retval = complex_gamma_inc_e(0.5-j, z,
           // we take the branch which is principal for the Re z < 0, Im z < 0 quadrant, cf. [Linton, p. 642 in the middle]
           QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, Gamma_pq+j);
-      if(!(retval==0 || retval==GSL_EUNDRFLW)) abort();
+      QPMS_ENSURE_SUCCESS_OR(retval, GSL_EUNDRFLW);
     }
     // R-DEPENDENT END
     // TODO optimisations: all the j-dependent powers can be done for each j only once, stored in array
@@ -713,8 +709,7 @@ int ewald3_sigma_short(
         legendre_array = c->legendre0;
         break;
       default:
-        if(GSL_SUCCESS != gsl_sf_legendre_array_e(c->legendre_normconv, lMax, cos(Rpq_shifted_theta), c->legendre_csphase, legendre_buf))
-        abort();
+        QPMS_ENSURE_SUCCESS(gsl_sf_legendre_array_e(c->legendre_normconv, lMax, cos(Rpq_shifted_theta), c->legendre_csphase, legendre_buf));
         legendre_array = legendre_buf;
         break;
     }
@@ -732,7 +727,7 @@ int ewald3_sigma_short(
         } else
           retval = ewald32_sr_integral_ck(r_pq_shifted, k, n, eta,
                cintres+n, interr + n, workspace);
-        if (retval) abort();
+        QPMS_ENSURE_SUCCESS(retval);
       } // otherwise recycle the integrals
       for (qpms_m_t m = -n; m <= n; ++m){
         complex double e_imf;

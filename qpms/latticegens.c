@@ -320,7 +320,7 @@ PGen PGen_1D_new_minMaxR(double period, double offset, double minR, bool inc_min
         s->ptindex = ptindex_dec(s->ptindex);
       break;
     default:
-      abort(); // invalid argument / not implemented
+      QPMS_WTF;
   }
   s->a = period;
   
@@ -357,7 +357,7 @@ PGenZReturnData PGen_1D_next_z(PGen *g) {
       } else theEnd = true;
       break;
     default:
-        abort(); // invalid value
+      QPMS_INVALID_ENUM(s->incdir);
   }
   if (!theEnd) {
       const PGenZReturnData retval = {PGEN_NOTDONE | PGEN_AT_Z, zval};
@@ -391,7 +391,7 @@ PGenSphReturnData PGen_1D_next_sph(PGen *g) {
       } else theEnd = true;
       break;
     default:
-        abort(); // invalid value
+        QPMS_INVALID_ENUM(s->incdir);
   }
   if (!theEnd) {
       const PGenSphReturnData retval = {PGEN_NOTDONE | PGEN_AT_Z | PGEN_COORDS_SPH,
@@ -512,7 +512,7 @@ PGenCart2ReturnData PGen_xyWeb_next_cart2(PGen *g) {
             if(s->j >= 0) ++s->phase;
             break;
           default:
-            abort();
+            QPMS_WTF;
         }
         if(s->phase == 4) { // phase overflow, start new layer
           ++s->layer;
@@ -549,7 +549,7 @@ PGenCart2ReturnData PGen_xyWeb_next_cart2(PGen *g) {
             if(s->j >= 0) ++s->phase;
             break;
           default:
-            abort();
+            QPMS_WTF;
         }
         if(s->phase == 6) { // phase overflow, start next layer
           ++s->layer;

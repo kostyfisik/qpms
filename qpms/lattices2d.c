@@ -362,14 +362,9 @@ static int trilatgen_pointlist_extend_capacity(triangular_lattice_gen_t *g, size
 
   trilatgen_pointlist_linearise(g);
 
-  intcoord2_t *newmem = realloc(p->pointlist_base, newcapacity * sizeof(intcoord2_t));
-  if (newmem != NULL) {
-    p->pointlist_base = newmem;
-    p->pointlist_capacity = newcapacity;
-    return 0;
-  } else 
-    abort();
-  
+  QPMS_CRASHING_REALLOC(p->pointlist_base, newcapacity * sizeof(intcoord2_t));
+  p->pointlist_capacity = newcapacity;
+  return 0;
 }
 
 // lower estimate for the number of lattice points inside the circumscribed hexagon, but outside the circle
@@ -404,16 +399,8 @@ static int trilatgen_ensure_ps_rs_capacity(triangular_lattice_gen_t *g, int maxs
   if (needed_capacity <= g->priv->ps_rs_capacity)
     return 0; // probably does not happen, but fuck it
 
-  double *newmem = realloc(g->ps.rs, needed_capacity * sizeof(double));
-  if (newmem != NULL)  
-    g->ps.rs = newmem; 
-  else 
-    abort();
-  ptrdiff_t *newmem2 = realloc(g->ps.r_offsets, (needed_capacity + 1) * sizeof(ptrdiff_t));
-  if (newmem2 != NULL)
-    g->ps.r_offsets = newmem2;
-  else 
-    abort();
+  QPMS_CRASHING_REALLOC(g->ps.rs, needed_capacity * sizeof(double));
+  QPMS_CRASHING_REALLOC(g->ps.r_offsets, (needed_capacity + 1) * sizeof(ptrdiff_t));
   
   g->priv->ps_rs_capacity = needed_capacity;
   return 0;
@@ -426,12 +413,7 @@ static int trilatgen_ensure_ps_points_capacity(triangular_lattice_gen_t *g, int 
   if(needed_capacity <= g->priv->ps_points_capacity)
     return 0;
 
-  point2d *newmem = realloc(g->ps.base, needed_capacity * sizeof(point2d));
-  if (newmem != NULL) 
-    g->ps.base = newmem;
-  else
-    abort();
-
+  QPMS_CRASHING_REALLOC(g->ps.base, needed_capacity * sizeof(point2d));
   g->priv->ps_points_capacity = needed_capacity;
   return 0;
 }
@@ -468,7 +450,7 @@ static void trilatgen_sort_pointlist(triangular_lattice_gen_t *g) {
       compar = trilat_cmp_intcoord2_by_3r2_plus1s;
       break;
     default:
-      abort();
+      QPMS_WTF;
   }
   qsort(p->pointlist_base + p->pointlist_beg, p->pointlist_n, sizeof(intcoord2_t), compar);
 }
@@ -580,7 +562,7 @@ int triangular_lattice_gen_extend_to_steps(triangular_lattice_gen_t * g, int max
             thepoint = point2d_fromxy(-(M_SQRT3_2*coord.j + g->hexshift*M_1_SQRT3)*g->a, (coord.i+.5*coord.j)*g->a);
             break;
           default:
-            abort();
+            QPMS_INVALID_ENUM(g->orientation);
         }
         g->ps.base[g->ps.r_offsets[g->ps.nrs+1]] = thepoint;
         ++(g->ps.r_offsets[g->ps.nrs+1]);
@@ -624,18 +606,9 @@ int honeycomb_lattice_gen_extend_to_steps(honeycomb_lattice_gen_t *g, const int 
     return 0;
   triangular_lattice_gen_extend_to_steps(g->tg, maxsteps);
 
-  double *newmem = realloc(g->ps.rs, g->tg->ps.nrs * sizeof(double));
-  if (NULL != newmem)
-    g->ps.rs = newmem;
-  else abort();
-  ptrdiff_t *newmem2 = realloc(g->ps.r_offsets, (g->tg->ps.nrs+1) * sizeof(ptrdiff_t));
-  if (NULL != newmem2)
-    g->ps.r_offsets = newmem2;
-  else abort();
-  point2d *newmem3 = realloc(g->ps.base, 2 * (g->tg->ps.r_offsets[g->tg->ps.nrs]) * sizeof(point2d));
-  if (NULL != newmem3)
-    g->ps.base = newmem3;
-  else abort();
+  QPMS_CRASHING_REALLOC(g->ps.rs, g->tg->ps.nrs * sizeof(double));
+  QPMS_CRASHING_REALLOC(g->ps.r_offsets, (g->tg->ps.nrs+1) * sizeof(ptrdiff_t));
+  QPMS_CRASHING_REALLOC(g->ps.base, 2 * (g->tg->ps.r_offsets[g->tg->ps.nrs]) * sizeof(point2d));
 
   // Now copy (new) contents of g->tg->ps into g->ps, but with inverse copy of each point
   for (size_t ri = g->ps.nrs; ri <= g->tg->ps.nrs; ++ri) 

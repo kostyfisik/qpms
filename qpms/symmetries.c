@@ -54,7 +54,7 @@ complex double *qpms_zflip_uvswi_dense(
       qpms_vswf_type_t ct;
       qpms_l_t cl;
       qpms_m_t cm;
-      if(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl)) abort();
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl));
       if (rl == cl && rm == cm && rt == ct)
         switch(rt) {
           case QPMS_VSWF_ELECTRIC:
@@ -65,7 +65,7 @@ complex double *qpms_zflip_uvswi_dense(
             target[n*row + col] = -min1pow(cm + cl);
             break;
           default:
-            abort();
+            QPMS_INVALID_ENUM(rt);
         }
       else target[n*row + col] = 0;
     }
@@ -91,7 +91,7 @@ complex double *qpms_yflip_uvswi_dense(
       qpms_vswf_type_t ct;
       qpms_l_t cl;
       qpms_m_t cm;
-      if(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl)) abort();
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl));
       if (rl == cl && rm == -cm && rt == ct)
         switch(rt) {
           case QPMS_VSWF_ELECTRIC:
@@ -102,7 +102,7 @@ complex double *qpms_yflip_uvswi_dense(
             target[n*row + col] = -min1pow(rm);
             break;
           default:
-            abort();
+            QPMS_INVALID_ENUM(rt);
         }
       else target[n*row + col] = 0;
     }
@@ -128,7 +128,7 @@ complex double *qpms_xflip_uvswi_dense(
       qpms_vswf_type_t ct;
       qpms_l_t cl;
       qpms_m_t cm;
-      if(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl)) abort();
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl));
       if (rl == cl && rm == -cm && rt == ct)
         switch(rt) {
           case QPMS_VSWF_ELECTRIC:
@@ -139,7 +139,7 @@ complex double *qpms_xflip_uvswi_dense(
             target[n*row + col] = -1;
             break;
           default:
-            abort();
+            QPMS_INVALID_ENUM(rt);
         }
       else target[n*row + col] = 0;
     }
@@ -169,7 +169,7 @@ complex double *qpms_zrot_uvswi_dense(
       qpms_vswf_type_t ct;
       qpms_l_t cl;
       qpms_m_t cm;
-      if(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl)) abort();
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl));
       if (rl == cl && rm == cm && rt == ct) // TODO COMPARE WITH PYTHON
         target[n*row + col] = cexp(/* - ?*/I * rm * phi);
       else target[n*row + col] = 0;
@@ -212,7 +212,7 @@ complex double *qpms_irot3_uvswfi_dense(
       qpms_vswf_type_t ct;
       qpms_l_t cl;
       qpms_m_t cm;
-      if(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl)) abort();
+      QPMS_ENSURE_SUCCESS(qpms_uvswfi2tmn(bspec->ilist[col], &ct, &cm, &cl));
       if (rl == cl && rt == ct)
         // TODO qpms_vswf_irot_elem_from_irot3 might be slow and not too accurate for large l
         target[n*row + col] = // Checkme rm and cm order

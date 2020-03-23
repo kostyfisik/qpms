@@ -9,7 +9,7 @@
 complex double qpms_wignerD_elem(const qpms_quat_t R,
     const qpms_l_t l, const qpms_m_t mp, const qpms_m_t m) {
   // TODO do some optimisations... The combinatoric coeffs could be precomputed.
-  if (abs(m) > l || abs(mp) > l)  abort();//return 0; // It's safer to crash. :D
+  QPMS_ENSURE(abs(m) <= l || abs(mp) <= l, "Got invalid values l = %d, m = %d", (int)l, (int)m);
   const double mRa = cabs(R.a), mRb = cabs(R.b);
   if (mRa < WIGNER_ATOL) {
     if (m != -mp) return 0;
