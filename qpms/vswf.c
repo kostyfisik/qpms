@@ -46,7 +46,7 @@ qpms_errno_t qpms_vswf_set_spec_append(qpms_vswf_set_spec_t *s, const qpms_uvswf
       s->lMax_L = MAX(s->lMax_L, l);
       break;
     default:
-      abort();
+      QPMS_WTF;
   }
   s->lMax = MAX(s->lMax, l);
   return QPMS_SUCCESS;
@@ -63,8 +63,8 @@ bool qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a,
 }
 
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_copy(const qpms_vswf_set_spec_t *or){
-  qpms_vswf_set_spec_t *c = malloc(sizeof(qpms_vswf_set_spec_t));
-  if (!c) abort(); // return NULL
+  qpms_vswf_set_spec_t *c;
+  QPMS_CRASHING_MALLOC(c, sizeof(*c));
   *c = *or;
   c->ilist = malloc(sizeof(qpms_uvswfi_t) * c->n);
   memcpy(c->ilist, or->ilist, sizeof(qpms_uvswfi_t)*c->n);
@@ -74,8 +74,8 @@ qpms_vswf_set_spec_t *qpms_vswf_set_spec_copy(const qpms_vswf_set_spec_t *or){
 
 qpms_vswf_set_spec_t *qpms_vswf_set_spec_from_lMax(qpms_l_t lMax, 
     qpms_normalisation_t norm) {
-  qpms_vswf_set_spec_t *c = malloc(sizeof(qpms_vswf_set_spec_t));
-  if (!c) abort(); // return NULL
+  qpms_vswf_set_spec_t *c;
+  QPMS_CRASHING_MALLOC(c, sizeof(*c));
   c->n = c->capacity = 2 * qpms_lMax2nelem(lMax);
   c->ilist = malloc(sizeof(qpms_uvswfi_t) * c->capacity);
   size_t i = 0;
@@ -231,7 +231,7 @@ qpms_errno_t qpms_vswf_fill_csph(csphvec_t *const longtarget,
     csph_t kr, qpms_bessel_t btyp, const qpms_normalisation_t norm) {
   assert(lMax >= 1);
   complex double *bessel = malloc((lMax+1)*sizeof(complex double));
-  if(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel)) abort();
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel));
   qpms_pitau_t pt = qpms_pitau_get(kr.theta, lMax, qpms_normalisation_t_csphase(norm));
   complex double const *pbes = bessel + 1; // starting from l = 1
   double const *pleg = pt.leg;
@@ -299,14 +299,14 @@ qpms_errno_t qpms_vswf_fill_alternative(csphvec_t *const longtarget, csphvec_t *
     qpms_bessel_t btyp, qpms_normalisation_t norm) {
   assert(lMax >= 1);
   complex double *bessel = malloc((lMax+1)*sizeof(complex double));
-  if(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel)) abort();
+  QPMS_ENSURE_SUCCESS(qpms_sph_bessel_fill(btyp, lMax, kr.r, bessel));
   complex double const *pbes = bessel + 1; // starting from l = 1
 
   qpms_y_t nelem = qpms_lMax2nelem(lMax);
   csphvec_t *a;
   QPMS_CRASHING_MALLOC(a, 3*nelem*sizeof(csphvec_t))
   csphvec_t * const a1 = a, * const a2 = a1 + nelem, * const a3 = a2 + 2 * nelem;
-  if(qpms_vecspharm_fill(a1, a2, a3, lMax, kr, norm)) abort();
+  QPMS_ENSURE_SUCCESS(qpms_vecspharm_fill(a1, a2, a3, lMax, kr, norm));
   const csphvec_t *p1 = a1; 
   const csphvec_t *p2 = a2;
   const csphvec_t *p3 = a3;
@@ -435,9 +435,9 @@ static inline complex double ipowl(qpms_l_t l) {
             break;
     case 3: return -I;
             break;
-    default: abort();
+    default: QPMS_WTF;
   }
-  assert(0);
+  QPMS_WTF;
 }
 
 qpms_errno_t qpms_planewave2vswf_fill_sph(sph_t wavedir, csphvec_t amplitude,
@@ -446,8 +446,7 @@ qpms_errno_t qpms_planewave2vswf_fill_sph(sph_t wavedir, csphvec_t amplitude,
   qpms_y_t nelem = qpms_lMax2nelem(lMax);
   csphvec_t * const dual_A1 = malloc(3*nelem*sizeof(csphvec_t)), *const dual_A2 = dual_A1 + nelem,
             * const dual_A3 = dual_A2 + nelem;
-  if (QPMS_SUCCESS != qpms_vecspharm_dual_fill(dual_A1, dual_A2, dual_A3, lMax, wavedir, norm))
-    abort();
+  QPMS_ENSURE_SUCCESS(qpms_vecspharm_dual_fill(dual_A1, dual_A2, dual_A3, lMax, wavedir, norm))
   const csphvec_t *pA1 = dual_A1, *pA2 = dual_A2, *pA3 = dual_A3;
   complex double *plong = target_longcoeff, *pmg = target_mgcoeff, *pel = target_elcoeff;
   for (qpms_l_t l = 1; l <= lMax; ++l) {
