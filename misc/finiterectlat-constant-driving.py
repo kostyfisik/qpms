@@ -2,7 +2,7 @@
 
 import math
 from qpms.argproc import ArgParser
-figscale=2
+figscale=3
 
 ap = ArgParser(['rectlattice2d_finite', 'single_particle', 'single_lMax', 'single_omega'])
 ap.add_argument("-k", '--wavevector', nargs=2, type=float, required=True, help='"Bloch" vector, modulating phase of the driving', metavar=('KX', 'KY'), default=(0., 0.))
@@ -43,6 +43,20 @@ from qpms.cycommon import DebugFlags, dbgmsg_enable
 from qpms import FinitePointGroup, ScatteringSystem, BesselType, eV, hbar
 from qpms.symmetries import point_group_info
 eh = eV/hbar
+
+def realdipfieldlabels(yp):
+    if yp == 0: return 'x'
+    if yp == 1: return 'y'
+    if yp == 2: return 'z'
+    raise ValueError
+def realdipfields(vecgrid, yp):
+    if yp == 1:
+        return vecgrid[...,0] + vecgrid[...,2]
+    if yp == 0:
+        return -1j*(vecgrid[...,0] - vecgrid[...,2])
+    if yp == 2:
+        return vecgrid[...,1]
+    raise ValueError
 
 def float_nicestr(x, tol=1e-5):
     x = float(x)
@@ -224,18 +238,19 @@ if a.plot or (a.plot_out is not None):
     pmcm = cm.bwr
     abscm = cm.plasma 
 
-    fig, axes = plt.subplots(nelem, 12 if math.isnan(a.ccd_distance) else 15, figsize=(figscale*(12 if math.isnan(a.ccd_distance) else 15), figscale*nelem))
+    fig, axes = plt.subplots(nelem, 12 if math.isnan(a.ccd_distance) else 16, figsize=(figscale*(12 if math.isnan(a.ccd_distance) else 16), figscale*nelem))
     for yp in range(0,3): # TODO xy-dipoles instead?
-        axes[0,4*yp+0].set_title("abs / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
-        axes[0,4*yp+1].set_title("arg / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
-        axes[0,4*yp+2].set_title("Fabs / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
-        axes[0,4*yp+3].set_title("Farg / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
+        axes[0,4*yp+0].set_title("abs / (E,1,%s)" % realdipfieldlabels(yp))
+        axes[0,4*yp+1].set_title("arg / (E,1,%s)" % realdipfieldlabels(yp))
+        axes[0,4*yp+2].set_title("Fabs / (E,1,%s)" % realdipfieldlabels(yp))
+        axes[0,4*yp+3].set_title("Farg / (E,1,%s)" % realdipfieldlabels(yp))
     if not math.isnan(a.ccd_distance):
         #axes[0,12].set_title("$E_{xy}$ @ $z = %g; \phi$" % a.ccd_distance)
         #axes[0,13].set_title("$E_{xy}$ @ $z = %g; \phi + \pi/2$" % a.ccd_distance)
         axes[0,12].set_title("$|E_{x}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
         axes[0,13].set_title("$|E_{y}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
-        axes[0,14].set_title("$|E_{z}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
+        axes[0,14].set_title("$|E_x + E_y|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
+        axes[0,15].set_title("$|E_{z}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
 
     for y in range(nelem):
         fulvec = scattered_full[y]
@@ -251,12 +266,12 @@ driving_nonzero_y)) # TODO shorten the complex number precision
         vecgrid_ff = np.fft.fftshift(np.fft.fft2(vecgrid, axes=(0,1)),axes=(0,1))
         lemax = np.amax(abs(vecgrid))
         for yp in range(0,3):
-            if(np.amax(abs(vecgrid[...,yp])) > lemax*1e-5):
-                axes[y,yp*4].imshow(abs(vecgrid[...,yp]), vmin=0, interpolation='none')
-                axes[y,yp*4].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,yp])), horizontalalignment='center', verticalalignment='center', transform=axes[y,yp*4].transAxes)
-                axes[y,yp*4+1].imshow(np.angle(vecgrid[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm, interpolation='none')
-                axes[y,yp*4+2].imshow(abs(vecgrid_ff[...,yp]), vmin=0, interpolation='none')
-                axes[y,yp*4+3].imshow(np.angle(vecgrid_ff[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm, interpolation='none')
+            if(np.amax(abs(realdipfields(vecgrid,yp))) > lemax*1e-5):
+                axes[y,yp*4].imshow(abs(realdipfields(vecgrid,yp)), vmin=0, interpolation='none')
+                axes[y,yp*4].text(0.5, 0.5, '%g' % np.amax(abs(realdipfields(vecgrid,yp))), horizontalalignment='center', verticalalignment='center', transform=axes[y,yp*4].transAxes)
+                axes[y,yp*4+1].imshow(np.angle(realdipfields(vecgrid,yp)), vmin=-np.pi, vmax=np.pi, cmap=phasecm, interpolation='none')
+                axes[y,yp*4+2].imshow(abs(realdipfields(vecgrid_ff,yp)), vmin=0, interpolation='none')
+                axes[y,yp*4+3].imshow(np.angle(realdipfields(vecgrid_ff,yp)), vmin=-np.pi, vmax=np.pi, cmap=phasecm, interpolation='none')
             else:
                 for c in range(0,4):
                     axes[y,yp*4+c].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
@@ -265,16 +280,24 @@ driving_nonzero_y)) # TODO shorten the complex number precision
             e2vmax = np.amax(np.linalg.norm(ccd_fields[y], axis=-1)**2)
             xint = abs(ccd_fields[y,...,0])**2
             yint = abs(ccd_fields[y,...,1])**2
-            axes[y, 12].imshow(xint, origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm, interpolation='none')
-            axes[y, 13].imshow(yint, origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm, interpolation='none')
-            #axes[y, 12].imshow(np.sum(abs(ccd_fields[y,...,:2].real)**2, axis=-1), origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm)
-            #axes[y, 12].quiver(ccd_points[...,1], ccd_points[...,0], ccd_fields[y,...,1].real, ccd_fields[y,...,0].real, color='w')
-            #axes[y, 13].imshow(np.sum(abs(ccd_fields[y,...,:2].imag)**2, axis=-1) ,origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm)
-            #axes[y, 13].quiver(ccd_points[...,1], ccd_points[...,0],ccd_fields[y,...,1].imag, ccd_fields[y,...,0].imag, color='w')
+            xyint = abs(ccd_fields[y,...,0] + ccd_fields[y,...,1])**2
             zint = abs(ccd_fields[y,...,2])**2
-            axes[y, 14].imshow(zint, origin='lower', extent=fxye, cmap=abscm, interpolation='none')
-            axes[y, 14].text(0.5, 0.5, '%g' % (np.amax(zint)/e2vmax), 
+            xintmax = np.amax(xint)
+            yintmax = np.amax(yint)
+            zintmax = np.amax(zint)
+            xyintmax = np.amax(xyint)
+            axes[y, 12].imshow(xint, origin="lower", extent=fxye, cmap=abscm, interpolation='none')
+            axes[y, 13].imshow(yint, origin="lower", extent=fxye, cmap=abscm, interpolation='none')
+            axes[y, 14].imshow(xyint, origin="lower", extent=fxye, cmap=abscm, interpolation='none')
+            axes[y, 15].imshow(zint, origin='lower', extent=fxye, cmap=abscm, interpolation='none')
+            axes[y, 12].text(0.5, 0.5, '%g\n%g' % (xintmax,xintmax/e2vmax), 
+                    horizontalalignment='center', verticalalignment='center', transform=axes[y,12].transAxes)
+            axes[y, 13].text(0.5, 0.5, '%g\n%g' % (yintmax,yintmax/e2vmax), 
+                    horizontalalignment='center', verticalalignment='center', transform=axes[y,13].transAxes)
+            axes[y, 14].text(0.5, 0.5, '%g\n%g' % (xyintmax,xyintmax/e2vmax), 
                     horizontalalignment='center', verticalalignment='center', transform=axes[y,14].transAxes)
+            axes[y, 15].text(0.5, 0.5, '%g\n%g' % (zintmax,zintmax/e2vmax), 
+                    horizontalalignment='center', verticalalignment='center', transform=axes[y,15].transAxes)
     plotfile = defaultprefix + ".pdf" if a.plot_out is None else a.plot_out
     fig.savefig(plotfile)
 
