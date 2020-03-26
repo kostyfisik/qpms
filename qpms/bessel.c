@@ -48,13 +48,17 @@ static inline complex double spherical_yn(qpms_l_t l, complex double z) {
 }
 #endif 
 
+// Don't use Stead algorithm from GSL above this threshold (it fails for x's around 1000000 and higher)
+static const double stead_threshold = 1000;
+
 // There is a big issue with gsl's precision of spherical bessel function; these have to be implemented differently
 qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array) {
   int retval;
   double tmparr[lmax+1];
   switch(typ) {
     case QPMS_BESSEL_REGULAR:
-      retval = gsl_sf_bessel_jl_steed_array(lmax, x, tmparr);
+      retval = (x < stead_threshold) ? gsl_sf_bessel_jl_steed_array(lmax, x, tmparr)
+                                     : gsl_sf_bessel_jl_array(lmax, x, tmparr);
       for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
       return retval;
       break;
@@ -70,7 +74,8 @@ qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double
       break;
     case QPMS_HANKEL_PLUS:
     case QPMS_HANKEL_MINUS:
-      retval = gsl_sf_bessel_jl_steed_array(lmax, x, tmparr);
+      retval = (x < stead_threshold) ? gsl_sf_bessel_jl_steed_array(lmax, x, tmparr)
+                                     : gsl_sf_bessel_jl_array(lmax, x, tmparr);
       for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
       if(retval) return retval;
       retval = gsl_sf_bessel_yl_array(lmax, x, tmparr);
