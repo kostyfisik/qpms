@@ -29,10 +29,9 @@ px, py = a.period
 
 particlestr = ("sph" if a.height is None else "cyl") + ("_r%gnm" % (a.radius*1e9))
 if a.height is not None: particlestr += "_h%gnm" % (a.height * 1e9)
-defaultprefix = "cd_%s_p%gnmx%gnm_%dx%d_m%s_n%g_k_%g_%g_f%geV_L%d" % (
-    particlestr, px*1e9, py*1e9, Nx, Ny, str(a.material), a.refractive_index, a.wavevector[0], a.wavevector[1], a.eV, a.lMax,)
+defaultprefix = "cd_%s_p%gnmx%gnm_%dx%d_m%s_n%g_k_%g_%g_f%geV_L%d_micro-%s" % (
+    particlestr, px*1e9, py*1e9, Nx, Ny, str(a.material), a.refractive_index, a.wavevector[0], a.wavevector[1], a.eV, a.lMax, "SO3" if a.symmetry_adapted is None else a.symmetry_adapted)
 logging.info("Default file prefix: %s" % defaultprefix)
-
 
 import numpy as np
 import qpms
@@ -44,6 +43,27 @@ from qpms.cycommon import DebugFlags, dbgmsg_enable
 from qpms import FinitePointGroup, ScatteringSystem, BesselType, eV, hbar
 from qpms.symmetries import point_group_info
 eh = eV/hbar
+
+def float_nicestr(x, tol=1e-5):
+    x = float(x)
+    if .5**2 - abs(x) < tol:
+        return(("-" if x < 0 else '+') + "2^{-2}")
+    else: 
+        return "%+.3g" % x
+
+def cplx_nicestr(x):
+    x = complex(x)
+    if x == 0:
+        return '0'
+    ret = ""
+    if x.real:
+        ret = ret + float_nicestr(x.real)
+    if x.imag:
+        ret = ret + float_nicestr(x.imag) + 'i'
+    if x.real and x.imag:
+        return '(' + ret + ')'
+    else:
+        return ret
 
 def cleanarray(a, atol=1e-10, copy=True):
     a = np.array(a, copy=copy)
@@ -94,6 +114,7 @@ if a.symmetry_adapted is not None:
     for iri1 in range(ss1.nirreps):
         for j in range(ss1.saecv_sizes[iri1]):
             pvc1 = np.zeros((ss1.saecv_sizes[iri1],), dtype=complex)
+            pvc1[j] = 1
             fvcs1[y] = ss1.unpack_vector(pvc1, iri1)
             fvcs1[y] = cleanarray(nicerot(fvcs1[y], copy=False), copy=False)
             driving_full[y] = (phases[:, None] * fvcs1[y][None,:]).flatten()
@@ -148,16 +169,14 @@ t, l, m = bspec.tlm()
 
 if not math.isnan(a.ccd_distance):
     logging.info("Computing the far fields")
-    ccd_size = (20 * a.ccd_distance / (max(Nx*px, Ny*py) * ssw.wavenumber.real)) if math.isnan(a.ccd_size) else a.ccd_size
+    ccd_size = (50 * a.ccd_distance / (max(Nx*px, Ny*py) * ssw.wavenumber.real)) if math.isnan(a.ccd_size) else a.ccd_size
     ccd_x = np.linspace(-ccd_size/2, ccd_size/2, a.ccd_resolution)
     ccd_y = np.linspace(-ccd_size/2, ccd_size/2, a.ccd_resolution)
     ccd_grid = np.meshgrid(ccd_x, ccd_y, (a.ccd_distance,), indexing='ij')
     ccd_points = np.stack(ccd_grid, axis=-1).squeeze(axis=-2)
-    print(ccd_points.shape)
     ccd_fields = np.empty((nelem,) + ccd_points.shape, dtype=complex)
     for y in range(nelem):
         ccd_fields[y] = ssw.scattered_E(scattered_full[y], ccd_points, btyp=BesselType.HANKEL_PLUS)
-    print(ccd_fields.shape)
     logging.info("Far fields done")
 
 outfile = defaultprefix + ".npz" if a.output is None else a.output
@@ -212,16 +231,18 @@ if a.plot or (a.plot_out is not None):
         axes[0,4*yp+2].set_title("Fabs / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
         axes[0,4*yp+3].set_title("Farg / %s,%d,%+d"%('E' if t[yp]==2 else 'M', l[yp], m[yp],))
     if not math.isnan(a.ccd_distance):
-        axes[0,12].set_title("$E_{xy}$ @ $z = %g; \phi$" % a.ccd_distance)
-        axes[0,13].set_title("$E_{xy}$ @ $z = %g; \phi + \pi/2$" % a.ccd_distance)
-        axes[0,14].set_title("$E_{z}$ @ $z = %g$" % a.ccd_distance)
+        #axes[0,12].set_title("$E_{xy}$ @ $z = %g; \phi$" % a.ccd_distance)
+        #axes[0,13].set_title("$E_{xy}$ @ $z = %g; \phi + \pi/2$" % a.ccd_distance)
+        axes[0,12].set_title("$|E_{x}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
+        axes[0,13].set_title("$|E_{y}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
+        axes[0,14].set_title("$|E_{z}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
 
     for y in range(nelem):
         fulvec = scattered_full[y]
         if a.symmetry_adapted is not None:
             driving_nonzero_y = [j for j in range(nelem) if abs(fvcs1[y,j]) > 1e-5]
-            driving_descr = ss1.irrep_names[iris1[y]].join((str(fvcs[y,j]) +
-"(%s, %d, %+d) " % (("E" if t[j] == 2 else "M"), l[j], m[j]) for j in
+            driving_descr = ss1.irrep_names[iris1[y]]+'\n'+', '.join(('$'+cplx_nicestr(fvcs1[y,j])+'$' +
+"(%s,%d,%+d)" % (("E" if t[j] == 2 else "M"), l[j], m[j]) for j in
 driving_nonzero_y)) # TODO shorten the complex number precision
         else:
             driving_descr = "%s,%d,%+d"%('E' if t[y]==2 else 'M', l[y], m[y],)
@@ -231,29 +252,29 @@ driving_nonzero_y)) # TODO shorten the complex number precision
         lemax = np.amax(abs(vecgrid))
         for yp in range(0,3):
             if(np.amax(abs(vecgrid[...,yp])) > lemax*1e-5):
-                axes[y,yp*4].imshow(abs(vecgrid[...,yp]), vmin=0)
+                axes[y,yp*4].imshow(abs(vecgrid[...,yp]), vmin=0, interpolation='none')
                 axes[y,yp*4].text(0.5, 0.5, '%g' % np.amax(abs(vecgrid[...,yp])), horizontalalignment='center', verticalalignment='center', transform=axes[y,yp*4].transAxes)
-                axes[y,yp*4+1].imshow(np.angle(vecgrid[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
-                axes[y,yp*4+2].imshow(abs(vecgrid_ff[...,yp]), vmin=0)
-                axes[y,yp*4+3].imshow(np.angle(vecgrid_ff[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm)
+                axes[y,yp*4+1].imshow(np.angle(vecgrid[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm, interpolation='none')
+                axes[y,yp*4+2].imshow(abs(vecgrid_ff[...,yp]), vmin=0, interpolation='none')
+                axes[y,yp*4+3].imshow(np.angle(vecgrid_ff[...,yp]), vmin=-np.pi, vmax=np.pi, cmap=phasecm, interpolation='none')
             else:
                 for c in range(0,4):
                     axes[y,yp*4+c].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
         if not math.isnan(a.ccd_distance):
             fxye=(-ccd_size/2, ccd_size/2, -ccd_size/2, ccd_size/2)
             e2vmax = np.amax(np.linalg.norm(ccd_fields[y], axis=-1)**2)
-            print(np.sum(abs(ccd_fields[y,...,:2].real)**2).shape)
-            axes[y, 12].imshow(np.sum(abs(ccd_fields[y,...,:2].real)**2, axis=-1),
-origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm)
-            axes[y, 12].streamplot(ccd_points[...,1], ccd_points[...,0],
-ccd_fields[y,...,1].real, ccd_fields[y,...,0].real)
-            axes[y, 13].imshow(np.sum(abs(ccd_fields[y,...,:2].imag)**2, axis=-1) ,
-origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm)
-            axes[y, 13].streamplot(ccd_points[...,1], ccd_points[...,0],
-ccd_fields[y,...,1].imag, ccd_fields[y,...,0].imag)
-            zplot = abs(ccd_fields[y,...,2])**2
-            axes[y, 14].imshow(zplot, origin='lower', extent=fxye, cmap=abscm)
-            axes[y, 14].text(0.5, 0.5, '%g' % np.amax(zplot)/e2vmax, horizontalalignment='center', verticalalignment='center', transform=axes[y,14].transAxes)
+            xint = abs(ccd_fields[y,...,0])**2
+            yint = abs(ccd_fields[y,...,1])**2
+            axes[y, 12].imshow(xint, origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm, interpolation='none')
+            axes[y, 13].imshow(yint, origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm, interpolation='none')
+            #axes[y, 12].imshow(np.sum(abs(ccd_fields[y,...,:2].real)**2, axis=-1), origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm)
+            #axes[y, 12].quiver(ccd_points[...,1], ccd_points[...,0], ccd_fields[y,...,1].real, ccd_fields[y,...,0].real, color='w')
+            #axes[y, 13].imshow(np.sum(abs(ccd_fields[y,...,:2].imag)**2, axis=-1) ,origin="lower",vmax=e2vmax, extent=fxye, cmap=abscm)
+            #axes[y, 13].quiver(ccd_points[...,1], ccd_points[...,0],ccd_fields[y,...,1].imag, ccd_fields[y,...,0].imag, color='w')
+            zint = abs(ccd_fields[y,...,2])**2
+            axes[y, 14].imshow(zint, origin='lower', extent=fxye, cmap=abscm, interpolation='none')
+            axes[y, 14].text(0.5, 0.5, '%g' % (np.amax(zint)/e2vmax), 
+                    horizontalalignment='center', verticalalignment='center', transform=axes[y,14].transAxes)
     plotfile = defaultprefix + ".pdf" if a.plot_out is None else a.plot_out
     fig.savefig(plotfile)
 
