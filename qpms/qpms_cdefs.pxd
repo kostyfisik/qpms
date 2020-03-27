@@ -618,7 +618,7 @@ cdef extern from "scatsystem.h":
     struct qpms_scatsys_at_omega_k_t:
         const qpms_scatsys_at_omega_t *ssw
         double k[3]
-    cdouble *qpms_scatsyswk_build_modeproblem_motrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
+    cdouble *qpms_scatsyswk_build_modeproblem_matrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
     cdouble *qpms_scatsys_periodic_build_translation_matrix_full(cdouble *target, const qpms_scatsys_t *ss, cdouble wavenumber, const cart3_t *wavevector)
     qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(cdouble *target, int *target_piv, const qpms_scatsys_at_omega_k_t *sswk)
     beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(const qpms_scatsys_t *ss, const double *k,

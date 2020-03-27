@@ -48,42 +48,27 @@ static inline complex double spherical_yn(qpms_l_t l, complex double z) {
 }
 #endif 
 
-// Don't use Stead algorithm from GSL above this threshold (it fails for x's around 1000000 and higher)
-static const double stead_threshold = 1000;
-
 // There is a big issue with gsl's precision of spherical bessel function; these have to be implemented differently
 qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double x, complex double *result_array) {
   int retval;
   double tmparr[lmax+1];
   switch(typ) {
     case QPMS_BESSEL_REGULAR:
-      retval = (x < stead_threshold) ? gsl_sf_bessel_jl_steed_array(lmax, x, tmparr)
-                                     : gsl_sf_bessel_jl_array(lmax, x, tmparr);
+      retval = gsl_sf_bessel_jl_steed_array(lmax, x, tmparr);
       for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
       return retval;
       break;
     case QPMS_BESSEL_SINGULAR: //FIXME: is this precise enough? Would it be better to do it one-by-one?
-      if(QPMS_UNLIKELY(x == 0)) {
-        for (int l = 0; l <= lmax; ++l)
-          result_array[l] = NAN;
-        return QPMS_ESING; // GSL would have returned GSL_EDOM without setting NANs.
-      }
       retval = gsl_sf_bessel_yl_array(lmax,x,tmparr);
       for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
       return retval;
       break;
     case QPMS_HANKEL_PLUS:
     case QPMS_HANKEL_MINUS:
-      retval = (x < stead_threshold) ? gsl_sf_bessel_jl_steed_array(lmax, x, tmparr)
-                                     : gsl_sf_bessel_jl_array(lmax, x, tmparr);
+      retval = gsl_sf_bessel_jl_steed_array(lmax, x, tmparr);
       for (int l = 0; l <= lmax; ++l) result_array[l] = tmparr[l];
       if(retval) return retval;
       retval = gsl_sf_bessel_yl_array(lmax, x, tmparr);
-      if(QPMS_UNLIKELY(x == 0)) {
-        for (int l = 0; l <= lmax; ++l)
-          result_array[l] += I * NAN;
-        return QPMS_ESING; // GSL would have returned GSL_EDOM without setting NANs.
-      }
       if (typ==QPMS_HANKEL_PLUS)
         for (int l = 0; l <= lmax; ++l) result_array[l] += I * tmparr[l];
       else 
@@ -91,9 +76,10 @@ qpms_errno_t qpms_sph_bessel_realx_fill(qpms_bessel_t typ, qpms_l_t lmax, double
       return retval;
       break;
     default:
-      QPMS_INVALID_ENUM(typ);
+      abort();
+      //return GSL_EDOM;
   }
-  QPMS_WTF;
+  assert(0);
 }
 
 // TODO DOC
@@ -106,6 +92,8 @@ qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, complex doub
   else if (fpclassify(creal(x)) == FP_INFINITE) 
     for(qpms_l_t l = 0; l <= lmax; ++l) res[l] = INFINITY + I * INFINITY;
   else {
+try_again: ;
+    int retry_counter = 0;
     const DOUBLE_PRECISION_t zr = creal(x), zi = cimag(x), fnu = 0.5;
     const INTEGER_t n = lmax + 1, kode = 1 /* No exponential scaling */;
     DOUBLE_PRECISION_t cyr[n], cyi[n];
@@ -133,7 +121,7 @@ qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, complex doub
         }
         break;
       default:
-        QPMS_INVALID_ENUM(typ);
+        QPMS_WTF;
     }
     // TODO check for underflows? (nz != 0)
     if (ierr == 0 || ierr == 3) {
@@ -145,9 +133,15 @@ qpms_errno_t qpms_sph_bessel_fill(qpms_bessel_t typ, qpms_l_t lmax, complex doub
             kindchar);
       return QPMS_SUCCESS; //TODO maybe something else if ierr == 3
     }
-    else
-      QPMS_PR_ERROR("Amos's zbes%c failed with ierr == %d.",
-         kindchar, (int) ierr);
+    else {
+      if (retry_counter < 5) {
+        QPMS_WARN("Amos's zbes%c failed with ierr == %d (lMax = %d, x = %+.16g%+.16gi). Retrying.\n",
+           kindchar, (int) ierr, lmax, creal(x), cimag(x));
+        ++retry_counter;
+        goto try_again;
+      } else QPMS_PR_ERROR("Amos's zbes%c failed with ierr == %d (lMax = %d, x = %+.16g%+.16gi).",
+           kindchar, (int) ierr, lmax, creal(x), cimag(x));
+    }
   }
   return QPMS_SUCCESS;
 }
@@ -165,8 +159,10 @@ static inline qpms_errno_t qpms_sbessel_calculator_ensure_lMax(qpms_sbessel_calc
   if (lMax <= c->lMax)
     return QPMS_SUCCESS;
   else {
-    QPMS_CRASHING_REALLOC(c->akn, sizeof(double) * akn_index(lMax + 2, 0));
-    // QPMS_CRASHING_REALLOC(c->bkn, sizeof(complex double) * bkn_index(lMax + 1, 0));
+    if ( NULL == (c->akn = realloc(c->akn, sizeof(double) * akn_index(lMax + 2, 0))))
+      abort();
+    //if ( NULL == (c->bkn = realloc(c->bkn, sizeof(complex double) * bkn_index(lMax + 1, 0))))
+    //	abort();
     for(qpms_l_t n = c->lMax+1; n <= lMax + 1; ++n)
       for(qpms_l_t k = 0; k <= n; ++k)
         c->akn[akn_index(n,k)] = exp(lgamma(n + k + 1) - k*M_LN2 - lgamma(k + 1) - lgamma(n - k + 1));
@@ -177,7 +173,8 @@ static inline qpms_errno_t qpms_sbessel_calculator_ensure_lMax(qpms_sbessel_calc
 }
 
 complex double qpms_sbessel_calc_h1(qpms_sbessel_calculator_t *c, qpms_l_t n, complex double x) {
-  QPMS_ENSURE_SUCCESS(qpms_sbessel_calculator_ensure_lMax(c, n));
+  if(QPMS_SUCCESS != qpms_sbessel_calculator_ensure_lMax(c, n))
+    abort();
   complex double z = I/x; 
   complex double result = 0;
   for (qpms_l_t k = n; k >= 0; --k) 
@@ -190,7 +187,8 @@ complex double qpms_sbessel_calc_h1(qpms_sbessel_calculator_t *c, qpms_l_t n, co
 
 qpms_errno_t qpms_sbessel_calc_h1_fill(qpms_sbessel_calculator_t * const c,
     const qpms_l_t lMax, const complex double x, complex double * const target) {
-  QPMS_ENSURE_SUCCESS(qpms_sbessel_calculator_ensure_lMax(c, lMax));
+  if(QPMS_SUCCESS != qpms_sbessel_calculator_ensure_lMax(c, lMax))
+    abort();
   memset(target, 0, sizeof(complex double) * lMax);
   complex double kahancomp[lMax];
   memset(kahancomp, 0, sizeof(complex double) * lMax);

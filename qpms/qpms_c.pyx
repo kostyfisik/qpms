@@ -821,12 +821,16 @@ cdef class _ScatteringSystemAtOmega:
         else:
             if iri is not None:
                 raise NotImplementedError("Irrep decomposition not (yet) supported for periodic systems")
-            sswk = _ScatteringSystemAtOmegaK()
-            sswk.sswk.ssw = self.ssw
-            sswk.sswk.k[0] = k[0]
-            sswk.sswk.k[1] = k[1]
-            sswk.sswk.k[2] = k[2]
+            sswk = self._sswk(k)
             return ScatteringMatrix(ssw=self, sswk=sswk, iri=None)
+
+    def _sswk(self, k):
+        cdef _ScatteringSystemAtOmegaK sswk = _ScatteringSystemAtOmegaK()
+        sswk.sswk.ssw = self.ssw
+        sswk.sswk.k[0] = k[0]
+        sswk.sswk.k[1] = k[1]
+        sswk.sswk.k[2] = k[2]
+        return sswk
 
     property fecv_size: 
         def __get__(self): return self.ss_pyref.fecv_size
@@ -846,7 +850,12 @@ cdef class _ScatteringSystemAtOmega:
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (flen,flen),dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
-        qpms_scatsysw_build_modeproblem_matrix_full(&target_view[0][0], self.ssw)
+        cdef _ScatteringSystemAtOmegaK sswk
+        if k is not None:
+            sswk = self._sswk(k)
+            qpms_scatsyswk_build_modeproblem_matrix_full(&target_view[0][0], &sswk.sswk)
+        else: 
+            qpms_scatsysw_build_modeproblem_matrix_full(&target_view[0][0], self.ssw)
         return target
 
     def modeproblem_matrix_packed(self, qpms_iri_t iri, version='pR'):
