@@ -65,15 +65,15 @@ def float_nicestr(x, tol=1e-5):
     else: 
         return "%+.3g" % x
 
-def cplx_nicestr(x):
+def cplx_nicestr(x, tol=1e-5):
     x = complex(x)
     if x == 0:
         return '0'
     ret = ""
     if x.real:
-        ret = ret + float_nicestr(x.real)
+        ret = ret + float_nicestr(x.real, tol)
     if x.imag:
-        ret = ret + float_nicestr(x.imag) + 'i'
+        ret = ret + float_nicestr(x.imag, tol) + 'i'
     if x.real and x.imag:
         return '(' + ret + ')'
     else:
@@ -187,7 +187,7 @@ if not math.isnan(a.ccd_distance):
     ccd_x = np.linspace(-ccd_size/2, ccd_size/2, a.ccd_resolution)
     ccd_y = np.linspace(-ccd_size/2, ccd_size/2, a.ccd_resolution)
     ccd_grid = np.meshgrid(ccd_x, ccd_y, (a.ccd_distance,), indexing='ij')
-    ccd_points = np.stack(ccd_grid, axis=-1).squeeze(axis=-2)
+    ccd_points = np.swapaxes(np.stack(ccd_grid, axis=-1).squeeze(axis=-2), 0,1) # First axis is y, second is x, because of imshow...
     ccd_fields = np.empty((nelem,) + ccd_points.shape, dtype=complex)
     for y in range(nelem):
         ccd_fields[y] = ssw.scattered_E(scattered_full[y], ccd_points, btyp=BesselType.HANKEL_PLUS)
@@ -223,12 +223,12 @@ if a.plot or (a.plot_out is not None):
         posmap[i,0] = np.searchsorted(xpositions, positions[i,0])
         posmap[i,1] = np.searchsorted(ypositions, positions[i,1])
 
-    def fullvec2grid(fullvec):
+    def fullvec2grid(fullvec, swapxy=False):
         arr = np.empty((Nx,Ny,nelem), dtype=complex)
         for pi, offset in enumerate(ss.fullvec_poffsets):
             ix, iy = posmap[pi]
             arr[ix, iy] = fullvec[offset:offset+nelem]
-        return arr
+        return np.swapaxes(arr, 0, 1) if swapxy else arr
 
     import matplotlib
     matplotlib.use('pdf')
@@ -251,6 +251,9 @@ if a.plot or (a.plot_out is not None):
         axes[0,13].set_title("$|E_{y}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
         axes[0,14].set_title("$|E_x + E_y|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
         axes[0,15].set_title("$|E_{z}|^2$ @ $z = %g\,\mathrm{m}$" % a.ccd_distance)
+        for gg in range(12,16):
+            axes[-1,gg].set_xlabel("$x/\mathrm{m}$")
+        
 
     for y in range(nelem):
         fulvec = scattered_full[y]
@@ -262,7 +265,9 @@ driving_nonzero_y)) # TODO shorten the complex number precision
         else:
             driving_descr = "%s,%d,%+d"%('E' if t[y]==2 else 'M', l[y], m[y],)
         axes[y,0].set_ylabel(driving_descr)
-        vecgrid = fullvec2grid(fulvec)
+        axes[y,-1].yaxis.set_label_position("right")
+        axes[y,-1].set_ylabel("$y/\mathrm{m}$\n"+driving_descr)
+        vecgrid = fullvec2grid(fulvec, swapxy=True)
         vecgrid_ff = np.fft.fftshift(np.fft.fft2(vecgrid, axes=(0,1)),axes=(0,1))
         lemax = np.amax(abs(vecgrid))
         for yp in range(0,3):
@@ -298,6 +303,10 @@ driving_nonzero_y)) # TODO shorten the complex number precision
                     horizontalalignment='center', verticalalignment='center', transform=axes[y,14].transAxes)
             axes[y, 15].text(0.5, 0.5, '%g\n%g' % (zintmax,zintmax/e2vmax), 
                     horizontalalignment='center', verticalalignment='center', transform=axes[y,15].transAxes)
+            for gg in range(12,16):
+                axes[y,gg].yaxis.tick_right()
+            for gg in range(12,15):
+                axes[y,gg].yaxis.set_major_formatter(plt.NullFormatter())
     plotfile = defaultprefix + ".pdf" if a.plot_out is None else a.plot_out
     fig.savefig(plotfile)
 
