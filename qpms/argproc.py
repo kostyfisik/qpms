@@ -20,8 +20,73 @@ class AppendTupleAction(argparse.Action):
             setattr(args, self.dest, list())
         getattr(args, self.dest).append(tuple(values))
 
+def float_range(string):
+    """Tries to parse a string either as one individual float value
+    or one of the following patterns:
+    
+    first:last:increment
+    first:last|steps
+    first:last
+    
+    (The last one is equivalent to first:last|50.)
+    Returns either float or numpy array.
+    """
+    try:
+        res = float(string)
+        return res
+    except ValueError:
+        import re
+        steps = None
+        match = re.match(r's?([^:]+):([^|]+)\|(.+)', string)
+        if match:
+            #print("first:last|steps", match.group(1,2,3))
+            steps = int(match.group(3))
+        else:
+            match = re.match(r's?([^:]+):([^:]+):(.+)', string)
+            if match:
+                #print("first:last:increment", match.group(1,2,3))
+                increment = float(match.group(3))
+            else:
+                match = re.match(r's?([^:]+):(.+)', string)
+                if match:
+                    #print("first:last", match.group(1,2))
+                    steps = 50
+                else: 
+                    argparse.ArgumentTypeError('Invalid float/sequence format: "%s"' % string)
+        first = float(match.group(1))
+        last = float(match.group(2))
+        import numpy as np
+        if steps is not None:
+            return np.linspace(first, last, num=steps)
+        else:
+            return np.arange(first, last, increment)
+
 class ArgParser:
     ''' Common argument parsing engine for QPMS python CLI scripts. '''
+    
+    def __add_planewave_argparse_group(ap):
+        pwgrp = ap.add_argument_group('Incident wave specification', """
+        Incident wave direction is given in terms of ISO polar and azimuthal angles θ, φ, 
+        which translate into cartesian coordinates as r̂ = (x, y, z) = (sin(θ) cos(φ), sin(θ) sin(φ), cos(θ)).
+
+        Wave polarisation is given in terms of parameters ψ, χ, where ψ is the angle between a polarisation 
+        ellipse axis and meridian tangent θ̂, and tg χ determines axes ratio; 
+        the electric field in the origin is then
+
+        E⃗ = cos(χ) (cos(ψ) θ̂ + sin(ψ) φ̂) + i sin(χ) (sin(ψ) θ̂ + cos(ψ) φ̂).
+
+        All the angles are given as multiples of π/2.
+        """ # TODO EXAMPLES
+        )
+        pwgrp.add_argument("-φ", "--phi", type=float, default=0,
+            help='Incident wave asimuth in multiples of π/2.')
+        pwgrp.add_argument("-θ", "--theta", type=float_range, default=0,
+            help='Incident wave polar angle in multiples of π/2. This might be a sequence in format FIRST:LAST:INCREMENT.')
+        pwgrp.add_argument("-ψ", "--psi", type=float, default=0,
+            help='Angle between polarisation ellipse axis and meridian tangent θ̂ in multiples of π/2.')
+        pwgrp.add_argument("-χ", "--chi", type=float, default=0,
+            help='Polarisation parameter χ in multiples of π/2. 0 for linear, 0.5 for circular pol.')
+
     atomic_arguments = {
             'rectlattice2d_periods': lambda ap: ap.add_argument("-p", "--period", type=float, nargs='+', required=True, help='square/rectangular lattice periods', metavar=('px','[py]')),
             'rectlattice2d_counts': lambda ap: ap.add_argument("--size", type=int, nargs=2, required=True, help='rectangular array size (particle column, row count)', metavar=('NCOLS', 'NROWS')),
@@ -40,6 +105,7 @@ class ArgParser:
             'plot_out': lambda ap: ap.add_argument("-O", "--plot-out", type=str, required=False, help="path to plot output (optional)"),
             'plot_do': lambda ap: ap.add_argument("-P", "--plot", action='store_true', help="if -p not given, plot to a default path"),
             'lattice2d_basis': lambda ap: ap.add_argument("-b", "--basis-vector", action=AppendTupleAction, help="basis vector in xy-cartesian coordinates (two required)", dest='basis_vectors', metavar=('X', 'Y')),
+            'planewave_pol_angles': __add_planewave_argparse_group,
     }
 
     feature_sets_available = { # name : (description, dependencies, atoms not in other dependencies, methods called after parsing) 
@@ -51,6 +117,7 @@ class ArgParser:
             'lattice2d': ("Specification of a generic 2d lattice (spanned by the x,y axes)", (), ('lattice2d_basis',), ('_eval_lattice2d',)),
             'rectlattice2d': ("Specification of a rectangular 2d lattice; conflicts with lattice2d", (), ('rectlattice2d_periods',), ('_eval_rectlattice2d',)),
             'rectlattice2d_finite': ("Specification of a rectangular 2d lattice; conflicts with lattice2d", ('rectlattice2d',), ('rectlattice2d_counts',), ()),
+            'planewave': ("Specification of a normalised plane wave (typically used for scattering) with a full polarisation state", (), ('planewave_pol_angles',), ("_process_planewave_angles",)),
     }
 
 
@@ -156,4 +223,13 @@ class ArgParser:
         self.direct_basis = np.array(a.basis_vectors)
         self.reciprocal_basis1 = np.linalg.inv(self.direct_basis)
         self.reciprocal_basis2pi = 2 * np.pi * self.reciprocal_basis1
+
+    def _process_planewave_angles(self): #feature: planewave
+        import math
+        pi2 = math.pi/2
+        a = self.args
+        a.chi = a.chi * pi2
+        a.psi = a.psi * pi2
+        a.theta = a.theta * pi2
+        a.phi = a.phi * pi2
 

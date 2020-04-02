@@ -4,11 +4,8 @@ import math
 from qpms.argproc import ArgParser
 
 
-ap = ArgParser(['rectlattice2d_finite', 'single_particle', 'single_lMax', 'single_omega'])
-ap.add_argument("-k", '--kx-lim', nargs=2, type=float, required=True, help='k vector', metavar=('KX_MIN', 'KX_MAX'))
-# ap.add_argument("--kpi", action='store_true', help="Indicates that the k vector is given in natural units instead of SI, i.e. the arguments given by -k shall be automatically multiplied by pi / period (given by -p argument)")
+ap = ArgParser(['rectlattice2d_finite', 'single_particle', 'single_lMax', 'single_omega', 'planewave'])
 ap.add_argument("-o", "--output", type=str, required=False, help='output path (if not provided, will be generated automatically)')
-ap.add_argument("-N", type=int, default="151", help="Number of angles")
 ap.add_argument("-O", "--plot-out", type=str, required=False, help="path to plot output (optional)")
 ap.add_argument("-P", "--plot", action='store_true', help="if -p not given, plot to a default path")
 ap.add_argument("-g", "--save-gradually", action='store_true', help="saves the partial result after computing each irrep")
@@ -22,15 +19,11 @@ logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 Nx, Ny = a.size
 px, py = a.period
 
-particlestr = ("sph" if a.height is None else "cyl") + ("_r%gnm" % (a.radius*1e9))
-if a.height is not None: particlestr += "_h%gnm" % (a.height * 1e9)
-defaultprefix = "%s_p%gnmx%gnm_%dx%d_m%s_n%g_angles(%g_%g)_Ey_f%geV_L%d_cn%d" % (
-    particlestr, px*1e9, py*1e9, Nx, Ny, str(a.material), a.refractive_index, a.kx_lim[0], a.kx_lim[1], a.eV, a.lMax, a.N)
-logging.info("Default file prefix: %s" % defaultprefix)
-
 
 import numpy as np
 import qpms
+import math
+from qpms.qpms_p import cart2sph, sph2cart, sph_loccart2cart, sph_loccart_basis
 from qpms.cybspec import BaseSpec
 from qpms.cytmatrices import CTMatrix, TMatrixGenerator
 from qpms.qpms_c import Particle
@@ -39,6 +32,13 @@ from qpms.cycommon import DebugFlags, dbgmsg_enable
 from qpms import FinitePointGroup, ScatteringSystem, BesselType, eV, hbar
 from qpms.symmetries import point_group_info
 eh = eV/hbar
+pi = math.pi
+
+particlestr = ("sph" if a.height is None else "cyl") + ("_r%gnm" % (a.radius*1e9))
+if a.height is not None: particlestr += "_h%gnm" % (a.height * 1e9)
+defaultprefix = "%s_p%gnmx%gnm_%dx%d_m%s_n%g_φ%gπ_θ(%g_%g)π_ψ%gπ_χ%gπ_f%geV_L%d" % (
+    particlestr, px*1e9, py*1e9, Nx, Ny, str(a.material), a.refractive_index, a.phi/pi, np.amin(a.theta)/pi, np.amax(a.theta)/pi, a.psi/pi, a.chi/pi, a.eV, a.lMax, )
+logging.info("Default file prefix: %s" % defaultprefix)
 
 dbgmsg_enable(DebugFlags.INTEGRATION)
 
@@ -56,23 +56,24 @@ Tmatrix = ap.tmgen(bspec, ap.omega)
 particles= [Particle(orig_xy[i], Tmatrix) for i in np.ndindex(orig_xy.shape[:-1])]
 
 sym = FinitePointGroup(point_group_info['D2h'])
-ss = ScatteringSystem(particles, sym)
+ss, ssw = ScatteringSystem.create(particles, ap.background_emg, omega, sym=sym)
 
 wavenumber = ap.background_epsmu.k(omega).real # Currently, ScatteringSystem does not "remember" frequency nor wavenumber
 
-sinalpha_list = np.linspace(a.kx_lim[0],a.kx_lim[1],a.N)
+## Plane wave data
+a.theta = np.array(a.theta)
+k_sph_list = np.stack((np.broadcast_to(wavenumber, a.theta.shape), a.theta, np.broadcast_to(a.phi, a.theta.shape)), axis=-1)
+sψ, cψ = math.sin(a.psi), math.cos(a.psi)
+sχ, cχ = math.sin(a.chi), math.cos(a.chi)
+E_sph = (0., cψ*cχ + 1j*sψ*sχ, sψ*cχ + 1j*cψ*sχ) 
 
-# Plane wave data
-E_cart_list = np.empty((a.N,3), dtype=complex)
-E_cart_list[:,:] = np.array((0,1,0))[None,:]
-k_cart_list = np.empty((a.N,3), dtype=float)
-k_cart_list[:,0] = sinalpha_list
-k_cart_list[:,1] = 0
-k_cart_list[:,2] = np.sqrt(1-sinalpha_list**2)
-k_cart_list *= wavenumber
+k_cart_list = sph2cart(k_sph_list)
+E_cart_list = sph_loccart2cart(E_sph, k_sph_list)
 
-σ_ext_list_ir = np.empty((a.N, ss.nirreps), dtype=float)
-σ_scat_list_ir = np.empty((a.N, ss.nirreps), dtype=float)
+npoints = a.theta.shape[0]
+
+σ_ext_list_ir = np.empty((npoints, ss.nirreps), dtype=float)
+σ_scat_list_ir = np.empty((npoints, ss.nirreps), dtype=float)
 
 outfile_tmp = defaultprefix + ".tmp" if a.output is None else a.output + ".tmp"
 
@@ -80,15 +81,15 @@ for iri in range(ss.nirreps):
     logging.info("processing irrep %d/%d" % (iri, ss.nirreps))
     LU = None # to trigger garbage collection before the next call
     translation_matrix = None
-    LU = ss.scatter_solver(wavenumber,iri)
+    LU = ssw.scatter_solver(iri)
     logging.info("LU solver created")
     translation_matrix = ss.translation_matrix_packed(wavenumber, iri, BesselType.REGULAR) + np.eye(ss.saecv_sizes[iri]) 
     logging.info("auxillary translation matrix created")
 
-    for j in range(a.N):
+    for j in range(npoints):
         # the following two could be calculated only once, but probably not a big deal
         ã = ss.planewave_full(k_cart=k_cart_list[j], E_cart=E_cart_list[j])
-        Tã = ss.apply_Tmatrices_full(ã)
+        Tã = ssw.apply_Tmatrices_full(ã)
 
         Tãi = ss.pack_vector(Tã, iri)
         ãi = ss.pack_vector(ã, iri)
@@ -97,7 +98,7 @@ for iri in range(ss.nirreps):
         σ_scat_list_ir[j, iri] = np.vdot(fi,np.dot(translation_matrix, fi)).real/wavenumber**2
     if a.save_gradually:
         iriout = outfile_tmp + ".%d" % iri
-        np.savez(iriout, iri=iri, meta=vars(a), sinalpha=sinalpha_list, k_cart = k_cart_list, E_cart=E_cart_list,
+        np.savez(iriout, iri=iri, meta=vars(a), k_sph=k_sph_list, k_cart = k_cart_list, E_cart=E_cart_list, E_sph=np.array(E_sph),
 		 omega=omega, wavenumber=wavenumber, σ_ext_list_ir=σ_ext_list_ir[:,iri], σ_scat_list_ir=σ_scat_list_ir[:,iri])
         logging.info("partial results saved to %s"%iriout)
 
@@ -108,8 +109,9 @@ for iri in range(ss.nirreps):
 
 
 outfile = defaultprefix + ".npz" if a.output is None else a.output
-np.savez(outfile, meta=vars(a), sinalpha=sinalpha_list, k_cart = k_cart_list, E_cart=E_cart_list, σ_ext=σ_ext,σ_abs=σ_abs,σ_scat=σ_scat,
- σ_ext_ir=σ_ext_list_ir,σ_abs_ir=σ_abs_list_ir,σ_scat_ir=σ_scat_list_ir, omega=omega, wavenumber=wavenumber
+np.savez(outfile, meta=vars(a), k_sph=k_sph_list, k_cart = k_cart_list, E_cart=E_cart_list, E_sph=np.array(E_sph),
+        σ_ext=σ_ext,σ_abs=σ_abs,σ_scat=σ_scat,
+        σ_ext_ir=σ_ext_list_ir,σ_abs_ir=σ_abs_list_ir,σ_scat_ir=σ_scat_list_ir, omega=omega, wavenumber=wavenumber
        )
 logging.info("Saved to %s" % outfile)
 
@@ -121,11 +123,12 @@ if a.plot or (a.plot_out is not None):
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(sinalpha_list, σ_ext*1e12,label='$\sigma_\mathrm{ext}$')
-    ax.plot(sinalpha_list, σ_scat*1e12, label='$\sigma_\mathrm{scat}$')
-    ax.plot(sinalpha_list, σ_abs*1e12, label='$\sigma_\mathrm{abs}$')
+    sintheta = np.sin(a.theta)
+    ax.plot(sintheta, σ_ext*1e12,label='$\sigma_\mathrm{ext}$')
+    ax.plot(sintheta, σ_scat*1e12, label='$\sigma_\mathrm{scat}$')
+    ax.plot(sintheta, σ_abs*1e12, label='$\sigma_\mathrm{abs}$')
     ax.legend()
-    ax.set_xlabel('$\sin\\alpha$')
+    ax.set_xlabel('$\sin\\theta$')
     ax.set_ylabel('$\sigma/\mathrm{\mu m^2}$')
     
     plotfile = defaultprefix + ".pdf" if a.plot_out is None else a.plot_out
