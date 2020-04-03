@@ -19,7 +19,24 @@ class EpsMuGeneratorType(enum.Enum):
     PYTHON_CALLABLE = 4
 
 cdef class EpsMu:
+    """Permittivity and permeability of an isotropic material.
+
+    This wraps the C structure qpms_epsmu_t.
+
+    See Also
+    --------
+    EpsMuGenerator : generates EpsMu objects as a function of frequency.
+    """
     def __init__(self, *args ,**kwargs):
+        """EpsMu object constructor
+
+        Parameters
+        ----------
+        eps : complex
+            Relative electric permittivity.
+        mu : complex
+            Relative magnetic permeability.
+        """
         self.em.eps = 1
         self.em.mu = 1
         if(len(args)>=1):
@@ -36,15 +53,38 @@ cdef class EpsMu:
         return 'EpsMu(' + repr(self.em.eps) + ', ' + repr(self.em.mu) + ')'
 
     def k(self, omega):
+        """Wavenumber of the material at frequency omega
+
+        Parameters
+        ----------
+        omega : complex
+            Angular frequency in 1/s.
+
+        Returns
+        -------
+        out : complex
+            Wavenumber of the material at omega assuming permittivity and permeability
+            from self.
+        """
         return self.n * omega / c
+
     property n:
+        """Refractive index of a material specified by this permittivity and permeability."""
         def __get__(self):
             return (self.em.eps * self.em.mu)**.5
     property Z:
+        """Wave impedance of a material specified by this permittivity and permeability."""
         def __get__(self):
             return (self.em.mu / self.em.eps)**.5
 
 cdef class LorentzDrudeModel:
+    """Lorentz-Drude model of material permittivity.
+
+    This wraps the C structure qpms_ldparams_t.
+
+    Some materials are available in the `lorentz_drude` dictionary.
+    """
+
     def __cinit__(self, eps_inf, omega_p, f_arr, omega_arr, gamma_arr):
         cdef size_t n = len(omega_arr)
         if (n != len(gamma_arr) or n != len(f_arr)):
@@ -66,9 +106,26 @@ cdef class LorentzDrudeModel:
         self.params = NULL
 
     def __call__(self, omega):
+        """Evaluates the permittivity at a given frequency
+
+        Parameters
+        ----------
+        omega : complex
+            Angular frequency in 1/s.
+
+        Returns
+        -------
+        eps : complex
+            Relative permittivity from the Lorentz-Drude model
+        """ 
         return qpms_lorentzdrude_eps(omega, self.params)
 
 cdef class _CLorentzDrudeModel:
+    """Lorentz-Drude model of material permittivity.
+
+    This is an auxilliary class making the pre-compiled C Lorentz-Drude models accessible.
+    For defining own Lorentz-Drude models from python, use LorentzDrudeModel class instead.
+    """
     def __cinit__(self):
         "Do not use directly. Do not use from Python. Use the link() method instead."
         pass
@@ -80,6 +137,18 @@ cdef class _CLorentzDrudeModel:
         return self
 
     def __call__(self, omega):
+        """Evaluates the permittivity at a given frequency
+
+        Parameters
+        ----------
+        omega : complex
+            Angular frequency in 1/s.
+
+        Returns
+        -------
+        eps : complex
+            Relative permittivity from the Lorentz-Drude model
+        """
         return qpms_lorentzdrude_eps(omega, self.params)
 
 cdef double eh = eV/hbar

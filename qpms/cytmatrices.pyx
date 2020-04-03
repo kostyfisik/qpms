@@ -274,6 +274,20 @@ cdef class TMatrixGenerator:
             raise TypeError("Can't construct TMatrixGenerator from that")
 
     def __call__(self, arg, cdouble omega):
+        """Produces a T-matrix at a given frequency.
+
+        Parameters
+        ----------
+        arg : CTMatrix or BaseSpec
+            If arg is a CTMatrix, its contents will be replaced.
+            If arg is a BaseSpec, a new CTMatrix instance will be created.
+        omega : complex
+            Angular frequency at which the T-matrix shall be evaluated.
+
+        Returns
+        -------
+        t : CTMatrix
+        """
         cdef CTMatrix tm
         if isinstance(arg, CTMatrix): # fill the matrix
             tm = arg
@@ -300,15 +314,70 @@ cdef class TMatrixGenerator:
     # Better "constructors":
     @staticmethod
     def sphere(outside, inside, r):
+        """Creates a T-matrix generator for a spherical scatterer.
+
+        This method uses analytical Mie-Lorentz formulae.
+
+        Parameters:
+        -----------
+        outside : EpsMuGenerator or EpsMu
+            Optical properties of the surrounding medium.
+        inside : EpsMuGenerator or EpsMu
+            Optical properties of the material inside the sphere.
+        r : double
+            Sphere radius
+        """
         return TMatrixGenerator(__MieParams(EpsMuGenerator(outside),
                     EpsMuGenerator(inside), r))
+
     @staticmethod
     def sphere_asarc(outside, inside, r, *args, **kwargs):
+        """Creates a T-matrix generator for a spherical scatterer.
+
+        This method uses numerical evaluation for generic axially-symmetric
+        scatterer, and is intended for testing and benchmarking only.
+        For regular use, see TMatrigGenerator.sphere() instead.
+
+        Parameters
+        ----------
+        outside : EpsMuGenerator or EpsMu
+            Optical properties of the surrounding medium.
+        inside : EpsMuGenerator or EpsMu
+            Optical properties of the material inside the sphere.
+        r : double
+            Sphere radius
+
+        Returns
+        -------
+        tmgen : TMatrixGenerator
+
+        See Also
+        --------
+        TMatrigGenerator.sphere : Faster and more precise method.
+        """
         return TMatrixGenerator(__AxialSymParams(
             EpsMuGenerator(outside), EpsMuGenerator(inside),
             ArcFunction(__ArcSphere(r)), *args, **kwargs))
+
     @staticmethod
     def cylinder(outside, inside, r, h, *args, **kwargs):
+        """Creates a T-matrix generator for a right circular cylinder.
+
+        Parameters:
+        -----------
+        outside : EpsMuGenerator or EpsMu
+            Optical properties of the surrounding medium.
+        inside : EpsMuGenerator or EpsMu
+            Optical properties of the material inside the cylinder.
+        r : double
+            Cylinder base radius.
+        h : double
+            Cylinder height.
+
+        Returns
+        -------
+        tmgen : TMatrixGenerator
+        """
         return TMatrixGenerator(__AxialSymParams(
             EpsMuGenerator(outside), EpsMuGenerator(inside),
             ArcFunction(__ArcCylinder(r, h)), *args, **kwargs))

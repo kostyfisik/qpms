@@ -271,6 +271,20 @@ cdef class Particle:
 
 
     def __cinit__(Particle self, pos, t, bspec = None):
+        """Particle object constructor.
+
+        Parameters
+        ----------
+        pos : (x, y, z) 
+            Particle position in cartesian coordinates
+
+        t : TMatrixGenerator or CTMatrix or TMatrixInterpolator
+            T-matrix specification for the particle.
+
+        bspec : BaseSpec
+            WSWF basis specification for the particle. Might be omitted if 
+            t is a CTMatrix.
+        """
         cdef TMatrixGenerator tgen
         cdef BaseSpec spec
         if(len(pos)>=2 and len(pos) < 4):
@@ -347,7 +361,11 @@ cpdef void scatsystem_set_nthreads(long n):
 
 cdef class ScatteringSystem:
     '''
-    Wrapper over the C qpms_scatsys_t structure.
+    Wrapper over the C qpms_scatsys_t structure, representing a collection
+    of scatterers, finite or periodic.
+
+    Currently, it does not have a standard constructor. Use the
+    ScatteringSystem.create() method instead.
     '''
     cdef list tmgobjs # here we keep the references to occuring TMatrixFunctions (and hence BaseSpecs and TMatrixGenerators)
     #cdef list Tmatrices # Here we keep the references to occuring T-matrices
@@ -372,6 +390,45 @@ cdef class ScatteringSystem:
     @staticmethod # We don't have any "standard" constructor for this right now
     def create(particles, medium, cdouble omega, FinitePointGroup sym = FinitePointGroup.TRIVIAL(),
             latticebasis = None): # TODO tolerances
+        """(Non-standard) constructor of ScatteringSystem
+
+        Parameters
+        ----------
+        particles : list of Particles objects
+            Scatterers to be included in the system. These scatterers are then
+            copied around by the constructor using the point group symmetry defined in sym.
+        medium : EpsMu or EpsMuGenerator
+            Material properties of the background medium.
+        omega : complex
+            Any valid angular frequency for the initial T-matrix evaluation.
+            It must be a value which all the T-matrix generators and interpolators 
+            referenced by particles can evaluate.
+        sym : FinitePointGroup
+            Symmetry group for a finite system.
+            Defaults to the trivial point group FinitePointGroup.TRIVIAL().
+            Currently, this must be left trivial for periodic systems.
+        latticebasis : None or array_like of float type.
+            Lattice base vectors of a periodic system in cartesian coordinates.
+            The shape must be [d][3], where d = 1, 2 or 3 determines the lattice dimension.
+            Defaults to None, i.e. a finite system.
+
+        Returns
+        -------
+        ss : ScatteringSystem
+            Object representing the system of compact scatterers.
+        ssw : _ScatteringSystemAtOmega
+            Object representing ss evaluated at omega (angular frequency used for the 
+            initial evaluation).
+
+        Note
+        ----
+        Currently, the ScatterinSystem's T-matrices need to be evaluated for at least
+        one frequency in order to initialise the symmetry structure. For this reason,
+        this "constructor" creates an instance of ScatteringSystem and an instance
+        of _ScatteringSystemAtOmega at the same time, so that the evaluated T-matrices
+        can be used right away if needed. This is why this approach is used instead
+        of the usual __init__ method.
+        """
 
         if latticebasis is not None and sym.order != 1:
             raise NotImplementedError("Periodic systems don't currently support nontrivial point group symmetries")
@@ -477,10 +534,12 @@ cdef class ScatteringSystem:
         return r
 
     property fecv_size: 
+        """Length of the full excitation coefficient vector"""
         def __get__(self): 
             self.check_s()
             return self.s[0].fecv_size
-    property saecv_sizes: 
+    property saecv_sizes:
+        """Lengths of the partial symmetry-adapted excitation coefficient vectors"""
         def __get__(self): 
             self.check_s()
             return [self.s[0].saecv_sizes[i] 
@@ -491,7 +550,8 @@ cdef class ScatteringSystem:
             return [string_c2py(self.s[0].sym[0].irreps[iri].name) 
                     if (self.s[0].sym[0].irreps[iri].name) else None
                 for iri in range(self.s[0].sym[0].nirreps)]
-    property nirreps: 
+    property nirreps:
+        """Number of irreducible representations of the scattering system point symmetry group"""
         def __get__(self): 
             self.check_s()
             return self.s[0].sym[0].nirreps
@@ -508,6 +568,26 @@ cdef class ScatteringSystem:
                 return None
 
     def pack_vector(self, vect, iri):
+        """Converts (projects) a full excitation coefficient vector into an irrep subspace.
+
+        Parameters
+        ----------
+        vect : array_like of shape (self.fecv_size,)
+            The full excitation coefficient vector to be converted.
+        iri : int
+            Index of the irreducible representation.
+
+        Returns
+        -------
+        packed : ndarray of shape (self.saecv_sizes[iri],)
+            "irrep-packed" excitation vector: the part of vect belonging to the 
+            irrep indexed by iri, in terms of given irrep's internal coordinates.
+
+        See Also
+        --------
+        unpack_vector : The beckward (not exactly inverse) operation.
+        pack_matrix : Corresponding conversion for matrices.
+        """
         self.check_s()
         if len(vect) != self.fecv_size: 
             raise ValueError("Length of a full vector has to be %d, not %d" 
@@ -519,7 +599,28 @@ cdef class ScatteringSystem:
         cdef cdouble[::1] target_view = target_np
         qpms_scatsys_irrep_pack_vector(&target_view[0], &vect_view[0], self.s, iri)
         return target_np
+
     def unpack_vector(self, packed, iri):
+        """Unpacks an "irrep-packed" excitation coefficient vector to full coordinates.
+
+        Parameters
+        ----------
+        packed : array_like of shape (self.saecv_sizes[iri],)
+            Excitation coefficient vector part belonging to the irreducible representation
+            indexed by iri, in terms of given irrep's internal coordinates.
+        iri : int
+            Index of the irreducible representation.
+
+        Returns
+        -------
+        vect : ndarray of shape (self.fecv_size,)
+            The contribution to a full excitation coefficient vector from iri'th irrep.
+
+        See Also
+        --------
+        pack_vector : The inverse operation.
+        unpack_matrix : Corresponding conversion for matrices.
+        """
         self.check_s()
         if len(packed) != self.saecv_sizes[iri]: 
             raise ValueError("Length of %d. irrep-packed vector has to be %d, not %d"
@@ -532,7 +633,28 @@ cdef class ScatteringSystem:
         qpms_scatsys_irrep_unpack_vector(&target_view[0], &packed_view[0], 
                 self.s, iri, 0)
         return target_np
+
     def pack_matrix(self, fullmatrix, iri):
+        """Converts (projects) a matrix into an irrep subspace.
+
+        Parameters
+        ----------
+        fullmatrix : array_like of shape (self.fecv_size, self.fecv_size)
+            The full matrix (operating on the exctitation coefficient vectors) to be converted.
+        iri : int
+            Index of the irreducible representation.
+
+        Returns
+        -------
+        packedmatrix : ndarray of shape (self.saecv_sizes[iri], self.saecv_sizes[iri])
+            "irrep-packed" matrix: the part of fullmatrix belonging to the 
+            irrep indexed by iri, in terms of given irrep's internal coordinates.
+
+        See Also
+        --------
+        unpack_matrix : The beckward (not exactly inverse) operation.
+        pack_vector : Corresponding conversion for excitation coefficient vectors.
+        """
         self.check_s()
         cdef size_t flen = self.s[0].fecv_size
         cdef size_t rlen = self.saecv_sizes[iri]
@@ -548,6 +670,27 @@ cdef class ScatteringSystem:
                 self.s, iri)
         return target_np
     def unpack_matrix(self, packedmatrix, iri):
+        """Unpacks an "irrep-packed" excitation coefficient vector to full coordinates.
+
+        Parameters
+        ----------
+        packedmatrix : array_like of shape (self.saecv_sizes[iri], self.saecv_sizes[iri])
+            A matrix (operating on the excitation coefficient vectors) part belonging to the 
+            irreducible representation indexed by iri, in terms of given irrep's internal
+            coordinates.
+        iri : int
+            Index of the irreducible representation.
+
+        Returns
+        -------
+        fullmatrix : ndarray of shape (self.fecv_size, self.fecv_size)
+            The iri'th irrep contribution to a full matrix. 
+
+        See Also
+        --------
+        pack_matrix : The inverse operation.
+        unpack_vector : Corresponding conversion for excitation coefficient vectors.
+        """
         self.check_s()
         cdef size_t flen = self.s[0].fecv_size
         cdef size_t rlen = self.saecv_sizes[iri]
