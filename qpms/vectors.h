@@ -203,7 +203,7 @@ static inline bool cart3_isclose(const cart3_t a, const cart3_t b, double rtol, 
 }
 
 /// Complex 3D vector scaling.
-static inline ccart3_t ccart3_scale(const complex  double c, const ccart3_t v) {
+static inline ccart3_t ccart3_scale(const complex double c, const ccart3_t v) {
 	ccart3_t res = {c * v.x, c * v.y, c * v.z};
 	return res;
 }

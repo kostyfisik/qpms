@@ -145,6 +145,8 @@ cdef extern from "qpms_types.h":
     struct qpms_epsmu_t:
         cdouble eps
         cdouble mu
+    ctypedef enum qpms_coord_system_t:
+        pass
     # maybe more if needed
 
 cdef extern from "qpms_error.h":
@@ -248,9 +250,74 @@ cdef extern from "lattices.h":
 
 
 cdef extern from "vectors.h":
-    cart2_t cart2_substract(cart2_t a, cart2_t b)
-    cart2_t cart2_scale(const double c, cart2_t b)
-    double cart2norm(cart2_t a)
+    cart2_t cart2_add(const cart2_t a, const cart2_t b)
+    cart2_t cart2_substract(const cart2_t a, const cart2_t b)
+    cart2_t cart2_scale(const double c, const cart2_t v)
+    double cart2_dot(const cart2_t a, const cart2_t b)
+    double cart2_normsq(const cart2_t a)
+    double cart2norm(const cart2_t v)
+    pol_t cart2pol(const cart2_t cart)
+    sph_t pol2sph_equator(const pol_t pol)
+    sph_t cart22sph(const cart2_t cart)
+    sph_t cart12sph_zaxis(double z)
+    cart3_t cart12cart3z(double z)
+    cart3_t cart22cart3xy(const cart2_t a)
+    cart2_t cart3xy2cart2(const cart3_t a)
+    double cart3_dot(const cart3_t a, const cart3_t b)
+    cart3_t cart3_vectorprod(const cart3_t a, const cart3_t b)
+    double cart3_tripleprod(const cart3_t a, const cart3_t b, const cart3_t c)
+    double cart3_normsq(const cart3_t a)
+    double cart3norm(const cart3_t v)
+    sph_t cart2sph(const cart3_t cart)
+    cart3_t sph2cart(const sph_t sph)
+    cart2_t pol2cart(const pol_t pol)
+    cart3_t pol2cart3_equator(const pol_t pol)
+    cart3_t cart3_add(const cart3_t a, const cart3_t b)
+    cart3_t cart3_substract(const cart3_t a, const cart3_t b)
+    cart3_t cart3_scale(const double c, const cart3_t v)
+    cart3_t cart3_divscale( const cart3_t v, const double c)
+    double cart3_dist(const cart3_t a, const cart3_t b)
+    bint cart3_isclose(const cart3_t a, const cart3_t b, double rtol, double atol)
+    ccart3_t ccart3_scale(const cdouble c, const ccart3_t v)
+    ccart3_t ccart3_add(const ccart3_t a, const ccart3_t b)
+    ccart3_t ccart3_substract(const ccart3_t a, const ccart3_t b)
+    cdouble ccart3_dotnc(const ccart3_t a, const ccart3_t b)
+    ccart3_t cart32ccart3(cart3_t c)
+    csphvec_t csphvec_add(const csphvec_t a, const csphvec_t b)
+    csphvec_t csphvec_substract(const csphvec_t a, const csphvec_t b)
+    csphvec_t csphvec_scale(cdouble c, const csphvec_t v)
+    cdouble csphvec_dotnc(const csphvec_t a, const csphvec_t b)
+    sph_t sph_scale(double c, const sph_t s)
+    csph_t sph_cscale(cdouble c, const sph_t s)
+    ccart3_t csphvec2ccart(const csphvec_t sphvec, const sph_t at)
+    ccart3_t csphvec2ccart_csph(const csphvec_t sphvec, const csph_t at)
+    csphvec_t ccart2csphvec(const ccart3_t cartvec, const sph_t at)
+    csph_t sph2csph(sph_t s)
+    sph_t csph2sph(csph_t s)
+    csph_t ccart2csph(const ccart3_t cart)
+    csph_t cart2csph(const cart3_t cart)
+    ccart3_t csph2ccart(const csph_t sph)
+    void ccart3_kahaninit(ccart3_t *sum, ccart3_t *compensation)
+    void csphvec_kahaninit(csphvec_t *sum, csphvec_t *compensation)
+    void ccart3_kahanadd(ccart3_t *sum, ccart3_t *compensation, const ccart3_t input)
+    void csphvec_kahanadd(csphvec_t *sum, csphvec_t *compensation, const csphvec_t input)
+    double csphvec_norm(const csphvec_t a)
+    double csphvec_reldiff_abstol(const csphvec_t a, const csphvec_t b, double tolerance)
+    double csphvec_reldiff(const csphvec_t a, const csphvec_t b)
+    sph_t anycoord2sph(anycoord_point_t p, qpms_coord_system_t t)
+    cart3_t anycoord2cart3(anycoord_point_t p, qpms_coord_system_t t)
+    double anycoord_norm(anycoord_point_t p, qpms_coord_system_t t)
+    pol_t anycoord2pol(anycoord_point_t p, qpms_coord_system_t t)
+    cart2_t anycoord2cart2(anycoord_point_t p, qpms_coord_system_t t)
+    double anycoord2cart1(anycoord_point_t p, qpms_coord_system_t t)
+    void qpms_array_coord_transform(void *dest, qpms_coord_system_t tdest,
+            const void *src, qpms_coord_system_t tsrc, size_t nmemb)
+    void anycoord_arr2something(void *dest, qpms_coord_system_t tdest,
+            const void *src, qpms_coord_system_t tsrc, size_t nmemb)
+    void cart3_to_double_array(double *a, cart3_t b)
+    cart3_t cart3_from_double_array(const double *a)
+    void cart2_to_double_array(double *a, cart2_t b)
+    cart2_t cart2_from_double_array(const double *a)
     const cart2_t CART2_ZERO
 
 
