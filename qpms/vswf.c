@@ -376,8 +376,8 @@ qpms_errno_t qpms_vecspharm_fill(csphvec_t *const a1target, csphvec_t *const a2t
         p3->phic = 0;
         ++p3;
       }
+      ++pleg; ++ppi; ++ptau;
     }
-    ++pleg; ++ppi; ++ptau;
   }
   qpms_pitau_free(pt);
   return QPMS_SUCCESS;
