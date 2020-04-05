@@ -93,6 +93,7 @@ class ArgParser:
             'single_frequency_eV': lambda ap: ap.add_argument("-f", "--eV", type=float, required=True, help='radiation angular frequency in eV'),
             'multiple_frequency_eV_optional': lambda ap: ap.add_argument("-f", "--eV", type=float, nargs='*', help='radiation angular frequency in eV (additional)'),
             'seq_frequency_eV': lambda ap: ap.add_argument("-F", "--eV-seq", type=float, nargs=3, required=True, help='uniform radiation angular frequency sequence in eV', metavar=('FIRST', 'INCREMENT', 'LAST')),
+            'real_frequencies_eV_ng': lambda ap: ap.add_argument("-f", "--eV", type=float_range, nargs='+', required=True, help='Angular frequency (or angular frequency range) in eV'),
             'single_material': lambda ap: ap.add_argument("-m", "--material", help='particle material (Au, Ag, ... for Lorentz-Drude or number for constant refractive index)', default='Au', required=True),
             'single_radius': lambda ap: ap.add_argument("-r", "--radius", type=float, required=True, help='particle radius (sphere or cylinder)'),
             'single_height': lambda ap: ap.add_argument("-H", "--height", type=float, help='cylindrical particle height; if not provided, particle is assumed to be spherical'),
@@ -114,6 +115,7 @@ class ArgParser:
             'single_lMax': ("Single particle lMax definition", (), ('single_lMax',), ()),
             'single_omega': ("Single angular frequency", (), ('single_frequency_eV',), ('_eval_single_omega',)),
             'omega_seq': ("Equidistant real frequency range with possibility of adding individual frequencies", (), ('seq_frequency_eV', 'multiple_frequency_eV_optional',), ('_eval_omega_seq',)),
+            'omega_seq_real_ng': ("Equidistant real frequency ranges or individual frequencies (new syntax)", (), ('real_frequencies_eV_ng',), ('_eval_omega_seq_real_ng',)),
             'lattice2d': ("Specification of a generic 2d lattice (spanned by the x,y axes)", (), ('lattice2d_basis',), ('_eval_lattice2d',)),
             'rectlattice2d': ("Specification of a rectangular 2d lattice; conflicts with lattice2d", (), ('rectlattice2d_periods',), ('_eval_rectlattice2d',)),
             'rectlattice2d_finite': ("Specification of a rectangular 2d lattice; conflicts with lattice2d", ('rectlattice2d',), ('rectlattice2d_counts',), ()),
@@ -198,6 +200,26 @@ class ArgParser:
             self.omegas = np.concatenate((self.omegas, np.array(self.args.eV)))
             self.omegas.sort()
         self.omegas *= eV/hbar
+
+    def _eval_omega_seq_real_ng(self): # feature: omega_seq_real_ng
+        import numpy as np
+        from .constants import eV, hbar
+        eh = eV / hbar
+        self.omegas = [omega_eV * eh for  omega_eV in self.args.eV]
+        self.omega_max = max(om if isinstance(om, float) else max(om) for om in self.omegas)
+        self.omega_min = min(om if isinstance(om, float) else min(om) for om in self.omegas)
+        self.omega_singles = [om for om in self.omegas if isinstance(om, float)]
+        self.omega_ranges = [om for om in self.omegas if not isinstance(om, float)]
+        self.omega_descr = ("%geV" % (self.omega_max / eh)) if (self.omega_max == self.omega_min) else (
+                "%g–%geV" % (self.omega_min / eh, self.omega_max / eh))
+        self.allomegas = []
+        for om in self.omegas:
+            if isinstance(om, float):
+                self.allomegas.append(om)
+            else:
+                self.allomegas.extend(om)
+        self.allomegas = np.unique(self.allomegas)
+
 
     def _eval_lattice2d(self): # feature: lattice2d
         l = len(self.args.basis_vectors)
