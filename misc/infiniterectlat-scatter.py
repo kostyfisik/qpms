@@ -34,8 +34,8 @@ px, py = a.period
 
 particlestr = ("sph" if a.height is None else "cyl") + ("_r%gnm" % (a.radius*1e9))
 if a.height is not None: particlestr += "_h%gnm" % (a.height * 1e9)
-defaultprefix = "%s_p%gnmx%gnm_m%s_n%g_φ%g_θ(%g_%g)π_ψ%gπ_χ%gπ_f%s_L%d" % (
-    particlestr, px*1e9, py*1e9, str(a.material), a.refractive_index, a.phi/pi, np.amin(a.theta)/pi, np.amax(a.theta)/pi, a.psi/pi, a.chi/pi, ap.omega_descr, a.lMax)
+defaultprefix = "%s_p%gnmx%gnm_m%s_bg%s_φ%g_θ(%g_%g)π_ψ%gπ_χ%gπ_f%s_L%d" % (
+    particlestr, px*1e9, py*1e9, str(a.material), str(a.background), a.phi/pi, np.amin(a.theta)/pi, np.amax(a.theta)/pi, a.psi/pi, a.chi/pi, ap.omega_descr, a.lMax)
 logging.info("Default file prefix: %s" % defaultprefix)
 
 

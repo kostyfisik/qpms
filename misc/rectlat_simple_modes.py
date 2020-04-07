@@ -3,7 +3,7 @@
 import math
 from qpms.argproc import ArgParser
 
-ap = ArgParser(['rectlattice2d', 'single_particle', 'single_lMax'])
+ap = ArgParser(['rectlattice2d', 'const_real_background', 'single_particle', 'single_lMax']) # const_real_background needed for calculation of the diffracted orders
 ap.add_argument("-k", nargs=2, type=float, required=True, help='k vector', metavar=('K_X', 'K_Y'))
 ap.add_argument("--kpi", action='store_true', help="Indicates that the k vector is given in natural units instead of SI, i.e. the arguments given by -k shall be automatically multiplied by pi / period (given by -p argument)")
 ap.add_argument("--rank-tol", type=float, required=False)

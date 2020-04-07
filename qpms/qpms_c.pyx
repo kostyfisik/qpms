@@ -726,14 +726,14 @@ cdef class ScatteringSystem:
                 qpms_scatsys_periodic_build_translation_matrix_full(&target_view[0][0], self.s, wavenumber, &blochvector_c)
         return target
 
-    def translation_matrix_packed(self, double k, qpms_iri_t iri, J = QPMS_HANKEL_PLUS):
+    def translation_matrix_packed(self, cdouble wavenumber, qpms_iri_t iri, J = QPMS_HANKEL_PLUS):
         self.check_s()
         cdef size_t rlen = self.saecv_sizes[iri]
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
                 (rlen,rlen),dtype=complex, order='C')
         cdef cdouble[:,::1] target_view = target
         qpms_scatsys_build_translation_matrix_e_irrep_packed(&target_view[0][0],
-                self.s, iri, k, J)
+                self.s, iri, wavenumber, J)
         return target
     
     property fullvec_psizes:
@@ -1019,6 +1019,9 @@ cdef class _ScatteringSystemAtOmega:
 
     def translation_matrix_full(self, blochvector = None):
         return self.ss_pyref.translation_matrix_full(wavenumber=self.wavenumber, blochvector=blochvector)
+
+    def translation_matrix_packed(self, iri, J = QPMS_HANKEL_PLUS):
+        return self.ss_pyref.translation_matrix_packed(wavenumber=self.wavenumber, iri=iri, J=J)
 
     def scattered_E(self, scatcoeffvector_full, evalpos, bint alt=False, btyp=QPMS_HANKEL_PLUS):
         cdef qpms_bessel_t btyp_c = BesselType(btyp)
