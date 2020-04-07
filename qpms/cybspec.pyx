@@ -83,6 +83,12 @@ cdef class BaseSpec:
                 raise ValueError # If this happens, it's probably a bug, as it should have failed already at qpms_uvswfi2tmn
             self.s.lMax = max(self.s.lMax, l)
 
+    def __eq__(self, BaseSpec other):
+        return bool(qpms_vswf_set_spec_isidentical(&self.s, &other.s))
+
+    def __hash__(self): # Very inefficient implementation, but this is not to be used very often
+        return hash((self.s.norm, self.s.n, tuple(self.__ilist[:self.s.n])))
+
     def tlm(self):
         cdef const qpms_uvswfi_t[:] ilist_memview = <qpms_uvswfi_t[:self.s.n]> self.s.ilist
         #cdef qpms_vswf_type_t[:] t = np.empty(shape=(self.s.n,), dtype=qpms_vswf_type_t) # does not work, workaround:

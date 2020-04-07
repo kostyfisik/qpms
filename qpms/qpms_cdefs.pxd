@@ -172,6 +172,7 @@ ctypedef union qpms_incfield_planewave_params_E:
     csphvec_t sph
 
 cdef extern from "vswf.h":
+    bint qpms_vswf_set_spec_isidentical(const qpms_vswf_set_spec_t *a, const qpms_vswf_set_spec_t *b)
     ctypedef qpms_errno_t (*qpms_incfield_t)(cdouble *target, const qpms_vswf_set_spec_t *bspec,
             const cart3_t evalpoint, const void *args, bint add)
     ctypedef struct qpms_incfield_planewave_params_t:
