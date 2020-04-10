@@ -1,0 +1,4 @@
+[submodule "camos"]
+	path = camos
+	url = https://github.com/texnokrates/zbessel.git
+	branch = purec

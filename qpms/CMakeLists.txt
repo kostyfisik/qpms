@@ -21,11 +21,12 @@ use_c99()
 
 set(LIBS ${LIBS} ${GSL_LIBRARIES} ${GSLCBLAS_LIBRARIES})
 
+
 target_link_libraries (qpms
 	gsl
 	lapack
 	blas
-	amos
+	${QPMS_AMOSLIB}
 	)
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
