@@ -14,7 +14,6 @@
 #include "groups.h"
 #include "symmetries.h"
 #include <assert.h>
-#include <unistd.h>
 #include "vectors.h"
 #include "quaternions.h"
 #include <string.h>
@@ -27,6 +26,7 @@
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 #include "optim.h"
+#include "oshacks.h"
 
 // These are quite arbitrarily chosen constants for the quadrature in qpms_tmatrix_axialsym_fill()
 #define TMATRIX_AXIALSYM_INTEGRAL_EPSREL (1e-5)
@@ -850,7 +850,7 @@ qpms_errno_t qpms_tmatrix_axialsym_fill(
     QPMS_DEBUG(QPMS_DBGMSG_THREADS, "Using overriding value of %ld thread(s).",
         nthreads);
   } else {
-    nthreads = sysconf(_SC_NPROCESSORS_ONLN);
+    nthreads = get_ncpus();
     if (nthreads < 1) {
       QPMS_DEBUG(QPMS_DBGMSG_THREADS, "_SC_NPROCESSORS_ONLN returned %ld, using %ld thread(s) instead.",
          nthreads, qpms_axsym_tmatrix_integration_nthreads_default);
