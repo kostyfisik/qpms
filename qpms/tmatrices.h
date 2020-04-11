@@ -442,13 +442,13 @@ typedef struct qpms_arc_cylinder_params_t {
 
 /// Arc parametrisation of cylindrical particle; for qpms_arc_function_t.
 qpms_arc_function_retval_t qpms_arc_cylinder(double theta,
-		const void *params; ///< Points to qpms_arc_cylinder_params_t
+		const void *params ///< Points to qpms_arc_cylinder_params_t
 		);
 
 /// Arc parametrisation of spherical particle; for qpms_arc_function_t.
 /** Useful mostly only for benchmarks or debugging, as one can use the Mie-Lorentz solution. */
 qpms_arc_function_retval_t qpms_arc_sphere(double theta,
-		const void *R; ///< Points to double containing particle's radius.
+		const void *R ///< Points to double containing particle's radius.
 		);
 
 

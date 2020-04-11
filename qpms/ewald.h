@@ -152,7 +152,7 @@ static inline complex double clilgamma(complex double z) {
  * even if `z1 == z2`, because `-0 == 0` according to IEEE 754.
  * The side of the branch cut can be determined using `signbit(creal(z))`.
  */
-int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
+int cx_gamma_inc_series_e(double a, complex double z, qpms_csf_result * result);
 
 /// Incomplete Gamma function as continued fractions.
 /** 
@@ -164,7 +164,7 @@ int cx_gamma_inc_series_e(double a, complex z, qpms_csf_result * result);
  * even if `z1 == z2`, because `-0 == 0` according to IEEE 754.
  * The side of the branch cut can be determined using `signbit(creal(z))`.
  */
-int cx_gamma_inc_CF_e(double a, complex z, qpms_csf_result * result);
+int cx_gamma_inc_CF_e(double a, complex double z, qpms_csf_result * result);
 
 /// Incomplete gamma for complex second argument.
 /** 
