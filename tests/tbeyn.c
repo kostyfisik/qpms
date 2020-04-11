@@ -1,6 +1,7 @@
 #include <qpms/beyn.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 // Matrix as in Beyn, section 4.11
 int M_function(complex double *target, const size_t m, const complex double z, void *no_params) {

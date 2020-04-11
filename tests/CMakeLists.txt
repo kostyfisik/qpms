@@ -72,13 +72,13 @@ target_link_libraries( tbeyn3f qpms gsl lapacke amos m )
 target_include_directories( tbeyn3f PRIVATE .. )
 target_compile_definitions( tbeyn3f PRIVATE VARIANTF )
 
-add_executable( tbeyn_gsl tbeyn_gsl.c )
-target_link_libraries( tbeyn_gsl qpms gsl lapacke amos m )
-target_include_directories( tbeyn_gsl PRIVATE .. )
+#add_executable( tbeyn_gsl tbeyn_gsl.c )
+#target_link_libraries( tbeyn_gsl qpms gsl lapacke amos m )
+#target_include_directories( tbeyn_gsl PRIVATE .. )
 
-add_executable( tbeyn_gsl2 tbeyn_gsl2.c )
-target_link_libraries( tbeyn_gsl2 qpms gsl lapacke amos m )
-target_include_directories( tbeyn_gsl2 PRIVATE .. )
+#add_executable( tbeyn_gsl2 tbeyn_gsl2.c )
+#target_link_libraries( tbeyn_gsl2 qpms gsl lapacke amos m )
+#target_include_directories( tbeyn_gsl2 PRIVATE .. )
 
 add_custom_target( mytests DEPENDS test_single_translations_vs_calc test_vswf_translations test_vswf_translations_array tbeyn )
 
