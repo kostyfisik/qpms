@@ -276,7 +276,7 @@ BeynSolver *BeynSolver_create(int M, int L)
   solver->eigenvalues  = gsl_vector_complex_calloc(L);
   solver->eigenvalue_errors     = gsl_vector_complex_calloc(L);
   solver->residuals    = gsl_vector_calloc(L);
-  solver->eigenvectors = gsl_matrix_complex_calloc(M, L);
+  solver->eigenvectors = gsl_matrix_complex_calloc(L, M);
 
   // storage for singular values, random VHat matrix, etc. used in algorithm
   solver->A0           = gsl_matrix_complex_calloc(M,L);
