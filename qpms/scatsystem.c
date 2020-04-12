@@ -1226,8 +1226,7 @@ static inline int qpms_ss_ppair_W(const qpms_scatsys_t *ss,
       !ss->per.lattice_basis[0].z && !ss->per.lattice_basis[1].z &&
       !wavevector[2]) 
     return qpms_ss_ppair_W32xy(ss, pdest, psrc, wavenumber, cart2_from_double_array(wavevector), 
-              target + deststride * ss->fecv_pstarts[pdest] + srcstride * ss->fecv_pstarts[psrc],
-              deststride, srcstride, parts);
+              target, deststride, srcstride, parts);
   else 
     QPMS_NOT_IMPLEMENTED("Only 2D xy-lattices currently supported");
 }
