@@ -100,6 +100,20 @@ def float_range(string):
         else:
             return np.arange(first, last, increment)
 
+def sfloat(string):
+    '''Tries to match a float, or a float with prepended 's'
+
+    Used as a workaraound for argparse's negative number matcher, which does not recognize
+    scientific notation.
+    '''
+    try:
+        res = float(string)
+    except ValueError as exc:
+        if string[0] == 's':
+            res = float(string[1:])
+        else: raise exc
+    return res
+
 def material_spec(string):
     """Tries to parse a string as a material specification, i.e. a 
     real or complex number or one of the string in built-in Lorentz-Drude models.
@@ -146,9 +160,9 @@ class ArgParser:
 
     def __add_manyparticle_argparse_group(ap):
         mpgrp = ap.add_argument_group('Many particle specification', "TODO DOC")
-        mpgrp.add_argument("-p", "--position", nargs='+', action=make_dict_action(argtype=float, postaction='append',
+        mpgrp.add_argument("-p", "--position", nargs='+', action=make_dict_action(argtype=sfloat, postaction='append',
             first_is_key=False), help="Particle positions, cartesion coordinates (default particle properties)")
-        mpgrp.add_argument("+p", "++position", nargs='+', action=make_dict_action(argtype=float, postaction='append', 
+        mpgrp.add_argument("+p", "++position", nargs='+', action=make_dict_action(argtype=sfloat, postaction='append', 
             first_is_key=True), help="Particle positions, cartesian coordinates (labeled)")
         mpgrp.add_argument("-L", "--lMax", nargs=1, default={},
                 action=make_dict_action(argtype=int, postaction='store', first_is_key=False,),
@@ -185,7 +199,7 @@ class ArgParser:
             'single_material': lambda ap: ap.add_argument("-m", "--material", help='particle material (Au, Ag, ... for Lorentz-Drude or number for constant refractive index)', type=material_spec, required=True),
             'single_radius': lambda ap: ap.add_argument("-r", "--radius", type=float, required=True, help='particle radius (sphere or cylinder)'),
             'single_height': lambda ap: ap.add_argument("-H", "--height", type=float, help='cylindrical particle height; if not provided, particle is assumed to be spherical'),
-            'single_kvec2': lambda ap: ap.add_argument("-k", '--kx-lim', nargs=2, type=float, required=True, help='k vector', metavar=('KX_MIN', 'KX_MAX')),
+            'single_kvec2': lambda ap: ap.add_argument("-k", '--kx-lim', nargs=2, type=sfloat, required=True, help='k vector', metavar=('KX_MIN', 'KX_MAX')),
             'kpi': lambda ap: ap.add_argument("--kpi", action='store_true', help="Indicates that the k vector is given in natural units instead of SI, i.e. the arguments given by -k shall be automatically multiplied by pi / period (given by -p argument)"),
             'bg_real_refractive_index': lambda ap: ap.add_argument("-n", "--refractive-index", type=float, default=1., help='background medium strictly real refractive index'),
             'bg_analytical': lambda ap: ap.add_argument("-B", "--background", type=material_spec, default=1., help="Background medium specification (constant real or complex refractive index, or supported material label)"),
@@ -194,7 +208,7 @@ class ArgParser:
             'outfile': lambda ap: ap.add_argument("-o", "--output", type=str, required=False, help='output path (if not provided, will be generated automatically)'), # TODO consider type=argparse.FileType('w')
             'plot_out': lambda ap: ap.add_argument("-O", "--plot-out", type=str, required=False, help="path to plot output (optional)"),
             'plot_do': lambda ap: ap.add_argument("-P", "--plot", action='store_true', help="if -p not given, plot to a default path"),
-            'lattice2d_basis': lambda ap: ap.add_argument("-b", "--basis-vector", nargs='+', action=AppendTupleAction, help="basis vector in xy-cartesian coordinates (two required)", required=True, dest='basis_vectors', metavar=('X', 'Y')),
+            'lattice2d_basis': lambda ap: ap.add_argument("-b", "--basis-vector", nargs='+', action=AppendTupleAction, help="basis vector in xy-cartesian coordinates (two required)", required=True, type=sfloat, dest='basis_vectors', metavar=('X', 'Y')),
             'planewave_pol_angles': __add_planewave_argparse_group,
             'multi_particle': __add_manyparticle_argparse_group,
     }
@@ -293,7 +307,11 @@ class ArgParser:
 
     def add_argument(self, *args, **kwargs):
         '''Add a custom argument directly to the standard library ArgParser object'''
-        self.ap.add_argument(*args, **kwargs)
+        return self.ap.add_argument(*args, **kwargs)
+    
+    def add_argument_group(self, *args, **kwargs):
+        '''Add a custom argument group directly to the standard library ArgParser object'''
+        return self.ap.add_argument_group(*args, **kwargs)
 
     def parse_args(self, process_data = True,  *args, **kwargs):
         self.args = self.ap.parse_args(*args, **kwargs)

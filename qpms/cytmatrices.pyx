@@ -211,7 +211,7 @@ cdef class __AxialSymParams:
         self.p.shape = self.shape.g
         if len(args)>0:
             self.lMax_extend = args[0]
-        if 'lMax_extend' in kwargs.keys():
+        if 'lMax_extend' in kwargs.keys() and kwargs['lMax_extend'] is not None:
             self.lMax_extend = kwargs['lMax_extend']
         if self.lMax_extend == 0:
             self.lMax_extend = 1
