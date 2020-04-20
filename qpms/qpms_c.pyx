@@ -707,6 +707,28 @@ cdef class ScatteringSystem:
         return target_np
 
     def translation_matrix_full(self, cdouble wavenumber, blochvector = None, J = QPMS_HANKEL_PLUS):
+        """Constructs full translation matrix of a scattering system.
+
+        This method enables to use any wave number for the background medium ignoring the
+        background EpsMuGenerator), using only system's particle positions (and lattice
+        basis for infinite system).
+
+        Parameters
+        ----------
+        wavenumber : complex
+            Wave number of the medium
+
+        blochvector : array_like of shape (3,)
+            Bloch vector (only for periodic systems)
+
+        J : BesselType
+            Optionally, one can replace Hankel functions of the first kind with different
+            Bessel functions.
+        
+        See Also
+        --------
+        ScatteringSystemAtOmega.translation_matrix_full : Translation matrix at a given frequency.
+        """
         self.check_s()
         cdef size_t flen = self.s[0].fecv_size
         cdef np.ndarray[np.complex_t, ndim=2] target = np.empty(
@@ -723,7 +745,8 @@ cdef class ScatteringSystem:
                 if J != QPMS_HANKEL_PLUS:
                     raise NotImplementedError("Translation operators based on other than Hankel+ functions not supperted in periodic systems")
                 blochvector_c = {'x': blochvector[0], 'y': blochvector[1], 'z': blochvector[2]}
-                qpms_scatsys_periodic_build_translation_matrix_full(&target_view[0][0], self.s, wavenumber, &blochvector_c)
+                with pgsl_ignore_error(15):
+                    qpms_scatsys_periodic_build_translation_matrix_full(&target_view[0][0], self.s, wavenumber, &blochvector_c)
         return target
 
     def translation_matrix_packed(self, cdouble wavenumber, qpms_iri_t iri, J = QPMS_HANKEL_PLUS):
@@ -1018,6 +1041,18 @@ cdef class _ScatteringSystemAtOmega:
         return target
 
     def translation_matrix_full(self, blochvector = None):
+        """Constructs full translation matrix of a scattering system at given frequency.
+
+        Parameters
+        ----------
+        blochvector : array_like of shape (3,)
+            Bloch vector (only for periodic systems)
+
+        See Also
+        --------
+        ScatteringSystem.translation_matrix_full: translation matrix for any wavenumber
+
+        """
         return self.ss_pyref.translation_matrix_full(wavenumber=self.wavenumber, blochvector=blochvector)
 
     def translation_matrix_packed(self, iri, J = QPMS_HANKEL_PLUS):
