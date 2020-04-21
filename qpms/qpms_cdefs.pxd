@@ -603,6 +603,7 @@ cdef extern from "scatsystem.h":
     struct qpms_scatsys_periodic_info_t:
         cart3_t lattice_basis[3]
         double unitcell_volume
+        double eta
         #etc.
     struct qpms_scatsys_t:
         int lattice_dimension

@@ -567,6 +567,23 @@ cdef class ScatteringSystem:
             else:
                 return None
 
+    property eta:
+        """Ewald parameter η"""
+        def __get__(self):
+            self.check_s()
+            if self.lattice_dimension:
+                return self.s[0].per.eta
+            else:
+                return None
+
+        def __set__(self, eta):
+            self.check_s()
+            if self.lattice_dimension:
+                self.s[0].per.eta = eta
+            else:
+                raise AttributeError("Cannot set Ewald parameter for finite system") # different exception?
+
+
     def pack_vector(self, vect, iri):
         """Converts (projects) a full excitation coefficient vector into an irrep subspace.
 
