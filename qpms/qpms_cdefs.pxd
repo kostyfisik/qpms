@@ -630,6 +630,7 @@ cdef extern from "scatsystem.h":
         cdouble omega
         qpms_epsmu_t medium
         cdouble wavenumber
+        double eta
     qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym,
             cdouble omega, const qpms_tolerance_spec_t *tol)
     qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss, cdouble omega)
@@ -688,7 +689,7 @@ cdef extern from "scatsystem.h":
         const qpms_scatsys_at_omega_t *ssw
         double k[3]
     cdouble *qpms_scatsyswk_build_modeproblem_matrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
-    cdouble *qpms_scatsys_periodic_build_translation_matrix_full(cdouble *target, const qpms_scatsys_t *ss, cdouble wavenumber, const cart3_t *wavevector)
+    cdouble *qpms_scatsys_periodic_build_translation_matrix_full(cdouble *target, const qpms_scatsys_t *ss, cdouble wavenumber, const cart3_t *wavevector, double eta)
     qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(cdouble *target, int *target_piv, const qpms_scatsys_at_omega_k_t *sswk)
     beyn_result_t *qpms_scatsys_periodic_find_eigenmodes(const qpms_scatsys_t *ss, const double *k,
             cdouble omega_centre, double omega_rr, double omega_ri, size_t contour_npoints, 

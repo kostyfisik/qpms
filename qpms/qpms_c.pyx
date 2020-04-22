@@ -568,7 +568,10 @@ cdef class ScatteringSystem:
                 return None
 
     property eta:
-        """Ewald parameter η"""
+        """Ewald parameter η (only relevant for periodic systems)
+        
+        This is the default value that will be copied into
+        _ScatteringSystemAtOmega by __call__"""
         def __get__(self):
             self.check_s()
             if self.lattice_dimension:
@@ -723,7 +726,7 @@ cdef class ScatteringSystem:
                 self.s, iri, 0)
         return target_np
 
-    def translation_matrix_full(self, cdouble wavenumber, blochvector = None, J = QPMS_HANKEL_PLUS):
+    def translation_matrix_full(self, cdouble wavenumber, blochvector = None, J = QPMS_HANKEL_PLUS, double eta = 0):
         """Constructs full translation matrix of a scattering system.
 
         This method enables to use any wave number for the background medium ignoring the
@@ -741,6 +744,11 @@ cdef class ScatteringSystem:
         J : BesselType
             Optionally, one can replace Hankel functions of the first kind with different
             Bessel functions.
+
+        eta : float
+            Ewald parameter η, only relevant for periodic lattices; 
+            if set to 0 (default), the actual value is determined 
+            automatically.
         
         See Also
         --------
@@ -763,7 +771,7 @@ cdef class ScatteringSystem:
                     raise NotImplementedError("Translation operators based on other than Hankel+ functions not supperted in periodic systems")
                 blochvector_c = {'x': blochvector[0], 'y': blochvector[1], 'z': blochvector[2]}
                 with pgsl_ignore_error(15):
-                    qpms_scatsys_periodic_build_translation_matrix_full(&target_view[0][0], self.s, wavenumber, &blochvector_c)
+                    qpms_scatsys_periodic_build_translation_matrix_full(&target_view[0][0], self.s, wavenumber, &blochvector_c, eta)
         return target
 
     def translation_matrix_packed(self, cdouble wavenumber, qpms_iri_t iri, J = QPMS_HANKEL_PLUS):
@@ -1025,6 +1033,20 @@ cdef class _ScatteringSystemAtOmega:
         def __get__(self): return self.ss_pyref.nirreps
     property wavenumber:
         def __get__(self): return self.ssw[0].wavenumber
+    property eta:
+        """Ewald parameter η (only relevant for periodic systems)"""
+        def __get__(self):
+            self.check_s()
+            if self.lattice_dimension:
+                return self.ssw[0].eta
+            else:
+                return None
+        def __set__(self, double eta):
+            self.check_s()
+            if self.lattice_dimension:
+                self.ssw[0].eta = eta
+            else:
+                raise AttributeError("Cannot set Ewald parameter for finite system") # different exception?
         
 
     def modeproblem_matrix_full(self, k=None):

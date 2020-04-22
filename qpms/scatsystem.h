@@ -147,7 +147,12 @@ typedef struct qpms_scatsys_periodic_info_t {
 	 */
 	double unitcell_volume;
 
-	/// Ewald parameter \f$ \eta \f$.
+	/// Default Ewald parameter \f$ \eta \f$.
+	/** Normally, this just gets copied into qpms_scatsys_at_omega_t,
+	 * which is then used in the Ewald sums.
+	 * However, for higher frequencies it must be adjusted to avoid
+	 * numerical instability.
+	 */
 	double eta;
 } qpms_scatsys_periodic_info_t;
 
@@ -241,6 +246,7 @@ typedef struct qpms_scatsys_at_omega_t {
 	complex double omega; ///< Angular frequency
 	qpms_epsmu_t medium; ///< Background medium optical properties at the given frequency
 	complex double wavenumber; ///< Background medium wave number
+	double eta; ///< Ewald parameter \f$ \eta \f$.
 } qpms_scatsys_at_omega_t;
 
 
@@ -501,7 +507,8 @@ complex double *qpms_scatsys_periodic_build_translation_matrix_full(
 		complex double *target,
 		const qpms_scatsys_t *ss,
 		complex double wavenumber, ///< Wave number to use in the translation matrix.
-		const cart3_t *wavevector ///< Wavevector / pseudomomentum in cartesian coordinates.
+		const cart3_t *wavevector, ///< Wavevector / pseudomomentum in cartesian coordinates.
+		double eta ///< Ewald parameter eta. Pass 0 or NaN to use the default value in \a ss.
 		);
 
 /// Global translation matrix. 

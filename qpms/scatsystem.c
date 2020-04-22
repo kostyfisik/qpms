@@ -59,6 +59,13 @@ static inline void qpms_ss_ensure_nonperiodic_a(const qpms_scatsys_t *ss, const 
   QPMS_ENSURE(ss->lattice_dimension == 0, "This method is applicable only to nonperiodic systems. Use %s instead.", s);
 }
 
+// Adjust Ewald parameter to avoid high-frequency breakdown; 
+// TODO make this actually do something (other than just copying ss's eta.)
+static inline double ss_adjusted_eta(const qpms_scatsys_t *ss, complex double omega) {
+	qpms_ss_ensure_periodic(ss);
+	return ss->per.eta;
+}
+
 // ------------ Stupid implementation of qpms_scatsys_apply_symmetry() -------------
 
 #define MIN(x,y) (((x)<(y))?(x):(y))
@@ -541,6 +548,9 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   }
   
   ss->c = qpms_trans_calculator_init(lMax, normalisation);
+
+  ssw->eta = ss->lattice_dimension ? ss_adjusted_eta(ss, omega) : NAN;
+
   return ssw;
 }
 
@@ -594,6 +604,7 @@ qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
   ssw->ss = ss;
   ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
   ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
+  ssw->eta = ss->lattice_dimension ? ss_adjusted_eta(ss, omega) : NAN;
   QPMS_CRASHING_CALLOC(ssw->tm, ss->tm_count, sizeof(*ssw->tm));
   qpms_tmatrix_t **tmatrices_preop;
   QPMS_CRASHING_CALLOC(tmatrices_preop, ss->tmg_count, sizeof(*tmatrices_preop));
@@ -1156,7 +1167,7 @@ complex double *qpms_scatsyswk_build_translation_matrix_full(
   const qpms_scatsys_t *ss = ssw->ss;
   qpms_ss_ensure_periodic(ss);
   const cart3_t k_cart3 = cart3_from_double_array(sswk->k);
-  return qpms_scatsys_periodic_build_translation_matrix_full(target, ss, wavenumber, &k_cart3);
+  return qpms_scatsys_periodic_build_translation_matrix_full(target, ss, wavenumber, &k_cart3, ssw->eta);
 }
 
 complex double *qpms_scatsys_build_translation_matrix_e_full(
@@ -1201,17 +1212,17 @@ complex double *qpms_scatsys_build_translation_matrix_e_full(
 static inline int qpms_ss_ppair_W32xy(const qpms_scatsys_t *ss,
     qpms_ss_pi_t pdest, qpms_ss_pi_t psrc, complex double wavenumber, const cart2_t kvector,
     complex double *target, const ptrdiff_t deststride, const ptrdiff_t srcstride,
-    qpms_ewald_part parts) {
+    qpms_ewald_part parts, double eta) {
   const qpms_vswf_set_spec_t *srcspec = qpms_ss_bspec_pi(ss, psrc);
   const qpms_vswf_set_spec_t *destspec = qpms_ss_bspec_pi(ss, pdest);
 
   // This might be a bit arbitrary, roughly "copied" from Unitcell constructor. TODO review.
-  const double maxR = sqrt(ss->per.unitcell_volume) * 32;
-  const double maxK = 1024 * 2 * M_PI / maxR;
+  const double maxR = sqrt(ss->per.unitcell_volume) * 64;
+  const double maxK = 2048 * 2 * M_PI / maxR;
 
   return qpms_trans_calculator_get_trans_array_e32_e(ss->c,
       target, NULL /*err*/, destspec, deststride, srcspec, srcstride,
-      ss->per.eta, wavenumber, 
+      eta, wavenumber, 
       cart3xy2cart2(ss->per.lattice_basis[0]), cart3xy2cart2(ss->per.lattice_basis[1]),
       kvector, 
       cart2_substract(cart3xy2cart2(ss->p[pdest].pos), cart3xy2cart2(ss->p[psrc].pos)),
@@ -1221,21 +1232,23 @@ static inline int qpms_ss_ppair_W32xy(const qpms_scatsys_t *ss,
 static inline int qpms_ss_ppair_W(const qpms_scatsys_t *ss,
     qpms_ss_pi_t pdest, qpms_ss_pi_t psrc, complex double wavenumber, const double wavevector[],
     complex double *target, const ptrdiff_t deststride, const ptrdiff_t srcstride,
-    qpms_ewald_part parts) {
+    qpms_ewald_part parts, double eta) {
   if(ss->lattice_dimension == 2 && // Currently, we can only the xy-plane
       !ss->per.lattice_basis[0].z && !ss->per.lattice_basis[1].z &&
       !wavevector[2]) 
     return qpms_ss_ppair_W32xy(ss, pdest, psrc, wavenumber, cart2_from_double_array(wavevector), 
-              target, deststride, srcstride, parts);
+              target, deststride, srcstride, parts, eta);
   else 
     QPMS_NOT_IMPLEMENTED("Only 2D xy-lattices currently supported");
 }
 
 complex double *qpms_scatsys_periodic_build_translation_matrix_full(
     complex double *target, const qpms_scatsys_t *ss,
-    complex double wavenumber, const cart3_t *wavevector) {
+    complex double wavenumber, const cart3_t *wavevector, double eta) {
   QPMS_UNTESTED;
   qpms_ss_ensure_periodic(ss);
+  if (eta == 0 || isnan(eta))
+    eta = ss->per.eta;
   const size_t full_len = ss->fecv_size;
   if(!target)
     QPMS_CRASHING_MALLOC(target, SQ(full_len) * sizeof(complex double));
@@ -1248,7 +1261,7 @@ complex double *qpms_scatsys_periodic_build_translation_matrix_full(
       for (qpms_ss_pi_t ps = 0; ps < ss->p_count; ++ps) {
         QPMS_ENSURE_SUCCESS(qpms_ss_ppair_W32xy(ss, pd, ps, wavenumber, cart3xy2cart2(*wavevector), 
               target + deststride * ss->fecv_pstarts[pd] + srcstride * ss->fecv_pstarts[ps],
-              deststride, srcstride, QPMS_EWALD_FULL));
+              deststride, srcstride, QPMS_EWALD_FULL, eta));
       }
   } else 
     QPMS_NOT_IMPLEMENTED("Only 2D xy-lattices currently supported");
@@ -1294,7 +1307,7 @@ static inline complex double *qpms_scatsysw_scatsyswk_build_modeproblem_matrix_f
         } else { // periodic case 
           QPMS_ENSURE_SUCCESS(qpms_ss_ppair_W(ss, piR, piC, wavenumber, k,
                 tmp /*target*/, bspecC->n /*deststride*/, 1 /*srcstride*/,
-                QPMS_EWALD_FULL));
+                QPMS_EWALD_FULL, ssw->eta));
         }
 
         cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
