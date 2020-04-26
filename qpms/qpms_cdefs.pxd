@@ -630,7 +630,6 @@ cdef extern from "scatsystem.h":
         cdouble omega
         qpms_epsmu_t medium
         cdouble wavenumber
-        double eta
     qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig, const qpms_finite_group_t *sym,
             cdouble omega, const qpms_tolerance_spec_t *tol)
     qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss, cdouble omega)
@@ -688,6 +687,7 @@ cdef extern from "scatsystem.h":
     struct qpms_scatsys_at_omega_k_t:
         const qpms_scatsys_at_omega_t *ssw
         double k[3]
+        double eta
     cdouble *qpms_scatsyswk_build_modeproblem_matrix_full(cdouble *target, const qpms_scatsys_at_omega_k_t *sswk)
     cdouble *qpms_scatsys_periodic_build_translation_matrix_full(cdouble *target, const qpms_scatsys_t *ss, cdouble wavenumber, const cart3_t *wavevector, double eta)
     qpms_ss_LU qpms_scatsyswk_build_modeproblem_matrix_full_LU(cdouble *target, int *target_piv, const qpms_scatsys_at_omega_k_t *sswk)
@@ -703,6 +703,8 @@ cdef extern from "scatsystem.h":
             const cdouble *f_excitation_vector_full, cart3_t where)
     ccart3_t qpms_scatsysw_scattered_E__alt(const qpms_scatsys_at_omega_t *ssw, qpms_bessel_t btyp,
             const cdouble *f_excitation_vector_full, cart3_t where)
+    double qpms_ss_adjusted_eta(const qpms_scatsys_t *ss, cdouble wavenumber, const double *wavevector);
+
 
 cdef extern from "ewald.h":
     struct qpms_csf_result:

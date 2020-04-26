@@ -23,6 +23,7 @@
 #include "kahansum.h"
 #include "tolerances.h"
 #include "beyn.h"
+#include "tiny_inlines.h"
 
 #ifdef QPMS_SCATSYSTEM_USE_OWN_BLAS
 #include "qpmsblas.h"
@@ -31,10 +32,14 @@
 #define SERIAL_ZGEMM cblas_zgemm
 #endif
 
-#define SQ(x) ((x)*(x))
 #define QPMS_SCATSYS_LEN_RTOL 1e-13
 #define QPMS_SCATSYS_TMATRIX_ATOL 1e-12
 #define QPMS_SCATSYS_TMATRIX_RTOL 1e-12
+
+// This is used in adjustment of Ewald parameter to avoid high frequency breakdown.
+// Very roughly, the value of 16 should lead to allowing terms containing incomplete Gamma
+// functions with magnitudes around exp(16) == 8.9e6
+static const double QPMS_SCATSYS_EWALD_MAX_EXPONENT = 16.;
 
 long qpms_scatsystem_nthreads_default = 4;
 long qpms_scatsystem_nthreads_override = 0;
@@ -59,17 +64,22 @@ static inline void qpms_ss_ensure_nonperiodic_a(const qpms_scatsys_t *ss, const 
   QPMS_ENSURE(ss->lattice_dimension == 0, "This method is applicable only to nonperiodic systems. Use %s instead.", s);
 }
 
-// Adjust Ewald parameter to avoid high-frequency breakdown; 
-// TODO make this actually do something (other than just copying ss's eta.)
-static inline double ss_adjusted_eta(const qpms_scatsys_t *ss, complex double omega) {
+// Adjust Ewald parameter to avoid high-frequency breakdown
+double qpms_ss_adjusted_eta(const qpms_scatsys_t *ss, complex double wavenumber, const double k[3]) {
 	qpms_ss_ensure_periodic(ss);
-	return ss->per.eta;
+	const double eta_default = ss->per.eta;
+	// FIXME here we silently assume that k lies in the first Brillioun zone, we should ensure that.
+	const double k2 = k[0]*k[0] + k[1]*k[1] + k[2] * k[2]; 
+	const double kappa2 = SQ(cabs(wavenumber)); // maybe creal would be enough
+  if(kappa2 < k2) // This should happen only for pretty low frequencies
+    return eta_default;
+	const qpms_l_t maxj = ss->c->lMax; // Based on ewald.c:301, note that VSWF (c's) lMax is already half of corresponding translation matrix Ewald factors' (c->e3c's) lMax
+	const double mina = 0.5 * (ss->lattice_dimension - 1) - maxj; // minimum incomplete Gamma first argument, based on ewald.c:301; CHECKME whether this is fine also for 3D lattice
+  const double eta_min = sqrt(fabs((kappa2 - k2) * (mina - 1.) / QPMS_SCATSYS_EWALD_MAX_EXPONENT));
+  return MAX(eta_default, eta_min);
 }
 
 // ------------ Stupid implementation of qpms_scatsys_apply_symmetry() -------------
-
-#define MIN(x,y) (((x)<(y))?(x):(y))
-#define MAX(x,y) (((x)>(y))?(x):(y))
 
 // The following functions are just to make qpms_scatsys_apply_symmetry more readable.
 // They are not to be used elsewhere, as they do not perform any array capacity checks etc.
@@ -549,8 +559,6 @@ qpms_scatsys_at_omega_t *qpms_scatsys_apply_symmetry(const qpms_scatsys_t *orig,
   
   ss->c = qpms_trans_calculator_init(lMax, normalisation);
 
-  ssw->eta = ss->lattice_dimension ? ss_adjusted_eta(ss, omega) : NAN;
-
   return ssw;
 }
 
@@ -604,7 +612,6 @@ qpms_scatsys_at_omega_t *qpms_scatsys_at_omega(const qpms_scatsys_t *ss,
   ssw->ss = ss;
   ssw->medium = qpms_epsmu_generator_eval(ss->medium, omega);
   ssw->wavenumber = qpms_wavenumber(omega, ssw->medium);
-  ssw->eta = ss->lattice_dimension ? ss_adjusted_eta(ss, omega) : NAN;
   QPMS_CRASHING_CALLOC(ssw->tm, ss->tm_count, sizeof(*ssw->tm));
   qpms_tmatrix_t **tmatrices_preop;
   QPMS_CRASHING_CALLOC(tmatrices_preop, ss->tmg_count, sizeof(*tmatrices_preop));
@@ -1167,7 +1174,7 @@ complex double *qpms_scatsyswk_build_translation_matrix_full(
   const qpms_scatsys_t *ss = ssw->ss;
   qpms_ss_ensure_periodic(ss);
   const cart3_t k_cart3 = cart3_from_double_array(sswk->k);
-  return qpms_scatsys_periodic_build_translation_matrix_full(target, ss, wavenumber, &k_cart3, ssw->eta);
+  return qpms_scatsys_periodic_build_translation_matrix_full(target, ss, wavenumber, &k_cart3, sswk->eta);
 }
 
 complex double *qpms_scatsys_build_translation_matrix_e_full(
@@ -1247,8 +1254,12 @@ complex double *qpms_scatsys_periodic_build_translation_matrix_full(
     complex double wavenumber, const cart3_t *wavevector, double eta) {
   QPMS_UNTESTED;
   qpms_ss_ensure_periodic(ss);
-  if (eta == 0 || isnan(eta))
-    eta = ss->per.eta;
+  if (eta == 0 || isnan(eta)) {
+    double tmp[3];
+    cart3_to_double_array(tmp, *wavevector);
+    eta = qpms_ss_adjusted_eta(ss, wavenumber, tmp);
+  }
+
   const size_t full_len = ss->fecv_size;
   if(!target)
     QPMS_CRASHING_MALLOC(target, SQ(full_len) * sizeof(complex double));
@@ -1273,7 +1284,8 @@ static inline complex double *qpms_scatsysw_scatsyswk_build_modeproblem_matrix_f
     /// Target memory with capacity for ss->fecv_size**2 elements. If NULL, new will be allocated.
     complex double *target,
     const qpms_scatsys_at_omega_t *ssw,
-    const double k[] // NULL if non-periodic
+    const double k[], // NULL if non-periodic
+    const double eta // ignored if non-periodic
     )
 {
   const complex double wavenumber = ssw->wavenumber;
@@ -1307,7 +1319,7 @@ static inline complex double *qpms_scatsysw_scatsyswk_build_modeproblem_matrix_f
         } else { // periodic case 
           QPMS_ENSURE_SUCCESS(qpms_ss_ppair_W(ss, piR, piC, wavenumber, k,
                 tmp /*target*/, bspecC->n /*deststride*/, 1 /*srcstride*/,
-                QPMS_EWALD_FULL, ssw->eta));
+                QPMS_EWALD_FULL, eta));
         }
 
         cblas_zgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
@@ -1334,14 +1346,14 @@ complex double *qpms_scatsysw_build_modeproblem_matrix_full(
     complex double *target, const qpms_scatsys_at_omega_t *ssw) {
   qpms_ss_ensure_nonperiodic_a(ssw->ss, "qpms_scatsyswk_build_modeproblem_matrix_full()");
   return qpms_scatsysw_scatsyswk_build_modeproblem_matrix_full(
-      target, ssw, NULL);
+      target, ssw, NULL, NAN);
 }
 
 complex double *qpms_scatsyswk_build_modeproblem_matrix_full(
     complex double *target, const qpms_scatsys_at_omega_k_t *sswk) 
 {
   qpms_ss_ensure_periodic_a(sswk->ssw->ss, "qpms_scatsysw_build_modeproblem_matrix_full()");
-  return qpms_scatsysw_scatsyswk_build_modeproblem_matrix_full(target, sswk->ssw, sswk->k);
+  return qpms_scatsysw_scatsyswk_build_modeproblem_matrix_full(target, sswk->ssw, sswk->k, sswk->eta);
 }
 
 
@@ -2246,7 +2258,8 @@ static int qpms_scatsys_periodic_eval_Beyn_ImTW(complex double *target,
   QPMS_ENSURE(ssw != NULL, "qpms_scatsys_at_omega() returned NULL");
   qpms_scatsys_at_omega_k_t sswk = {
     .ssw = ssw,
-    .k = {p->k[0], p->k[1], p->k[2]}
+    .k = {p->k[0], p->k[1], p->k[2]},
+    .eta = qpms_ss_adjusted_eta(p->ss, ssw->wavenumber, p->k)
   };
   QPMS_ASSERT(m == p->ss->fecv_size);
   QPMS_ENSURE(NULL != 

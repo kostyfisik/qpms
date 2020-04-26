@@ -963,6 +963,13 @@ cdef class _ScatteringSystemAtOmegaK:
 
     cdef qpms_scatsys_at_omega_k_t *rawpointer(self):
         return &self.sswk
+    
+    property eta:
+        """Ewald parameter η"""
+        def __get__(self):
+            return self.sswk.eta
+        def __set__(self, double eta):
+            self.sswk.eta = eta
 
 cdef class _ScatteringSystemAtOmega:
     '''
@@ -1021,6 +1028,7 @@ cdef class _ScatteringSystemAtOmega:
         sswk.sswk.k[0] = k[0]
         sswk.sswk.k[1] = k[1]
         sswk.sswk.k[2] = k[2]
+        sswk.eta = qpms_ss_adjusted_eta(self.ssw[0].ss, self.ssw[0].wavenumber, sswk.sswk.k)
         return sswk
 
     property fecv_size: 
@@ -1033,20 +1041,6 @@ cdef class _ScatteringSystemAtOmega:
         def __get__(self): return self.ss_pyref.nirreps
     property wavenumber:
         def __get__(self): return self.ssw[0].wavenumber
-    property eta:
-        """Ewald parameter η (only relevant for periodic systems)"""
-        def __get__(self):
-            self.check_s()
-            if self.lattice_dimension:
-                return self.ssw[0].eta
-            else:
-                return None
-        def __set__(self, double eta):
-            self.check_s()
-            if self.lattice_dimension:
-                self.ssw[0].eta = eta
-            else:
-                raise AttributeError("Cannot set Ewald parameter for finite system") # different exception?
         
 
     def modeproblem_matrix_full(self, k=None):

@@ -246,7 +246,6 @@ typedef struct qpms_scatsys_at_omega_t {
 	complex double omega; ///< Angular frequency
 	qpms_epsmu_t medium; ///< Background medium optical properties at the given frequency
 	complex double wavenumber; ///< Background medium wave number
-	double eta; ///< Ewald parameter \f$ \eta \f$.
 } qpms_scatsys_at_omega_t;
 
 
@@ -489,6 +488,7 @@ complex double *qpms_scatsys_scatter_solve(
 typedef struct qpms_scatsys_at_omega_k_t {
 	const qpms_scatsys_at_omega_t *ssw;
 	double k[3]; ///< The k-vector's cartesian coordinates.
+	double eta; ///< Ewald parameter η.
 } qpms_scatsys_at_omega_k_t;
 
 /// Creates the full \f$ (I - WS) \f$ matrix of the periodic scattering system. 
@@ -768,6 +768,10 @@ ccart3_t qpms_scatsysw_scattered_E__alt(
 		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
 		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
 		);
+
+/// Adjusted Ewadl parameter to avoid high-frequency breakdown.
+// TODO DOC
+double qpms_ss_adjusted_eta(const qpms_scatsys_t *ss, complex double wavenumber, const double wavevector[3]);
 
 #if 0
 /** Evaluates partial scattered fields (corresponding to a given irrep-reduced excitation vector)
