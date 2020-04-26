@@ -29,9 +29,6 @@
 #define M_SQRTPI 1.7724538509055160272981674833411452
 #endif
 
-#define MAX(x,y) ((x)<(y)?(y):(x))
-#define MIN(x,y) ((x)<(y)?(x):(y))
-
 
 // sloppy implementation of factorial
 static inline double factorial(const int n) {

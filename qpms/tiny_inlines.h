@@ -45,4 +45,17 @@ static inline complex double ipow(int x) {
 
 static inline int isq(int x) {return x * x;}
 
+#ifndef MIN
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#endif
+
+#ifndef MAX
+#define MAX(x, y) (((x) >= (y)) ? (x) : (y))
+#endif
+
+#ifndef SQ
+#define SQ(x) ((x) * (x))
+#endif
+
+
 #endif // TINY_INLINES_H

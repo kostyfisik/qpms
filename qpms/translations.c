@@ -308,8 +308,6 @@ static inline size_t qpms_trans_calculator_index_yyu(const qpms_trans_calculator
 }
 
 
-#define SQ(x) ((x)*(x))
-
 static inline double fsq(double x) {return x * x; }
 
 static void qpms_trans_calculator_multipliers_A(

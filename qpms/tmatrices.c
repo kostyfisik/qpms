@@ -36,10 +36,6 @@
 #define ELECTRONVOLT (1.602176487e-19)
 #define SCUFF_OMEGAUNIT (3e14)
 
-#define SQ(x) ((x)*(x))
-#define MAX(x,y) ((x) < (y) ? (y) : (x))
-#define MIN(x,y) ((x) > (y) ? (y) : (x))
-
 qpms_tmatrix_t *qpms_tmatrix_init(const qpms_vswf_set_spec_t *bspec) {
   qpms_tmatrix_t *t;
   QPMS_CRASHING_MALLOC(t, sizeof(qpms_tmatrix_t));

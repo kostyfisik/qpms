@@ -3,9 +3,6 @@
 #include "kahansum.h"
 #define WIGNER_ATOL (1e-15)
 
-#define MIN(a,b) ((a)<(b)?(a):b)
-#define MAX(a,b) ((a)>(b)?(a):b)
-
 complex double qpms_wignerD_elem(const qpms_quat_t R,
     const qpms_l_t l, const qpms_m_t mp, const qpms_m_t m) {
   // TODO do some optimisations... The combinatoric coeffs could be precomputed.
