@@ -25,7 +25,7 @@ export B2Y_nmi=$(bc <<< '4*pi/3/'${SEPARATION_nm})
 
 # a K-point coordinates
 export KPOINTX_nmi=$(bc <<< '4*pi/3/sqrt(3)'/${SEPARATION_nm})
-export KPOINTY_nmi=$(bc <<< '4*pi/3/sqrt(3)'/${SEPARATION_nm})
+export KPOINTY_nmi=0.0 #$(bc <<< '4*pi/3/sqrt(3)'/${SEPARATION_nm})
 
 export RADIUS_nm=50
 export HEIGHT_nm=50

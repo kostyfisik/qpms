@@ -114,6 +114,20 @@ def sfloat(string):
         else: raise exc
     return res
 
+def sint(string):
+    '''Tries to match an int, or an int with prepended 's'
+
+    Used as a workaraound for argparse's negative number matcher if '+' is used as a
+    prefix 
+    '''
+    try:
+        res = int(string)
+    except ValueError as exc:
+        if string[0] == 's':
+            res = int(string[1:])
+        else: raise exc
+    return res
+
 def material_spec(string):
     """Tries to parse a string as a material specification, i.e. a 
     real or complex number or one of the string in built-in Lorentz-Drude models.
