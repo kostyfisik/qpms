@@ -403,7 +403,7 @@ class ArgParser:
         from .qpms_c import lll_reduce
         self.direct_basis = lll_reduce(self.args.basis_vectors, delta=1.)
         import numpy as np
-        self.reciprocal_basis1 = np.linalg.inv(self.direct_basis)
+        self.reciprocal_basis1 = np.linalg.inv(self.direct_basis.T)
         self.reciprocal_basis2pi = 2 * np.pi * self.reciprocal_basis1
     
     def _eval_rectlattice2d(self): # feature: rectlattice2d
@@ -419,7 +419,7 @@ class ArgParser:
         import numpy as np
         a.basis_vectors = [(a.period[0], 0.), (0., a.period[1])]
         self.direct_basis = np.array(a.basis_vectors)
-        self.reciprocal_basis1 = np.linalg.inv(self.direct_basis)
+        self.reciprocal_basis1 = np.linalg.inv(self.direct_basis.T)
         self.reciprocal_basis2pi = 2 * np.pi * self.reciprocal_basis1
 
     def _process_planewave_angles(self): #feature: planewave
