@@ -38,7 +38,7 @@ import qpms
 import warnings
 from qpms.cybspec import BaseSpec
 from qpms.cytmatrices import CTMatrix, TMatrixGenerator
-from qpms.qpms_c import Particle, pgsl_ignore_error
+from qpms.qpms_c import Particle, pgsl_ignore_error, empty_lattice_modes_xy
 from qpms.cymaterials import EpsMu, EpsMuGenerator, LorentzDrudeModel, lorentz_drude
 from qpms.cycommon import DebugFlags, dbgmsg_enable
 from qpms import FinitePointGroup, ScatteringSystem, BesselType, eV, hbar
@@ -109,6 +109,12 @@ if a.plot or (a.plot_out is not None):
                 label= None if i else irrep_labels.get(ss1.irrep_names[iri], ss1.irrep_names[iri]), 
                 **cargs)
     ax.set_ylim([0,1.1])
+    if hasattr(ap, "background_epsmu"):
+        xlim = ax.get_xlim()
+        omegas_empty = empty_lattice_modes_xy(ap.background_epsmu, ap.reciprocal_basis2pi, k, omegas[-1])
+        for om in omegas_empty:
+            if om/eh > xlim[0] and om/eh < xlim[1]:
+                ax.axvline(om/eh, ls=':')
     ax.set_xlabel('$\hbar \omega / \mathrm{eV}$')
     ax.set_ylabel('Singular values')
     ax.legend()
