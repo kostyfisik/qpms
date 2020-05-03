@@ -100,6 +100,52 @@ def float_range(string):
         else:
             return np.arange(first, last, increment)
 
+def int_or_None(string):
+    """Tries to parse a string either as an int or None (if it contains only whitespaces)"""
+    try:
+        return int(string)
+    except ValueError as ve:
+        if string.strip() == '':
+            return None
+        else:
+            raise ve
+
+def sslice(string):
+    """Tries to parse a string either as one individual int value
+    or one of the following patterns:
+    
+    first:last:increment
+    first:last
+
+    first, last and increment must be parseable as ints
+    or be empty (then 
+
+    In each case, 's' letter can be prepended to the whole string to avoid
+    argparse interpreting this as a new option (if the argument contains
+    '-' or '+').
+    
+    Returns either int or slice containing ints or Nones.
+    """
+    if string[0] == 's':
+        string = string[1:]
+    try:
+        res = int(string)
+        return res
+    except ValueError:
+        import re
+        match = re.match(r'([^:]*):([^:]*):(.*)', string)
+        if match:
+            step = int_or_None(match.group(3))
+        else:
+            match = re.match(r'([^:]*):(.*)', string)
+            if match:
+                step = None
+            else: 
+                argparse.ArgumentTypeError('Invalid int/slice format: "%s"' % string)
+        start = int_or_None(match.group(1))
+        stop = int_or_None(match.group(2))
+        return slice(start, stop, step)
+
 def sfloat(string):
     '''Tries to match a float, or a float with prepended 's'
 
