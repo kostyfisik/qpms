@@ -42,6 +42,10 @@ else (QPMS_USE_FORTRAN_AMOS)
 	set(QPMS_AMOSLIB camos)
 endif (QPMS_USE_FORTRAN_AMOS)
 
+
+set(FADDEEVA_BUILD_STATIC ON)
+add_subdirectory(faddeeva)
+
 add_subdirectory (qpms)
 
 

@@ -27,6 +27,7 @@ target_link_libraries (qpms
 	lapack
 	blas
 	${QPMS_AMOSLIB}
+	Faddeeva
 	)
 target_include_directories (qpms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
