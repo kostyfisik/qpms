@@ -257,7 +257,8 @@ int ewald3_21_xy_sigma_long (
 #endif
   // recycleable values if rbeta_pq stays the same:
   complex double gamma_pq;
-  complex double z;
+  complex double z; // I?*κ*γ*particle_shift.z
+  complex double x; // κ*γ/(2*η)
   complex double factor1d = 1; // the "additional" factor for the 1D case (then it is not 1)
   // space for Gamma_pq[j]'s
   qpms_csf_result Gamma_pq[lMax/2+1];
@@ -291,17 +292,28 @@ int ewald3_21_xy_sigma_long (
 
 
     // R-DEPENDENT BEGIN
+    //void ewald3_2_sigma_long_Delta(complex double *target, int maxn, complex double x, complex double z) {
     if (new_rbeta_pq) {
       gamma_pq = clilgamma(rbeta_pq/k);
-      z = csq(gamma_pq*k/(2*eta)); 
-      for(qpms_l_t j = 0; j <= lMax/2; ++j) {
-        int retval = complex_gamma_inc_e(0.5-j, z,
-          // we take the branch which is principal for the Re z < 0, Im z < 0 quadrant, cf. [Linton, p. 642 in the middle]
-          QPMS_LIKELY(creal(z) < 0) && !signbit(cimag(z)) ? -1 : 0, Gamma_pq+j);
-        QPMS_ENSURE_SUCCESS_OR(retval, GSL_EUNDRFLW);
+      complex double x = gamma_pq*k/(2*eta);
+      complex double x2 = x*x;
+      if(particle_shift.z == 0) {
+        for(qpms_l_t j = 0; j <= lMax/2; ++j) {
+          int retval = complex_gamma_inc_e(0.5-j, x2,
+            // we take the branch which is principal for the Re x < 0, Im x < 0 quadrant, cf. [Linton, p. 642 in the middle]
+            QPMS_LIKELY(creal(x2) < 0) && !signbit(cimag(x2)) ? -1 : 0, Gamma_pq+j);
+          QPMS_ENSURE_SUCCESS_OR(retval, GSL_EUNDRFLW);
+        } 
+        if (latdim & LAT1D)
+          factor1d =  M_SQRT1_2 * .5 * k * gamma_pq;
+      } else if (latdim & LAT2D) {
+        QPMS_UNTESTED;
+        // TODO check the branches/phases!
+        complex double z = I * k * gamma_pq * particle_shift.z;
+        ewald3_2_sigma_long_Delta(Gamma_pq, lMax/2, x, z);
+      } else {
+        QPMS_NOT_IMPLEMENTED("1D lattices in 3D space outside of the line not implemented");
       }
-      if (latdim & LAT1D)
-        factor1d =  M_SQRT1_2 * .5 * k * gamma_pq;
     }
     // R-DEPENDENT END
     

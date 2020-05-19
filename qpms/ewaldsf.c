@@ -12,6 +12,7 @@
 #include <gsl/gsl_errno.h>
 #include <float.h>
 #include <stdbool.h>
+#include <Faddeeva.h>
 
 #ifndef COMPLEXPART_REL_ZERO_LIMIT
 #define COMPLEXPART_REL_ZERO_LIMIT 1e-14
@@ -289,5 +290,28 @@ int hyperg_2F2_series(const double a, const double b, const double c, const doub
   return GSL_SUCCESS;
 }
 
+// The Delta_n factor from [Kambe II], Appendix 3
+// \f[ \Delta_n = \int_n^\infty t^{-1/2 - n} \exp(-t + z^2/(4t))\ud t \f]
+void ewald3_2_sigma_long_Delta(qpms_csf_result *target, int maxn, complex double x, complex double z) {
+  complex double expfac = cexp(-x + 0.25 * z*z / x);
+  complex double sqrtx = csqrt(x); // TODO check carefully, which branch is needed
+  // These are used in the first two recurrences
+  complex double w_plus  = Faddeeva_w(+z/(2*sqrtx) + I*sqrtx, 0);
+  complex double w_minus = Faddeeva_w(-z/(2*sqrtx) + I*sqrtx, 0);
+  QPMS_ASSERT(maxn >= 0); 
+  if (maxn >= 0) {
+    target[0].val = 0.5 * M_SQRTPI * expfac * (w_minus + w_plus);
+    target[0].err = NAN; //TODO
+  }
+  if (maxn >= 1) {
+    target[1].val = -I / z * M_SQRTPI * expfac * (w_minus - w_plus);
+    target[1].err = NAN; //TODO
+  }
+  for(int n = 1; n < maxn; ++n) { // The rest via recurrence
+    // TODO The cpow(x, 0.5 - n) might perhaps better be replaced with a recurrently computed variant
+    target[n+1].val = (4 / (z*z)) * ((0.5 - n) * target[n].val + target[n-1].val - cpow(x, 0.5 - n) * expfac);
+    target[n+1].err = NAN; //TODO
+  }
+} 
 
 

@@ -210,6 +210,12 @@ int hyperg_2F2_series(double a, double b, double c, double d, double x,
 int ewald32_sr_integral(double r, double k, double n, double eta, double *result, double *err, gsl_integration_workspace *workspace);
 #endif
 
+/// The Delta_n factor from [Kambe II], Appendix 3, used in 2D-in-3D long range sum.
+/** \f[ \Delta_n = \int_n^\infty t^{-1/2 - n} \exp(-t + z^2/(4t))\ud t \f]
+ *
+ * NOTE: The error part is not yet implemented, NANs are returned instead!
+ */
+void ewald3_2_sigma_long_Delta(qpms_csf_result *target, int maxn, complex double x, complex double z);
 
 // General functions acc. to [2], sec. 4.6 – currently valid for 2D and 1D lattices in 3D space
 
