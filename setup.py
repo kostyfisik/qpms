@@ -121,6 +121,10 @@ cyquaternions = Extension('qpms.cyquaternions',
         #extra_link_args=['amos/libamos.a', 'qpms/libqpms.a'],
         libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
         )
+cyewaldtest = Extension('qpms.cyewaldtest',
+        sources = ['qpms/cyewaldtest.pyx'],
+        libraries=['qpms', 'gsl', 'lapacke', 'blas', 'gslcblas', 'pthread',]
+        )
 
 qpms_c = Extension('qpms.qpms_c',
         sources = [
@@ -144,7 +148,7 @@ setup(name='qpms',
             #'quaternion','spherical_functions',
             'scipy>=0.18.0', 'sympy>=1.2'],
         #dependency_links=['https://github.com/moble/quaternion/archive/v2.0.tar.gz','https://github.com/moble/spherical_functions/archive/master.zip'],
-        ext_modules=cythonize([qpms_c, cywaves, cytranslations, cytmatrices, cycommon, cyquaternions, cybspec, cymaterials], include_path=['qpms', 'amos'], gdb_debug=True),
+        ext_modules=cythonize([qpms_c, cywaves, cytranslations, cytmatrices, cycommon, cyquaternions, cybspec, cymaterials, cyewaldtest], include_path=['qpms', 'amos'], gdb_debug=True),
         cmdclass = {'build_ext': build_ext},
         zip_safe=False
         )
