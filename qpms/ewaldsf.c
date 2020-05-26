@@ -304,12 +304,12 @@ void ewald3_2_sigma_long_Delta(qpms_csf_result *target, int maxn, complex double
     target[0].err = NAN; //TODO
   }
   if (maxn >= 1) {
-    target[1].val = -I / z * M_SQRTPI * expfac * (w_minus - w_plus);
+    target[1].val = I / z * M_SQRTPI * expfac * (w_minus - w_plus);
     target[1].err = NAN; //TODO
   }
   for(int n = 1; n < maxn; ++n) { // The rest via recurrence
     // TODO The cpow(x, 0.5 - n) might perhaps better be replaced with a recurrently computed variant
-    target[n+1].val = (4 / (z*z)) * ((0.5 - n) * target[n].val + target[n-1].val - cpow(x, 0.5 - n) * expfac);
+    target[n+1].val = -(4 / (z*z)) * (-(0.5 - n) * target[n].val + target[n-1].val - cpow(x, 0.5 - n) * expfac);
     target[n+1].err = NAN; //TODO
   }
 } 
