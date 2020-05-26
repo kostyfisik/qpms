@@ -1,0 +1,266 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 584
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\Delta_{n}(x,z)\equiv\int_{x}^{\infty}t^{-\frac{1}{2}-n}e^{-t+\frac{z^{2}}{4t}}\ud t\label{eq:Delta definition}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Integration per partes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\int t^{-\frac{1}{2}-n}\ud t=\frac{t^{\frac{1}{2}-n}}{\frac{1}{2}-n};
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{\ud}{\ud t}e^{-t+\frac{z^{2}}{4t}}=\left(-1-\frac{z^{2}}{4t^{2}}\right)e^{-t+\frac{z^{2}}{4t}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\left(\frac{1}{2}-n\right)\Delta_{n} & =-x^{\frac{1}{2}-n}e^{-x+\frac{z^{2}}{4x}}+\int_{x}^{\infty}t^{\frac{1}{2}-n}e^{-t+\frac{z^{2}}{4t}}\ud t+\frac{z^{2}}{4}\int_{x}^{\infty}t^{\frac{-3}{2}-n}e^{-t+\frac{z^{2}}{4t}}\ud t\\
+ & =-x^{\frac{1}{2}-n}e^{-x+\frac{z^{2}}{4x}}+\Delta_{n-1}+\frac{z^{2}}{4}\Delta_{n+1},
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\Delta_{n+1}=\frac{4}{z^{2}}\left(\left(\frac{1}{2}-n\right)\Delta_{n}-\Delta_{n-1}+x^{\frac{1}{2}-n}e^{-x+\frac{z^{2}}{4x}}\right).\label{eq:Delta recurrence}
+\end{equation}
+
+\end_inset
+
+There are obviously wrong signs in Kambe II, (A 3.3).
+\end_layout
+
+\begin_layout Standard
+Eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Delta recurrence"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is obviously unsuitable for numerical computation when 
+\begin_inset Formula $z$
+\end_inset
+
+approaches 0.
+ However, the definition 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Delta definition"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ suggests that the function should be analytical around 
+\begin_inset Formula $z=0$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $z=0$
+\end_inset
+
+, one has (by definition of incomplete Г function)
+\begin_inset Formula 
+\begin{equation}
+\Delta_{n}(x,0)=\Gamma\left(\frac{1}{2}-n,x\right).\label{eq:Delta:z = 0}
+\end{equation}
+
+\end_inset
+
+For convenience, label 
+\begin_inset Formula $w=z^{2}/4$
+\end_inset
+
+ and 
+\begin_inset Formula 
+\[
+\Delta'_{n}\left(x,w\right)\equiv\int_{x}^{\infty}t^{-\frac{1}{2}-n}e^{-t+\frac{w}{t}}\ud t.
+\]
+
+\end_inset
+
+ Differentiating by parameter 
+\begin_inset Formula $w$
+\end_inset
+
+ (which should be fine as long as the integration contour does not go through
+ zero) gives
+\begin_inset Formula 
+\[
+\frac{\partial\Delta'_{n}\left(x,w\right)}{\partial w}=\Delta'_{n+1}\left(x,w\right),
+\]
+
+\end_inset
+
+so by recurrence
+\begin_inset Formula 
+\[
+\frac{\partial^{k}}{\partial w^{k}}\Delta'_{n}\left(x,w\right)=\Delta'_{n+k}\left(x,w\right).
+\]
+
+\end_inset
+
+Together with 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Delta:z = 0"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, this gives an expansion around 
+\begin_inset Formula $w=0$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\Delta_{n}'\left(x,w\right)=\sum_{k=0}^{\infty}\Gamma\left(\frac{1}{2}-n-k,x\right)\frac{w^{k}}{k!},
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\Delta_{n}\left(x,z\right)=\sum_{k=0}^{\infty}\Gamma\left(\frac{1}{2}-n-k,x\right)\frac{\left(z/2\right)^{2k}}{k!}.
+\]
+
+\end_inset
+
+The big negative first arguments in incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ functions should be good (at least I think so, CHECKME), as well as the
+ 
+\begin_inset Formula $1/k!$
+\end_inset
+
+ factor (of course).
+ I am not sure what the convergence radius is, but for 
+\begin_inset Formula $\left|z\right|<2$
+\end_inset
+
+ there seems to be absolutely no problem in using this formula.
+\end_layout
+
+\end_body
+\end_document
