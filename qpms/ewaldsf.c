@@ -292,26 +292,112 @@ int hyperg_2F2_series(const double a, const double b, const double c, const doub
 
 // The Delta_n factor from [Kambe II], Appendix 3
 // \f[ \Delta_n = \int_n^\infty t^{-1/2 - n} \exp(-t + z^2/(4t))\ud t \f]
-void ewald3_2_sigma_long_Delta(qpms_csf_result *target, int maxn, complex double x, complex double z) {
+void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *err, int maxn, complex double x, complex double z) {
   complex double expfac = cexp(-x + 0.25 * z*z / x);
   complex double sqrtx = csqrt(x); // TODO check carefully, which branch is needed
   // These are used in the first two recurrences
   complex double w_plus  = Faddeeva_w(+z/(2*sqrtx) + I*sqrtx, 0);
   complex double w_minus = Faddeeva_w(-z/(2*sqrtx) + I*sqrtx, 0);
   QPMS_ASSERT(maxn >= 0); 
-  if (maxn >= 0) {
-    target[0].val = 0.5 * M_SQRTPI * expfac * (w_minus + w_plus);
-    target[0].err = NAN; //TODO
-  }
-  if (maxn >= 1) {
-    target[1].val = I / z * M_SQRTPI * expfac * (w_minus - w_plus);
-    target[1].err = NAN; //TODO
-  }
+  if (maxn >= 0) 
+    target[0] = 0.5 * M_SQRTPI * expfac * (w_minus + w_plus);
+  if (maxn >= 1) 
+    target[1] = I / z * M_SQRTPI * expfac * (w_minus - w_plus);
   for(int n = 1; n < maxn; ++n) { // The rest via recurrence
     // TODO The cpow(x, 0.5 - n) might perhaps better be replaced with a recurrently computed variant
-    target[n+1].val = -(4 / (z*z)) * (-(0.5 - n) * target[n].val + target[n-1].val - cpow(x, 0.5 - n) * expfac);
-    target[n+1].err = NAN; //TODO
+    target[n+1] = -(4 / (z*z)) * (-(0.5 - n) * target[n] + target[n-1] - cpow(x, 0.5 - n) * expfac);
   }
-} 
+  if (err) {
+    // The error estimates for library math functions are based on 
+    // https://www.gnu.org/software/libc/manual/html_node/Errors-in-Math-Functions.html
+    // and are not guaranteed to be extremely precise.
+    // The error estimate for Faddeeva's functions is based on the package's authors at
+    // http://ab-initio.mit.edu/wiki/index.php/Faddeeva_Package
+    // "we find that the accuracy is typically at at least 13 significant digits in both the real and imaginary parts"
+    // FIXME the error estimate seems might be off by several orders of magnitude (try parameters x = -3, z = 0.5, maxn=20)
+    double w_plus_abs = cabs(w_plus), w_minus_abs = cabs(w_minus), expfac_abs = cabs(expfac);
+    double w_plus_err = w_plus_abs * 1e-13, w_minus_err = w_minus_abs * 1e-13; // LPTODO argument error contrib.
+    double expfac_err = expfac_abs * (4 * DBL_EPSILON); // LPTODO add argument error contrib.
+    double z_abs = cabs(z);
+    double z_err = z_abs * DBL_EPSILON;
+    double x_abs = cabs(x);
+    if (maxn >= 0) 
+      err[0] = 0.5 * M_SQRTPI * (expfac_abs * (w_minus_err + w_plus_err) + (w_minus_abs + w_plus_abs) * expfac_err);
+    if (maxn >= 1) 
+      err[1] = 2 * err[0] / z_abs + cabs(target[1]) * z_err / (z_abs*z_abs);
+    for(int n = 1; n < maxn; ++n) {
+      err[n+1] = (2 * cabs(target[n+1]) / z_abs + 4 * ((0.5+n) * err[n] + err[n-1] +
+            pow(x_abs, 0.5 - n) * (2*DBL_EPSILON * expfac_abs + expfac_err))  // LPTODO not ideal, pow() call is an overkill
+            ) * z_err / (z_abs*z_abs);
+    }
+  }
+}
 
+
+void ewald3_2_sigma_long_Delta_series(complex double *target, double *err, int maxn, complex double x, complex double z) {
+  complex double w = 0.25*z*z;
+  double w_abs = cabs(w);
+  int maxk;
+  if (w_abs == 0)
+    maxk = 0; // Delta is equal to the respective incomplete Gamma functions
+  else {
+    // Estimate a suitable maximum k, using Stirling's formula, so that w**maxk / maxk! is less than DBL_EPSILON
+    // This implementation is quite stupid, but it is still cheap compared to the actual computation, so LPTODO better one
+    maxk = 1;
+    double log_w_abs = log(w_abs);
+    while (maxk * (log_w_abs - log(maxk) + 1) >= -DBL_MANT_DIG)
+      ++maxk;
+  }
+  // TODO asserts on maxn, maxk
+
+  complex double *Gammas;
+  double *Gammas_err = NULL, *Gammas_abs = NULL;
+  QPMS_CRASHING_CALLOC(Gammas, maxk+maxn+1, sizeof(*Gammas));
+  if(err) {
+    QPMS_CRASHING_CALLOC(Gammas_err, maxk+maxn+1, sizeof(*Gammas_err));
+    QPMS_CRASHING_MALLOC(Gammas_abs, (maxk+maxn+1) * sizeof(*Gammas_abs));
+  }
+
+  for(int j = 0; j <= maxn+maxk; ++j) {
+    qpms_csf_result g;
+    QPMS_ENSURE_SUCCESS(complex_gamma_inc_e(0.5-j, x, 0 /* TODO branch choice */, &g));
+    Gammas[j] = g.val;
+    if(err) {
+      Gammas_abs[j] = cabs(g.val);
+      Gammas_err[j] = g.err;
+    }
+  }
+
+  for(int n = 0; n <= maxn; ++n) target[n] = 0;
+  if(err) for(int n = 0; n <= maxn; ++n) err[n] = 0;
+
+  complex double wpowk_over_fack = 1.;
+  double wpowk_over_fack_abs = 1.;
+  for(int k = 0; k <= maxk; ++k, wpowk_over_fack *= w/k) { // TODO? Kahan sum, Horner's method?
+    // Also TODO? for small n, continue for higher k if possible/needed
+    for(int n = 0; n <= maxn; ++n) {
+      target[n] += Gammas[n+k] * wpowk_over_fack;
+      if(err) {
+        // DBL_EPSILON might not be the best estimate here, but...
+        err[n] += wpowk_over_fack_abs * Gammas_err[n+k] + DBL_EPSILON * Gammas_abs[n+k];
+        wpowk_over_fack_abs *= w_abs / (k+1);
+      }
+    }
+  }
+
+  // TODO add an error estimate for the k-cutoff!!!
+
+  free(Gammas);
+  free(Gammas_err);
+  free(Gammas_abs);
+}
+
+
+void ewald3_2_sigma_long_Delta(complex double *target, double *err, int maxn, complex double x, complex double z) {
+  double absz = cabs(z);
+  if (absz < 2.) // TODO take into account also the other parameters
+    ewald3_2_sigma_long_Delta_series(target, err, maxn, x, z);
+  else
+    ewald3_2_sigma_long_Delta_recurrent(target, err, maxn, x, z);
+}
 

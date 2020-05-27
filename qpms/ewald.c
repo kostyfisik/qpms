@@ -261,7 +261,8 @@ int ewald3_21_xy_sigma_long (
   complex double x; // κ*γ/(2*η)
   complex double factor1d = 1; // the "additional" factor for the 1D case (then it is not 1)
   // space for Gamma_pq[j]'s
-  qpms_csf_result Gamma_pq[lMax/2+1];
+  complex double Gamma_pq[lMax/2+1];
+  double Gamma_pq_err[lMax/2+1];
 
   // CHOOSE POINT BEGIN
   // TODO mayby PGen_next_sph is not the best coordinate system choice here
@@ -299,10 +300,13 @@ int ewald3_21_xy_sigma_long (
       complex double x2 = x*x;
       if(particle_shift.z == 0) {
         for(qpms_l_t j = 0; j <= lMax/2; ++j) {
+          qpms_csf_result Gam;
           int retval = complex_gamma_inc_e(0.5-j, x2,
             // we take the branch which is principal for the Re x < 0, Im x < 0 quadrant, cf. [Linton, p. 642 in the middle]
-            QPMS_LIKELY(creal(x2) < 0) && !signbit(cimag(x2)) ? -1 : 0, Gamma_pq+j);
+            QPMS_LIKELY(creal(x2) < 0) && !signbit(cimag(x2)) ? -1 : 0, &Gam);
           QPMS_ENSURE_SUCCESS_OR(retval, GSL_EUNDRFLW);
+          Gamma_pq[j] = Gam.val;
+          if(err) Gamma_pq_err[j] = Gam.err;
         } 
         if (latdim & LAT1D)
           factor1d =  M_SQRT1_2 * .5 * k * gamma_pq;
@@ -310,7 +314,7 @@ int ewald3_21_xy_sigma_long (
         QPMS_UNTESTED;
         // TODO check the branches/phases!
         complex double z = I * k * gamma_pq * particle_shift.z;
-        ewald3_2_sigma_long_Delta(Gamma_pq, lMax/2, x, z);
+        ewald3_2_sigma_long_Delta(Gamma_pq, err ?  Gamma_pq_err : NULL, lMax/2, x, z);
       } else {
         QPMS_NOT_IMPLEMENTED("1D lattices in 3D space outside of the line not implemented");
       }
@@ -335,9 +339,9 @@ int ewald3_21_xy_sigma_long (
             * c->s1_constfacs[y][j];
           if(err) {
             // FIXME include also other errors than Gamma_pq's relative error
-             kahanadd(&jsum_err, &jsum_err_c, Gamma_pq[j].err * cabs(summand));
+             kahanadd(&jsum_err, &jsum_err_c, Gamma_pq_err[j] * cabs(summand));
           }
-          summand *= Gamma_pq[j].val; // GGG
+          summand *= Gamma_pq[j]; // GGG
           ckahanadd(&jsum, &jsum_c, summand);
         }
         jsum *= phasefac * factor1d; // PFC
