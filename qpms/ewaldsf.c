@@ -13,6 +13,7 @@
 #include <float.h>
 #include <stdbool.h>
 #include <Faddeeva.h>
+#include "tiny_inlines.h"
 
 #ifndef COMPLEXPART_REL_ZERO_LIMIT
 #define COMPLEXPART_REL_ZERO_LIMIT 1e-14
@@ -290,11 +291,17 @@ int hyperg_2F2_series(const double a, const double b, const double c, const doub
   return GSL_SUCCESS;
 }
 
+// Complex square root with branch selection
+static inline complex double csqrt_branch(complex double x, int xbranch) {
+  return csqrt(x) * min1pow(xbranch);
+}
+
 // The Delta_n factor from [Kambe II], Appendix 3
 // \f[ \Delta_n = \int_n^\infty t^{-1/2 - n} \exp(-t + z^2/(4t))\ud t \f]
-void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *err, int maxn, complex double x, complex double z) {
+void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *err,
+    int maxn, complex double x, int xbranch, complex double z) {
   complex double expfac = cexp(-x + 0.25 * z*z / x);
-  complex double sqrtx = csqrt(x); // TODO check carefully, which branch is needed
+  complex double sqrtx = csqrt_branch(x, xbranch); // TODO check carefully, which branch is needed
   // These are used in the first two recurrences
   complex double w_plus  = Faddeeva_w(+z/(2*sqrtx) + I*sqrtx, 0);
   complex double w_minus = Faddeeva_w(-z/(2*sqrtx) + I*sqrtx, 0);
@@ -305,7 +312,7 @@ void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *err, in
     target[1] = I / z * M_SQRTPI * expfac * (w_minus - w_plus);
   for(int n = 1; n < maxn; ++n) { // The rest via recurrence
     // TODO The cpow(x, 0.5 - n) might perhaps better be replaced with a recurrently computed variant
-    target[n+1] = -(4 / (z*z)) * (-(0.5 - n) * target[n] + target[n-1] - cpow(x, 0.5 - n) * expfac);
+    target[n+1] = -(4 / (z*z)) * (-(0.5 - n) * target[n] + target[n-1] - sqrtx * cpow(x, -n) * expfac);
   }
   if (err) {
     // The error estimates for library math functions are based on 
@@ -334,7 +341,8 @@ void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *err, in
 }
 
 
-void ewald3_2_sigma_long_Delta_series(complex double *target, double *err, int maxn, complex double x, complex double z) {
+void ewald3_2_sigma_long_Delta_series(complex double *target, double *err,
+    int maxn, complex double x, int xbranch, complex double z) {
   complex double w = 0.25*z*z;
   double w_abs = cabs(w);
   int maxk;
@@ -360,7 +368,7 @@ void ewald3_2_sigma_long_Delta_series(complex double *target, double *err, int m
 
   for(int j = 0; j <= maxn+maxk; ++j) {
     qpms_csf_result g;
-    QPMS_ENSURE_SUCCESS(complex_gamma_inc_e(0.5-j, x, 0 /* TODO branch choice */, &g));
+    QPMS_ENSURE_SUCCESS(complex_gamma_inc_e(0.5-j, x, xbranch, &g));
     Gammas[j] = g.val;
     if(err) {
       Gammas_abs[j] = cabs(g.val);
@@ -393,11 +401,12 @@ void ewald3_2_sigma_long_Delta_series(complex double *target, double *err, int m
 }
 
 
-void ewald3_2_sigma_long_Delta(complex double *target, double *err, int maxn, complex double x, complex double z) {
+void ewald3_2_sigma_long_Delta(complex double *target, double *err,
+    int maxn, complex double x, int xbranch, complex double z) {
   double absz = cabs(z);
   if (absz < 2.) // TODO take into account also the other parameters
-    ewald3_2_sigma_long_Delta_series(target, err, maxn, x, z);
+    ewald3_2_sigma_long_Delta_series(target, err, maxn, x, xbranch, z);
   else
-    ewald3_2_sigma_long_Delta_recurrent(target, err, maxn, x, z);
+    ewald3_2_sigma_long_Delta_recurrent(target, err, maxn, x, xbranch, z);
 }
 

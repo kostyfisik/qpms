@@ -314,7 +314,7 @@ int ewald3_21_xy_sigma_long (
         QPMS_UNTESTED;
         // TODO check the branches/phases!
         complex double z = I * k * gamma_pq * particle_shift.z;
-        ewald3_2_sigma_long_Delta(Gamma_pq, err ?  Gamma_pq_err : NULL, lMax/2, x, z);
+        ewald3_2_sigma_long_Delta(Gamma_pq, err ?  Gamma_pq_err : NULL, lMax/2, x, 0 /* FIXME */, z);
       } else {
         QPMS_NOT_IMPLEMENTED("1D lattices in 3D space outside of the line not implemented");
       }

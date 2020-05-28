@@ -217,13 +217,15 @@ int ewald32_sr_integral(double r, double k, double n, double eta, double *result
  * unsuitable especially for big values of \a maxn.
  * 
  */
-void ewald3_2_sigma_long_Delta(complex double *target, double *target_err, int maxn, complex double x, complex double z);
+void ewald3_2_sigma_long_Delta(complex double *target, double *target_err, int maxn, complex double x,
+	       int xbranch, complex double z);
 
 /// The Delta_n factor from [Kambe II], Appendix 3, used in 2D-in-3D long range sum.
 /** This function always uses Kambe's (corrected) recurrent formula.
  * For production, use ewald3_2_sigma_long_Delta() instead.
  */
-void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *target_err, int maxn, complex double x, complex double z);
+void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *target_err, int maxn, complex double x,
+	       int xbranch, complex double z);
 
 /// The Delta_n factor from [Kambe II], Appendix 3, used in 2D-in-3D long range sum.
 /** This function always uses Taylor expansion in \a z.
@@ -233,7 +235,8 @@ void ewald3_2_sigma_long_Delta_recurrent(complex double *target, double *target_
  * parameters maxn = 40, z = 0.5, x = -3. This might be related to the exponential growth
  * of the error.
  */
-void ewald3_2_sigma_long_Delta_series(complex double *target, double *target_err, int maxn, complex double x, complex double z);
+void ewald3_2_sigma_long_Delta_series(complex double *target, double *target_err, int maxn, complex double x,
+	       int xbranch, complex double z);
 
 // General functions acc. to [2], sec. 4.6 – currently valid for 2D and 1D lattices in 3D space
 
