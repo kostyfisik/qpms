@@ -26,11 +26,12 @@
 #endif
 
 #ifndef M_SQRTPI
-#define M_SQRTPI 1.7724538509055160272981674833411452
+#define M_SQRTPI 1.7724538509055160272981674833411452L
 #endif
 
 
 // sloppy implementation of factorial
+// We prefer to avoid tgamma/lgamma, as their errors are about 4+ bits
 static inline double factorial(const int n) {
   assert(n >= 0);
   if (n < 0)
@@ -43,6 +44,44 @@ static inline double factorial(const int n) {
   }
   else 
     return tgamma(n + 1); // hope it's precise and that overflow does not happen
+}
+
+// sloppy implementation of double factorial n!!
+static inline double double_factorial(int n) {
+  assert(n >= 0);
+  if (n <= 25) {
+    double fac = 1;
+    while (n > 0) {
+      fac *= n;
+      n -= 2;
+    }
+    return fac;
+  } else {
+    if (n % 2) { // odd, (2*k - 1)!! = 2**k * Γ(k + 0.5) / sqrt(п)
+      const int k = n / 2 + 1;
+      return pow(2, k) * tgamma(k + 0.5) / M_SQRTPI;
+    } else { // even, n!! = 2**(n/2) * (n/2)!
+      const int k = n/2;
+      return pow(2, k) * factorial(k);
+    }
+  }
+}
+
+// sloppy implementation of (n/2)! = Γ(n/2 + 1)
+// It is _slightly_ more precise than direct call of tgamma for small odd n
+static inline double factorial_of_half(const int n2) {
+  assert(n2 >= 0);
+  if (n2 % 2 == 0) return factorial(n2/2);
+  else {
+    if (n2 <= 50) { // odd, use (k - 0.5)! =  Γ(k + 0.5) = 2**(-k) (2*k - 1)!! sqrt(п) for small n2
+      const int k = n2 / 2 + 1;
+      double fac2 = 1;
+      for(int j = 2*k - 1; j > 0; j -= 2)
+        fac2 *= j;
+      return fac2 * pow(2, -k) * M_SQRTPI;
+    }
+    else return tgamma(1. + 0.5*n2);
+  }
 }
 
 static inline complex double csq(complex double x) { return x * x; }

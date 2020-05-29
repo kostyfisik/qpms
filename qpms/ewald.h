@@ -80,6 +80,34 @@ typedef struct qpms_ewald3_constants_t {
 	 * 2D sum with additional factor of 
 	 * \f$ \sqrt{pi} \kappa \gamma(\abs{\vect{k}+\vect{K}}/\kappa) \f$.
 	 */
+
+	///=============== NEW GENERATION GENERAL 2D-IN-3D, including z != 0 =========================
+	
+	// TODO indexing mechanisms
+	
+	/// The constant factors for the long range part of a 2D Ewald sum.
+	complex double **S1_constfacs; // indices [y][j] where j is same as in [1, (4.5)]
+	/* These are the actual numbers now: (in the EWALD32_CONSTANTS_AGNOSTIC version)
+	 * for m + n EVEN:
+	 *
+	 * s1_constfacs[y(m,n)][x(j,s)] = 
+	 *
+	 *   -2 * I**(n+1) * sqrt(π) * ((n-m)/2)! * ((n+m)/2)! * (-1)**j /   j    \
+	 *   ----------------------------------------------------------- |        |
+	 *              j! * ((n - m - s)/2)! * ((n + m - s)/2)!         \ 2j - s /
+	 *
+	 * for m + n ODD:
+	 *
+	 * s1_constfacs[y(m,n)][j] = 0
+	 */
+	complex double *S1_constfacs_base; ///< Internal pointer holding memory for the 2D Ewald sum constant factors.
+	/// The constant factors for the long range part of a 1D Ewald sum along the \a z axis.
+	/** If the summation points lie along a different direction, use the formula for
+	 * 2D sum with additional factor of 
+	 * \f$ \sqrt{pi} \kappa \gamma(\abs{\vect{k}+\vect{K}}/\kappa) \f$.
+	 */
+
+
 	complex double **s1_constfacs_1Dz; 
 	/* These are the actual numbers now:
 	 * s1_constfacs_1Dz[n][j] =
