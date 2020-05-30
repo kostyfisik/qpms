@@ -90,7 +90,7 @@ typedef struct qpms_ewald3_constants_t {
 	/* These are the actual numbers now: (in the EWALD32_CONSTANTS_AGNOSTIC version)
 	 * for m + n EVEN:
 	 *
-	 * s1_constfacs[y(m,n)][x(j,s)] = 
+	 * S1_constfacs[y(m,n)][x(j,s)] = 
 	 *
 	 *   -2 * I**(n+1) * sqrt(π) * ((n-m)/2)! * ((n+m)/2)! * (-1)**j /   j    \
 	 *   ----------------------------------------------------------- |        |
@@ -98,7 +98,7 @@ typedef struct qpms_ewald3_constants_t {
 	 *
 	 * for m + n ODD:
 	 *
-	 * s1_constfacs[y(m,n)][j] = 0
+	 * S1_constfacs[y(m,n)][j] = 0
 	 */
 	complex double *S1_constfacs_base; ///< Internal pointer holding memory for the 2D Ewald sum constant factors.
 	/// The constant factors for the long range part of a 1D Ewald sum along the \a z axis.

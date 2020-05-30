@@ -233,7 +233,9 @@ For
 \begin_inset Formula 
 \begin{align*}
  & =-\frac{i^{n+1}}{k^{2}\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\\
- & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{n-\left|m\right|}\frac{\Delta_{npq}}{j!}\left(-1\right)^{j}\left(\gamma_{pq}\right)^{2j-1}\sum_{s\overset{*}{=}j}^{\min(2j,n-\left|m\right|)}\binom{j}{2j-s}\frac{\left(-\kappa z\right)^{2j-s}\left(\beta_{pq}/k\right)^{n-s}}{\left(\frac{1}{2}\left(n-m-s\right)\right)!\left(\frac{1}{2}\left(n+m-s\right)\right)!}
+ & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{n-\left|m\right|}\frac{\Delta_{npq}}{j!}\left(-1\right)^{j}\left(\gamma_{pq}\right)^{2j-1}\sum_{s\overset{*}{=}j}^{\min(2j,n-\left|m\right|)}\binom{j}{2j-s}\frac{\left(-\kappa z\right)^{2j-s}\left(\beta_{pq}/k\right)^{n-s}}{\left(\frac{1}{2}\left(n-m-s\right)\right)!\left(\frac{1}{2}\left(n+m-s\right)\right)!}\\
+ & =-\frac{i^{n+1}}{k^{2}\mathscr{A}}\sqrt{\pi}2\left(\left(n-m\right)/2\right)!\left(\left(n+m\right)/2\right)!\\
+ & \times\sum_{\vect K_{pq}\in\Lambda^{*}}^{'}Y_{n}^{m}\left(\frac{\pi}{2},\phi_{\vect{\beta}_{pq}}\right)\sum_{j=0}^{n-\left|m\right|}\Delta_{npq}\left(\gamma_{pq}\right)^{2j-1}\sum_{s\overset{*}{=}j}^{\min(2j,n-\left|m\right|)}\frac{\left(-1\right)^{j}}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa z\right)^{2j-s}\left(\beta_{pq}/k\right)^{n-s}}{\left(\frac{1}{2}\left(n-m-s\right)\right)!\left(\frac{1}{2}\left(n+m-s\right)\right)!}
 \end{align*}
 
 \end_inset

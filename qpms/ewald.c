@@ -155,6 +155,49 @@ qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, cons
       c->s1_constfacs[y] = NULL;
   }
 
+  // -----  New generation 2D-in-3D constants ------
+  // TODO it is not necessary to treat +|m| and -|m| cases separately
+  // N.B. currently, this is only valid for EWALD32_CONSTANTS_AGNOSTIC (NOT CHECKED!)
+  c->S1_constfacs = malloc(c->nelem_sc * sizeof(complex double *));
+  //determine sizes
+  size_t S1_constfacs_sz = 0;
+  for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
+    qpms_l_t n; qpms_m_t m; qpms_y2mn_sc_p(y, &m, &n);
+    const qpms_l_t L_M = n - abs(m);
+    for(qpms_l_t j = 0; j <= L_M; ++j) { // outer sum
+      // inner sum: j <= s <= min(2*j, n - |m|), s has the same parity as n - |m|
+      for(qpms_l_t s = j + (L_M - j) % 2; 
+          (s <= 2 * j) && (s <= L_M);
+          s += 2) {
+        ++S1_constfacs_sz;
+      }
+    }
+  }
+  c->S1_constfacs_base = malloc(S1_constfacs_sz * sizeof(complex double));
+  size_t S1_constfacs_sz_cumsum = 0; // second count
+  for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
+    qpms_l_t n; qpms_m_t m; qpms_y2mn_sc_p(y, &m, &n);
+    const complex double yfactor = -2 * ipow(n+1) * M_SQRTPI  
+              * factorial((n-m)/2) * factorial((n+m)/2);
+    c->S1_constfacs[y] = c->s1_constfacs_base + S1_constfacs_sz_cumsum;
+    size_t coeffs_per_y = 0;
+    const qpms_l_t L_M = n - abs(m);
+    for(qpms_l_t j = 0; j <= L_M; ++j) { // outer sum
+      // inner sum: j <= s <= min(2*j, n - |m|), s has the same parity as n - |m|
+      for(qpms_l_t s = j + (L_M - j) % 2; 
+          (s <= 2 * j) && (s <= L_M);
+          s += 2) {
+        c->S1_constfacs_base[S1_constfacs_sz_cumsum] = 
+             yfactor * min1pow(j) 
+             / factorial(2*j-s) / factorial(s - j) 
+             / factorial_of_half(n - m - s) / factorial_of_half(n + m - s);
+        ++S1_constfacs_sz_cumsum;
+      }
+    }
+    S1_constfacs_sz_cumsum += coeffs_per_y;
+  }
+  QPMS_ASSERT(S1_constfacs_sz_cumsum = S1_constfacs_sz);
+
   // ------ the "z-axis constants" -----
   // determine sizes
   size_t s1_constfacs_1Dz_sz;
