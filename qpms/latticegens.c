@@ -942,3 +942,70 @@ const PGenClassInfo PGen_LatticeRadialHeap3D = {
 };
 
 
+//==== PGen_shifted ====
+// Meta-generator that takes another generator and generates points shifted by a constant
+
+extern const PGenClassInfo PGen_shifted; // forward declaration needed by constructor (may be placed in header file instead)
+
+// Internal state structure
+typedef struct PGen_shifted_StateData {
+  PGen orig;
+  cart3_t shift;
+} PGen_shifted_StateData;
+
+// Constructor
+PGen PGen_shifted_new(PGen orig, cart3_t shift) {
+  PGen_shifted_StateData *s = malloc(sizeof(PGen_shifted_StateData));
+  s->shift = shift;
+  s->orig = orig;
+  PGen g = {&PGen_shifted, (void *) s};
+  return g;
+}
+
+// Dectructor
+void PGen_shifted_destructor(PGen *g) {
+  PGen_shifted_StateData *s = g->stateData;
+  if(s->orig.stateData) PGen_destroy(&(s->orig));
+  free(g->stateData);
+  g->stateData = NULL;
+}
+
+// Extractor, 3D cartesian coordinate output
+PGenCart3ReturnData PGen_shifted_next_cart3(PGen *g) {
+  if (g->stateData == NULL) // already destroyed
+    return PGenCart3DoneVal;
+  else {
+    PGen_shifted_StateData *s = (PGen_shifted_StateData *) g->stateData;
+    PGenCart3ReturnData retdata = PGen_next_cart3(&(s->orig));
+    if ((retdata.flags & PGEN_NOTDONE)) {
+      retdata.point_cart3 = cart3_add(retdata.point_cart3, s->shift);
+      retdata.flags = PGEN_COORDS_CART3 | PGEN_NOTDONE; //TODO more advanced flags?
+      return retdata;
+    } else {
+      PGen_destroy(g);
+      return retdata;
+    }
+  }
+}
+
+// Class metadata structure; TODO maybe this can rather be done by macro.
+const PGenClassInfo PGen_shifted = {
+  "PGen_shifted",
+  3, //dimensionality
+  PGEN_COORDS_CART3, // native coordinate system
+  // some of the _next_... fun pointers can be NULL
+  NULL, //PGen_shifted_next,
+  NULL, //PGen_shifted_next_z,
+  NULL, //PGen_shifted_next_pol,
+  PGen_next_sph_from_cart3, //PGen_shifted_next_sph,
+  NULL, //PGen_shifted_next_cart2,
+  PGen_shifted_next_cart3, // native
+  NULL, //PGen_shifted_fetch,
+  NULL, //PGen_shifted_fetch_z,
+  NULL, //PGen_shifted_fetch_pol,
+  NULL, //PGen_shifted_fetch_sph,
+  NULL, //PGen_shifted_fetch_cart2,
+  NULL, //PGen_shifted_fetch_cart3, // TODO at least this
+  PGen_shifted_destructor
+};
+

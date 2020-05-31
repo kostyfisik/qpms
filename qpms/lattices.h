@@ -635,6 +635,10 @@ PGen PGen_LatticeRadialHeap3D_new(const cart3_t *b1, const cart3_t *b2, const ca
 	       	const cart3_t *offset, double minR, bool inc_minR, double maxR, bool inc_maxR);
 
 
+/// A metagenerator generating points from another generator shifted by a constant.
+extern const PGenClassInfo PGen_shifted;
+PGen PGen_shifted_new(PGen orig, cart3_t shift);
+
 /*
  * THE NICE PART (adaptation of lattices2d.py)
  * ===========================================
