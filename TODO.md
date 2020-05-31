@@ -1,11 +1,12 @@
-TODO list before public release
-===============================
+TODO list before 1.0 release
+============================
 
 - Tests!
 - Docs!
-- Cross section calculations.
-- Field calculations.
-- Complex frequencies, n's, k's.
+- Cross section calculations. (Done in some Python scripts.)
+- Field calculations. (Partly done, needs more testing.)
+  * Also test periodic vs. nonperiodic consistence (big finite lattice + absorbing medium vs. infinite lattice + absorbing medium).
+- Complex frequencies, n's, k's. (Mostly done.)
 - Transforming point (meta)generators.
 - Check whether moble's quaternions and my 
   quaternions give the same results in tmatrices.py

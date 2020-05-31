@@ -158,7 +158,7 @@ qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, cons
   // -----  New generation 2D-in-3D constants ------
   // TODO it is not necessary to treat +|m| and -|m| cases separately
   // N.B. currently, this is only valid for EWALD32_CONSTANTS_AGNOSTIC (NOT CHECKED!)
-  c->S1_constfacs = malloc(c->nelem_sc * sizeof(complex double *));
+  c->S1_constfacs = malloc((1+c->nelem_sc) * sizeof(complex double *));
   //determine sizes
   size_t S1_constfacs_sz = 0;
   for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
@@ -173,13 +173,14 @@ qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, cons
       }
     }
   }
+
   c->S1_constfacs_base = malloc(S1_constfacs_sz * sizeof(complex double));
   size_t S1_constfacs_sz_cumsum = 0; // second count
   for (qpms_y_t y = 0; y < c->nelem_sc; ++y) {
     qpms_l_t n; qpms_m_t m; qpms_y2mn_sc_p(y, &m, &n);
     const complex double yfactor = -2 * ipow(n+1) * M_SQRTPI  
               * factorial((n-m)/2) * factorial((n+m)/2);
-    c->S1_constfacs[y] = c->s1_constfacs_base + S1_constfacs_sz_cumsum;
+    c->S1_constfacs[y] = c->S1_constfacs_base + S1_constfacs_sz_cumsum;
     size_t coeffs_per_y = 0;
     const qpms_l_t L_M = n - abs(m);
     for(qpms_l_t j = 0; j <= L_M; ++j) { // outer sum
@@ -197,6 +198,7 @@ qpms_ewald3_constants_t *qpms_ewald3_constants_init(const qpms_l_t lMax /*, cons
     S1_constfacs_sz_cumsum += coeffs_per_y;
   }
   QPMS_ASSERT(S1_constfacs_sz_cumsum = S1_constfacs_sz);
+  c->S1_constfacs[c->nelem_sc] = c->S1_constfacs_base + S1_constfacs_sz; // For easier limit checks
 
   // ------ the "z-axis constants" -----
   // determine sizes
@@ -246,6 +248,8 @@ void qpms_ewald3_constants_free(qpms_ewald3_constants_t *c) {
   free(c->legendre_minus1);
   free(c->s1_constfacs);
   free(c->s1_constfacs_base);
+  free(c->S1_constfacs);
+  free(c->S1_constfacs_base);
   free(c->s1_constfacs_1Dz_base);
   free(c->s1_constfacs_1Dz);
   free(c->s1_jMaxes);
@@ -347,7 +351,7 @@ int ewald3_21_xy_sigma_long (
   double Gamma_pq_err[lMax/2+1];
 
   // CHOOSE POINT BEGIN
-  // TODO mayby PGen_next_sph is not the best coordinate system choice here
+  // TODO maybe PGen_next_sph is not the best coordinate system choice here
   while ((pgen_retdata = PGen_next_sph(pgen_K)).flags & PGEN_NOTDONE) { // BEGIN POINT LOOP
     cart3_t K_pq_cart;
     sph_t beta_pq_sph;
@@ -407,31 +411,62 @@ int ewald3_21_xy_sigma_long (
     // and just fetched for each n, m pair
     for(qpms_l_t n = 0; n <= lMax; ++n)
       for(qpms_m_t m = -n; m <= n; ++m) {
-        if((m+n) % 2 != 0) // odd coefficients are zero.
+        if((particle_shift.z == 0) && ((m+n) % 2 != 0)) // odd coefficients are zero.
           continue;
         const qpms_y_t y = qpms_mn2y_sc(m, n);
+        size_t constidx = 0; // constants offset
         const complex double e_imalpha_pq = cexp(I*m*arg_pq);
-        complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
-        double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
-        assert((n-abs(m))/2 == c->s1_jMaxes[y]);
-        for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
-          complex double summand = cpow_0lim_zi(rbeta_pq/k, n-2*j)
-            * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
-            * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
-            * c->s1_constfacs[y][j];
-          if(err) {
-            // FIXME include also other errors than Gamma_pq's relative error
-             kahanadd(&jsum_err, &jsum_err_c, Gamma_pq_err[j] * cabs(summand));
+          complex double jsum, jsum_c; ckahaninit(&jsum, &jsum_c);
+          double jsum_err, jsum_err_c; kahaninit(&jsum_err, &jsum_err_c); // TODO do I really need to kahan sum errors?
+        if (particle_shift.z == 0) { // TODO remove when the general case is stable and tested
+          assert((n-abs(m))/2 == c->s1_jMaxes[y]);
+          for(qpms_l_t j = 0; j <= c->s1_jMaxes[y]/*(n-abs(m))/2*/; ++j) { // FIXME </<= ?
+            complex double summand = cpow_0lim_zi(rbeta_pq/k, n-2*j)
+              * e_imalpha_pq  * c->legendre0[gsl_sf_legendre_array_index(n,abs(m))] * min1pow_m_neg(m) // This line can actually go outside j-loop
+              * cpow(gamma_pq, 2*j-1) // * Gamma_pq[j] bellow (GGG) after error computation
+              * c->s1_constfacs[y][j];
+            if(err) {
+              // FIXME include also other errors than Gamma_pq's relative error
+               kahanadd(&jsum_err, &jsum_err_c, Gamma_pq_err[j] * cabs(summand));
+            }
+            summand *= Gamma_pq[j]; // GGG
+            ckahanadd(&jsum, &jsum_c, summand);
           }
-          summand *= Gamma_pq[j]; // GGG
-          ckahanadd(&jsum, &jsum_c, summand);
-        }
-        jsum *= phasefac * factor1d; // PFC
-        ckahanadd(target + y, target_c + y, jsum);
+          jsum *= phasefac * factor1d; // PFC
+          ckahanadd(target + y, target_c + y, jsum);
 #ifdef EWALD_AUTO_CUTOFF
-        kahanadd(&lsum, &lsum_c, cabs(jsum));
+          kahanadd(&lsum, &lsum_c, cabs(jsum));
 #endif
-        if(err) kahanadd(err + y, err_c + y, jsum_err);
+          if(err) kahanadd(err + y, err_c + y, jsum_err);
+        } else { // particle_shift.z != 0
+          const qpms_l_t L_M = n - abs(m);
+          for(qpms_l_t j = 0; j <= L_M; ++j) { // outer sum
+            complex double ssum, ssum_c; ckahaninit(&ssum, &ssum_c);
+            // TODO errors of ssum
+            // inner sum: j <= s <= min(2*j, n - |m|), s has the same parity as n - |m|
+            for(qpms_l_t s = j + (L_M - j) % 2;
+                (s <= 2 * j) && (s <= L_M);
+                s += 2) {
+              complex double ssummand = c->S1_constfacs[y][constidx]
+                * cpow(-k * particle_shift.z, 2*j - s) * cpow_0lim_zi(rbeta_pq / k, n - s);
+              ckahanadd(&ssum, &ssum_c, ssummand);
+              ++constidx;
+            }
+            const complex double jfactor = e_imalpha_pq * Gamma_pq[j] * cpow(gamma_pq, 2*j - 1);
+            if (err) { // FIXME include also other sources of error than Gamma_pq's relative error
+              double jfactor_err = Gamma_pq_err[j] * pow(cabs(gamma_pq), 2*j - 1);
+              kahanadd(&jsum_err, &jsum_err_c, jfactor_err * ssum);
+            }
+            complex double jsummand = jfactor * ssum;
+            ckahanadd(&jsum, &jsum_c, jsummand);
+          }
+          jsum *= phasefac; // factor1d not here, off-axis sums not implemented/allowed.
+          ckahanadd(target + y, target_c + y, jsum);
+#ifdef EWALD_AUTO_CUTOFF
+          kahanadd(&lsum, &lsum_c, cabs(jsum));
+#endif
+          if(err) kahanadd(err + y, err_c + y, jsum_err);
+        }
       }
 #ifndef NDEBUG
     rbeta_pq_prev = rbeta_pq;

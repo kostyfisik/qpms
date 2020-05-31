@@ -703,6 +703,8 @@ cdef extern from "scatsystem.h":
             const cdouble *f_excitation_vector_full, cart3_t where)
     ccart3_t qpms_scatsysw_scattered_E__alt(const qpms_scatsys_at_omega_t *ssw, qpms_bessel_t btyp,
             const cdouble *f_excitation_vector_full, cart3_t where)
+    ccart3_t qpms_scatsyswk_scattered_E(const qpms_scatsys_at_omega_k_t *sswk, qpms_bessel_t btyp,
+            const cdouble *f_excitation_vector_full, cart3_t where)
     double qpms_ss_adjusted_eta(const qpms_scatsys_t *ss, cdouble wavenumber, const double *wavevector);
 
 

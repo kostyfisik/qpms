@@ -159,10 +159,10 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
 		complex double *Adest, double *Aerr,
 		complex double *Bdest, double *Berr,
 		const ptrdiff_t deststride, const ptrdiff_t srcstride,
-		const double eta, const complex double k,
+		const double eta, const complex double wavenumber,
 		cart2_t b1, cart2_t b2,
 		const cart2_t beta,
-		const cart2_t particle_shift,
+		const cart3_t particle_shift,
 		double maxR, double maxK
 		);
 
@@ -170,10 +170,10 @@ int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
 		complex double *Adest, double *Aerr,
 		complex double *Bdest, double *Berr,
 		const ptrdiff_t deststride, const ptrdiff_t srcstride,
-		const double eta, const complex double k,
+		const double eta, const complex double wavenumber,
 		cart2_t b1, cart2_t b2,
 		const cart2_t beta,
-		const cart2_t particle_shift,
+		const cart3_t particle_shift,
 		double maxR, double maxK,
 		qpms_ewald_part parts
 		);
@@ -185,10 +185,10 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculat
 		const qpms_vswf_set_spec_t *destspec, size_t deststride,
 		/// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm. 
 		const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-		const double eta, const complex double k,
+		const double eta, const complex double wavenumber,
 		cart2_t b1, cart2_t b2,
 		const cart2_t beta,
-		const cart2_t particle_shift,
+		const cart3_t particle_shift,
 		double maxR, double maxK
 		);
 
@@ -198,10 +198,10 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32_e(const qpms_trans_calcul
 		const qpms_vswf_set_spec_t *destspec, size_t deststride,
 		/// Must be srcspec->lMax <= c-> lMax && srcspec->norm == c->norm. 
 		const qpms_vswf_set_spec_t *srcspec, size_t srcstride,
-		const double eta, const complex double k,
+		const double eta, const complex double wavenumber,
 		cart2_t b1, cart2_t b2,
 		const cart2_t beta,
-		const cart2_t particle_shift,
+		const cart3_t particle_shift,
 		double maxR, double maxK,
 		qpms_ewald_part parts
 		);

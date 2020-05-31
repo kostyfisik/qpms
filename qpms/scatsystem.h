@@ -708,7 +708,9 @@ complex double *qpms_scatsys_incident_field_vector_irrep_packed(
  * 
  * \see qpms_scatsysw_scattered_E()
  *
- * Not yet implemented for periodic systems.
+ * \see qpms_scatsyswk_scattered_E() for periodic systems.
+ *
+ * 
  */
 ccart3_t qpms_scatsys_scattered_E(
 		const qpms_scatsys_t *ss,
@@ -727,7 +729,7 @@ ccart3_t qpms_scatsys_scattered_E(
  * 
  * \see qpms_scatsys_scattered_E()
  *
- * Not yet implemented for periodic systems.
+ * \see qpms_scatsyswk_scattered_E() for periodic systems.
  */
 ccart3_t qpms_scatsysw_scattered_E(
 		const qpms_scatsys_at_omega_t *ssw,
@@ -764,6 +766,25 @@ ccart3_t qpms_scatsys_scattered_E__alt(
  */
 ccart3_t qpms_scatsysw_scattered_E__alt(
 		const qpms_scatsys_at_omega_t *ssw,
+		qpms_bessel_t typ, ///< Bessel function kind to use (for scattered fields, use QPMS_HANKEL_PLUS).
+		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
+		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.
+		);
+
+
+/// Evaluates scattered electric field at a point, given a full vector of scattered field coefficients. (Periodic system.)
+/**
+ * This function evaluates the field \f$ \vect E (\vect r ) \f$, with any 
+ * given vector of the excitation coefficients \f$ \wckcout \f$.
+ *
+ * \return Complex electric field at the point defined by \a evalpoint.
+ *
+ * \bug Currently implemented only for btyp == QPMS_HANKEL_PLUS.
+ *
+ * \see qpms_scatsys_scattered_E(), qpms_scatsysw_scattered_E() for finite systems.
+ */
+ccart3_t qpms_scatsyswk_scattered_E(
+		const qpms_scatsys_at_omega_k_t *sswk,
 		qpms_bessel_t typ, ///< Bessel function kind to use (for scattered fields, use QPMS_HANKEL_PLUS).
 		const complex double *scatcoeff_full, ///< Full vector of the scattered field coefficients \f$ \wckcout \f$.
 		cart3_t evalpoint ///< A point \f$ \vect r \f$, at which the field is evaluated.

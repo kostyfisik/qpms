@@ -970,6 +970,30 @@ cdef class _ScatteringSystemAtOmegaK:
             return self.sswk.eta
         def __set__(self, double eta):
             self.sswk.eta = eta
+    
+    def scattered_E(self, scatcoeffvector_full, evalpos, btyp=QPMS_HANKEL_PLUS): # TODO DOC!!!
+        if(btyp != QPMS_HANKEL_PLUS):
+            raise NotImplementedError("Only first kind Bessel function-based fields are supported")
+        cdef qpms_bessel_t btyp_c = BesselType(btyp)
+        evalpos = np.array(evalpos, dtype=float, copy=False)
+        if evalpos.shape[-1] != 3:
+            raise ValueError("Last dimension of evalpos has to be 3")
+        cdef np.ndarray[double,ndim=2] evalpos_a = evalpos.reshape(-1,3)
+        cdef np.ndarray[dtype=complex, ndim=1] scv = np.array(scatcoeffvector_full, copy=False)
+        cdef cdouble[::1] scv_view = scv
+        cdef np.ndarray[complex, ndim=2] results = np.empty((evalpos_a.shape[0],3), dtype=complex)
+        cdef ccart3_t res
+        cdef cart3_t pos
+        cdef size_t i
+        for i in range(evalpos_a.shape[0]):
+            pos.x = evalpos_a[i,0]
+            pos.y = evalpos_a[i,1]
+            pos.z = evalpos_a[i,2]
+            res = qpms_scatsyswk_scattered_E(&self.sswk, btyp_c, &scv_view[0], pos)
+            results[i,0] = res.x
+            results[i,1] = res.y
+            results[i,2] = res.z
+        return results.reshape(evalpos.shape)
 
 cdef class _ScatteringSystemAtOmega:
     '''

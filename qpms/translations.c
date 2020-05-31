@@ -730,7 +730,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32_e(const qpms_trans_calcul
     const double eta, const complex double k,
     cart2_t b1, cart2_t b2,
     const cart2_t beta,
-    const cart2_t particle_shift,
+    const cart3_t particle_shift,
     double maxR, double maxK,
     const qpms_ewald_part parts
     )
@@ -784,7 +784,7 @@ qpms_errno_t qpms_trans_calculator_get_trans_array_e32(const qpms_trans_calculat
     const double eta, const complex double k,
     cart2_t b1, cart2_t b2,
     const cart2_t beta,
-    const cart2_t particle_shift,
+    const cart3_t particle_shift,
     double maxR, double maxK
     )
 {
@@ -931,7 +931,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
     const double eta, const complex double k,
     const cart2_t b1, const cart2_t b2,
     const cart2_t beta,
-    const cart2_t particle_shift,
+    const cart3_t particle_shift,
     double maxR, double maxK,
     const qpms_ewald_part parts
     )
@@ -940,7 +940,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
   const qpms_y_t nelem2_sc = qpms_lMax2nelem_sc(c->e3c->lMax);
   //const qpms_y_t nelem = qpms_lMax2nelem(c->lMax);
   const bool doerr = Aerr || Berr;
-  const bool do_sigma0 = ((particle_shift.x == 0) && (particle_shift.y == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
+  const bool do_sigma0 = ((particle_shift.x == 0) && (particle_shift.y == 0) && (particle_shift.z == 0)); // FIXME ignoring the case where particle_shift equals to lattice vector
 
   complex double *sigmas_short = malloc(sizeof(complex double)*nelem2_sc);
   complex double *sigmas_long = malloc(sizeof(complex double)*nelem2_sc);
@@ -972,7 +972,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
 #else
           false,
 #endif
-          cart22cart3xy(beta), cart22cart3xy(particle_shift)));
+          cart22cart3xy(beta), particle_shift));
     if(Kgen.stateData) // PGen not consumed entirely (converged earlier)
       PGen_destroy(&Kgen);
   }
@@ -980,11 +980,18 @@ int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
   if (parts & QPMS_EWALD_SHORT_RANGE) {
     PGen Rgen = PGen_xyWeb_new(b1, b2, BASIS_RTOL, 
 #ifdef GEN_RSHIFTEDPOINTS
-        cart2_scale(-1 /*CHECKSIGN*/, particle_shift),
+        cart2_scale(-1 /*CHECKSIGN*/, cart3xy2cart2(particle_shift)),
 #else
         CART2_ZERO,
 #endif
         0, !do_sigma0, maxR, false);
+#ifdef GEN_RSHIFTEDPOINTS // rather ugly hacks, LPTODO cleanup
+    if (particle_shift.z != 0) {
+      const cart3_t zshift = {0, 0, -particle_shift.z /*CHECKSIGN*/}; 
+      Rgen = Pgen_shifted_new(Rgen, zshift);
+    }
+#endif
+
 
     QPMS_ENSURE_SUCCESS(ewald3_sigma_short(sigmas_short, serr_short, c->e3c, eta, k,
           LAT_2D_IN_3D_XYONLY, &Rgen, 
@@ -993,7 +1000,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
 #else
           false,
 #endif
-          cart22cart3xy(beta), cart22cart3xy(particle_shift)));
+          cart22cart3xy(beta), particle_shift));
 
     if(Rgen.stateData) // PGen not consumed entirely (converged earlier)
       PGen_destroy(&Rgen);
@@ -1078,7 +1085,7 @@ int qpms_trans_calculator_get_AB_arrays_e32(const qpms_trans_calculator *c,
     const double eta, const complex double k,
     const cart2_t b1, const cart2_t b2,
     const cart2_t beta,
-    const cart2_t particle_shift,
+    const cart3_t particle_shift,
     double maxR, double maxK) 
 {
   return qpms_trans_calculator_get_AB_arrays_e32_e(
