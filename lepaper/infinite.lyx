@@ -184,16 +184,16 @@ noprefix "false"
 \begin_inset Formula $\alpha$
 \end_inset
 
- from set 
+ from a set 
 \begin_inset Formula $\mathcal{P}_{1}$
 \end_inset
 
- and (relative) positions inside the unit cell 
+ and (relative) positions 
 \begin_inset Formula $\vect r_{\alpha}$
 \end_inset
 
-; any particle of the periodic system can thus be labeled by a multiindex
- from 
+ inside the unit cell; any particle of the periodic system can thus be labeled
+ by a multiindex from 
 \begin_inset Formula $\mathcal{P}=\ints^{d}\times\mathcal{P}_{1}$
 \end_inset
 
@@ -303,8 +303,8 @@ W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\b
 
 \end_inset
 
-evaluation of which is possible but quite non-trivial due to the infinite
- lattice sum, so we explain it separately in Sect.
+evaluation of which is possible but rather non-trivial due to the infinite
+ lattice sum, so we cover it separately in Sect.
  
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -439,17 +439,7 @@ noprefix "false"
 
 , w.r.t.
  the distance; the gain might then balance the losses in particles, resulting
- in propagating 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-lepší slovo
-\end_layout
-
-\end_inset
-
-modes satisfying eq.
+ in sustained modes satisfying eq.
  
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -846,7 +836,8 @@ reference "eq:W definition"
 
 \end_inset
 
- is the asymptotic behaviour of the translation operator, 
+ is the asymptotic behaviour of the translation operator at large distances,
+ 
 \begin_inset Formula $\tropsp{\vect 0,\alpha}{\vect m,\beta}\sim\left|\vect R_{\vect m}\right|^{-1}e^{i\kappa\left|\vect R_{\vect m}\right|}$
 \end_inset
 
@@ -884,8 +875,13 @@ Note that
 
 \end_inset
 
- The problem of poorly converging lattice sums has been originally solved
- for electrostatic potentials with Ewald summation 
+ The problem of poorly converging lattice sums can be solved by decomposing
+ the lattice-summed function into two parts: a short-range part that decays
+ fast and can be summed directly, and a long-range part which decays poorly
+ but is fairly smooth everywhere, so that its Fourier transform decays fast
+ enough, and to deal with the long range part by Poisson summation over
+ the reciprocal lattice.
+ This idea dates back to Ewald 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ewald_berechnung_1921"
@@ -893,18 +889,74 @@ literal "false"
 
 \end_inset
 
+ who solved the problem for electrostatic potentials (Green's functions
+ for Laplace's equation).
+ For linear electrodynamic problems, ruled by Helmholtz equation, the same
+ basic idea can be used as well, resulting in exponentially convergent summation
+ formulae, but the technical details are considerably more complicated than
+ in electrostatics.
+ For the scalar Helmholtz equation in three dimensions, the formulae were
+ developed by Ham & Segall 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ham_energy_1961"
+literal "false"
+
+\end_inset
+
+ for 3D periodicity, Kambe 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kambe_theory_1967,kambe_theory_1967-1,kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+ for 2D periodicity and Moroz 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "moroz_quasi-periodic_2006"
+literal "false"
+
+\end_inset
+
+ for 1D periodicity.
+ A review of these methods can be found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
 .
- Its basic idea is to decompose the lattice-summed function in two parts:
- a short-range part that decays fast and can be summed directly, and a long-rang
-e part which decays poorly but is fairly smooth everywhere, so that its
- Fourier transform decays fast enough, and to deal with the long range part
- by Poisson summation over the reciprocal lattice.
- The same idea can be used also in the case of linear electrodynamic problems,
- just the technical details are more complicated than in electrostatics.
+ We will not rederive the formulae here, but for reference, we restate the
+ results in a form independent upon the normalisation and phase conventions
+ for spherical harmonic bases (pointing out some errors in the aforementioned
+ literature) and discuss some practical aspects of the numerical evaluation.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Tady ještě upřesnit, co vlastně dělám.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-In eq.
+We note that the lattice sums for 
+\emph on
+scalar
+\emph default
+ Helmholtz equation are enough for the evaluation of the translation operator
+ lattice sum 
+\begin_inset Formula $W_{\alpha\beta}(\vect k)$
+\end_inset
+
+: in eq.
  
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -916,35 +968,19 @@ noprefix "false"
 \end_inset
 
  we demonstratively expressed the translation operator elements as linear
- combinations of (outgoing) scalar spherical wavefunctions 
+ combinations of (outgoing) 
+\emph on
+scalar
+\emph default
+ spherical wavefunctions 
 \begin_inset Formula 
 \begin{equation}
-\sswfoutlm lm\left(\vect r\right)=h_{l}^{\left(1\right)}\left(r\right)\ush lm\left(\uvec r\right),\label{eq:scalar spherical wavefunctions}
+\sswfoutlm lm\left(\vect r\right)=h_{l}^{\left(1\right)}\left(r\right)\ush lm\left(\uvec r\right).\label{eq:scalar spherical wavefunctions}
 \end{equation}
 
 \end_inset
 
- because for them, fortunately, exponentially convergent Ewald-type summation
- techniques have been developed 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-add refs
-\end_layout
-
-\end_inset
-
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "moroz_quasi-periodic_2006,linton_one-_2009,linton_lattice_2010,kambe_theory_1967,kambe_theory_1967-1,kambe_theory_1968"
-literal "false"
-
-\end_inset
-
- and can be applied to our case.
- If we formally label 
+If we formally label 
 \begin_inset Note Note
 status open
 
@@ -1062,72 +1098,7 @@ For reader's reference, we list the Ewald-type formulae for lattice sums
 
  rewritten in a way that is independent on particular phase or normalisation
  conventions of vector spherical harmonics.
- The derivations of these formulae can otherwise be
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-except for eq.
- xxx todo
-\end_layout
-
-\end_inset
-
- found in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "moroz_quasi-periodic_2006,linton_lattice_2010"
-literal "false"
-
-\end_inset
-
-.
  
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset citation
-LatexCommand cite
-key "linton_lattice_2010"
-literal "false"
-
-\end_inset
-
- (case 
-\begin_inset Formula $\vect s=0$
-\end_inset
-
-, all lattice dimensionalities), 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kambe_theory_1968"
-literal "false"
-
-\end_inset
-
- (
-\begin_inset Formula $d=2$
-\end_inset
-
-) , 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "moroz_quasi-periodic_2006"
-literal "false"
-
-\end_inset
-
- (
-\begin_inset Formula $d=1$
-\end_inset
-
-)
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1239,8 +1210,8 @@ Poznámka ohledně zahození radiální části u kulových fcí?
 \end_layout
 
 \begin_layout Standard
-The explicit form of the long-range part of Ewald sum depends on the lattice
- dimensionality.
+The explicit form of the long-range part of the lattice sum depends on the
+ lattice dimensionality.
  The long-range parts are calculated as sums over the reciprocal lattice
  
 \begin_inset Formula $\Lambda^{*}$
@@ -1263,7 +1234,7 @@ The explicit form of the long-range part of Ewald sum depends on the lattice
 \end_layout
 
 \begin_layout Standard
-For case 
+If 
 \begin_inset Formula $d=3$
 \end_inset
 
@@ -1285,8 +1256,8 @@ regardless of chosen coordinate axes.
 \end_layout
 
 \begin_layout Standard
-For cases 
-\begin_inset Formula $d=1,2$
+If 
+\begin_inset Formula $d=2$
 \end_inset
 
 , reasonable explicit forms assume that the lattice lies inside the 
@@ -1323,11 +1294,11 @@ noprefix "false"
 
 \end_inset
 
- Moreover, we require that the component of 
+ The component of 
 \begin_inset Formula $\vect s$
 \end_inset
 
- normal to the lattice is parallel to the 
+ normal to the lattice is then parallel to the 
 \begin_inset Formula $z$
 \end_inset
 
@@ -1335,11 +1306,7 @@ noprefix "false"
 \begin_inset Formula $\vect s=\vect s_{\parallel}+\vect s_{\perp}=\vect s_{\parallel}+s_{\perp}\uvec z$
 \end_inset
 
- (this holds automatically for 
-\begin_inset Formula $d=2$
-\end_inset
-
-).
+ .
  With these assumptions
 \begin_inset Note Note
 status open
@@ -1357,14 +1324,49 @@ FP: check sign of
 
 \begin_inset Formula 
 \begin{multline}
-\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
-\times\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{2}\mathcal{A}}\pi^{3/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{l-\left|m\right|}\left(-1\right)^{j}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+1}\Delta_{j}\left(\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}},-i\kappa\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)s_{\perp}\right)\times\\
+\times\sum_{\begin{array}{c}
+s\\
+j\le s\le\min\left(2j,l-\left|m\right|\right)\\
+l-n+\left|m\right|\,\mathrm{even}
+\end{array}}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D}
 \end{multline}
 
 \end_inset
 
-and if the normal component 
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{multline}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
+\times\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D-1}
+\end{multline}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+where 
+\begin_inset Formula $\gamma\left(z\right)=\left(z^{2}-1\right)^{\frac{1}{2}}$
+\end_inset
+
+ and 
+\begin_inset Formula 
+\[
+\Delta_{j}\left(x,z\right)=\int_{x}^{\infty}t^{\frac{-1}{2}-n}\exp\left(-t+\frac{z^{2}}{4t}\right)\ud t
+\]
+
+\end_inset
+
+ and if the normal component 
 \begin_inset Formula $s_{\perp}$
 \end_inset
 
