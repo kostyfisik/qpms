@@ -994,7 +994,7 @@ int qpms_trans_calculator_get_AB_arrays_e32_e(const qpms_trans_calculator *c,
 
 
     QPMS_ENSURE_SUCCESS(ewald3_sigma_short(sigmas_short, serr_short, c->e3c, eta, k,
-          LAT_2D_IN_3D_XYONLY, &Rgen, 
+          particle_shift.z ? LAT_2D_IN_3D : LAT_2D_IN_3D_XYONLY, &Rgen, 
 #ifdef GEN_RSHIFTEDPOINTS
           true,
 #else
