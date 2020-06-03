@@ -451,7 +451,12 @@ noprefix "false"
 \end_inset
 
 .
- The gain in the system introduces some challenges, which we will discuss
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The gain in the system introduces some challenges, which we will discuss
  in Section 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -463,6 +468,11 @@ noprefix "false"
 \end_inset
 
 .
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -628,16 +638,17 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-An alternative, more robust approach to generic minimisation algorithms
- is Beyn's contour integral method 
+An alternative, faster and more robust approach to generic minimisation
+ algorithms are eigensolvers for nonlinear eigenvalue problems based on
+ contour integration 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "beyn_integral_2012"
+key "beyn_integral_2012,gavin_feast_2018"
 literal "false"
 
 \end_inset
 
- which finds the roots of 
+ which are able to find the roots of 
 \begin_inset Formula $M\left(\omega,\vect k\right)=0$
 \end_inset
 
@@ -753,7 +764,7 @@ empty
  as defined in 
 \begin_inset CommandInset ref
 LatexCommand eqref
-reference "eq:lilgamma"
+reference "eq:lilgamma_old"
 plural "false"
 caps "false"
 noprefix "false"
@@ -1091,7 +1102,24 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-For reader's reference, we list the Ewald-type formulae for lattice sums
+The lattice sums 
+\begin_inset Formula $\sigma_{l,m}\left(\vect k,\vect s\right)$
+\end_inset
+
+ are related to what is also called 
+\emph on
+structural constants
+\emph default
+ in some literature 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kambe_theory_1967,kambe_theory_1967-1,kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+, but the phase and normalisation differ.
+ For reader's reference, we list the Ewald-type formulae for lattice sums
  
 \begin_inset Formula $\sigma_{l,m}\left(\vect k,\vect s\right)$
 \end_inset
@@ -1129,7 +1157,7 @@ FP: Check sign of s
 \begin_inset Formula 
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{\kappa^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\\
-\times\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-\kappa/4\xi^{2}}\xi^{2l}\ud\xi\\
+\times\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-\kappa^{2}/4\xi^{2}}\xi^{2l}\ud\xi\\
 +\delta_{\vect{R_{n}},-\vect s}\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa^{2}}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right).\label{eq:Ewald in 3D short-range part}
 \end{multline}
 
@@ -1210,6 +1238,32 @@ Poznámka ohledně zahození radiální části u kulových fcí?
 \end_layout
 
 \begin_layout Standard
+In practice, the integrals in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D short-range part"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ can be easily evaluated by numerical quadrature and the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+-functions using the series or continued fraction representations from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 The explicit form of the long-range part of the lattice sum depends on the
  lattice dimensionality.
  The long-range parts are calculated as sums over the reciprocal lattice
@@ -1221,7 +1275,11 @@ The explicit form of the long-range part of the lattice sum depends on the
 \begin_inset Formula $\left\{ \vect b_{i}\right\} _{i=1}^{d}$
 \end_inset
 
- lying in the same subspace as the direct lattice vectors 
+ lying in the same 
+\begin_inset Formula $d$
+\end_inset
+
+-dimensional subspace as the direct lattice vectors 
 \begin_inset Formula $\left\{ \vect a_{i}\right\} _{i=1}^{d}$
 \end_inset
 
@@ -1233,12 +1291,15 @@ The explicit form of the long-range part of the lattice sum depends on the
  
 \end_layout
 
-\begin_layout Standard
-If 
+\begin_layout Paragraph
+Case 
 \begin_inset Formula $d=3$
 \end_inset
 
-,
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\frac{\left(\left|\vect k+\vect K\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right)\label{eq:Ewald in 3D long-range part 3D}
@@ -1255,12 +1316,16 @@ regardless of chosen coordinate axes.
  cases).
 \end_layout
 
-\begin_layout Standard
-If 
+\begin_layout Paragraph
+Case 
 \begin_inset Formula $d=2$
 \end_inset
 
-, reasonable explicit forms assume that the lattice lies inside the 
+
+\end_layout
+
+\begin_layout Standard
+Reasonable explicit forms assume that the lattice lies inside the 
 \begin_inset Formula $xy$
 \end_inset
 
@@ -1325,7 +1390,7 @@ FP: check sign of
 \begin_inset Formula 
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{2}\mathcal{A}}\pi^{3/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{l-\left|m\right|}\left(-1\right)^{j}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+1}\Delta_{j}\left(\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}},-i\kappa\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)s_{\perp}\right)\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{l-\left|m\right|}\left(-1\right)^{j}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+1}\Delta_{j}\left(\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)^{2}}{4\eta^{2}},-i\kappa\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)s_{\perp}\right)\times\\
 \times\sum_{\begin{array}{c}
 s\\
 j\le s\le\min\left(2j,l-\left|m\right|\right)\\
@@ -1343,7 +1408,7 @@ status open
 \begin_inset Formula 
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)^{2}}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
 \times\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D-1}
 \end{multline}
 
@@ -1355,18 +1420,155 @@ status open
 \end_inset
 
 where 
-\begin_inset Formula $\gamma\left(z\right)=\left(z^{2}-1\right)^{\frac{1}{2}}$
+\begin_inset Formula 
+\begin{equation}
+\gamma\left(z\right)=\left(z^{2}-1\right)^{\frac{1}{2}},\label{eq:lilgamma}
+\end{equation}
+
 \end_inset
 
- and 
+
+\begin_inset Formula 
+\begin{equation}
+\Delta_{j}\left(x,z\right)=\int_{x}^{\infty}t^{\frac{-1}{2}-n}\exp\left(-t+\frac{z^{2}}{4t}\right)\ud t.\label{eq:Delta_j}
+\end{equation}
+
+\end_inset
+
+If the normal component 
+\begin_inset Formula $s_{\bot}$
+\end_inset
+
+ is zero, in the last sum in eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D long-range part 1D 2D"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ only one term (
+\begin_inset Formula $s=2j$
+\end_inset
+
+) will remain if 
+\begin_inset Formula $l-\left|m\right|$
+\end_inset
+
+ is even; for 
+\begin_inset Formula $l-\left|m\right|$
+\end_inset
+
+ odd, the sum will vanish completely.
+ Moreover, 
+\begin_inset Formula $\Delta_{j}\left(x,0\right)=\Gamma\left(1/2-j,x\right)$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $s_{\bot}\ne0$
+\end_inset
+
+, the integral 
+\begin_inset Formula $\Delta_{j}\left(x,z\right)$
+\end_inset
+
+ can be evaluated e.g.
+ using the Taylor series
+\lang finnish
+
 \begin_inset Formula 
 \[
-\Delta_{j}\left(x,z\right)=\int_{x}^{\infty}t^{\frac{-1}{2}-n}\exp\left(-t+\frac{z^{2}}{4t}\right)\ud t
+\Delta_{j}\left(x,z\right)=\sum_{k=0}^{\infty}\Gamma\left(\frac{1}{2}-j-k,x\right)\frac{\left(z/2\right)^{2k}}{k!}
 \]
 
 \end_inset
 
- and if the normal component 
+which is the first choice for small 
+\begin_inset Formula $z$
+\end_inset
+
+
+\lang english
+.
+ Kambe 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+ mentions a recurrence formula that can be obtained integrating 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Delta_j"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ by parts (note that the signs are wrong in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{equation}
+\Delta_{j+1}\left(x,z\right)=\frac{4}{z^{2}}\left(\left(\frac{1}{2}-j\right)\Delta_{j}\left(x,z\right)-\Delta_{j-1}\left(x,z\right)+x^{\frac{1}{2}-j}e^{-x+\frac{z^{2}}{4x}}\right)\label{eq:Delta_j recurrent}
+\end{equation}
+
+\end_inset
+
+with the first two terms 
+\begin_inset Formula 
+\begin{align*}
+\Delta_{0}\left(x,z\right) & =\frac{\sqrt{\pi}}{2}e^{-x^{2}+\frac{z^{2}}{4x}}\left(w\left(-\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)+w\left(\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)\right),\\
+\Delta_{1}\left(x,z\right) & =i\frac{\sqrt{\pi}}{z}e^{-x^{2}+\frac{z^{2}}{4x}}\left(w\left(-\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)-w\left(\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)\right),
+\end{align*}
+
+\end_inset
+
+where 
+\begin_inset Formula $w\left(z\right)=e^{-z^{2}}\left(1+2i\pi^{-1/2}\int_{0}^{z}e^{t^{2}}\ud t\right)$
+\end_inset
+
+ is the Faddeeva function.
+ However, the recurrence formula 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Delta_j recurrent"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is unsuitable for numerical evaluation if 
+\begin_inset Formula $z$
+\end_inset
+
+ is small or 
+\begin_inset Formula $j$
+\end_inset
+
+ is large due to its numerical instability.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+and if the normal component 
 \begin_inset Formula $s_{\perp}$
 \end_inset
 
@@ -1380,7 +1582,17 @@ where
 
 \end_inset
 
- The function 
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The function 
 \begin_inset Formula $\gamma\left(z\right)$
 \end_inset
 
@@ -1397,68 +1609,8 @@ noprefix "false"
  is defined as
 \begin_inset Formula 
 \begin{equation}
-\gamma\left(z\right)=\left(z-1\right)^{\frac{1}{2}}\left(z+1\right)^{\frac{1}{2}},\quad-\frac{3\pi}{2}<\arg\left(z-1\right)<\frac{\pi}{2},-\frac{\pi}{2}<\arg\left(z+1\right)<\frac{3\pi}{2}.\label{eq:lilgamma}
+\gamma\left(z\right)=\left(z-1\right)^{\frac{1}{2}}\left(z+1\right)^{\frac{1}{2}},\quad-\frac{3\pi}{2}<\arg\left(z-1\right)<\frac{\pi}{2},-\frac{\pi}{2}<\arg\left(z+1\right)<\frac{3\pi}{2}.\label{eq:lilgamma_old}
 \end{equation}
-
-\end_inset
-
-The Ewald parameter 
-\begin_inset Formula $\eta$
-\end_inset
-
- determines the pace of convergence of both parts.
- The larger 
-\begin_inset Formula $\eta$
-\end_inset
-
- is, the faster 
-\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)$
-\end_inset
-
- converges but the slower 
-\begin_inset Formula $\sigma_{l,m}^{\left(L,\eta\right)}\left(\vect k,\vect s\right)$
-\end_inset
-
- converges.
- Therefore (based on the lattice geometry) it has to be adjusted in a way
- that a reasonable amount of terms needs to be evaluated numerically from
- both 
-\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)$
-\end_inset
-
- and 
-\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)$
-\end_inset
-
-.
- For one-dimensional, square, and cubic lattices, the optimal choice is
- 
-\begin_inset Formula $\eta=\sqrt{\pi}/p$
-\end_inset
-
- where 
-\begin_inset Formula $p$
-\end_inset
-
- is the direct lattice period 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "linton_lattice_2010"
-literal "false"
-
-\end_inset
-
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-Whatabout different geometries?
-\end_layout
 
 \end_inset
 
@@ -1491,7 +1643,12 @@ FP: I have some error estimates derived in my notes.
 \end_layout
 
 \begin_layout Standard
-For a two-dimensional lattice, the incomplete 
+One pecularity of the two-dimensional case is the two-branchedness of the
+ function 
+\begin_inset Formula $\gamma\left(z\right)$
+\end_inset
+
+ and the incomplete 
 \begin_inset Formula $\Gamma$
 \end_inset
 
@@ -1499,12 +1656,26 @@ For a two-dimensional lattice, the incomplete
 \begin_inset Formula $\Gamma\left(\frac{1}{2}-j,z\right)$
 \end_inset
 
- in the long-range part has a branch point at 
-\begin_inset Formula $z=0$
+ appearing in the long-range part.
+ As a consequence, if we now explicitly label the dependence on the wavenumber,
+ 
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\kappa,\vect k,\vect s\right)$
 \end_inset
 
- and special care has to be taken when choosing the appropriate branch.
- If the wavenumber of the medium has a positive imaginary part, 
+ has branch points at 
+\begin_inset Formula $\kappa=\left|\vect k+\vect K\right|$
+\end_inset
+
+ for every reciprocal lattice vector 
+\begin_inset Formula $\vect K$
+\end_inset
+
+.
+ If the wavenumber 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ of the medium has a positive imaginary part, 
 \begin_inset Formula $\Im\kappa>0$
 \end_inset
 
@@ -1527,17 +1698,19 @@ noprefix "false"
 \end_inset
 
  converges absolutely even in the direct space, and it is equal to the Ewald
- sum with the principal value of the incomplete 
-\begin_inset Formula $\Gamma$
+ sum with the principal branches used both in 
+\begin_inset Formula $\gamma\left(z\right)$
 \end_inset
 
- function being used in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:Ewald in 3D long-range part 1D 2D z = 0"
-plural "false"
-caps "false"
-noprefix "false"
+ and 
+\begin_inset Formula $\Gamma\left(\frac{1}{2}-j,z\right)$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+literal "false"
 
 \end_inset
 
@@ -1546,7 +1719,7 @@ noprefix "false"
 \begin_inset Formula $\kappa$
 \end_inset
 
-, the branch choice is made in such way that 
+, we typically choose the branch in such way that 
 \begin_inset Formula $W_{\alpha\beta}\left(\vect k\right)$
 \end_inset
 
@@ -1652,37 +1825,114 @@ status open
 
 \end_layout
 
+\begin_layout Paragraph
+Case 
+\begin_inset Formula $d=1$
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-In practice, the integrals in 
-\begin_inset CommandInset ref
-LatexCommand eqref
-reference "eq:Ewald in 3D short-range part"
-plural "false"
-caps "false"
-noprefix "false"
-
+For one-dimensional chains, the easiest choice is to align the lattice with
+ the 
+\begin_inset Formula $z$
 \end_inset
 
- can be easily evaluated by numerical quadrature and the incomplete 
-\begin_inset Formula $\Gamma$
+ axis.
+\end_layout
+
+\begin_layout Subsubsection
+Choice of Ewald parameter and high-frequency breakdown
+\end_layout
+
+\begin_layout Standard
+The Ewald parameter 
+\begin_inset Formula $\eta$
 \end_inset
 
--functions using the series 8.7.3 from 
+ determines the pace of convergence of both parts.
+ The larger 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is, the faster 
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)$
+\end_inset
+
+ converges but the slower 
+\begin_inset Formula $\sigma_{l,m}^{\left(L,\eta\right)}\left(\vect k,\vect s\right)$
+\end_inset
+
+ converges.
+ Therefore (based on the lattice geometry) it has to be adjusted in a way
+ that a reasonable amount of terms needs to be evaluated numerically from
+ both 
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)$
+\end_inset
+
+.
+ For one-dimensional, square, and cubic lattices, the optimal choice for
+ small frequencies (wavenumbers) is 
+\begin_inset Formula $\eta=\sqrt{\pi}/p$
+\end_inset
+
+ where 
+\begin_inset Formula $p$
+\end_inset
+
+ is the direct lattice period 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "NIST:DLMF"
+key "linton_lattice_2010"
 literal "false"
 
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+Whatabout different geometries?
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
 
 \begin_layout Subsection
 Physical interpretation of wavenumber with negative imaginary part; screening
 \begin_inset CommandInset label
 LatexCommand label
 name "subsec:Physical-interpretation-of"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+left out for the time being
+\end_layout
 
 \end_inset
 
@@ -1749,7 +1999,7 @@ noprefix "false"
 
 \begin_layout Standard
 Ewald summation can be used for evaluating scattered field intensities outside
- scatterers' circumscribing spheres: thes requires expressing VSWF cartesian
+ scatterers' circumscribing spheres: this requires expressing VSWF cartesian
  components in terms of scalar spherical wavefunctions defined in 
 \begin_inset CommandInset ref
 LatexCommand eqref
