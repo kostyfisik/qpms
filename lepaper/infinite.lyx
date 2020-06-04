@@ -1487,7 +1487,8 @@ noprefix "false"
 
 \end_inset
 
-which is the first choice for small 
+which has infinite radius of convergence and is the first choice for small
+ 
 \begin_inset Formula $z$
 \end_inset
 
@@ -1912,7 +1913,7 @@ Whatabout different geometries?
 
 \end_inset
 
-
+ However, at greater wavelengths
 \end_layout
 
 \begin_layout Standard
