@@ -243,5 +243,63 @@ For
 
 \end_layout
 
+\begin_layout Section
+
+\lang english
+Ewald long range integral
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+Linton has (2.24):
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{2\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}\int_{1/\eta}^{\infty\exp\left(i\pi/4\right)}e^{-\kappa^{2}\gamma_{m}^{2}\zeta^{2}/4}e^{-\left|\vect r_{\bot}\right|^{2}/\zeta^{2}}\zeta^{1-d_{c}}\ud\zeta
+\]
+
+\end_inset
+
+Try substitution 
+\begin_inset Formula $t=\zeta^{2}$
+\end_inset
+
+: then 
+\begin_inset Formula $\ud t=2\zeta\,\ud\zeta$
+\end_inset
+
+ (
+\begin_inset Formula $\ud\zeta=\ud t/2t^{1/2}$
+\end_inset
+
+) and
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}\int_{1/\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\kappa^{2}\gamma_{m}^{2}t/4}e^{-\left|\vect r_{\bot}\right|^{2}/t}t^{\frac{-d_{c}}{2}}\ud t
+\]
+
+\end_inset
+
+Try subst.
+ 
+\begin_inset Formula $\tau=k^{2}\gamma_{m}^{2}/4$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}\left(\frac{\kappa\gamma_{m}}{2}\right)^{d_{c}}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{\frac{-d_{c}}{2}}\ud\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document

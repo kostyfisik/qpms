@@ -371,5 +371,16 @@ Let's look at the
 Ewald parameter (integration limits)
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Linton{\eta}=\sqrt{\frac{1}{2\Kambe{\omega}}}
+\]
+
+\end_inset
+
+(Based on comparison of some function arguments, not checked.)
+\end_layout
+
 \end_body
 \end_document
