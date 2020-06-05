@@ -1919,10 +1919,27 @@ outside.
 \begin_layout Standard
 In our convention, the regular translation operator elements can be expressed
  explicitly as 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align}
 \tropr_{\tau lm;\tau l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|}^{l+l'}C_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)j_{\lambda}\left(d\right),\nonumber \\
-\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)j_{\lambda}\left(d\right),\quad\tau'\ne\tau,\label{eq:translation operator}
+\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)j_{\lambda}\left(d\right),\quad\tau'\ne\tau,\label{eq:translation operator-1}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\tropr_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+\left|\tau-\tau'\right|}^{l+l'}\tropcoeff_{\tau lm;\tau'l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)j_{\lambda}\left(d\right),\label{eq:translation operator}
 \end{align}
 
 \end_inset
@@ -1936,10 +1953,27 @@ and analogously the elements of the singular operator
 \end_inset
 
 ) in the radial part instead of the regular bessel functions,
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align}
 \trops_{\tau lm;\tau l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|}^{l+l'}C_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)h_{\lambda}^{(1)}\left(d\right),\nonumber \\
-\trops_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)h_{\lambda}^{(1)}\left(d\right),\quad\tau'\ne\tau,\label{eq:translation operator singular}
+\trops_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)h_{\lambda}^{(1)}\left(d\right),\quad\tau'\ne\tau,\label{eq:translation operator singular-1}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\trops_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+\left|\tau-\tau'\right|}^{l+l'}\tropcoeff_{\tau lm;\tau'l'm'}^{\lambda}\ush{\lambda}{m-m'}\left(\uvec d\right)h_{\lambda}^{(1)}\left(d\right),\label{eq:translation operator singular}
 \end{align}
 
 \end_inset
@@ -2136,14 +2170,25 @@ m & -m' & m'-m
 
 
 \begin_inset Formula 
+\[
+\tropcoeff_{\tau lm;\tau'l'm'}^{\lambda}=\begin{cases}
+A_{lm;l'm'}^{\lambda} & \tau=\tau',\\
+B_{lm;l'm'}^{\lambda} & \tau\ne\tau',
+\end{cases}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
 \begin{multline}
-C_{lm;l'm'}^{\lambda}=\left(-1\right)^{\frac{l'-l+\lambda}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+A_{lm;l'm'}^{\lambda}=\left(-1\right)^{\frac{l'-l+\lambda}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
 \times\begin{pmatrix}l & l' & \lambda\\
 0 & 0 & 0
 \end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
 m & -m' & m'-m
 \end{pmatrix}\left(l\left(l+1\right)+l'\left(l'+1\right)-\lambda\left(\lambda+1\right)\right),\\
-D_{lm;l'm'}^{\lambda}=-i\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
+B_{lm;l'm'}^{\lambda}=-i\left(-1\right)^{\frac{l'-l+\lambda+1}{2}}\sqrt{\frac{4\pi\left(2\lambda+1\right)\left(2l+1\right)\left(2l'+1\right)}{l\left(l+1\right)l'\left(l'+1\right)}}\times\\
 \times\begin{pmatrix}l & l' & \lambda-1\\
 0 & 0 & 0
 \end{pmatrix}\begin{pmatrix}l & l' & \lambda\\
@@ -2222,16 +2267,6 @@ todo different notation for the complex conjugation without transposition???
 , which has to be taken into consideration when evaluating quantities such
  as absorption or scattering cross sections.
  Similarly, the full regular operators can be composed
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-better wording
-\end_layout
-
-\end_inset
-
- 
 \begin_inset Formula 
 \begin{equation}
 \troprp ac=\troprp ab\troprp bc\label{eq:regular translation composition}

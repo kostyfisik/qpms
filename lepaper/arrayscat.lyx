@@ -396,6 +396,11 @@ status open
 
 
 \begin_inset FormulaMacro
+\newcommand{\tropcoeff}{C}
+\end_inset
+
+
+\begin_inset FormulaMacro
 \newcommand{\truncated}[2]{\left[#1\right]_{l\le#2}}
 \end_inset
 

@@ -140,6 +140,13 @@ Topology anoyne?
 
 \begin_layout Subsection
 Formulation of the problem
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Quasiperiodic scattering problem"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1061,11 +1068,28 @@ W_{\alpha\beta}(\vect k)\equiv\sum_{\vect m\in\ints^{d}}\left(1-\delta_{\alpha\b
 \end_inset
 
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
 W_{\alpha,\tau lm;\beta,\tau l'm'}(\vect k) & =\sum_{\lambda=\left|l-l'\right|}^{l+l'}C_{lm;l'm'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r_{\beta}-\vect r_{\alpha}\right),\\
 W_{\alpha,\tau lm;\beta,\tau'l'm'}(\vect k) & =\sum_{\lambda=\left|l-l'\right|+1}^{l+l'}D_{lm;l'm'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r_{\beta}-\vect r_{\alpha}\right),\quad\tau'\ne\tau,
 \end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+W_{\alpha,\tau lm;\beta,\tau'l'm'}(\vect k)=\sum_{\lambda=\left|l-l'\right|+\left|\tau-\tau'\right|}^{l+l'}\tropcoeff_{\tau lm;\tau'l'm'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r_{\beta}-\vect r_{\alpha}\right),\quad\tau'\ne\tau,
+\]
 
 \end_inset
 
@@ -1913,7 +1937,8 @@ Whatabout different geometries?
 
 \end_inset
 
- However, at greater wavelengths
+ However, at larger wavelengths, TODO BLA BLA BLA which is detrimental for
+ accuracy in floating point arithmetics.
 \end_layout
 
 \begin_layout Standard
@@ -2015,14 +2040,14 @@ noprefix "false"
  Fortunately, these can be obtained easily from the expressions for the
  translation operator: 
 \begin_inset Formula 
-\begin{align*}
-\vswfrtlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\tropr_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),\\
-\vswfouttlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),
-\end{align*}
+\begin{align}
+\vswfrtlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\tropr_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),\nonumber \\
+\vswfouttlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),\label{eq:VSWFs expressed as translated dipole waves}
+\end{align}
 
 \end_inset
 
-where we used eqs.
+which follows from eqs.
  
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -2048,6 +2073,102 @@ noprefix "false"
 \end_inset
 
  vanish at origin.
+ For the quasiperiodic scattering problem formulated in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Quasiperiodic scattering problem"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, the total electric field scattered from all the particles at point 
+\begin_inset Formula $\vect r$
+\end_inset
+
+ located outside all the particles' circumscribing sphere reads, using eqs.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:translation operator singular"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:sigma lattice sums"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:scalar spherical wavefunctions"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+,
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align}
+\trops_{\tau lm;\tau'l'm'}\left(\vect d\right) & =\sum_{\lambda=\left|l-l'\right|+\left|\tau-\tau'\right|}^{l+l'}\tropcoeff_{\tau lm;\tau'l'm'}^{\lambda}\psi_{\lambda,m-m'}\left(\vect d\right),\label{eq:translation operator singular-1}
+\end{align}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\sigma_{l,m}\left(\vect k,\vect s\right)=\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},\vect s}\right)e^{i\vect{\vect k}\cdot\left(\vect R_{\vect n}-\vect s\right)}\sswfoutlm lm\left(\kappa\left(\vect{R_{n}}-\vect s\right)\right),\label{eq:sigma lattice sums}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\vect E_{\mathrm{scat}}\left(\vect r\right) & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\\
+ & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lme^{i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm 21{m'}\left(0\right)\\
+ & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lme^{-i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\left(\vect r+\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm 21{m'}\left(0\right),\text{FIXME signs}\\
+ & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lme^{-i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\psi_{\lambda,m-m'}\left(\kappa\left(\vect r+\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm 21{m'}\left(0\right)\\
+ & =\sum_{\alpha\in\mathcal{P}_{1}}e^{-i\vect k\cdot\left(\vect r-\vect r_{\alpha}\right)}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r-\vect r_{\alpha}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+TODO fix signs and exponential phase factors
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\vect E_{\mathrm{scat}}\left(\vect r\right) & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\\
+ & =\sum_{\alpha\in\mathcal{P}_{1}}e^{-i\vect k\cdot\left(\vect r-\vect r_{\alpha}\right)}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r-\vect r_{\alpha}\right).
+\end{align*}
+
+\end_inset
+
+
 \end_layout
 
 \end_body
