@@ -469,9 +469,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/beyn_lMax_cutoff_Au_sphere.pdf
 	width 100text%
@@ -479,10 +477,9 @@ status open
 \end_inset
 
 
-\end_layout
+\begin_inset Caption Standard
 
-\end_inset
-
+\begin_layout Plain Layout
 Consequences of multipole degree cutoff: Eigenfrequencies found with Beyn's
  algorithm for an infinite square lattice of golden spherical nanoparticles
  with varying particle size.
@@ -498,8 +495,13 @@ name "square lattice var lMax, r at gamma point Au"
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Float figure

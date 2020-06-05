@@ -768,13 +768,27 @@ empty
 \begin_inset Formula $\gamma(z)$
 \end_inset
 
- as defined in 
+ if the branch is selected to be continuous for 
+\begin_inset Formula $-3\pi/2<\arg\left(z-1\right)<\pi/2$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+as defined in 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:lilgamma_old"
 plural "false"
 caps "false"
 noprefix "false"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1415,11 +1429,11 @@ FP: check sign of
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{2}\mathcal{A}}\pi^{3/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
 \times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{l-\left|m\right|}\left(-1\right)^{j}\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+1}\Delta_{j}\left(\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)^{2}}{4\eta^{2}},-i\kappa\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)s_{\perp}\right)\times\\
-\times\sum_{\begin{array}{c}
-s\\
+\times\sum_{\substack{s\\
 j\le s\le\min\left(2j,l-\left|m\right|\right)\\
 l-n+\left|m\right|\,\mathrm{even}
-\end{array}}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D}
+}
+}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D}
 \end{multline}
 
 \end_inset
