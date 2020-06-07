@@ -306,8 +306,8 @@ outgoing
 , respectively, defined as follows:
 \begin_inset Formula 
 \begin{align}
-\vswfrtlm 1lm\left(\kappa\vect r\right) & =j_{l}\left(\kappa r\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfrtlm 2lm\left(\kappa\vect r\right) & =\frac{1}{\kappa r}\frac{\ud\left(\kappa rj_{l}\left(\kappa r\right)\right)}{\ud\left(\kappa r\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(\kappa r\right)}{\kappa r}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF regular}
+\vswfrtlm1lm\left(\kappa\vect r\right) & =j_{l}\left(\kappa r\right)\vsh1lm\left(\uvec r\right),\nonumber \\
+\vswfrtlm2lm\left(\kappa\vect r\right) & =\frac{1}{\kappa r}\frac{\ud\left(\kappa rj_{l}\left(\kappa r\right)\right)}{\ud\left(\kappa r\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{j_{l}\left(\kappa r\right)}{\kappa r}\vsh3lm\left(\uvec r\right),\label{eq:VSWF regular}
 \end{align}
 
 \end_inset
@@ -315,8 +315,8 @@ outgoing
 
 \begin_inset Formula 
 \begin{align}
-\vswfouttlm 1lm\left(\kappa\vect r\right) & =h_{l}^{\left(1\right)}\left(\kappa r\right)\vsh 1lm\left(\uvec r\right),\nonumber \\
-\vswfouttlm 2lm\left(\kappa\vect r\right) & =\frac{1}{kr}\frac{\ud\left(\kappa rh_{l}^{\left(1\right)}\left(\kappa r\right)\right)}{\ud\left(\kappa r\right)}\vsh 2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(\kappa r\right)}{\kappa r}\vsh 3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
+\vswfouttlm1lm\left(\kappa\vect r\right) & =h_{l}^{\left(1\right)}\left(\kappa r\right)\vsh1lm\left(\uvec r\right),\nonumber \\
+\vswfouttlm2lm\left(\kappa\vect r\right) & =\frac{1}{kr}\frac{\ud\left(\kappa rh_{l}^{\left(1\right)}\left(\kappa r\right)\right)}{\ud\left(\kappa r\right)}\vsh2lm\left(\uvec r\right)+\sqrt{l\left(l+1\right)}\frac{h_{l}^{\left(1\right)}\left(\kappa r\right)}{\kappa r}\vsh3lm\left(\uvec r\right),\label{eq:VSWF outgoing}\\
  & \tau=1,2;\quad l=1,2,3,\dots;\quad m=-l,-l+1,\dots,+l,\nonumber 
 \end{align}
 
@@ -387,9 +387,9 @@ vector spherical harmonics
 
 \begin_inset Formula 
 \begin{align}
-\vsh 1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\nonumber \\
-\vsh 2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\nonumber \\
-\vsh 3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).\label{eq:vector spherical harmonics definition}
+\vsh1lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\times\left(\vect r\ush lm\left(\uvec r\right)\right)=\frac{1}{\sqrt{l\left(l+1\right)}}\nabla\ush lm\left(\uvec r\right)\times\vect r,\nonumber \\
+\vsh2lm\left(\uvec r\right) & =\frac{1}{\sqrt{l\left(l+1\right)}}r\nabla\ush lm\left(\uvec r\right),\nonumber \\
+\vsh3lm\left(\uvec r\right) & =\uvec r\ush lm\left(\uvec r\right).\label{eq:vector spherical harmonics definition}
 \end{align}
 
 \end_inset
@@ -408,7 +408,7 @@ electric dipolar
 \end_inset
 
  waves 
-\begin_inset Formula $\vswfrtlm 21m$
+\begin_inset Formula $\vswfrtlm21m$
 \end_inset
 
 , they vanish.
@@ -605,7 +605,7 @@ noprefix "false"
 \end_inset
 
  inside a ball 
-\begin_inset Formula $\openball{R^{>}}{\vect 0}$
+\begin_inset Formula $\openball{R^{>}}{\vect0}$
 \end_inset
 
  with radius 
@@ -615,7 +615,7 @@ noprefix "false"
  and center in the origin, were it filled with homogeneous isotropic medium;
  however, if the equation is not guaranteed to hold inside a smaller ball
  
-\begin_inset Formula $\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\closedball{R^{<}}{\vect0}$
 \end_inset
 
  around the origin (typically due to presence of a scatterer), one has to
@@ -624,7 +624,7 @@ noprefix "false"
 \end_inset
 
  to have a complete basis of the solutions in the volume 
-\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect 0}=\openball{R^{>}}{\vect 0}\setminus\closedball{R^{<}}{\vect 0}$
+\begin_inset Formula $\mezikuli{R^{<}}{R^{>}}{\vect0}=\openball{R^{>}}{\vect0}\setminus\closedball{R^{<}}{\vect0}$
 \end_inset
 
 .
@@ -1541,6 +1541,34 @@ where
 
 matrices as the off-diagonal blocks, whereas the diagonal blocks are set
  to zeros.
+ 
+\end_layout
+
+\begin_layout Standard
+We note that eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Multiple-scattering problem block form"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ with zero right-hand side describes the normal modes of the system; the
+ methods mentioned later in Section 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "sec:Infinite"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ for solving the band structure of a periodic system can be used as well
+ for finding the resonant frequencies of a finite system.
 \end_layout
 
 \begin_layout Standard

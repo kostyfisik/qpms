@@ -92,9 +92,8 @@ name "sec:Symmetries"
 
 \begin_layout Standard
 If the system has nontrivial point group symmetries, group theory gives
- additional understanding of the system properties, and can be used to reduce
- the computational costs.
- 
+ additional understanding of the system properties, and can be used to substanti
+ally reduce the computational costs.
 \end_layout
 
 \begin_layout Standard
@@ -175,8 +174,21 @@ noprefix "false"
 \end_inset
 
  matrix, not the linear algebra.
- However, the lattice modes can be searched for in each irrep separately,
- and the irrep dimension gives a priori information about mode degeneracy.
+ However, decomposition of the lattice mode problem 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ into the irreducible representations of the corresponding little co-groups
+ of the system's space group is nevertheless a useful tool in the mode analysis:
+ among other things, it enables separation of the lattice modes (which can
+ then be searched for each irrep separately), and the irrep dimension gives
+ a priori information about mode degeneracy.
 \end_layout
 
 \begin_layout Subsection
@@ -193,8 +205,8 @@ TODO Zkontrolovat všechny vzorečky zde!!!
 
 \end_inset
 
-In order to use the point group symmetries, we first need to know how they
- affect our basis functions, i.e.
+In order to make use of the point group symmetries, we first need to know
+ how they affect our basis functions, i.e.
  the VSWFs.
 \end_layout
 
@@ -1170,8 +1182,7 @@ Periodic systems
 \end_layout
 
 \begin_layout Standard
-For periodic systems, we can in similar manner also block-diagonalise the
- 
+Also for periodic systems, 
 \begin_inset Formula $M\left(\omega,\vect k\right)=\left(I-T\left(\omega\right)W\left(\omega,\vect k\right)\right)$
 \end_inset
 
@@ -1196,7 +1207,7 @@ noprefix "false"
 
 \end_inset
 
-.
+ can be block-diagonalised in a similar manner.
  Hovewer, in this case, 
 \begin_inset Formula $W\left(\omega,\vect k\right)$
 \end_inset
@@ -1218,25 +1229,29 @@ s happens unless
 
  lies somewhere in the high-symmetry parts of the Brillouin zone.
  However, the high-symmetry points are usually the ones of the highest physical
- interest, for it is where the band edges 
+ interest, for it is where the band edges are typically located.
+ The subsection does not aim for an exhaustive treatment of the topic of
+ space groups in physics (which can be found elsewhere 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dresselhaus_group_2008,bradley_mathematical_1972"
+literal "false"
+
+\end_inset
+
+), here we rather demonstrate how the group action matrices are generated
+ on a specific example of a symmorphic space group.
+ 
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-or 
-\begin_inset Quotes eld
-\end_inset
-
-dirac points
-\begin_inset Quotes erd
-\end_inset
-
-
+better formulation
 \end_layout
 
 \end_inset
 
- are typically located.
+
 \end_layout
 
 \begin_layout Standard
@@ -1469,6 +1484,36 @@ because in this case, the Bloch condition gives
 \end_layout
 
 \begin_layout Standard
+Having the group action matrices, we can construct the projectors and decompose
+ the system into irreducible representations of the corresponding point
+ groups analogously to the finite case 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:SAB unitary transformation operator"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ This procedure can be repeated for any system with a symmorphic space group
+ symmetry, where the translation and point group operations are essentially
+ separable.
+ For systems with non-symmorphic space group symmetries (i.e.
+ those with glide reflection planes or screw rotation axes) a more refined
+ approach is required 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bradley_mathematical_1972,dresselhaus_group_2008"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 placement document
 alignment document
@@ -1535,20 +1580,6 @@ name "Phase factor illustration"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-More rigorous analysis can be found e.g.
- in 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "chapters 10–11"
-key "dresselhaus_group_2008"
-literal "true"
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Standard
