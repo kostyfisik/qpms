@@ -27,6 +27,11 @@ export B2Y_nmi=$(bc <<< '4*pi/3/'${SEPARATION_nm})
 export KPOINTX_nmi=$(bc <<< '4*pi/3/sqrt(3)'/${SEPARATION_nm})
 export KPOINTY_nmi=0.0 #$(bc <<< '4*pi/3/sqrt(3)'/${SEPARATION_nm})
 
+# a M-point coordinates
+export MPOINTX_nmi=0.0 
+export MPOINTY_nmi=$(bc <<< '2*pi/3'/${SEPARATION_nm})
+
+
 export RADIUS_nm=50
 export HEIGHT_nm=50
 export METAL=Au

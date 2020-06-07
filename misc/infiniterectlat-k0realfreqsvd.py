@@ -22,8 +22,8 @@ thegroup = 'D4h' if px == py and not a.D2 else 'D2h'
 
 particlestr = ("sph" if a.height is None else "cyl") + ("_r%gnm" % (a.radius*1e9))
 if a.height is not None: particlestr += "_h%gnm" % (a.height * 1e9)
-defaultprefix = "%s_p%gnmx%gnm_m%s_n%g_f(%g..%g..%g)eV_L%d_SVGamma" % (
-    particlestr, px*1e9, py*1e9, str(a.material), a.refractive_index, *(a.eV_seq), a.lMax)
+defaultprefix = "%s_p%gnmx%gnm_m%s_bg%s_f(%g..%g..%g)eV_L%d_SVGamma" % (
+    particlestr, px*1e9, py*1e9, str(a.material), str(a.background), *(a.eV_seq), a.lMax)
 logging.info("Default file prefix: %s" % defaultprefix)
 
 
@@ -87,6 +87,8 @@ for i, omega in enumerate(omegas):
     with pgsl_ignore_error(15): # avoid gsl crashing on underflow; maybe not needed
         ImTW = ssw.modeproblem_matrix_full(k)
     for iri in range(ss1.nirreps):
+        if ss1.saecv_sizes[iri] == 0:
+            continue
         ImTW_packed = ss1.pack_matrix(ImTW, iri)
         SVs[iri][i] = np.linalg.svd(ImTW_packed, compute_uv = False)
 
