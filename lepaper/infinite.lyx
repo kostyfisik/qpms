@@ -912,7 +912,12 @@ Note that
  fast and can be summed directly, and a long-range part which decays poorly
  but is fairly smooth everywhere, so that its Fourier transform decays fast
  enough, and to deal with the long range part by Poisson summation over
- the reciprocal lattice.
+ the reciprocal lattice; these two parts put together shall give an analytical
+ continuation of the original sum for 
+\begin_inset Formula $\Im\kappa\le0$
+\end_inset
+
+.
  This idea dates back to Ewald 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1615,7 +1620,7 @@ and if the normal component
 \begin_inset Formula 
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{d}\mathcal{A}}\pi^{2+\left(3-d\right)/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
+\times\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{\left[\left(l-\left|m\right|/2\right)\right]}\frac{\left(-1\right)^{j}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-2j}\Gamma\left(\frac{d-1}{2}-j,\frac{\kappa^{2}\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)^{2}}{4\eta^{2}}\right)}{j!\left(\frac{1}{2}\left(l-m\right)-j\right)!\left(\frac{1}{2}\left(l+m\right)-j\right)!}\times\\
 \times\left(\gamma\left(\left|\vect k+\vect K\right|/\kappa\right)\right)^{2j+3-d}\label{eq:Ewald in 3D long-range part 1D 2D z = 0}
 \end{multline}
 
@@ -1951,8 +1956,149 @@ Whatabout different geometries?
 
 \end_inset
 
- However, at larger wavelengths, TODO BLA BLA BLA which is detrimental for
- accuracy in floating point arithmetics.
+ However, in floating point arithmetics, the magnitude of the summands must
+ be taken into account as well in order to maintain accuracy.
+ There is a particular problem with the 
+\begin_inset Quotes eld
+\end_inset
+
+central
+\begin_inset Quotes erd
+\end_inset
+
+ reciprocal lattice points in the long-range sums for which the real part
+ of 
+\begin_inset Formula $\left|\vect k+\vect K\right|^{2}-\kappa^{2}$
+\end_inset
+
+ is negative: the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ function present in the sum (either explicitly or in the expansions of
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\nospellcheck off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\Delta_{j}$
+\end_inset
+
+)
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\nospellcheck default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ grows exponentially with respect to the negative second argument, with
+ asymptotic behaviour 
+\begin_inset Formula $\Gamma\left(a,z\right)\sim e^{-z}z^{a-1}$
+\end_inset
+
+ .
+ Therefore for higher frequencies, the parameter 
+\begin_inset Formula $\eta$
+\end_inset
+
+ needs to be adjusted in a way that keeps the value of 
+\begin_inset Formula $\Gamma\left(a,\frac{\left|\vect k+\vect K\right|^{2}-\kappa^{2}}{4\eta^{2}}\right)$
+\end_inset
+
+ within reasonable bounds.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Setting a target maximum magnitude for 
+\begin_inset Formula $M$
+\end_inset
+
+, so that 
+\begin_inset Formula $\left|\Gamma\left(a,-\left|z\right|\right)\right|\lesssim M$
+\end_inset
+
+, using the asymptotic estimate 
+\begin_inset Formula $\Gamma\left(a,-\left|z\right|\right)\sim e^{-\left|z\right|}\left|z\right|^{a-1}$
+\end_inset
+
+, we get 
+\begin_inset Formula 
+\begin{align*}
+e^{-\left|z\right|}\left|z\right|^{a-1} & \lesssim M,\\
+-\left|z\right|\left(a-1\right)\log\left|z\right| & \lesssim\log M.
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+If we assume that 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ lies in the first Brillouin zone, the minimum real part of the second argument
+ of the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ function will be 
+\begin_inset Formula $\left(\left|\vect k\right|^{2}-\kappa^{2}\right)/4\eta^{2}$
+\end_inset
+
+, so setting 
+\begin_inset Formula $\eta\ge\sqrt{\left|\kappa\right|^{2}-\left|\vect k\right|^{2}}/2\log M$
+\end_inset
+
+ eliminates the exponential growth in the incomplete 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ function, where the constant 
+\begin_inset Formula $M$
+\end_inset
+
+ is chosen to represent the (rough) maximum tolerated magnitude of the summand
+ with regard to target accuracy.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\[
+-\frac{\left|\left|\vect k\right|^{2}-\kappa^{2}\right|}{4\eta^{2}}\left(a-1\right)2\log\frac{\left|\left|\vect k\right|^{2}-\kappa^{2}\right|^{\frac{1}{2}}}{2\eta}\lesssim\log M
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
