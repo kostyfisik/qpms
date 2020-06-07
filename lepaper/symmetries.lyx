@@ -1255,6 +1255,148 @@ better formulation
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/hex/p6m_group_actions.pdf
+	width 95text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Representing symmetry action on electromagnetic Bloch waves in a lattice
+ with 
+\begin_inset Formula $p6m$
+\end_inset
+
+ wallpaper group symmetry.
+ In a hexagonal array with five particles (labeled 
+\begin_inset Formula $A$
+\end_inset
+
+–
+\begin_inset Formula $E$
+\end_inset
+
+) per unit cell, we first choose into which unit cells do the particles
+ on unit cell boundaries belong.
+ a) At 
+\begin_inset Formula $M$
+\end_inset
+
+ point, the little co-group contains a 
+\begin_inset Formula $D_{2}$
+\end_inset
+
+ point group; the unit cells can be divided into two groups (alternating
+ horizontal rows) with opposite sign.
+ The horizontal mirror operation 
+\begin_inset Formula $\sigma_{xz}$
+\end_inset
+
+ maps the particles from a single unit cell to each other.
+ However, the vertical mirror operation 
+\begin_inset Formula $\sigma_{yz}$
+\end_inset
+
+ maps them onto particles belonging to different unit cells, introducing
+ possible phase factors in the point group action: 
+\begin_inset Formula $B,C,D$
+\end_inset
+
+ map onto 
+\begin_inset Formula $B,C,D$
+\end_inset
+
+ belonging to different unit cell from same phase group, so no additional
+ phase is needed; however, 
+\begin_inset Formula $A,E$
+\end_inset
+
+ map onto 
+\begin_inset Formula $E,A$
+\end_inset
+
+ belonging to unitcells with relative phases 
+\begin_inset Formula $\pm\pi$
+\end_inset
+
+, therefore the corresponding action matrix blocks will carry a factor 
+\begin_inset Formula $-1$
+\end_inset
+
+.
+ b) At 
+\begin_inset Formula $K$
+\end_inset
+
+ point point, little co-group contains a 
+\begin_inset Formula $D_{3}$
+\end_inset
+
+ point group, and the unit cells divide into three groups with relative
+ phase shift 
+\begin_inset Formula $e^{2\pi i/3}$
+\end_inset
+
+.
+ The horizontal mirroring 
+\begin_inset Formula $\sigma_{xz}$
+\end_inset
+
+ again does not introduce any additional phase.
+ However, the 
+\begin_inset Formula $C_{3}$
+\end_inset
+
+ rotation mixes particles belonging to different unit cells, so for example
+ particle 
+\begin_inset Formula $D$
+\end_inset
+
+ maps onto particle 
+\begin_inset Formula $D$
+\end_inset
+
+, but with additional phase factor 
+\begin_inset Formula $e^{-2\pi i/3}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "Phase factor illustration"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 The transformation to the symmetry adapted basis 
 \begin_inset Formula $U$
 \end_inset
@@ -1462,7 +1604,18 @@ the original
 \begin_inset Formula $C_{3}$
 \end_inset
 
- rotation, as an example we have
+ rotation as an example we have (see Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "Phase factor illustration"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+b)
 \begin_inset Formula 
 \begin{align*}
 \outcoeffp{\vect 0A} & \overset{C_{3}}{\longmapsto}\tilde{J}\left(C_{3}\right)\outcoeffp{\left(0,-1\right)E}=e^{2\pi i/3}\tilde{J}\left(C_{3}\right)\outcoeffp{\vect 0E},\\
@@ -1511,75 +1664,6 @@ literal "false"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement document
-alignment document
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename p6m_mpoint.png
-	lyxscale 20
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename p6m_kpoint.png
-	lyxscale 20
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Representing symmetry action on electromagnetic Bloch waves in a lattice
- with 
-\begin_inset Formula $p6m$
-\end_inset
-
- wallpaper group symmetry for 
-\begin_inset Formula $M$
-\end_inset
-
- (top) and 
-\begin_inset Formula $K$
-\end_inset
-
- (bottom) points.
-\begin_inset CommandInset label
-LatexCommand label
-name "Phase factor illustration"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
