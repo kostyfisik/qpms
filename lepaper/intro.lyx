@@ -476,8 +476,18 @@ reference "sec:Applications"
 
 \end_inset
 
- shows some practical results that can be obtained using QPMS and benchmarks
- with BEM.
+ shows some practical results that can be obtained using QPMS.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+and benchmarks with BEM.
+\end_layout
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 

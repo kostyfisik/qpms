@@ -2081,6 +2081,18 @@ If we assume that
 
  is chosen to represent the (rough) maximum tolerated magnitude of the summand
  with regard to target accuracy.
+ This adjustment means that, in worst-case scenario, with growing wavenumber
+ one has to include an increasing number of terms in the long-range sum
+ in order to achieve a given accuracy, the number of terms being proportional
+ to 
+\begin_inset Formula $\left|\kappa\right|^{d}$
+\end_inset
+
+ where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the dimension of the lattice.
  
 \begin_inset Note Note
 status open

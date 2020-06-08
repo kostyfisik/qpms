@@ -795,6 +795,10 @@ Maybe put the numerical results separately in the end.
 \end_layout
 
 \begin_layout Section*
+\begin_inset Note Note
+status open
+
+\begin_layout Section*
 TODO
 \end_layout
 
@@ -821,6 +825,12 @@ Truncation notation.
 Example results and benchmarks with BEM; figures!
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+Given up for BEM, SCUFF-EM too unreliable.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 Carefully check the transformation directions in sec.
  
@@ -839,6 +849,17 @@ noprefix "false"
 \begin_layout Itemize
 Check whether everything written is correct also for non-symmorphic space
  groups.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Given up
+\end_layout
+
+\end_deeper
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
