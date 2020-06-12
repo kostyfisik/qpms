@@ -216,6 +216,18 @@ e^{i\kappa\vect r\cdot\uvec r'}=4\pi\sum_{l,m}i^{n}\mathcal{J}'_{l}^{m}\left(\ka
 
 \end_inset
 
+This one should also be convention independent (similarly for 
+\begin_inset Formula $\mathcal{H}_{l}^{m}$
+\end_inset
+
+):
+\begin_inset Formula 
+\[
+\mathcal{J}_{l}^{m}\left(-\vect r\right)=\left(-1\right)^{l}\mathcal{J}_{l}^{m}\left(\vect r\right).
+\]
+
+\end_inset
+
 
 \end_layout
 
@@ -245,11 +257,24 @@ G_{\pm}^{(\kappa)}\left(\vect x,\vect x_{0}\right) & =G_{\pm}^{(\kappa)}\left(\v
 
 \end_inset
 
+
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $G_{\pm}^{(\kappa)}\left(\vect x,\vect x_{0}\right)=-\frac{i\kappa}{\ush 00}\mathcal{H}_{0}^{0}\left(\kappa\left|\vect x-\vect x_{0}\right|\right)$
+\end_inset
+
+ in case wacky conventions.
+\end_layout
+
+\end_inset
+
 Lattice GF [Linton (2.3)]:
 \begin_inset Formula 
-\[
-G_{\Lambda}^{(\kappa)}\left(\vect s,\vect k\right)\equiv\sum_{\vect R\in\Lambda}G_{+}^{\kappa}\left(\vect s-\vect R\right)e^{i\vect k\cdot\vect R}
-\]
+\begin{equation}
+G_{\Lambda}^{(\kappa)}\left(\vect s,\vect k\right)\equiv\sum_{\vect R\in\Lambda}G_{+}^{\kappa}\left(\vect s-\vect R\right)e^{i\vect k\cdot\vect R}\label{eq:Lattice GF}
+\end{equation}
 
 \end_inset
 
@@ -264,7 +289,15 @@ GF expansion and lattice sum definition
 Let's define 
 \begin_inset Formula 
 \[
-\sigma_{l}^{m}\left(\vect s,\vect k\right)=\sum_{\vect R\in\Lambda}\mathcal{H}_{l}^{m}\left(\kappa\left(\vect s-\vect R\right)\right)e^{i\vect k\cdot\vect R}.
+\sigma_{l}^{m}\left(\vect s,\vect k\right)=\sum_{\vect R\in\Lambda}\mathcal{H}_{l}^{m}\left(\kappa\left(\vect s+\vect R\right)\right)e^{i\vect k\cdot\vect R},
+\]
+
+\end_inset
+
+and also its dual version
+\begin_inset Formula 
+\[
+\sigma'_{l}^{m}\left(\vect s,\vect k\right)=\sum_{\vect R\in\Lambda}\mathcal{H}'_{l}^{m}\left(\kappa\left(\vect s+\vect R\right)\right)e^{i\vect k\cdot\vect R}.
 \]
 
 \end_inset
@@ -287,8 +320,137 @@ Inspired by [Linton (4.1)]; assuming that
 \begin_layout Standard
 \begin_inset Formula 
 \[
-G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)=-i\kappa\sum_{l,m}\tau_{l}^{m}\left(\vect s,\vect k\right)\mathcal{J}_{l}^{m}\left(\kappa\vect r\right).
+G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)=-i\kappa\sum_{l,m}\tau_{l}^{m}\left(\vect s,\vect k\right)\mathcal{J}_{l}^{m}\left(\kappa\vect r\right)
 \]
+
+\end_inset
+
+and multiply with a dual SH + integrate
+\begin_inset Formula 
+\begin{align}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right) & =-i\kappa\sum_{l,m}\tau_{l}^{m}\left(\vect s,\vect k\right)j_{l}\left(\kappa\left|\vect r\right|\right)\delta_{ll'}\delta_{mm'}\nonumber \\
+ & =-i\kappa\tau_{l'}^{m'}\left(\vect s,\vect k\right)j_{l'}\left(\kappa\left|\vect r\right|\right)\label{eq:tau extraction}
+\end{align}
+
+\end_inset
+
+The expansion coefficients 
+\begin_inset Formula $\tau_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+ is then typically extracted by taking the limit 
+\begin_inset Formula $\left|\vect r\right|\to0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The relation between 
+\begin_inset Formula $\sigma_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\tau_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+ can be obtained e.g.
+ from the addition theorem for scalar spherical wavefunctions [Linton (C.3)],
+ 
+\begin_inset Formula 
+\[
+\mathcal{H}_{l}^{m}\left(\vect a+\vect b\right)=\sum_{l'm'}S_{ll'}^{mm'}\left(\vect b\right)\mathcal{J}_{l'}^{m'}\left(\vect a\right),\quad\left|\vect a\right|<\left|\vect b\right|
+\]
+
+\end_inset
+
+where for the zeroth degree and order one has [Linton (C.3)]
+\begin_inset Formula 
+\[
+S_{0l'}^{0m'}\left(\vect b\right)=\sqrt{4\pi}\mathcal{H}'_{l'}^{m'}\left(-\vect b\right)
+\]
+
+\end_inset
+
+
+\begin_inset Marginal
+status open
+
+\begin_layout Plain Layout
+In a totally convention-independent version probably looks like 
+\begin_inset Formula $S_{0l'}^{0m'}\left(\vect b\right)=\ush 00\mathcal{H}'_{l'}^{m'}\left(-\vect b\right)$
+\end_inset
+
+, but the 
+\begin_inset Formula $Y_{0}^{0}$
+\end_inset
+
+ will cancel with the expression for GF anyways, so no harm to the final
+ result.
+\end_layout
+
+\end_inset
+
+From the lattice GF definition 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Lattice GF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right) & \equiv\frac{-i\kappa}{\sqrt{4\pi}}\sum_{\vect R\in\Lambda}\mathcal{H}_{0}^{0}\left(\kappa\left(\vect s+\vect r-\vect R\right)\right)e^{i\vect k\cdot\vect R}\\
+ & =\frac{-i\kappa}{\sqrt{4\pi}}\sum_{\vect R\in\Lambda}\mathcal{H}_{0}^{0}\left(\kappa\left(\vect s+\vect r-\vect R\right)\right)e^{i\vect k\cdot\vect R}\\
+ & =\frac{-i\kappa}{\sqrt{4\pi}}\sum_{\vect R\in\Lambda}\sum_{l'm'}S_{0l'}^{0m'}\left(\kappa\left(\vect s-\vect R\right)\right)\mathcal{J}_{l'}^{m'}\left(\kappa\vect r\right)e^{i\vect k\cdot\vect R}\\
+ & =-i\kappa\sum_{\vect R\in\Lambda}\sum_{lm}\mathcal{H}'_{l}^{m}\left(-\kappa\left(\vect s-\vect R\right)\right)\mathcal{J}_{l}^{m}\left(\kappa\vect r\right)e^{i\vect k\cdot\vect R}
+\end{align*}
+
+\end_inset
+
+and mutliplying with dual SH and integrating 
+\begin_inset Formula 
+\begin{align*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right) & =-i\kappa\sum_{\vect R\in\Lambda}\sum_{lm}\mathcal{H}'_{l}^{m}\left(-\kappa\left(\vect s-\vect R\right)\right)j_{l}\left(\kappa\left|\vect r\right|\right)\delta_{ll'}\delta_{mm'}e^{i\vect k\cdot\vect R}\\
+ & =-i\kappa\sum_{\vect R\in\Lambda}\mathcal{H}'_{l'}^{m'}\left(\kappa\left(-\vect s+\vect R\right)\right)j_{l}\left(\kappa\left|\vect r\right|\right)e^{i\vect k\cdot\vect R}\\
+ & =-i\kappa\sigma'_{l'}^{m'}\left(-\vect s,\vect k\right)j_{l}\left(\kappa\left|\vect r\right|\right)
+\end{align*}
+
+\end_inset
+
+and comparing with 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we have
+\begin_inset Formula 
+\[
+\tau_{l}^{m}\left(\vect s,\vect k\right)=\sigma'_{l}^{m}\left(-\vect s,\vect k\right).
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO maybe also define some 
+\begin_inset Formula $\tau'_{l}^{m}$
+\end_inset
+
+ as expansion coefficients of GF into dual regular SSWFs.
+\end_layout
 
 \end_inset
 
