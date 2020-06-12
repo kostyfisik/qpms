@@ -255,7 +255,7 @@ Ewald long range integral
 Linton has (2.24):
 \begin_inset Formula 
 \[
-G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{2\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}\int_{1/\eta}^{\infty\exp\left(i\pi/4\right)}e^{-\kappa^{2}\gamma_{m}^{2}\zeta^{2}/4}e^{-\left|\vect r_{\bot}\right|^{2}/\zeta^{2}}\zeta^{1-d_{c}}\ud\zeta
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{2\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\int_{1/\eta}^{\infty\exp\left(i\pi/4\right)}e^{-\kappa^{2}\gamma_{m}^{2}\zeta^{2}/4}e^{-\left|\vect r_{\bot}\right|^{2}/\zeta^{2}}\zeta^{1-d_{c}}\ud\zeta
 \]
 
 \end_inset
@@ -275,7 +275,7 @@ Try substitution
 ) and
 \begin_inset Formula 
 \[
-G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}\int_{1/\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\kappa^{2}\gamma_{m}^{2}t/4}e^{-\left|\vect r_{\bot}\right|^{2}/t}t^{\frac{-d_{c}}{2}}\ud t
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\int_{1/\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\kappa^{2}\gamma_{m}^{2}t/4}e^{-\left|\vect r_{\bot}\right|^{2}/t}t^{\frac{-d_{c}}{2}}\ud t
 \]
 
 \end_inset
@@ -293,7 +293,7 @@ Try subst.
 \lang english
 \begin_inset Formula 
 \[
-G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}\left(\frac{\kappa\gamma_{m}}{2}\right)^{d_{c}}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{\frac{-d_{c}}{2}}\ud\tau
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\left(\frac{\kappa\gamma_{m}}{2}\right)^{d_{c}}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{\frac{-d_{c}}{2}}\ud\tau
 \]
 
 \end_inset
