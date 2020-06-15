@@ -343,6 +343,49 @@ so
 \end_layout
 
 \begin_layout Standard
+We also have
+\begin_inset Formula 
+\begin{align*}
+e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau} & =e^{-\left(\left|\vect s_{\bot}\right|^{2}+\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\\
+ & =e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4\tau}\right)^{n},
+\end{align*}
+
+\end_inset
+
+hence
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\underbrace{\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-1-n}\ud\tau}_{\Delta_{n+1/2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+BTW:
+\begin_inset Formula 
+\begin{align*}
+\left|\vect r_{\bot}\right|^{2} & =\left|\vect r\right|^{2}-\left|\vect r_{\parallel}\right|^{2}=\left|\vect r\right|^{2}-\left(\vect r\cdot\uvec K\right)^{2},\\
+\vect r_{\bot}\cdot\vect s_{\bot} & =\vect r\cdot\vect s_{\bot}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Now we set the conventions: let the lattice lie on the 
 \begin_inset Formula $z$
 \end_inset
@@ -364,13 +407,13 @@ Now we set the conventions: let the lattice lie on the
 \end_inset
 
 , 
-\begin_inset Formula $\vect r_{\bot}=\uvec xr_{\bot}\cos\phi+\uvec yr_{\bot}\sin\phi$
+\begin_inset Formula $\vect r_{\bot}=\uvec xr_{\bot}\cos\phi+\uvec yr_{\bot}\sin\phi=\uvec xr\sin\theta\cos\phi+\uvec yr\sin\theta\sin\phi$
 \end_inset
 
 , we have 
 \begin_inset Formula 
 \[
-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}=s_{\bot}^{2}+r_{\bot}^{2}+2s_{\bot}r_{\bot}\cos\left(\phi-\Phi\right).
+\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}=s_{\bot}^{2}+r^{2}\left(\sin\theta\right)^{2}+2s_{\bot}r\sin\theta\cos\left(\phi-\Phi\right).
 \]
 
 \end_inset
@@ -411,7 +454,7 @@ The angular integral (assuming it can be separated from the rest like this)
  is
 \begin_inset Formula 
 \[
-I_{l}^{m}\equiv\int\ud\Omega_{\vect r}\,\ushD lm\left(\uvec r\right)e^{-\left(r_{\bot}^{2}+2s_{\bot}r_{\bot}\cos\left(\phi-\Phi\right)\right)^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}
+I_{l'}^{m'}\equiv\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)e^{-\left(r_{\bot}^{2}+2s_{\bot}r_{\bot}\cos\left(\phi-\Phi\right)\right)^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}
 \]
 
 \end_inset
@@ -427,12 +470,37 @@ Let's further extract the azimuthal part
 
 \begin_inset Formula 
 \[
-e^{-im\Phi}A_{l}^{m}\equiv\int_{0}^{2\pi}e^{-im\phi}e^{-w\cos\left(\phi-\Phi\right)}\ud\phi=e^{-im\Phi}\int_{0}^{2\pi}e^{-im\varphi}e^{-w\cos\varphi}\ud\varphi
+e^{-im'\Phi}A_{l'}^{m'}\equiv\int_{0}^{2\pi}e^{-im'\phi}e^{-w\cos\left(\phi-\Phi\right)}\ud\phi=e^{-im'\Phi}\int_{0}^{2\pi}e^{-im'\varphi}e^{-w\cos\varphi}\ud\varphi
 \]
 
 \end_inset
 
+Using [DLMF 10.9.2], 
+\begin_inset Formula $\int_{0}^{2\pi}e^{-im'\varphi}e^{-w\cos\varphi}\ud\varphi=\int_{0}^{2\pi}\cos\left(m'\varphi\right)e^{i(iw)\cos\varphi}=2\pi i^{m'}J_{m'}\left(iw\right)$
+\end_inset
 
+ we have
+\begin_inset Formula 
+\[
+e^{-m'\Phi}A_{l'}^{m'}=2\pi i^{m'}J_{m'}\left(iw\right),
+\]
+
+\end_inset
+
+assuming that 
+\begin_inset Formula $w$
+\end_inset
+
+ is real (which does not necessarily have to be true!); numerical experiments
+ in Sage show that the result is valid also for complex 
+\begin_inset Formula $w$
+\end_inset
+
+.
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{align*}
 A_{l}^{m} & =\int_{0}^{2\pi}e^{-im\varphi}\sum_{n=0}^{\infty}\frac{\left(-w\cos\varphi\right)^{n}}{n!}\ud\varphi\\
@@ -446,6 +514,11 @@ A_{l}^{m} & =\int_{0}^{2\pi}e^{-im\varphi}\sum_{n=0}^{\infty}\frac{\left(-w\cos\
  & =2\pi\sum_{k=0}^{\infty}\frac{\left(-w\right)^{2k-m}}{2^{2k-m}}\frac{1}{k!\left(k-m\right)!}\delta_{k-m\ge0}\\
  & =2\pi\sum_{k=\max\left(m,0\right)}^{\infty}\left(-\frac{w}{2}\right)^{2k-m}\frac{1}{k!\left(k-m\right)!}
 \end{align*}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
