@@ -491,7 +491,7 @@ Let's do the polar integration next:
 
 \begin_inset Formula 
 \[
-B_{l}^{m}\equiv\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l}^{-m}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)e^{-\left(\sin\theta\right)^{2}r^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\left(-\sin\theta\,rs_{\bot}\kappa^{2}\gamma_{\vect K}^{2}/4\tau\right)^{2k-m}
+B_{l'}^{m'}\equiv\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l'}^{-m'}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)e^{-\left(\sin\theta\right)^{2}r^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\left(-\sin\theta\,rs_{\bot}\kappa^{2}\gamma_{\vect K}^{2}/4\tau\right)^{2k-m'}
 \]
 
 \end_inset
@@ -503,11 +503,47 @@ Label
 ; then 
 \begin_inset Formula 
 \begin{align*}
-B_{l}^{m} & =\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l}^{-m}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)e^{-u\left(\sin\theta\right)^{2}}\left(-v\sin\theta\right)^{2k-m}\\
- & =\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l}^{-m}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)\left(-v\sin\theta\right)^{2k-m}\sum_{a=0}^{\infty}\frac{\left(-u\right)^{a}}{a!}\left(\sin\theta\right)^{2a}\\
- & =\left(-v\right)^{2k-m}\sum_{a=0}^{\infty}\frac{\left(-u\right)^{a}}{a!}\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l}^{-m}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)\left(\sin\theta\right)^{2a+2k-m}
+B_{l'}^{m'} & =\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l'}^{-m'}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)e^{-u\left(\sin\theta\right)^{2}}\left(-v\sin\theta\right)^{2k-m'}\\
+ & =\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l'}^{-m'}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)\left(-v\sin\theta\right)^{2k-m'}\sum_{a=0}^{\infty}\frac{\left(-u\right)^{a}}{a!}\left(\sin\theta\right)^{2a}\\
+ & =\left(-v\right)^{2k-m'}\sum_{a=0}^{\infty}\frac{\left(-u\right)^{a}}{a!}\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l'}^{-m'}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)\left(\sin\theta\right)^{2a+2k-m'}
 \end{align*}
 
+\end_inset
+
+If we now perform the limit 
+\begin_inset Formula $r\to0$
+\end_inset
+
+ and compare the radial parts (incl.
+ those in 
+\begin_inset Formula $u,v$
+\end_inset
+
+) powers, the leading term indices will have
+\begin_inset Formula 
+\[
+l'\sim l+2a+2k-m'
+\]
+
+\end_inset
+
+so we can fix 
+\begin_inset Formula $2a+2k-m'=l'-l$
+\end_inset
+
+ and get 
+\begin_inset Formula 
+\[
+\int_{0}^{\pi}\sin\theta\ud\theta\,P_{l'}^{-m'}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)\left(\sin\theta\right)^{l'-l}=\begin{cases}
+0 & l'-l+m'\text{ odd}\\
+? & l'-l+m'\text{ even}
+\end{cases}
+\]
+
+\end_inset
+
+
+\begin_inset Formula $ $
 \end_inset
 
 
