@@ -491,21 +491,12 @@ These are compatibility macros for the (...)-old files:
 \end_layout
 
 \begin_layout Title
+Many-particle 
 \begin_inset Formula $T$
 \end_inset
 
--matrix simulations in finite and infinite systems of electromagnetic scatterers
- 
-\begin_inset Marginal
-status open
-
-\begin_layout Plain Layout
-(TODO better title)
-\end_layout
-
-\end_inset
-
-
+-matrix simulations for nanophotonics: symmetries, scattering and lattice
+ modes
 \end_layout
 
 \begin_layout Standard
@@ -521,12 +512,19 @@ Multiple-scattering
 \end_layout
 
 \begin_layout Itemize
-Multiple-scattering 
+Many-particle 
 \begin_inset Formula $T$
 \end_inset
 
 -matrix simulations for nanophotonics: symmetries, scattering and lattice
  modes.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations in finite and infinite systems of electromagnetic scatterers
 \end_layout
 
 \begin_layout Standard
@@ -617,13 +615,23 @@ The T-matrix multiple scattering method (TMMSM) can be used to solve the
 \begin_layout Abstract
 Here we extend the method to infinite periodic structures using Ewald-type
  lattice summation, and we exploit the possible symmetries of the structure
- to further improve its efficiency.
+ to further improve its efficiency, so that systems containing tens of thousands
+ of particles can be studied with relative ease.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
 Should I mention also the cross sections formulae in abstract / intro?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -862,7 +870,7 @@ Given up
 
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
