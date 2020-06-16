@@ -105,8 +105,17 @@ name "sec:Applications"
 \end_layout
 
 \begin_layout Standard
-Finally, we present some results obtained with the QPMS suite as well as
- benchmarks with BEM.
+Finally, we present some results obtained with the QPMS suite
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+as well as benchmarks with BEM
+\end_layout
+
+\end_inset
+
+.
  Scripts to reproduce these results are available under the 
 \family typewriter
 examples
@@ -115,20 +124,16 @@ examples
 \end_layout
 
 \begin_layout Subsection
-Response of a rectangular nanoplasmonic array
+Optical response of a square array; finite size effects
 \end_layout
 
 \begin_layout Standard
-Our first example deals with a plasmonic array made of golden nanoparticles
- placed in a rectangular planar configuration.
- The nanoparticles have shape of right circular cylinder with radius 50
- nm and height 50 nm.
- The particles are placed with periodicities 
-\begin_inset Formula $p_{x}=\SI{621}{nm}$
-\end_inset
-
-, 
-\begin_inset Formula $p_{y}=\SI{571}{nm}$
+Our first example deals with a plasmonic array made of silver nanoparticles
+ placed in a square planar configuration.
+ The nanoparticles have shape of right circular cylinder with 30 nm radius
+ and 30 nm in height.
+ The particles are placed with periodicity 
+\begin_inset Formula $p_{x}=p_{y}=375\,\mathrm{nm}$
 \end_inset
 
  into an isotropic medium with a constant refraction index 
@@ -136,7 +141,30 @@ Our first example deals with a plasmonic array made of golden nanoparticles
 \end_inset
 
 .
- For gold, we use the optical properties listed in 
+ For silver, we use Drude-Lorentz model with parameters from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "rakic_optical_1998"
+literal "false"
+
+\end_inset
+
+, and the 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix of a single particle we compute using the null-field method (with
+ cutoff 
+\begin_inset Formula $l_{\mathrm{max}}=6$
+\end_inset
+
+ for solving the null-field equations).
+ 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+the optical properties listed in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "johnson_optical_1972"
@@ -145,7 +173,16 @@ literal "false"
 \end_inset
 
  interpolated with cubical splines.
- The particles' cylindrical shape is approximated with a triangular mesh
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The particles' cylindrical shape is approximated with a triangular mesh
  with XXX boundary elements.
 \begin_inset Marginal
 status open
@@ -159,40 +196,92 @@ Show the mesh as well?
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 We consider finite arrays with 
-\begin_inset Formula $N_{x}\times N_{y}=\ldots\times\ldots,\ldots\times\ldots,\ldots\times\ldots$
+\begin_inset Formula $N_{x}\times N_{y}=40\times40,70\times70,100\times100$
 \end_inset
 
  particles and also the corresponding infinite array, and simulate their
- absorption when irradiated by circularly polarised plane waves with energies
- from xx to yy and incidence direction lying in the 
+ absorption when irradiated by 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+circularly 
+\end_layout
+
+\end_inset
+
+ plane waves with incidence direction lying in the 
 \begin_inset Formula $xz$
 \end_inset
 
  plane.
- The results are shown in Figure 
+ We concentrate on the behaviour around the first diffracted order crossing
+ at the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point, which happens around frequency 
+\begin_inset Formula $2.18\,\mathrm{eV}/\hbar$
+\end_inset
+
+.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:Example rectangular absorption"
+reference "fig:Example rectangular absorption infinite"
 plural "false"
 caps "false"
 noprefix "false"
 
 \end_inset
 
-.
- 
-\begin_inset Marginal
-status open
+ shows the response for the infinite array for a range of frequencies; here
+ in particular we used the multipole cutoff 
+\begin_inset Formula $l_{\mathrm{max}}=3$
+\end_inset
 
-\begin_layout Plain Layout
-Mention lMax.
-\end_layout
+ for the interparticle interactions, although there is no visible difference
+ if we use 
+\begin_inset Formula $l_{\mathrm{max}}=2$
+\end_inset
+
+ instead due to the small size of the particles.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Example rectangular absorption size comparison"
+plural "false"
+caps "false"
+noprefix "false"
 
 \end_inset
 
+, we compare the response of differently sized array slightly below the
+ diffracted order crossing.
+ We see that far from the diffracted orders, all the cross sections are
+ almost directly proportional to the total number of particles.
+ However, near the resonances, the size effects become apparent: the lattice
+ resonances tend to fade away as the size of the array decreases.
+ Moreover, the proportion between the absorbed and scattered parts changes
+ as while the small arrays tend to more just scatter the incident light
+ into different directions, in larger arrays, it is more 
+\begin_inset Quotes eld
+\end_inset
 
+likely
+\begin_inset Quotes erd
+\end_inset
+
+ that the light will scatter many times, each time sacrifying a part of
+ its energy to the ohmic losses.
+ 
 \begin_inset Float figure
 placement document
 alignment document
@@ -201,37 +290,49 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/inf.pdf
+	width 45text%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figs/inf_big_px.pdf
+	width 45text%
+
+\end_inset
+
+ 
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Absorption of rectangular arrays of golden nanoparticles with periodicities
+Response of an infinite square array of silver nanoparticles with periodicities
  
-\begin_inset Formula $p_{x}=\SI{621}{nm}$
+\begin_inset Formula $p_{x}=p_{y}=375\,\mathrm{nm}$
 \end_inset
 
-, 
-\begin_inset Formula $p_{y}=\SI{571}{nm}$
+ to plane waves incident in the 
+\begin_inset Formula $xz$
 \end_inset
 
- with a) 
-\begin_inset Formula $\ldots\times\ldots$
+-plane.
+ Left: 
+\begin_inset Formula $y$
 \end_inset
 
-, b) 
-\begin_inset Formula $\ldots\times\ldots$
+-polarised waves, right: 
+\begin_inset Formula $x$
 \end_inset
 
-, c) 
-\begin_inset Formula $\ldots\times\ldots$
-\end_inset
-
- and d) infinitely many particles, irradiated by circularly polarised plane
- waves.
- e) Absoption profile of a single nanoparticle.
+-polarised waves.
+ The images show extinction, scattering and absorption cross section per
+ unit cell.
  
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:Example rectangular absorption"
+name "fig:Example rectangular absorption infinite"
 
 \end_inset
 
@@ -245,19 +346,114 @@ name "fig:Example rectangular absorption"
 
 \end_inset
 
-We compared the 
-\begin_inset Formula $\ldots\times\ldots$
-\end_inset
 
- case with a purely BEM-based solution obtained using the 
-\family typewriter
-scuff-scatter
-\family default
- utility.
- TODO WHAT DO WE GET? 
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/sqlat_scattering_cuts.pdf
+	width 90col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Comparison of optical responses of differently sized square arrays of silver
+ nanoparticles with the same periodicity 
+\begin_inset Formula $p_{x}=p_{y}=375\,\mathrm{nm}$
+\end_inset
+
+.
+ In all cases, the array is illuminated by plane waves linearly polarised
+ in the 
+\begin_inset Formula $y$
+\end_inset
+
+-direction, with constant frequency 
+\begin_inset Formula $2.15\,\mathrm{eV}/\hbar$
+\end_inset
+
+.
+ The cross sections are normalised by the total number of particles in the
+ array.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Example rectangular absorption size comparison"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The finite-size cases in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Example rectangular absorption size comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ were computed with quadrupole truncation 
+\begin_inset Formula $l\le2$
+\end_inset
+
+ and using the decomposition into the eight irreducible representations
+ of group 
+\begin_inset Formula $D_{2h}$
+\end_inset
+
+.
+ The 
+\begin_inset Formula $100\times100$
+\end_inset
+
+ array took about 4 h to compute on Dell PowerEdge C4130 with 12 core Xeon
+ E5 2680 v3 2.50GHz, requiring about 20 GB of RAM.
+ For smaller systems, the computation time decreases quickly, as the main
+ bottleneck is the LU factorisation.
+ In any case, there is still room for optimisation in the QPMS suite.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 In the infinite case, we benchmarked against a pseudorandom selection of
  
 \begin_inset Formula $\left(\vect k,\omega\right)$
@@ -285,15 +481,281 @@ TODO also details about the machines used.
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
-Modes of a rectangular nanoplasmonic array
+Lattice mode structure
+\end_layout
+
+\begin_layout Subsection
+Square lattice
 \end_layout
 
 \begin_layout Standard
-Next, we study the eigenmode problem of the same rectangular arrays.
- The system is lossy, therefore the eigenfrequencies are complex and we
- need to have a model of the material optical properties also for complex
- frequencies.
+Next, we study the lattice mode problem of the same square arrays.
+ First we consider the mode problem exactly at the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point, 
+\begin_inset Formula $\vect k=0$
+\end_inset
+
+.
+ Before proceeding with more sophisticated methods, it is often helpful
+ to look at the singular values of mode problem matrix 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+ from the lattice mode equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lattice mode equation"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, as shown in Fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:square lattice real interval SVD"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ This can be always done, even with tabulated/interpolated material properties
+ and/or 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices.
+ An additional insight, especially in the high-symmetry points of the Brillouin
+ zone, is provided by decomposition of the matrix into irreps – in this
+ case of group 
+\begin_inset Formula $D_{4h}$
+\end_inset
+
+, which corresponds to the point group symmetry of the array at the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point.
+ Although on the picture none of the SVDs hits manifestly zero, we see two
+ prominent dips in the 
+\begin_inset Formula $E'$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{2}''$
+\end_inset
+
+ irrep subspaces, which is a sign of an actual solution nearby in the complex
+ plane.
+ Moreover, there might be some less obvious minima in the very vicinity
+ of the diffracted order crossing which do not appear in the picture due
+ to rough frequency sampling.
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/cyl_r30nm_h30nm_p375nmx375nm_mAg_bg1.52_φ0_θ(-0.0075_0.0075)π_ψ0.5π_χ0π_f2.11–2.23eV_L3.pdf
+	width 80col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Singular values of the mode problem matrix 
+\begin_inset Formula $\truncated{M\left(\omega,\vect k=0\right)}3$
+\end_inset
+
+ for a real frequency interval.
+ The irreducible representations of 
+\begin_inset Formula $D_{4h}$
+\end_inset
+
+ are labeled with different colors.
+ The density of the data points on the horizontal axis is 
+\begin_inset Formula $1/\mathrm{meV}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:square lattice real interval SVD"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As we have used only analytical ingredients in 
+\begin_inset Formula $M\left(\omega,\vect k\right)$
+\end_inset
+
+, the matrix is itself analytical, hence Beyn's algorithm can be used to
+ search for complex mode frequencies, which is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:square lattice beyn dispersion"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ The number of the frequency point found is largely dependent on the parameters
+ used in Beyn's algorithm, mostly the integration contour in the frequency
+ space.
+ Here we used ellipses discretised by 250 points each, with edges nearly
+ touching the empty lattice diffracted orders (from either above or below
+ in the real part), and with major axis covering 1/5 of the interval between
+ two diffracted orders.
+ At the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point, the algorithm finds the actual complex positions of the suspected
+ 
+\begin_inset Formula $E'$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{2}''$
+\end_inset
+
+ modes without a problem, as well as their continuations to the other nearby
+ values of 
+\begin_inset Formula $\vect k$
+\end_inset
+
+.
+ However, for further 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ it might 
+\begin_inset Quotes eld
+\end_inset
+
+lose track
+\begin_inset Quotes erd
+\end_inset
+
+, especially as the modes cross the diffracted orders.
+ As a result, the parameters of Beyn's algorithm often require manual tuning
+ based on the observed behaviour.
+ 
+\begin_inset Float figure
+placement document
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figs/sqlat_beyn_dispersion.pdf
+	width 80col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Solutions of the lattice mode problem 
+\begin_inset Formula $\truncated{M\left(\omega,\vect k\right)}3$
+\end_inset
+
+ found using Beyn's method nearby the first diffracted order crossing at
+ the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point for 
+\begin_inset Formula $k_{y}=0$
+\end_inset
+
+.
+ At the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ point, they are classified according to the irreducible representations
+ of 
+\begin_inset Formula $D_{4h}$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:square lattice beyn dispersion"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The system is lossy, therefore the eigenfrequencies are complex and we need
+ to have a model of the material optical properties also for complex frequencies.
  So in this case we use the Drude-Lorentz model for gold with parameters
  as in 
 \begin_inset CommandInset citation
@@ -304,6 +766,11 @@ literal "false"
 \end_inset
 
 .
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection

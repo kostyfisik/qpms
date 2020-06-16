@@ -379,7 +379,13 @@ noprefix "false"
 
 describes the 
 \emph on
-lattice modes.
+lattice modes
+\emph default
+, i.e.
+ electromagnetic excitations that can sustain themselves for prolonged time
+ even without external driving
+\emph on
+.
 
 \emph default
  Non-trivial solutions to 
@@ -1724,7 +1730,32 @@ One pecularity of the two-dimensional case is the two-branchedness of the
 \begin_inset Formula $\Gamma\left(\frac{1}{2}-j,z\right)$
 \end_inset
 
- appearing in the long-range part.
+ appearing in the long-range part (in the cases 
+\begin_inset Formula $d=1,3$
+\end_inset
+
+ the function 
+\begin_inset Formula $\gamma\left(z\right)$
+\end_inset
+
+ appears with even powers, and 
+\begin_inset Formula $\Gamma\left(-j,z\right)$
+\end_inset
+
+ is meromorphic for integer 
+\begin_inset Formula $j$
+\end_inset
+
+  
+\begin_inset CommandInset citation
+LatexCommand cite
+after "8.2.9"
+key "NIST:DLMF"
+literal "false"
+
+\end_inset
+
+).
  As a consequence, if we now explicitly label the dependence on the wavenumber,
  
 \begin_inset Formula $\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\kappa,\vect k,\vect s\right)$
@@ -2108,6 +2139,18 @@ If we assume that
 
  is chosen to represent the (rough) maximum tolerated magnitude of the summand
  with regard to target accuracy.
+ This adjustment means that, in worst-case scenario, with growing wavenumber
+ one has to include an increasing number of terms in the long-range sum
+ in order to achieve a given accuracy, the number of terms being proportional
+ to 
+\begin_inset Formula $\left|\kappa\right|^{d}$
+\end_inset
+
+ where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the dimension of the lattice.
  
 \begin_inset Note Note
 status open
@@ -2228,8 +2271,8 @@ noprefix "false"
  translation operator: 
 \begin_inset Formula 
 \begin{align}
-\vswfrtlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\tropr_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),\nonumber \\
-\vswfouttlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm 21{m'}\left(0\right),\label{eq:VSWFs expressed as translated dipole waves}
+\vswfrtlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\tropr_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm21{m'}\left(0\right),\nonumber \\
+\vswfouttlm{\tau}lm\left(\kappa\vect r\right) & =\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\vect r\right)\vswfrtlm21{m'}\left(0\right),\label{eq:VSWFs expressed as translated dipole waves}
 \end{align}
 
 \end_inset
@@ -2256,7 +2299,7 @@ noprefix "false"
 \end_inset
 
  and the fact that all the other regular VSWFs except for 
-\begin_inset Formula $\vswfrtlm 21{m'}$
+\begin_inset Formula $\vswfrtlm21{m'}$
 \end_inset
 
  vanish at origin.
@@ -2329,10 +2372,10 @@ status open
 \begin_inset Formula 
 \begin{align*}
 \vect E_{\mathrm{scat}}\left(\vect r\right) & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\\
- & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lme^{i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm 21{m'}\left(0\right)\\
- & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lme^{-i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\left(\vect r+\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm 21{m'}\left(0\right),\text{FIXME signs}\\
- & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lme^{-i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\psi_{\lambda,m-m'}\left(\kappa\left(\vect r+\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm 21{m'}\left(0\right)\\
- & =\sum_{\alpha\in\mathcal{P}_{1}}e^{-i\vect k\cdot\left(\vect r-\vect r_{\alpha}\right)}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r-\vect r_{\alpha}\right)
+ & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect0,\alpha}{\tau}lme^{i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm21{m'}\left(0\right)\\
+ & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect0,\alpha}{\tau}lme^{-i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\trops_{\tau lm;21m'}\left(\kappa\left(\vect r+\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm21{m'}\left(0\right),\text{FIXME signs}\\
+ & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect0,\alpha}{\tau}lme^{-i\vect k\cdot\vect R_{\vect n}}\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\psi_{\lambda,m-m'}\left(\kappa\left(\vect r+\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\vswfrtlm21{m'}\left(0\right)\\
+ & =\sum_{\alpha\in\mathcal{P}_{1}}e^{-i\vect k\cdot\left(\vect r-\vect r_{\alpha}\right)}\sum_{\tau lm}\outcoeffptlm{\vect0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r-\vect r_{\alpha}\right)
 \end{align*}
 
 \end_inset
@@ -2350,7 +2393,7 @@ TODO fix signs and exponential phase factors
 \begin_inset Formula 
 \begin{align*}
 \vect E_{\mathrm{scat}}\left(\vect r\right) & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\\
- & =\sum_{\alpha\in\mathcal{P}_{1}}e^{-i\vect k\cdot\left(\vect r-\vect r_{\alpha}\right)}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r-\vect r_{\alpha}\right).
+ & =\sum_{\alpha\in\mathcal{P}_{1}}e^{-i\vect k\cdot\left(\vect r-\vect r_{\alpha}\right)}\sum_{\tau lm}\outcoeffptlm{\vect0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r-\vect r_{\alpha}\right).
 \end{align*}
 
 \end_inset
