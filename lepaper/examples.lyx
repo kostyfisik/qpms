@@ -291,6 +291,11 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/inf.pdf
 	width 45text%
@@ -305,6 +310,11 @@ status open
 \end_inset
 
  
+\end_layout
+
+\end_inset
+
+
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
@@ -363,9 +373,19 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/sqlat_scattering_cuts.pdf
 	width 90col%
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -572,9 +592,19 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/cyl_r30nm_h30nm_p375nmx375nm_mAg_bg1.52_φ0_θ(-0.0075_0.0075)π_ψ0.5π_χ0π_f2.11–2.23eV_L3.pdf
 	width 80col%
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -692,9 +722,19 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Graphics
 	filename figs/sqlat_beyn_dispersion.pdf
 	width 80col%
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 

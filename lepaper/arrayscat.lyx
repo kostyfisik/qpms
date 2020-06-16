@@ -491,24 +491,73 @@ These are compatibility macros for the (...)-old files:
 \end_layout
 
 \begin_layout Title
+Multiple-scattering 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations for nanophotonics: symmetries and periodic lattices
+\end_layout
+
+\begin_layout Author
+Marek Nečada
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+target "marek@necada.org"
+type "mailto:"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, Päivi Törmä
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset href
+LatexCommand href
+target "paivi.torma@aalto.fi"
+type "mailto:"
+literal "false"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Address
+Department of Applied Physics, Aalto University School of Science, P.O.
+ Box 15100, FI-00076 Aalto, Finland
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Alternative titles:
+\end_layout
+
+\begin_layout Itemize
 Many-particle 
 \begin_inset Formula $T$
 \end_inset
 
 -matrix simulations for nanophotonics: symmetries, scattering and lattice
  modes
-\end_layout
-
-\begin_layout Standard
-Alternative titles:
-\end_layout
-
-\begin_layout Itemize
-Multiple-scattering 
-\begin_inset Formula $T$
-\end_inset
-
--matrix simulations for nanophotonics: symmetries and periodic lattices.
 \end_layout
 
 \begin_layout Itemize
@@ -525,6 +574,11 @@ Many-particle
 \end_inset
 
 -matrix simulations in finite and infinite systems of electromagnetic scatterers
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -610,10 +664,7 @@ The T-matrix multiple scattering method (TMMSM) can be used to solve the
  retaining a good level of accuracy while using relatively few degrees of
  freedom, largely surpassing other methods in the number of scatterers it
  can deal with.
-\end_layout
-
-\begin_layout Abstract
-Here we extend the method to infinite periodic structures using Ewald-type
+ Here we extend the method to infinite periodic structures using Ewald-type
  lattice summation, and we exploit the possible symmetries of the structure
  to further improve its efficiency, so that systems containing tens of thousands
  of particles can be studied with relative ease.
@@ -636,10 +687,6 @@ Should I mention also the cross sections formulae in abstract / intro?
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Abstract
 We release a modern implementation of the method, including the theoretical
  improvements presented here, under GNU General Public Licence.
 \end_layout
