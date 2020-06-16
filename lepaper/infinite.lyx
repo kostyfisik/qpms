@@ -2205,9 +2205,9 @@ noprefix "false"
 
 , taking the sums over scatterers inside one unit cell, to get the extinction
  and absorption cross sections per unit cell.
- From these, quantities such as absorption, extinction coefficients are
- obtained using suitable normalisation by unit cell size, depending on lattice
- dimensionality.
+ From these, quantities such as absorption, extinction and scattering coefficien
+ts are obtained using suitable normalisation by unit cell size, depending
+ on lattice dimensionality.
 \end_layout
 
 \begin_layout Standard

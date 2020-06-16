@@ -207,11 +207,11 @@ TODO Zkontrolovat všechny vzorečky zde!!!
 
 In order to make use of the point group symmetries, we first need to know
  how they affect our basis functions, i.e.
- the VSWFs.
-\end_layout
+\begin_inset space \space{}
+\end_inset
 
-\begin_layout Standard
-Let 
+the VSWFs.
+ Let 
 \begin_inset Formula $g$
 \end_inset
 
@@ -220,8 +220,10 @@ Let
 \end_inset
 
 , i.e.
- a 3D point rotation or reflection operation that transforms vectors in
- 
+\begin_inset space \space{}
+\end_inset
+
+a 3D point rotation or reflection operation that transforms vectors in 
 \begin_inset Formula $\reals^{3}$
 \end_inset
 
@@ -281,8 +283,8 @@ Spherical harmonics
 , transform as 
 \begin_inset CommandInset citation
 LatexCommand cite
-after "???"
-key "dresselhaus_group_2008"
+after "Chapter 15"
+key "wigner_group_1959"
 literal "false"
 
 \end_inset
@@ -429,11 +431,11 @@ noprefix "false"
 
 \end_inset
 
-(and analogously for the regular waves 
+and analogously for the regular waves 
 \begin_inset Formula $\vswfrtlm{\tau}lm$
 \end_inset
 
-).
+.
  
 \begin_inset Note Note
 status open
@@ -767,7 +769,7 @@ With these transformation properties in hand, we can proceed to the effects
  & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right.\\
  & \quad+\left.\outcoeffptlm p{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{\pi_{g}p}\right)\right)\right)\\
  & =\sum_{\tau=1,2}\sum_{l=1}^{\infty}\sum_{m=-l}^{+l}\sum_{m'=-l}^{l}\left(\rcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfrtlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{q}\right)\right)\right.\\
- & \quad+\left.\outcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{q}\right)\right)\right)
+ & \quad+\left.\outcoeffptlm{\pi_{g}^{-1}q}{\tau}lmD_{m,\mu'}^{\tau l}\left(g\right)\vswfouttlm{\tau}l{m'}\left(\kappa\left(\vect r-\vect r_{q}\right)\right)\right).
 \end{align*}
 
 \end_inset
@@ -799,7 +801,11 @@ For a given particle
 \begin_inset Formula $p$
 \end_inset
 
-, i.e.
+,
+\begin_inset space \space{}
+\end_inset
+
+i.e.
  the set 
 \begin_inset Formula $\left\{ \pi_{g}\left(p\right);g\in G\right\} $
 \end_inset
@@ -853,7 +859,17 @@ noprefix "false"
 
 \end_inset
 
- (TODO avoid notation clash here in a more consistent and readable way!)
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(TODO avoid notation clash here in a more consistent and readable way!)
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula 
 \begin{align}
 \rcoeffp p & \overset{g}{\longmapsto}\tilde{J}\left(g\right)\rcoeffp{\pi_{g}^{-1}(p)},\nonumber \\
@@ -942,7 +958,7 @@ ing problem matrix
 \begin_inset Formula $G$
 \end_inset
 
-consisting of matrices 
+ consisting of matrices 
 \begin_inset Formula $D^{\Gamma_{n}}\left(g\right)$
 \end_inset
 
@@ -1050,7 +1066,7 @@ literal "false"
  or 
 \begin_inset CommandInset citation
 LatexCommand cite
-after "???"
+after "Chapter 2"
 key "bradley_mathematical_1972"
 literal "false"
 
@@ -1187,7 +1203,10 @@ Also for periodic systems,
 \end_inset
 
  from the left hand side of eqs.
- 
+\begin_inset space \space{}
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:Multiple-scattering problem unit cell block form"
@@ -1230,7 +1249,7 @@ s happens unless
  lies somewhere in the high-symmetry parts of the Brillouin zone.
  However, the high-symmetry points are usually the ones of the highest physical
  interest, for it is where the band edges are typically located.
- The subsection does not aim for an exhaustive treatment of the topic of
+ This subsection does not aim for an exhaustive treatment of the topic of
  space groups in physics (which can be found elsewhere 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1414,7 +1433,10 @@ The transformation to the symmetry adapted basis
 : this can happen if the point group symmetry maps some of the scatterers
  from the reference unit cell to scatterers belonging to other unit cells.
  This is illustrated in Fig.
- 
+\begin_inset space \space{}
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "Phase factor illustration"
@@ -1426,7 +1448,10 @@ noprefix "false"
 
 .
  Fig.
- 
+\begin_inset space \space{}
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "Phase factor illustration"
@@ -1449,21 +1474,21 @@ a shows a hexagonal periodic array with
 \end_inset
 
 .
- If we delimit our representative unit cell as the Wigner-Seitz cell with
- origin in a 
+ We delimit our representative unit cell as the Wigner-Seitz cell with origin
+ in a 
 \begin_inset Formula $D_{6}$
 \end_inset
 
- point group symmetry center (there is one per each unit cell).
- Per unit cell, there are five different particles placed on the unit cell
- boundary, and we need to make a choice to which unit cell the particles
- on the boundary belong; in our case, we choose that a unit cell includes
- the particles on the left as denoted by different colors.
+ point group symmetry center (there is one per each unit cell); per unit
+ cell, there are five different particles placed on the unit cell boundary,
+ and we need to make a choice to which unit cell the particles on the boundary
+ belong; in our case, we choose that a unit cell includes the particles
+ on the left as denoted by different colors.
  If the Bloch vector is at the upper 
 \begin_inset Formula $M$
 \end_inset
 
-point, 
+ point, 
 \begin_inset Formula $\vect k=\vect M_{1}=\left(0,2\pi/\sqrt{3}a\right)$
 \end_inset
 
@@ -1503,7 +1528,10 @@ horizontal
 \end_inset
 
 as in eq.
- 
+\begin_inset space \space{}
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:excitation coefficient under symmetry operation"
@@ -1577,7 +1605,7 @@ If we set instead
 \begin_inset Formula $\vect k=\vect K=\left(4\pi/3a,0\right),$
 \end_inset
 
-the original 
+ the original 
 \begin_inset Formula $D_{6}$
 \end_inset
 
