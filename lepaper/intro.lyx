@@ -112,7 +112,7 @@ y small, compact scatterers in various geometries, and its numerical solution,
  metalic or dielectric nanoparticle arrays 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "wang_rich_2018"
+key "zou_silver_2004,garcia_de_abajo_colloquium:_2007,wang_rich_2018,kravets_plasmonic_2018"
 literal "false"
 
 \end_inset
@@ -129,28 +129,28 @@ literal "false"
 , strong coupling between light and quantum emitters 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "vakevainen_plasmonic_2014,ramezani_strong_2019,torma_strong_2015,fedele_strong_2016"
+key "vakevainen_plasmonic_2014,ramezani_strong_2019,torma_strong_2015"
 literal "false"
 
 \end_inset
 
-, nano-lasing
+, weak and strong coupling lasing and Bose-Einstein condensation 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "zhou_lasing_2013,hakala_lasing_2017"
+key "zhou_lasing_2013,hakala_lasing_2017,guo_lasing_2019,hakala_boseeinstein_2018,yang_real-time_2015,ramezani_plasmon-exciton-polariton_2017,vakevainen_sub-picosecond_2020,wang_structural_2018"
 literal "false"
 
 \end_inset
 
-, Bose-Einstein condensation of surface plasmon-polaritons 
+, magneto-optical effects 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "hakala_boseeinstein_2018,ramezani_strong_2019"
+key "kataja_surface_2015"
 literal "false"
 
 \end_inset
 
- or sensing 
+, or sensing 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kuttner_plasmonics_2018"
@@ -374,6 +374,54 @@ infinite periodic systems
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The power of the method has been already demonstrated by several works where
+ we used it to explain experimental observations: the finite lattice size
+ effects on dipole patterns and phase profiles of the nanoparticle lattice
+ modes in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hakala_lasing_2017"
+literal "false"
+
+\end_inset
+
+, symmetry and polarisation analysis of the modes at the 
+\begin_inset Formula $K$
+\end_inset
+
+-point of a honeycomb nanopatricle lattice in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "guo_lasing_2019"
+literal "false"
+
+\end_inset
+
+, the structure of lasing modes in a Ni nanoparticle array 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "pourjamal_lasing_2019"
+literal "false"
+
+\end_inset
+
+ and energy spacing between the 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+-point modes in a finite lattice 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "vakevainen_sub-picosecond_2020"
+literal "false"
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Standard
