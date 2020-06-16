@@ -191,10 +191,10 @@ zkontroluj reference, přidej referenci na frequency domain fem
 
 ) include the field degrees of freedom (DoF) of the background medium (which
  can have very large volumes), whereas integral approaches such as the boundary
- element method (BEM, a.k.a the method of moments, MOM, 
+ element method (BEM, a.k.a the method of moments, MOM 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "medgyesi-mitschang_generalized_1994,reid_efficient_2015"
+key "harrington_field_1993,medgyesi-mitschang_generalized_1994,reid_efficient_2015"
 literal "false"
 
 \end_inset
@@ -221,8 +221,20 @@ s used in nanophotonics: there are modes in which the particles' electric
  dipole moments completely vanish due to symmetry, and regardless of how
  small the particles are, the excitations have quadrupolar or higher-degree
  multipolar character.
- These modes typically appear at the band edges where interesting phenomena
- such as lasing or Bose-Einstein condensation have been observed 
+ These modes, belonging to a category that is sometimes called 
+\emph on
+optical bound states in the continuum (BIC)
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hsu_bound_2016"
+literal "false"
+
+\end_inset
+
+, typically appear at the band edges where interesting phenomena such as
+ lasing or Bose-Einstein condensation have been observed 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "guo_lasing_2019,pourjamal_lasing_2019,hakala_lasing_2017,yang_real-time_2015,hakala_boseeinstein_2018"
@@ -238,10 +250,14 @@ The natural way to overcome both limitations of CDA mentioned above is to
  take higher multipoles into account.
  Instead of a polarisability tensor, the scattering properties of an individual
  particle are then described with more general 
+\emph on
+transition matrix
+\emph default
+ (commonly known as 
 \begin_inset Formula $T$
 \end_inset
 
--matrix, and different particles' multipole excitations are coupled together
+-matrix), and different particles' multipole excitations are coupled together
  via translation operators, a generalisation of the Green's functions used
  in CDA.
  This is the idea behind the 
@@ -332,12 +348,12 @@ However, the potential of MSTMM reaches far beyond its past implementations.
  This enables, among other things, to use MSTMM for fast solving of the
  lattice modes of such periodic systems, and comparing them to their finite
  counterparts with respect to electromagnetic response, which is useful
- to isolate the bulk and finite-size phenomena of photonic arrays.
+ to isolate the bulk and finite-size phenomena of photonic lattices.
  Moreover, we exploit symmetries of the system to decompose the problem
  into several substantially smaller ones, which provides better understanding
  of modes, mainly in periodic systems, and substantially reduces the demands
  on computational resources, hence speeding up the computations and allowing
- for finite size simulations of systems with particle counts practically
+ for finite size simulations of systems with particle numbers practically
  impossible to reliably simulate with any other method.
 \begin_inset Note Note
 status open
