@@ -4,12 +4,17 @@
 \begin_header
 \save_transient_properties true
 \origin unavailable
-\textclass article
+\textclass amsart
 \begin_preamble
 \DeclareUnicodeCharacter{0428}{Ш }
 \usepackage{tikz}
 \end_preamble
 \use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
 \maintain_unincluded_children false
 \language english
 \language_package default
@@ -491,6 +496,18 @@ These are compatibility macros for the (...)-old files:
 \end_layout
 
 \begin_layout Title
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations: symmetries and periodic lattices
+\end_layout
+
+\end_inset
+
 Multiple-scattering 
 \begin_inset Formula $T$
 \end_inset
@@ -500,166 +517,73 @@ Multiple-scattering
 
 \begin_layout Author
 Marek Nečada
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset href
-LatexCommand href
-target "marek@necada.org"
-type "mailto:"
-literal "false"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-, Päivi Törmä
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-\begin_inset CommandInset href
-LatexCommand href
-target "paivi.torma@aalto.fi"
-type "mailto:"
-literal "false"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Address
-Department of Applied Physics, Aalto University School of Science, P.O.
- Box 15100, FI-00076 Aalto, Finland
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Alternative titles:
-\end_layout
-
-\begin_layout Itemize
-Many-particle 
-\begin_inset Formula $T$
+Department of Applied Physics 
+\begin_inset Newline newline
 \end_inset
 
--matrix simulations for nanophotonics: symmetries, scattering and lattice
- modes
-\end_layout
-
-\begin_layout Itemize
-Many-particle 
-\begin_inset Formula $T$
+Aalto University School of Science
+\begin_inset Newline newline
 \end_inset
 
--matrix simulations for nanophotonics: symmetries, scattering and lattice
- modes.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $T$
+P.O.
+ Box 15100
+\begin_inset Newline newline
 \end_inset
 
--matrix simulations in finite and infinite systems of electromagnetic scatterers
-\end_layout
-
+FI-00076 Aalto
+\begin_inset Newline newline
 \end_inset
 
-
+Finland
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Excerpt from the SIAM Journal of Scientific Computing Editorial Policy:
+\begin_layout Email
+marek@necada.org
 \end_layout
 
-\begin_layout Quotation
-The purpose of SIAM Journal on Scientific Computing (SISC) is to advance
- computational methods for solving scientific and engineering problems.
+\begin_layout Author
+Päivi Törmä
 \end_layout
 
-\begin_layout Quotation
-SISC papers are classified into three categories:
-\begin_inset Separator latexpar
+\begin_layout Address
+Department of Applied Physics 
+\begin_inset Newline newline
 \end_inset
 
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Methods and Algorithms for Scientific Computing: Papers in this category
- may include theoretical analysis, provided that the relevance to applications
- in science and engineering is demonstrated.
- They should contain meaningful computational results and theoretical results
- or strong heuristics supporting the performance of new algorithms.
- 
-\end_layout
-
-\begin_layout Itemize
-Computational Methods in Science and Engineering: Papers in this section
- will typically describe novel methodologies for solving a specific problem
- in computational science or engineering.
- They should contain enough information about the application to orient
- other computational scientists but should omit details of interest mainly
- to the applications specialist.
- 
-\end_layout
-
-\begin_layout Itemize
-Software and High-Performance Computing: Papers in this category should
- concern the novel design and development of computational methods and high-qual
-ity software, parallel algorithms, high-performance computing issues, new
- architectures, data analysis, or visualization.
- The primary focus should be on computational methods that have potentially
- large impact for an important class of scientific or engineering problems.
-\end_layout
-
-\end_deeper
-\begin_layout Quotation
-Authors are encouraged to indicate which category best fits their SISC submissio
-n.
-\end_layout
-
-\begin_layout Quotation
-All submissions to SISC must be well written and accessible to a wide variety
- of readers, and should represent a clear advance in the state of the art.
-\end_layout
-
-\begin_layout Quotation
-Due to space limitations, articles are normally limited to 20 journal pages.
- Exceptions can be made in special cases only with the concurrence of the
- referees, the associate editor, and the editor-in-chief.
- 
-\end_layout
-
-\begin_layout Plain Layout
-Category: Methods and Algorithms for Scientific Computing?
-\end_layout
-
+Aalto University School of Science
+\begin_inset Newline newline
 \end_inset
 
+P.O.
+ Box 15100
+\begin_inset Newline newline
+\end_inset
 
+FI-00076 Aalto
+\begin_inset Newline newline
+\end_inset
+
+Finland
+\end_layout
+
+\begin_layout Email
+paivi.torma@aalto.fi
+\end_layout
+
+\begin_layout Subjectclass
+78-10, 78-04, 78M16, 78A45, 65R20, 35B27
+\end_layout
+
+\begin_layout Keywords
+T-matrix, multiple scattering, lattice modes, symmetry-adapted basis, metamateri
+als, Ewald summation
 \end_layout
 
 \begin_layout Abstract
-The T-matrix multiple scattering method (TMMSM) can be used to solve the
+The multiple scattering method T-matrix (MSTMM) can be used to solve the
  electromagnetic response of systems consisting of many compact scatterers,
  retaining a good level of accuracy while using relatively few degrees of
  freedom, largely surpassing other methods in the number of scatterers it
@@ -924,6 +848,112 @@ status open
 \begin_layout Plain Layout
 The text about symmetries is pretty dense.
  Make it more explanatory and human-readable.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Alternative titles:
+\end_layout
+
+\begin_layout Itemize
+Many-particle 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations for nanophotonics: symmetries, scattering and lattice
+ modes
+\end_layout
+
+\begin_layout Itemize
+Many-particle 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations for nanophotonics: symmetries, scattering and lattice
+ modes.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $T$
+\end_inset
+
+-matrix simulations in finite and infinite systems of electromagnetic scatterers
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Excerpt from the SIAM Journal of Scientific Computing Editorial Policy:
+\end_layout
+
+\begin_layout Quotation
+The purpose of SIAM Journal on Scientific Computing (SISC) is to advance
+ computational methods for solving scientific and engineering problems.
+\end_layout
+
+\begin_layout Quotation
+SISC papers are classified into three categories:
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Methods and Algorithms for Scientific Computing: Papers in this category
+ may include theoretical analysis, provided that the relevance to applications
+ in science and engineering is demonstrated.
+ They should contain meaningful computational results and theoretical results
+ or strong heuristics supporting the performance of new algorithms.
+\end_layout
+
+\begin_layout Itemize
+Computational Methods in Science and Engineering: Papers in this section
+ will typically describe novel methodologies for solving a specific problem
+ in computational science or engineering.
+ They should contain enough information about the application to orient
+ other computational scientists but should omit details of interest mainly
+ to the applications specialist.
+\end_layout
+
+\begin_layout Itemize
+Software and High-Performance Computing: Papers in this category should
+ concern the novel design and development of computational methods and high-qual
+ity software, parallel algorithms, high-performance computing issues, new
+ architectures, data analysis, or visualization.
+ The primary focus should be on computational methods that have potentially
+ large impact for an important class of scientific or engineering problems.
+\end_layout
+
+\end_deeper
+\begin_layout Quotation
+Authors are encouraged to indicate which category best fits their SISC submissio
+n.
+\end_layout
+
+\begin_layout Quotation
+All submissions to SISC must be well written and accessible to a wide variety
+ of readers, and should represent a clear advance in the state of the art.
+\end_layout
+
+\begin_layout Quotation
+Due to space limitations, articles are normally limited to 20 journal pages.
+ Exceptions can be made in special cases only with the concurrence of the
+ referees, the associate editor, and the editor-in-chief.
+\end_layout
+
+\begin_layout Plain Layout
+Category: Methods and Algorithms for Scientific Computing?
 \end_layout
 
 \end_inset
