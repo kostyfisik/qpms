@@ -1023,6 +1023,20 @@ literal "true"
 
 \end_layout
 
+\begin_layout Section
+Acknowledgements
+\end_layout
+
+\begin_layout Standard
+We thank Kristian Arjas and Javier Cuerda for useful discussions.
+ This work was supported by the Academy of Finland under project numbers
+ 303351, 307419, 327293, 318987 (QuantERA project RouTe), and 318937 (PROFI),
+ by Centre for Quantum Engineering (CQE) at Aalto University, and by the
+ European Research Council (ERC-2013-AdG-340748-CODE).
+ We acknowledge the computational resources provided by the Aalto Science-IT
+ project.
+\end_layout
+
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
