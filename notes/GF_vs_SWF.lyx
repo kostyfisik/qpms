@@ -416,8 +416,8 @@ and mutliplying with dual SH and integrating
 \begin_inset Formula 
 \begin{align*}
 \int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right) & =-i\kappa\sum_{\vect R\in\Lambda}\sum_{lm}\mathcal{H}'_{l}^{m}\left(-\kappa\left(\vect s-\vect R\right)\right)j_{l}\left(\kappa\left|\vect r\right|\right)\delta_{ll'}\delta_{mm'}e^{i\vect k\cdot\vect R}\\
- & =-i\kappa\sum_{\vect R\in\Lambda}\mathcal{H}'_{l'}^{m'}\left(\kappa\left(-\vect s+\vect R\right)\right)j_{l}\left(\kappa\left|\vect r\right|\right)e^{i\vect k\cdot\vect R}\\
- & =-i\kappa\sigma'_{l'}^{m'}\left(-\vect s,\vect k\right)j_{l}\left(\kappa\left|\vect r\right|\right)
+ & =-i\kappa\sum_{\vect R\in\Lambda}\mathcal{H}'_{l'}^{m'}\left(\kappa\left(-\vect s+\vect R\right)\right)j_{l'}\left(\kappa\left|\vect r\right|\right)e^{i\vect k\cdot\vect R}\\
+ & =-i\kappa\sigma'_{l'}^{m'}\left(-\vect s,\vect k\right)j_{l'}\left(\kappa\left|\vect r\right|\right)
 \end{align*}
 
 \end_inset

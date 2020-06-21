@@ -1,0 +1,539 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 584
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+1D in 3D Ewald sum
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\abs}[1]{\left|#1\right|}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\uvec}[1]{\hat{\mathbf{#1}}}
+\end_inset
+
+
+\lang english
+
+\begin_inset FormulaMacro
+\newcommand{\ush}[2]{Y_{#1}^{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ushD}[2]{Y'_{#1}^{#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vsh}{\vect A}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vshD}{\vect{A'}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wfkc}{\vect y}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wfkcout}{\vect u}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wfkcreg}{\vect v}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wckcreg}{a}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wckcout}{f}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+General formula
+\end_layout
+
+\begin_layout Standard
+We need to find the expansion coefficient
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{i}{\kappa j_{l'}\left(\kappa\left|\vect r\right|\right)}\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right).\label{eq:tau extraction formula}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+[Linton, (2.24)] with slightly modified notation and setting 
+\begin_inset Formula $d_{c}=2$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect r}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t
+\]
+
+\end_inset
+
+or, evaluated at point 
+\begin_inset Formula $\vect s+\vect r$
+\end_inset
+
+ instead
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t
+\]
+
+\end_inset
+
+The integral can be by substitutions taken into the form 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{2\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\int_{1/\eta}^{\infty\exp\left(i\pi/4\right)}e^{-\kappa^{2}\gamma_{m}^{2}\zeta^{2}/4}e^{-\left|\vect r_{\bot}\right|^{2}/\zeta^{2}}\zeta^{1-d_{c}}\ud\zeta
+\]
+
+\end_inset
+
+Try substitution 
+\begin_inset Formula $t=\zeta^{2}$
+\end_inset
+
+: then 
+\begin_inset Formula $\ud t=2\zeta\,\ud\zeta$
+\end_inset
+
+ (
+\begin_inset Formula $\ud\zeta=\ud t/2t^{1/2}$
+\end_inset
+
+) and
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\int_{1/\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\kappa^{2}\gamma_{m}^{2}t/4}e^{-\left|\vect r_{\bot}\right|^{2}/t}t^{\frac{-d_{c}}{2}}\ud t
+\]
+
+\end_inset
+
+Try subst.
+ 
+\begin_inset Formula $\tau=k^{2}\gamma_{m}^{2}/4$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang english
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\left(\frac{\kappa\gamma_{m}}{2}\right)^{d_{c}}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{\frac{-d_{c}}{2}}\ud\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+[Linton, (2.25)] with slightly modified notation:
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect r}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2j-1}\Gamma_{j\vect K}
+\]
+
+\end_inset
+
+We want to express an expansion in a shifted point, so let's substitute
+ 
+\begin_inset Formula $\vect r\to\vect s+\vect r$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2j-1}\Gamma_{j\vect K}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Let's do the integration to get 
+\begin_inset Formula $\tau_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
+\]
+
+\end_inset
+
+The 
+\begin_inset Formula $\vect r$
+\end_inset
+
+-dependent plane wave factor can be also written as
+\begin_inset Formula 
+\begin{align*}
+e^{i\vect K\cdot\vect r} & =e^{i\left|\vect K\right|\vect r\cdot\uvec K}=4\pi\sum_{lm}i^{l}\mathcal{J}'_{l}^{m}\left(\left|\vect K\right|\vect r\right)\ush lm\left(\uvec K\right)\\
+ & =4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec{\vect r}\right)\ush lm\left(\uvec K\right)
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+or the other way around
+\begin_inset Formula 
+\[
+e^{i\vect K\cdot\vect r}=4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect r}\right)\ushD lm\left(\uvec K\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+so
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec K\right)\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We also have
+\begin_inset Formula 
+\begin{align*}
+e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau} & =e^{-\left(\left|\vect s_{\bot}\right|^{2}+\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\\
+ & =e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4\tau}\right)^{n},
+\end{align*}
+
+\end_inset
+
+hence
+\begin_inset Formula 
+\begin{align*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right) & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\underbrace{\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}-n}\ud\tau}_{\Delta_{n}^{\left(d\right)}}\\
+ & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\Delta_{n}^{\left(d\right)}}{n!}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\\
+ & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2(n-k)}\left(2\vect r_{\bot}\cdot\vect s_{\bot}\right)^{k}
+\end{align*}
+
+\end_inset
+
+If we label 
+\begin_inset Formula $\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|\cos\varphi\equiv\vect r_{\bot}\cdot\vect s_{\bot}$
+\end_inset
+
+, we have
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2n-k}\left(\cos\varphi\right)^{k}
+\]
+
+\end_inset
+
+and if we label 
+\begin_inset Formula $\left|\vect r\right|\sin\vartheta\equiv\left|\vect r_{\bot}\right|$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\left|\vect r\right|^{2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{2n-k}\left(\cos\varphi\right)^{k}
+\]
+
+\end_inset
+
+Now let's put the RHS into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction formula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and try eliminating some sum by taking the limit 
+\begin_inset Formula $\left|\vect r\right|\to0$
+\end_inset
+
+.
+ We have 
+\begin_inset Formula $j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\sim\left(\left|\vect K\right|\left|\vect r\right|\right)^{l}/\left(2l+1\right)!!$
+\end_inset
+
+; the denominator from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction formula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ behaves like 
+\begin_inset Formula $j_{l'}\left(\kappa\left|\vect r\right|\right)\sim\left(\kappa\left|\vect r\right|\right)^{l'}/\left(2l'+1\right)!!.$
+\end_inset
+
+ The leading terms are hence those with 
+\begin_inset Formula $\left|\vect r\right|^{l-l'+2n-k}$
+\end_inset
+
+.
+ So 
+\begin_inset Formula 
+\[
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\delta_{l'-l,2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{k}.
+\]
+
+\end_inset
+
+Let's now focus on rearranging the sums; we have
+\begin_inset Formula 
+\[
+S(l')\equiv\sum_{l=0}^{\infty}\sum_{n=0}^{\infty}\sum_{k=0}^{n}\delta_{l'-l,2n-k}f(l',l,n,k)=\sum_{l=0}^{\infty}\sum_{n=0}^{\infty}\sum_{k=0}^{n}\delta_{l'-l,2n-k}f(l',l,n,2n-l'+l)
+\]
+
+\end_inset
+
+We have 
+\begin_inset Formula $0\le k\le n$
+\end_inset
+
+, hence 
+\begin_inset Formula $0\le2n-l'+l\le n$
+\end_inset
+
+, hence 
+\begin_inset Formula $-2n\le-l'+l\le-n$
+\end_inset
+
+, hence also 
+\begin_inset Formula $l'-2n\le l\le l'-n$
+\end_inset
+
+, which gives the opportunity to swap the 
+\begin_inset Formula $l,n$
+\end_inset
+
+ sums and the 
+\begin_inset Formula $l$
+\end_inset
+
+-sum becomes finite; so also consuming 
+\begin_inset Formula $\sum_{k=0}^{n}\delta_{l'-l,2n-k}$
+\end_inset
+
+ we get 
+\begin_inset Formula 
+\[
+S(l')=\sum_{n=0}^{\infty}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
+\]
+
+\end_inset
+
+Finally, we see that the interval of valid 
+\begin_inset Formula $l$
+\end_inset
+
+ becomes empty when 
+\begin_inset Formula $l'-n<0$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $n>l'$
+\end_inset
+
+; so we get a finite sum
+\begin_inset Formula 
+\[
+S(l')=\sum_{n=0}^{l'}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
+\]
+
+\end_inset
+
+Applying rearrangement,
+\begin_inset Formula 
+\[
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa^{'}}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{2n-l'+l},
+\]
+
+\end_inset
+
+or replacing the anles with their original definition,
+\begin_inset Formula 
+\[
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa^{'}}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2n-l'+l},
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
