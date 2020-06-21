@@ -164,6 +164,25 @@
 
 \end_layout
 
+\begin_layout Section
+General formula
+\end_layout
+
+\begin_layout Standard
+We need to find the expansion coefficient
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{i}{\kappa j_{l'}\left(\kappa\left|\vect r\right|\right)}\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right).\label{eq:tau extraction formula}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 [Linton, (2.24)] with slightly modified notation and setting 
 \begin_inset Formula $d_{c}=2$
@@ -354,13 +373,259 @@ e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}
 
 hence
 \begin_inset Formula 
+\begin{align*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right) & =-\frac{1}{2\pi\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\underbrace{\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-1-n}\ud\tau}_{\Delta_{n+1/2}}\\
+ & =-\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\Delta_{n+1/2}}{n!}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\\
+ & =-\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2(n-k)}\left(2\vect r_{\bot}\cdot\vect s_{\bot}\right)^{k}
+\end{align*}
+
+\end_inset
+
+If we label 
+\begin_inset Formula $\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|\cos\varphi\equiv\vect r_{\bot}\cdot\vect s_{\bot}$
+\end_inset
+
+, we have
+\begin_inset Formula 
 \[
-\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\underbrace{\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-1-n}\ud\tau}_{\Delta_{n+1/2}}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2n-k}\left(\cos\varphi\right)^{k}
+\]
+
+\end_inset
+
+and if we label 
+\begin_inset Formula $\left|\vect r\right|\sin\theta\equiv\left|\vect r_{\bot}\right|$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\left|\vect r\right|^{2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\theta\right)^{2n-k}\left(\cos\varphi\right)^{k}
+\]
+
+\end_inset
+
+Now let's put the RHS into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction formula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and try eliminating some sum by taking the limit 
+\begin_inset Formula $\left|\vect r\right|\to0$
+\end_inset
+
+.
+ We have 
+\begin_inset Formula $j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\sim\left(\left|\vect K\right|\left|\vect r\right|\right)^{l}/\left(2l+1\right)!!$
+\end_inset
+
+; the denominator from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction formula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ behaves like 
+\begin_inset Formula $j_{l'}\left(\kappa\left|\vect r\right|\right)\sim\left(\kappa\left|\vect r\right|\right)^{l'}/\left(2l'+1\right)!!.$
+\end_inset
+
+ The leading terms are hence those with 
+\begin_inset Formula $\left|\vect r\right|^{l-l'+2n-k}$
+\end_inset
+
+.
+ So 
+\begin_inset Formula 
+\[
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\delta_{l'-l,2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\theta\right)^{l'-l}\left(\cos\varphi\right)^{k}.
+\]
+
+\end_inset
+
+Let's now focus on rearranging the sums; we have
+\begin_inset Formula 
+\[
+S(l')\equiv\sum_{l=0}^{\infty}\sum_{n=0}^{\infty}\sum_{k=0}^{n}\delta_{l'-l,2n-k}f(l',l,n,k)=\sum_{l=0}^{\infty}\sum_{n=0}^{\infty}\sum_{k=0}^{n}\delta_{l'-l,2n-k}f(l',l,n,2n-l'+l)
+\]
+
+\end_inset
+
+We have 
+\begin_inset Formula $0\le k\le n$
+\end_inset
+
+, hence 
+\begin_inset Formula $0\le2n-l'+l\le n$
+\end_inset
+
+, hence 
+\begin_inset Formula $-2n\le-l'+l\le-n$
+\end_inset
+
+, hence also 
+\begin_inset Formula $l'-2n\le l\le l'-n$
+\end_inset
+
+, which gives the opportunity to swap the 
+\begin_inset Formula $l,n$
+\end_inset
+
+ sums and the 
+\begin_inset Formula $l$
+\end_inset
+
+-sum becomes finite; so also consuming 
+\begin_inset Formula $\sum_{k=0}^{n}\delta_{l'-l,2n-k}$
+\end_inset
+
+ we get 
+\begin_inset Formula 
+\[
+S(l')=\sum_{n=0}^{\infty}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
+\]
+
+\end_inset
+
+Finally, we see that the interval of valid 
+\begin_inset Formula $l$
+\end_inset
+
+ becomes empty when 
+\begin_inset Formula $l'-n<0$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $n>l'$
+\end_inset
+
+; so we get a finite sum
+\begin_inset Formula 
+\[
+S(l')=\sum_{n=0}^{l'}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
+\]
+
+\end_inset
+
+Applying rearrangement,
+\begin_inset Formula 
+\[
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\theta\right)^{l'-l}\left(\cos\varphi\right)^{2n-l'+l}.
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Z-aligned lattice
+\end_layout
+
+\begin_layout Standard
+Now we set some conventions: let the lattice lie on the 
+\begin_inset Formula $z$
+\end_inset
+
+ axis, so that 
+\begin_inset Formula $\vect s_{\bot},\vect r_{\bot}$
+\end_inset
+
+ lie in the 
+\begin_inset Formula $xy$
+\end_inset
+
+-plane.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(TODO check the meaning of 
+\begin_inset Formula $\vect k$
+\end_inset
+
+ and possible additional phase factor.)
+\end_layout
+
+\end_inset
+
+ If we write
+\begin_inset Formula $\vect s_{\bot}=\uvec x\left|\vect s_{\bot}\right|\cos\Phi+\uvec y\left|\vect s_{\bot}\right|\sin\Phi$
+\end_inset
+
+, 
+\begin_inset Formula $\vect r_{\bot}=\uvec x\left|\vect r_{\bot}\right|\cos\phi+\uvec y\left|\vect r_{\bot}\right|\sin\phi=\uvec x\left|\vect r\right|\sin\theta\cos\phi+\uvec y\left|\vect r\right|\sin\theta\sin\phi$
+\end_inset
+
+, we have 
+\begin_inset Formula $\varphi=\phi-\Phi$
+\end_inset
+
+.
+ Also, in this convention 
+\begin_inset Formula $\ush lm\left(\uvec K\right)=0$
+\end_inset
+
+ for 
+\begin_inset Formula $m\ne0$
+\end_inset
+
+, so
+\begin_inset Formula 
+\[
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\ush l0\left(\uvec K\right)\underbrace{\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD l0\left(\uvec r\right)\left(\sin\theta\right)^{l'-l}\left(\cos\varphi\right)^{2n-l'+l}}_{\equiv A_{l',l,n,m'}}.
+\]
+
+\end_inset
+
+Let's also fix the (dual) spherical harmonics for now, 
+\begin_inset Formula 
+\[
+\ushD lm\left(\uvec r\right)=\lambda'_{lm}e^{-im\phi}P_{l}^{-m}\left(\cos\theta\right);
+\]
+
+\end_inset
+
+the angular integral then becomes (we also use 
+\begin_inset Formula $e^{-im'\phi}=e^{im'\Phi}e^{-im'\varphi}$
+\end_inset
+
+)
+\begin_inset Formula 
+\begin{align*}
+A_{l',l,n,m'} & \equiv\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD l0\left(\uvec r\right)\left(\sin\theta\right)^{l'-l}\left(\cos\varphi\right)^{2n-l'+l}\\
+ & =\lambda'_{l'm'}\lambda'_{l0}e^{im'\Phi}\int_{0}^{\pi}\ud\theta\,\sin\theta P_{l'}^{-m'}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)\left(\sin\theta\right)^{l'-l}\int_{0}^{2\pi}\ud\varphi\,e^{-im'\varphi}\left(\cos\varphi\right)^{2n-l'+l}.
+\end{align*}
+
+\end_inset
+
+The asimuthal integral evaluates to 
+\begin_inset Formula 
+\[
+\int_{0}^{2\pi}\ud\varphi\,e^{-im'\varphi}\left(\cos\varphi\right)^{2n-l'+l}=\pi\delta_{\left|m'\right|,2n-l'+l}
+\]
+
+\end_inset
+
+ (note that 
+\begin_inset Formula $2n-l'+l\ge0$
+\end_inset
+
+ as it's the former index 
+\begin_inset Formula $k$
+\end_inset
+
+).
+ That eliminates one of the two remaining (finite) sums.
 \end_layout
 
 \begin_layout Standard
@@ -386,6 +651,10 @@ BTW:
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Now we set the conventions: let the lattice lie on the 
 \begin_inset Formula $z$
 \end_inset
@@ -418,6 +687,38 @@ Now we set the conventions: let the lattice lie on the
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Plain Layout
+Also, in this convention 
+\begin_inset Formula $\ush lm\left(\uvec K\right)=0$
+\end_inset
+
+ for 
+\begin_inset Formula $m\ne0$
+\end_inset
+
+, so
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{align*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right) & =-\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush l0\left(\uvec K\right)\times\\
+ & \quad\times\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD l0\left(\uvec r\right)\sum_{n=0}^{\infty}\Delta_{n+1/2}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}.
+\end{align*}
+
+\end_inset
+
+Let's also fix the spherical harmonics for now, 
+\begin_inset Formula 
+\[
+\ushD lm\left(\uvec r\right)=\lambda'_{lm}e^{-im\phi}P_{l}^{-m}\left(\cos\theta\right)
+\]
+
+\end_inset
+
 Also, in this convention 
 \begin_inset Formula $\ush lm\left(\uvec K\right)=0$
 \end_inset
@@ -437,7 +738,7 @@ Also, in this convention
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Let's also fix the spherical harmonics for now, 
 \begin_inset Formula 
 \[
@@ -449,7 +750,7 @@ Let's also fix the spherical harmonics for now,
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The angular integral (assuming it can be separated from the rest like this)
  is
 \begin_inset Formula 
@@ -462,7 +763,7 @@ I_{l'}^{m'}\equiv\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)e^{-\
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Let's further extract the azimuthal part 
 \begin_inset Formula $\left(w\equiv2r_{\bot}s_{\bot}\kappa^{2}\gamma_{\vect K}^{2}/4\tau\right)$
 \end_inset
@@ -556,7 +857,7 @@ Althought it's not superobvious, this sum is symmetric w.r.t.
 .
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Let's do the polar integration next: 
 \begin_inset Formula $r_{\bot}=r\sin\theta$
 \end_inset
@@ -612,6 +913,11 @@ so we can fix
 ? & l'-l+m'\text{ even}
 \end{cases}
 \]
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
