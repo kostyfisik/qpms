@@ -1054,7 +1054,28 @@ literal "true"
 \end_layout
 
 \begin_layout Section
-Acknowledgements
+Summary
+\end_layout
+
+\begin_layout Standard
+We presented two major enhancements of the electromagnetic multiple-scattering
+ 
+\begin_inset Formula $T$
+\end_inset
+
+-matrix method: 1) Employing Ewald summation techniques enables very efficient
+ computation of lattice modes and optical response of infinite periodic
+ nanoparticle structures.
+ 2) Exploiting possible symmetries of the system by transformation into
+ symmetry adapted basis reduces the requirements on computational resources
+ considerably, enabling simulations of finite systems with dozens of thousands
+ of scatterers.
+ These enhancements are included into the QPMS software suite, which we
+ hereby make publicly available under the GNU General Public License.
+\end_layout
+
+\begin_layout Section
+Acknowledgments
 \end_layout
 
 \begin_layout Standard

@@ -107,7 +107,7 @@ name "sec:Introduction"
 \begin_layout Standard
 The problem of electromagnetic response of a system consisting of many relativel
 y small, compact scatterers in various geometries, and its numerical solution,
- is relevant to many branches of nanophotonics.
+ is relevant to several branches of nanophotonics.
  In practice, the scatterers often form some ordered structure, such as
  metalic or dielectric nanoparticle arrays 
 \begin_inset CommandInset citation
@@ -203,15 +203,22 @@ literal "false"
  couplings between each pair of DoF.
  Therefore, a common (frequency-domain) approach to get an approximate solution
  of the scattering problem for many small particles has been the coupled
- dipole approximation (CDA) where a drastic reduction of the number of DoF
- is achieved by approximating individual scatterers to electric dipoles
- (characterised by a polarisability tensor) coupled to each other through
- Green's functions.
+ dipole approximation (CD) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "zhao_extinction_2003"
+literal "false"
+
+\end_inset
+
+ where a drastic reduction of the number of DoF is achieved by approximating
+ individual scatterers to electric dipoles (characterised by a polarisability
+ tensor) coupled to each other through Green's functions.
  
 \end_layout
 
 \begin_layout Standard
-CDA is easy to implement and demands relatively little computational resources
+CD is easy to implement and demands relatively little computational resources
  but suffers from at least two fundamental drawbacks.
  The obvious one is that the dipole approximation is too rough for particles
  with diameter larger than a small fraction of the wavelength, which results
@@ -242,11 +249,11 @@ literal "false"
 
 \end_inset
 
- – and CDA by definition fails to capture such modes.
+ – and CD by definition fails to capture such modes.
 \end_layout
 
 \begin_layout Standard
-The natural way to overcome both limitations of CDA mentioned above is to
+The natural way to overcome both limitations of CD mentioned above is to
  take higher multipoles into account.
  Instead of a polarisability tensor, the scattering properties of an individual
  particle are then described with more general 
@@ -336,7 +343,8 @@ literal "false"
 
 \end_inset
 
-, which also a rare example is in this field of a code with a clear licence.
+, which also a rare example is in this field of a publicly available code
+ with a clear licence.
 \end_layout
 
 \begin_layout Standard
@@ -355,6 +363,18 @@ However, the potential of MSTMM reaches far beyond its past implementations.
  on computational resources, hence speeding up the computations and allowing
  for finite size simulations of systems with particle numbers practically
  impossible to reliably simulate with any other method.
+ Furthemore, the method can be combined with other integral methods, which
+ removes the limitation to systems with compact scatterers only, and enables
+ e.g.
+ including a substrate 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "czajkowski_multipole_2020"
+literal "false"
+
+\end_inset
+
+.
 \begin_inset Note Note
 status open
 
@@ -493,15 +513,14 @@ TODO před odesláním zkontrolovat, co všechno to v danou chvíli umí.
 
 \end_inset
 
- It includes extensive Doxygen documentation, together with description
- of the API.
+ It includes Doxygen documentation together with description of the API.
  It has been written with customisability and extendibility in mind, so
  that including e.g.
  alternative methods of 
 \begin_inset Formula $T$
 \end_inset
 
--matrix calculations of a single matrix are as easy as possible.
+-matrix calculations of a single particle's matrix are as easy as possible.
 \end_layout
 
 \begin_layout Standard
