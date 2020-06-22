@@ -596,12 +596,21 @@ noprefix "false"
 \end_inset
 
 , we have
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Marginal
 status open
 
 \begin_layout Plain Layout
 Check this carefully.
  Maybe explain in more detail?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset

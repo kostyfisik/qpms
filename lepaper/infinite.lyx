@@ -953,8 +953,8 @@ literal "false"
  basic idea can be used as well, resulting in exponentially convergent summation
  formulae, but the technical details are considerably more complicated than
  in electrostatics.
- For the scalar Helmholtz equation in three dimensions, the formulae were
- developed by Ham & Segall 
+ For the scalar Helmholtz equation in three dimensions, the formulae for
+ lattice Green's functions were developed by Ham & Segall 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ham_energy_1961"
@@ -988,10 +988,28 @@ literal "false"
 \end_inset
 
 .
- We will not rederive the formulae here, but for reference, we restate the
- results in a form independent upon the normalisation and phase conventions
- for spherical harmonic bases (pointing out some errors in the aforementioned
- literature) and discuss some practical aspects of the numerical evaluation.
+ 
+\end_layout
+
+\begin_layout Standard
+For our purposes we do not need directly the lattice Green's functions but
+ rather the related lattice sums of spherical wavefunctions defined in 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:sigma lattice sums"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, which can be derived by an analogous procedure.
+ Below, we state the results in a form independent upon the normalisation
+ and phase conventions for spherical harmonic bases (pointing out some errors
+ in the aforementioned literature) and discuss some practical aspects of
+ the numerical evaluation.
+ The derivation of the somewhat more complicated 1D and 2D periodicities
+ is provided in the Supplementary Material.
 \begin_inset Note Note
 status open
 
@@ -1001,7 +1019,7 @@ Tady ještě upřesnit, co vlastně dělám.
 
 \end_inset
 
-
+ 
 \end_layout
 
 \begin_layout Standard
