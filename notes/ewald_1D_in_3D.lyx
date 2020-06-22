@@ -394,13 +394,13 @@ If we label
 \end_inset
 
 and if we label 
-\begin_inset Formula $\left|\vect r\right|\sin\theta\equiv\left|\vect r_{\bot}\right|$
+\begin_inset Formula $\left|\vect r\right|\sin\vartheta\equiv\left|\vect r_{\bot}\right|$
 \end_inset
 
 
 \begin_inset Formula 
 \[
-\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\left|\vect r\right|^{2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\theta\right)^{2n-k}\left(\cos\varphi\right)^{k}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\left|\vect r\right|^{2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{2n-k}\left(\cos\varphi\right)^{k}
 \]
 
 \end_inset
@@ -446,7 +446,7 @@ noprefix "false"
  So 
 \begin_inset Formula 
 \[
-\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\delta_{l'-l,2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\theta\right)^{l'-l}\left(\cos\varphi\right)^{k}.
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\delta_{l'-l,2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{k}.
 \]
 
 \end_inset
@@ -519,7 +519,7 @@ S(l')=\sum_{n=0}^{l'}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
 Applying rearrangement,
 \begin_inset Formula 
 \[
-\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\theta\right)^{l'-l}\left(\cos\varphi\right)^{2n-l'+l}.
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n+1/2}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{2n-l'+l}.
 \]
 
 \end_inset
@@ -568,6 +568,10 @@ status open
 
 , we have 
 \begin_inset Formula $\varphi=\phi-\Phi$
+\end_inset
+
+, and 
+\begin_inset Formula $\vartheta=\theta$
 \end_inset
 
 .
@@ -626,6 +630,46 @@ The asimuthal integral evaluates to
 
 ).
  That eliminates one of the two remaining (finite) sums.
+ We are left with the polar integral
+\begin_inset Formula 
+\[
+\int_{0}^{\pi}\ud\theta\,\sin\theta P_{l'}^{-m'}\left(\cos\theta\right)P_{l}^{0}\left(\cos\theta\right)\left(\sin\theta\right)^{l'-l}
+\]
+
+\end_inset
+
+for which I couldn't find an explicit form yet.
+\end_layout
+
+\begin_layout Section
+X-aligned lattice
+\end_layout
+
+\begin_layout Standard
+If we instead set 
+\begin_inset Formula $\vect s_{\bot}=\uvec z\left|\vect s_{\bot}\right|\cos\Theta+\uvec y\left|\vect s_{\bot}\right|\sin\Theta$
+\end_inset
+
+, 
+\begin_inset Formula $\vect r_{\bot}=\uvec z\left|\vect r_{\bot}\right|\cos\theta+\uvec y\left|\vect r_{\bot}\right|\sin\theta=\uvec z\left|\vect r\right|\cos\theta+\uvec y\left|\vect r\right|\sin\theta\sin\phi$
+\end_inset
+
+, we have 
+\begin_inset Formula $\vartheta=\Theta-\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{k}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
