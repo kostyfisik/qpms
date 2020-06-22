@@ -56,7 +56,7 @@ figs-within-sections
 \pdf_backref false
 \pdf_pdfusetitle true
 \papersize a4paper
-\use_geometry false
+\use_geometry true
 \use_package amsmath 2
 \use_package amssymb 1
 \use_package cancel 1
@@ -82,6 +82,13 @@ figs-within-sections
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\headheight 2cm
+\headsep 2cm
+\footskip 2cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -691,7 +698,7 @@ We presented two major enhancements of the electromagnetic multiple-scattering
  nanoparticle structures.
  2) Exploiting possible symmetries of the system by transformation into
  symmetry adapted basis reduces the requirements on computational resources
- considerably, enabling simulations of finite systems with dozens of thousands
+ considerably, enabling simulations of finite systems with tens of thousands
  of scatterers.
  These enhancements are included into the QPMS software suite, which we
  hereby make publicly available under the GNU General Public License.
@@ -704,9 +711,8 @@ Acknowledgments
 \begin_layout Standard
 We thank Nicki Källman, Kristian Arjas and Javier Cuerda for useful discussions.
  This work was supported by the Academy of Finland under project numbers
- 303351, 307419, 327293, 318987 (QuantERA project RouTe), and 318937 (PROFI),
- by Centre for Quantum Engineering (CQE) at Aalto University, and by the
- European Research Council (ERC-2013-AdG-340748-CODE).
+ 303351, 307419, 327293, 318987 (QuantERA project RouTe), and by the European
+ Research Council (ERC-2013-AdG-340748-CODE).
  We acknowledge the computational resources provided by the Aalto Science-IT
  project.
 \end_layout
