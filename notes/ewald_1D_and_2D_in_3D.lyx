@@ -169,7 +169,7 @@ General formula
 \end_layout
 
 \begin_layout Standard
-We need to find the expansion coefficient
+We need to find the long-range part of the expansion coefficient
 \end_layout
 
 \begin_layout Standard
@@ -184,14 +184,14 @@ We need to find the expansion coefficient
 \end_layout
 
 \begin_layout Standard
-[Linton, (2.24)] with slightly modified notation and setting 
-\begin_inset Formula $d_{c}=2$
+We take [Linton, (2.24)] with slightly modified notation 
+\begin_inset Formula $\left(\vect k_{\vect K}\equiv\vect K+\vect k\right)$
 \end_inset
 
-:
+
 \begin_inset Formula 
 \[
-G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect r}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t
+G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect r}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t
 \]
 
 \end_inset
@@ -203,7 +203,7 @@ or, evaluated at point
  instead
 \begin_inset Formula 
 \[
-G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t
 \]
 
 \end_inset
@@ -268,7 +268,7 @@ G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal
 
 \begin_inset Formula 
 \[
-G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
 \]
 
 \end_inset
@@ -284,7 +284,7 @@ status open
 [Linton, (2.25)] with slightly modified notation:
 \begin_inset Formula 
 \[
-G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect r}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2j-1}\Gamma_{j\vect K}
+G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect r}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect{\vect k_{\vect K}}}}{2}\right)^{2j-1}\Gamma_{j\vect k_{\vect K}}
 \]
 
 \end_inset
@@ -297,7 +297,7 @@ We want to express an expansion in a shifted point, so let's substitute
 
 \begin_inset Formula 
 \[
-G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2j-1}\Gamma_{j\vect K}
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j-1}\Gamma_{j\vect k_{\vect K}}
 \]
 
 \end_inset
@@ -314,7 +314,7 @@ Let's do the integration to get
 
 \begin_inset Formula 
 \[
-\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
 \]
 
 \end_inset
@@ -326,8 +326,8 @@ The
 -dependent plane wave factor can be also written as
 \begin_inset Formula 
 \begin{align*}
-e^{i\vect K\cdot\vect r} & =e^{i\left|\vect K\right|\vect r\cdot\uvec K}=4\pi\sum_{lm}i^{l}\mathcal{J}'_{l}^{m}\left(\left|\vect K\right|\vect r\right)\ush lm\left(\uvec K\right)\\
- & =4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec{\vect r}\right)\ush lm\left(\uvec K\right)
+e^{i\vect k_{\vect K}\cdot\vect r} & =e^{i\left|\vect k_{\vect K}\right|\vect r\cdot\uvec{\vect k_{\vect K}}}=4\pi\sum_{lm}i^{l}\mathcal{J}'_{l}^{m}\left(\left|\vect k_{\vect K}\right|\vect r\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\\
+ & =4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ushD lm\left(\uvec{\vect r}\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)
 \end{align*}
 
 \end_inset
@@ -340,7 +340,7 @@ status open
 or the other way around
 \begin_inset Formula 
 \[
-e^{i\vect K\cdot\vect r}=4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect r}\right)\ushD lm\left(\uvec K\right)
+e^{i\vect k_{\vect K}\cdot\vect r}=4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect r}\right)\ushD lm\left(\uvec{\vect k_{\vect K}}\right)
 \]
 
 \end_inset
@@ -354,7 +354,7 @@ so
 \begin_inset Formula 
 \begin{multline*}
 \int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\frac{1}{2\pi\mathcal{A}}\times\\
-\times\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec K\right)\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
+\times\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\int_{\kappa^{2}\gamma_{\vect{\vect k_{\vect K}}}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect{\vect k_{\vect K}}}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau
 \end{multline*}
 
 \end_inset
@@ -367,7 +367,7 @@ We also have
 \begin_inset Formula 
 \begin{align*}
 e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau} & =e^{-\left(\left|\vect s_{\bot}\right|^{2}+\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\\
- & =e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4\tau}\right)^{n},
+ & =e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\sum_{j=0}^{\infty}\frac{1}{j!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4\tau}\right)^{j},
 \end{align*}
 
 \end_inset
@@ -375,12 +375,12 @@ e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}
 hence
 \begin_inset Formula 
 \begin{align*}
-\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right) & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec K\right)\times\\
- & \quad\times\sum_{n=0}^{\infty}\frac{1}{n!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\underbrace{\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}-n}\ud\tau}_{\Delta_{n}^{\left(d_{\Lambda}\right)}}\\
- & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\Delta_{n}^{\left(d_{\Lambda}\right)}}{n!}\times\\
- & \quad\times\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4}\right)^{n}\\
- & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\times\\
- & \quad\times\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2(n-k)}\left(2\vect r_{\bot}\cdot\vect s_{\bot}\right)^{k}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right) & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\times\\
+ & \quad\times\sum_{j=0}^{\infty}\frac{1}{j!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect{\vect k_{\vect K}}}^{2}}{4}\right)^{j}\underbrace{\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}-j}\ud\tau}_{\Delta_{j}^{\left(d_{\Lambda}\right)}}\\
+ & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\sum_{j=0}^{\infty}\frac{\Delta_{j}^{\left(d_{\Lambda}\right)}}{j!}\times\\
+ & \quad\times\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}}{4}\right)^{j}\\
+ & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\times\\
+ & \quad\times\left(\frac{\kappa\gamma_{\vect{\vect k_{\vect K}}}}{2}\right)^{2j}\sum_{k=0}^{j}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2(j-k)}\left(2\vect r_{\bot}\cdot\vect s_{\bot}\right)^{k}.
 \end{align*}
 
 \end_inset
@@ -392,8 +392,8 @@ If we label
 , we have
 \begin_inset Formula 
 \begin{multline*}
-\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\times\\
-\times\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2n-k}\left(\cos\varphi\right)^{k}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\times\\
+\times\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{k=0}^{j}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2j-k}\left(\cos\varphi\right)^{k}
 \end{multline*}
 
 \end_inset
@@ -405,8 +405,8 @@ and if we label
 
 \begin_inset Formula 
 \begin{multline*}
-\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\ush lm\left(\uvec K\right)\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\times\\
-\times\sum_{k=0}^{n}\left|\vect r\right|^{2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{2n-k}\left(\cos\varphi\right)^{k}.
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\times\\
+\times\sum_{k=0}^{j}\left|\vect r\right|^{2j-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{2j-k}\left(\cos\varphi\right)^{k}.
 \end{multline*}
 
 \end_inset
@@ -427,7 +427,7 @@ noprefix "false"
 
 .
  We have 
-\begin_inset Formula $j_{l}\left(\left|\vect K\right|\left|\vect r\right|\right)\sim\left(\left|\vect K\right|\left|\vect r\right|\right)^{l}/\left(2l+1\right)!!$
+\begin_inset Formula $j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\sim\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)^{l}/\left(2l+1\right)!!$
 \end_inset
 
 ; the denominator from 
@@ -445,15 +445,15 @@ noprefix "false"
 \end_inset
 
  The leading terms are hence those with 
-\begin_inset Formula $\left|\vect r\right|^{l-l'+2n-k}$
+\begin_inset Formula $\left|\vect r\right|^{l-l'+2j-k}$
 \end_inset
 
 .
  So 
 \begin_inset Formula 
 \begin{multline*}
-\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{lm}4\pi i^{l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\ush lm\left(\uvec K\right)\times\\
-\times\sum_{n=0}^{\infty}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{k=0}^{n}\delta_{l'-l,2n-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{k}.
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\ush lm\left(\uvec{\vect k_{\vect K}}\right)\times\\
+\times\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{k=0}^{j}\delta_{l'-l,2j-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{k}.
 \end{multline*}
 
 \end_inset
@@ -461,29 +461,29 @@ noprefix "false"
 Let's now focus on rearranging the sums; we have
 \begin_inset Formula 
 \[
-S(l')\equiv\sum_{l=0}^{\infty}\sum_{n=0}^{\infty}\sum_{k=0}^{n}\delta_{l'-l,2n-k}f(l',l,n,k)=\sum_{l=0}^{\infty}\sum_{n=0}^{\infty}\sum_{k=0}^{n}\delta_{l'-l,2n-k}f(l',l,n,2n-l'+l)
+S(l')\equiv\sum_{l=0}^{\infty}\sum_{j=0}^{\infty}\sum_{k=0}^{j}\delta_{l'-l,2j-k}f(l',l,j,k)=\sum_{l=0}^{\infty}\sum_{j=0}^{\infty}\sum_{k=0}^{j}\delta_{l'-l,2j-k}f(l',l,j,2j-l'+l)
 \]
 
 \end_inset
 
 We have 
-\begin_inset Formula $0\le k\le n$
+\begin_inset Formula $0\le k\le j$
 \end_inset
 
 , hence 
-\begin_inset Formula $0\le2n-l'+l\le n$
+\begin_inset Formula $0\le2j-l'+l\le j$
 \end_inset
 
 , hence 
-\begin_inset Formula $-2n\le-l'+l\le-n$
+\begin_inset Formula $-2j\le-l'+l\le-j$
 \end_inset
 
 , hence also 
-\begin_inset Formula $l'-2n\le l\le l'-n$
+\begin_inset Formula $l'-2j\le l\le l'-j$
 \end_inset
 
 , which gives the opportunity to swap the 
-\begin_inset Formula $l,n$
+\begin_inset Formula $l,j$
 \end_inset
 
  sums and the 
@@ -491,13 +491,13 @@ We have
 \end_inset
 
 -sum becomes finite; so also consuming 
-\begin_inset Formula $\sum_{k=0}^{n}\delta_{l'-l,2n-k}$
+\begin_inset Formula $\sum_{k=0}^{j}\delta_{l'-l,2j-k}$
 \end_inset
 
  we get 
 \begin_inset Formula 
 \[
-S(l')=\sum_{n=0}^{\infty}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
+S(l')=\sum_{j=0}^{\infty}\sum_{l=\max(0,l'-2j)}^{l'-j}f(l',l,j,2j-l'+l).
 \]
 
 \end_inset
@@ -507,18 +507,18 @@ Finally, we see that the interval of valid
 \end_inset
 
  becomes empty when 
-\begin_inset Formula $l'-n<0$
+\begin_inset Formula $l'-j<0$
 \end_inset
 
 , i.e.
  
-\begin_inset Formula $n>l'$
+\begin_inset Formula $j>l'$
 \end_inset
 
 ; so we get a finite sum
 \begin_inset Formula 
 \[
-S(l')=\sum_{n=0}^{l'}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
+S(l')=\sum_{j=0}^{l'}\sum_{l=\max(0,l'-2j)}^{l'-j}f(l',l,j,2j-l'+l).
 \]
 
 \end_inset
@@ -526,8 +526,8 @@ S(l')=\sum_{n=0}^{l'}\sum_{l=\max(0,l'-2n)}^{l'-n}f(l',l,n,2n-l'+l).
 Applying rearrangement,
 \begin_inset Formula 
 \begin{multline*}
-\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\times\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\\
-\times\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{2n-l'+l},
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\times\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\\
+\times\sum_{m=-l}^{l}\ush lm\left(\uvec{\vect k_{\vect K}}\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{2j-l'+l},
 \end{multline*}
 
 \end_inset
@@ -535,8 +535,8 @@ Applying rearrangement,
 or replacing the angles with their original definition,
 \begin_inset Formula 
 \begin{multline*}
-\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\times\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\\
-\times\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2n-l'+l},
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2j}\times\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\\
+\times\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2j-l'+l},
 \end{multline*}
 
 \end_inset
@@ -552,8 +552,8 @@ and if we want a
  and replace all spherical harmonics with their dual counterparts:
 \begin_inset Formula 
 \begin{multline*}
-\sigma_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\times\\
-\times\sum_{m=-l}^{l}\ushD lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ush lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{-\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2n-l'+l},
+\sigma_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\times\\
+\times\sum_{m=-l}^{l}\ushD lm\left(\uvec{\vect k_{\vect K}}\right)\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ush lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{-\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2j-l'+l},
 \end{multline*}
 
 \end_inset
@@ -569,8 +569,8 @@ duality
  is interchangeable,
 \begin_inset Formula 
 \begin{multline*}
-\sigma_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect K\cdot\vect s}\sum_{n=0}^{l'}\frac{\left(-1\right)^{n}}{n!}\Delta_{n}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2n}\sum_{l=\max\left(0,l'-2n\right)}^{l'-n}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2n-l'+l}\frac{\left|\vect K\right|^{l}}{\left(2l+1\right)!!}\times\\
-\times\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\underbrace{\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{-\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2n-l'+l}}_{\equiv A_{l',l,m',m,n}^{\left(d_{\Lambda}\right)}}.
+\sigma_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\times\\
+\times\sum_{m=-l}^{l}\ush lm\left(\uvec{\vect k_{\vect K}}\right)\underbrace{\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{-\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2j-l'+l}}_{\equiv A_{l',l,m',m,j}^{\left(d_{\Lambda}\right)}}.
 \end{multline*}
 
 \end_inset
@@ -590,7 +590,7 @@ The angular integral is easier to evaluate when
 , which gives 
 \begin_inset Formula 
 \[
-A_{l',l,m',m,n}^{\left(2\right)}=\left(-\frac{\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\cdot\vect s_{\bot}\right|}\right)^{2n-l'+l}\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{2n}
+A_{l',l,m',m,j}^{\left(2\right)}=\left(-\frac{\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\cdot\vect s_{\bot}\right|}\right)^{2j-l'+l}\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{2j}
 \]
 
 \end_inset
@@ -611,13 +611,13 @@ and if we set the normal of the lattice correspond to the
 \begin_inset Formula 
 \begin{multline}
 \sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{2}\mathcal{A}}\pi^{3/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
-\times\sum_{\vect K\in\Lambda^{*}}e^{i\vect K\cdot\vect s}\ush lm\left(\vect k+\vect K\right)\sum_{j=0}^{l-\left|m\right|}\left(-1\right)^{j}\gamma_{\vect K}^{2}^{2j+1}\times\\
-\times\Delta_{j}\left(\frac{\kappa^{2}\gamma_{\vect K}^{2}}{4\eta^{2}},-i\kappa\gamma_{\vect K}^{2}s_{\perp}\right)\times\\
+\times\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\ush lm\left(\vect k_{\vect K}\right)\sum_{j=0}^{l-\left|m\right|}\left(-1\right)^{j}\gamma_{\vect k_{\vect K}}^{2}{}^{2j+1}\times\\
+\times\Delta_{j}\left(\frac{\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}}{4\eta^{2}},-i\kappa\gamma_{\vect k_{\vect K}}^{2}s_{\perp}\right)\times\\
 \times\sum_{\substack{s\\
 j\le s\le\min\left(2j,l-\left|m\right|\right)\\
-l-n+\left|m\right|\,\mathrm{even}
+l-j+\left|m\right|\,\mathrm{evej}
 }
-}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D-1}
+}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k_{\vect K}\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D-1}
 \end{multline}
 
 \end_inset
@@ -643,7 +643,7 @@ where
 \end_inset
 
  axis, 
-\begin_inset Formula $A_{l',l,m',m,n}^{\left(1\right)}$
+\begin_inset Formula $A_{l',l,m',m,j}^{\left(1\right)}$
 \end_inset
 
  is zero unless 
@@ -653,7 +653,7 @@ where
 , but one still has 
 \begin_inset Formula 
 \[
-A_{l',l,m',0,n}^{\left(1\right)}=\pi\delta_{m',l'-l-2n}\lambda'_{l0}\lambda_{l'm'}\int_{-1}^{1}\ud x\,P_{l'}^{m'}\left(x\right)P_{l}^{0}\left(x\right)\left(1-x^{2}\right)^{\frac{l'-l}{2}}
+A_{l',l,m',0,j}^{\left(1\right)}=\pi\delta_{m',l'-l-2j}\lambda'_{l0}\lambda_{l'm'}\int_{-1}^{1}\ud x\,P_{l'}^{m'}\left(x\right)P_{l}^{0}\left(x\right)\left(1-x^{2}\right)^{\frac{l'-l}{2}}
 \]
 
 \end_inset
@@ -666,6 +666,11 @@ where
  This does not seem to have such a nice closed-form expression as in the
  2D case, but it can be evaluated e.g.
  using the common recurrence relations for associated Legendre polynomials.
+ Of course when 
+\begin_inset Formula $\vect s=0$
+\end_inset
+
+, one gets relatively nice closed expressions, such as those in [Linton].
 \end_layout
 
 \end_body
