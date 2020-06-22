@@ -1063,8 +1063,25 @@ FP: Check signs.
 
 \begin_inset Formula 
 \begin{equation}
-\sigma_{l,m}\left(\vect k,\vect s\right)=\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},\vect s}\right)e^{i\vect{\vect k}\cdot\left(\vect R_{\vect n}-\vect s\right)}\sswfoutlm lm\left(\vect{R_{n}}-\vect s\right),\label{eq:sigma lattice sums}
+\sigma_{l,m}\left(\vect k,\vect s\right)=\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},\vect s}\right)e^{i\vect{\vect k}\cdot\vect R_{\vect n}}\sswfoutlm lm\left(\kappa\left(\vect s+\vect{R_{n}}\right)\right),\label{eq:sigma lattice sums}
 \end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+\sigma_{l,m}\left(\vect k,\vect s\right)=\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},\vect s}\right)e^{i\vect{\vect k}\cdot\left(\vect R_{\vect n}-\vect s\right)}\sswfoutlm lm\left(\vect{R_{n}}-\vect s\right),\label{eq:sigma lattice sums-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1129,9 +1146,26 @@ W_{\alpha,\tau lm;\beta,\tau'l'm'}(\vect k) & =\sum_{\lambda=\left|l-l'\right|+1
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \[
 W_{\alpha,\tau lm;\beta,\tau'l'm'}(\vect k)=\sum_{\lambda=\left|l-l'\right|+\left|\tau-\tau'\right|}^{l+l'}\tropcoeff_{\tau lm;\tau'l'm'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r_{\beta}-\vect r_{\alpha}\right),\quad\tau'\ne\tau,
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+W_{\alpha,\tau lm;\beta,\tau'l'm'}(\vect k)=\sum_{\lambda=\left|l-l'\right|+\left|\tau-\tau'\right|}^{l+l'}\tropcoeff_{\tau lm;\tau'l'm'}^{\lambda}\sigma_{\lambda,m-m'}\left(-\vect k,\vect r_{\alpha}-\vect r_{\beta}\right),\quad\tau'\ne\tau,
 \]
 
 \end_inset
@@ -1223,14 +1257,19 @@ FP: Check sign of s
 \begin_layout Standard
 \begin_inset Formula 
 \begin{multline}
-\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{\kappa^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect{R_{n}+\vect s}\right|^{l}\ush lm\left(\vect{R_{n}+\vect s}\right)e^{i\vect k\cdot\left(\vect{R_{n}+\vect s}\right)}\\
-\times\int_{\eta}^{\infty}e^{-\left|\vect{R_{n}+\vect s}\right|^{2}\xi^{2}}e^{-\kappa^{2}/4\xi^{2}}\xi^{2l}\ud\xi\\
-+\delta_{\vect{R_{n}},-\vect s}\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa^{2}}{4\eta^{2}}\right)\ush lm\left(\vect{R_{n}+\vect s}\right).\label{eq:Ewald in 3D short-range part}
+\sigma_{l,m}^{\left(\mathrm{S},\eta\right)}\left(\vect k,\vect s\right)=-\frac{2^{l+1}i}{\kappa^{l+1}\sqrt{\pi}}\sum_{\vect n\in\ints^{d}}\left(1-\delta_{\vect{R_{n}},-\vect s}\right)\left|\vect s_{\vect n}\right|^{l}\ush lm\left(\uvec s_{\vect n}\right)e^{i\vect k\cdot\vect{R_{n}}}\\
+\times\int_{\eta}^{\infty}e^{-\left|\vect s_{\vect n}\right|^{2}\xi^{2}}e^{-\kappa^{2}/4\xi^{2}}\xi^{2l}\ud\xi\\
++\delta_{\vect{R_{n}},-\vect s}\frac{\delta_{l0}\delta_{m0}}{\sqrt{4\pi}}\Gamma\left(-\frac{1}{2},-\frac{\kappa^{2}}{4\eta^{2}}\right)\ush lm\left(\uvec s_{\vect n}\right),\label{eq:Ewald in 3D short-range part}
 \end{multline}
 
 \end_inset
 
-The formal 
+where we labeled 
+\begin_inset Formula $\vect s_{\vect n}\equiv\vect s+\vect R_{\vect n}$
+\end_inset
+
+.
+ The formal 
 \begin_inset Formula $\left(1-\delta_{\vect{R_{n}},-\vect s}\right)$
 \end_inset
 
@@ -1355,7 +1394,19 @@ The explicit form of the long-range part of the lattice sum depends on the
 \end_inset
 
 .
- 
+ In the following, let us label 
+\begin_inset Formula $\vect k_{\vect K}\equiv\vect k+\vect K$
+\end_inset
+
+, where 
+\begin_inset Formula $\vect K$
+\end_inset
+
+ is a point in the reciprocal lattice, and let 
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+ be the lattice unit cell volume (or area/length in the 2D/1D cases).
 \end_layout
 
 \begin_layout Paragraph
@@ -1369,7 +1420,7 @@ Case
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}\underbrace{e^{i\vect K\cdot\vect s}}_{\text{nemá tu být \ensuremath{\vect{k\cdot s}?}}}\frac{\left(\left|\vect k+\vect K\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k+\vect K\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k+\vect K\right|^{2}\right)/4\eta^{2}}\ush lm\left(\vect k+\vect K\right)\label{eq:Ewald in 3D long-range part 3D}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=\frac{4\pi i^{l+1}}{\kappa\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect k_{\vect K}\cdot\vect s}\frac{\left(\left|\vect k_{\vect K}\right|/\kappa\right)^{l}}{\kappa^{2}-\left|\vect k_{\vect K}\right|^{2}}e^{\left(\kappa^{2}-\left|\vect k_{\vect K}\right|^{2}\right)/4\eta^{2}}\ush lm\left(\uvec k_{\vect K}\right)\label{eq:Ewald in 3D long-range part 3D}
 \end{equation}
 
 \end_inset
@@ -1384,14 +1435,115 @@ regardless of chosen coordinate axes.
 \end_layout
 
 \begin_layout Paragraph
-Case 
-\begin_inset Formula $d=2$
+Cases 
+\begin_inset Formula $d=1,2$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
+In the quasiperiodic cases, we decompose vectors into parallel and orthogonal
+ parts with respect to the linear subspace in which the Bravais lattice
+ lies (the reciprocal lattice lies in the same subspace), 
+\begin_inset Formula $\vect v=\vect v_{\perp}+\vect v_{\parallel}$
+\end_inset
+
+, and we label 
+\begin_inset Formula 
+\begin{equation}
+\gamma_{\vect k_{\vect K}}\equiv\gamma_{\vect k_{\vect K}}\left(\kappa\right)\equiv\left(\left|\vect k_{\vect K}\right|^{2}-\kappa^{2}\right)^{\frac{1}{2}}/\kappa,\label{eq:lilgamma}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\Delta_{d;j}\left(x,z\right)\equiv\int_{x}^{\infty}t^{-\frac{d_{c}}{2}-n}\exp\left(-t+\frac{z^{2}}{4t}\right)\ud t,\label{eq:Delta_j}
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $d_{c}=3-d$
+\end_inset
+
+ is the complementary dimension of the lattice.
+ Then
+\begin_inset Formula 
+\begin{multline}
+\sigma_{l}^{m}\left(\vect k,\vect s\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l+1\right)!!}{\kappa^{l}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect k_{\vect K}\cdot\vect s}\times\\
+\times\sum_{j=0}^{l}\frac{\left(-1\right)^{j}}{j!}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\Delta_{d;j}\left(\frac{\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}}{4\eta^{2}},-i\kappa\gamma_{\vect k_{\vect K}}\left|\vect s_{\perp}\right|\right)\times\\
+\times\sum_{l'=\max\left(0,l-2j\right)}^{l-j}4\pi i^{l'}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l+l'}\frac{\left|\vect k_{\vect K}\right|^{l'}}{\left(2l'+1\right)!!}\sum_{m'=-l'}^{l'}\ush{l'}{m'}\left(\uvec k_{\vect K}\right)\times\\
+\times\int\ud\Omega_{\vect r}\,\ush lm\left(\uvec r\right)\ushD{l'}{m'}\left(\uvec r\right)\left(\frac{\left|\vect r_{\perp}\right|}{\left|\vect r\right|}\right)^{l-l}\left(\frac{-\vect r_{\perp}\cdot\vect s_{\perp}}{\left|\vect r_{\perp}\right|\left|\vect s_{\perp}\right|}\right)^{2j-l+l'}.\label{eq:Ewald in 3D long-range part 1D 2D}
+\end{multline}
+
+\end_inset
+
+The angular integral on the last line of 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Ewald in 3D long-range part 1D 2D"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ gives a set of constant coefficients characteristic to a chosen convention
+ for spherical harmonics and coordinate axes; relatively simple closed-form
+ expressions are obtained for 2D periodicity if we choose the lattice to
+ lie in the 
+\begin_inset Formula $xy$
+\end_inset
+
+ plane, so that both 
+\begin_inset Formula $\vect r_{\perp},\vect s_{\perp}$
+\end_inset
+
+ are parallel to the 
+\begin_inset Formula $z$
+\end_inset
+
+ axis, as done in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+, see also Supplementary Material.
+ In the special case 
+\begin_inset Formula $\vect s_{\perp}=0$
+\end_inset
+
+ the expressions can be considerably simplified as most of the terms vanish
+ and 
+\begin_inset Formula $\Delta_{d;j}\left(x,0\right)=\Gamma\left(1-d_{c}/2-j,x\right)$
+\end_inset
+
+, but the general case is needed for evaluating the fields in space (see
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Periodic scattering and fields"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) or if there is an offset between two particles in a unitcell that is not
+ parallel to the lattice subspace.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
 Reasonable explicit forms assume that the lattice lies inside the 
 \begin_inset Formula $xy$
 \end_inset
@@ -1462,8 +1614,13 @@ FP: check sign of
 j\le s\le\min\left(2j,l-\left|m\right|\right)\\
 l-n+\left|m\right|\,\mathrm{even}
 }
-}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D}
+}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k+\vect K\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D-1}
 \end{multline}
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1486,23 +1643,12 @@ status open
 
 \end_inset
 
-where 
-\begin_inset Formula 
-\begin{equation}
-\gamma\left(z\right)=\left(z^{2}-1\right)^{\frac{1}{2}},\label{eq:lilgamma}
-\end{equation}
 
-\end_inset
+\begin_inset Note Note
+status open
 
-
-\begin_inset Formula 
-\begin{equation}
-\Delta_{j}\left(x,z\right)=\int_{x}^{\infty}t^{\frac{-1}{2}-n}\exp\left(-t+\frac{z^{2}}{4t}\right)\ud t.\label{eq:Delta_j}
-\end{equation}
-
-\end_inset
-
-If the normal component 
+\begin_layout Plain Layout
+where If the normal component 
 \begin_inset Formula $s_{\bot}$
 \end_inset
 
@@ -1538,12 +1684,20 @@ noprefix "false"
 \end_inset
 
 .
- If 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
 \begin_inset Formula $s_{\bot}\ne0$
 \end_inset
 
 , the integral 
-\begin_inset Formula $\Delta_{j}\left(x,z\right)$
+\begin_inset Formula $\Delta_{d;j}\left(x,0\right)$
 \end_inset
 
  can be evaluated e.g.
@@ -1555,7 +1709,7 @@ using the Taylor series
 
 \begin_inset Formula 
 \[
-\Delta_{j}\left(x,z\right)=\sum_{k=0}^{\infty}\Gamma\left(\frac{1}{2}-j-k,x\right)\frac{\left(z/2\right)^{2k}}{k!}
+\Delta_{d;j}\left(x,z\right)=\sum_{k=0}^{\infty}\Gamma\left(1-\frac{d_{c}}{2}-j-k,x\right)\frac{\left(z/2\right)^{2k}}{k!}
 \]
 
 \end_inset
@@ -1586,27 +1740,19 @@ noprefix "false"
 
 \end_inset
 
- by parts (note that the signs are wrong in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "kambe_theory_1968"
-literal "false"
-
-\end_inset
-
-)
+ by parts (with signs corrected here):
 \begin_inset Formula 
 \begin{equation}
-\Delta_{j+1}\left(x,z\right)=\frac{4}{z^{2}}\left(\left(\frac{1}{2}-j\right)\Delta_{j}\left(x,z\right)-\Delta_{j-1}\left(x,z\right)+x^{\frac{1}{2}-j}e^{-x+\frac{z^{2}}{4x}}\right)\label{eq:Delta_j recurrent}
+\Delta_{d;j+1}\left(x,z\right)=\frac{4}{z^{2}}\left(\left(\frac{1}{2}-j\right)\Delta_{d;j}\left(x,z\right)-\Delta_{d;j-1}\left(x,z\right)+x^{\frac{d_{c}}{2}-j}e^{-x+\frac{z^{2}}{4x}}\right)\label{eq:Delta_j recurrent}
 \end{equation}
 
 \end_inset
 
-with the first two terms 
+with the first two terms for 2D periodicity
 \begin_inset Formula 
 \begin{align*}
-\Delta_{0}\left(x,z\right) & =\frac{\sqrt{\pi}}{2}e^{-x^{2}+\frac{z^{2}}{4x}}\left(w\left(-\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)+w\left(\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)\right),\\
-\Delta_{1}\left(x,z\right) & =i\frac{\sqrt{\pi}}{z}e^{-x^{2}+\frac{z^{2}}{4x}}\left(w\left(-\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)-w\left(\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)\right),
+\Delta_{2;0}\left(x,z\right) & =\frac{\sqrt{\pi}}{2}e^{-x^{2}+\frac{z^{2}}{4x}}\left(w\left(-\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)+w\left(\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)\right),\\
+\Delta_{2;1}\left(x,z\right) & =i\frac{\sqrt{\pi}}{z}e^{-x^{2}+\frac{z^{2}}{4x}}\left(w\left(-\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)-w\left(\frac{z}{2\sqrt{x}}+i\sqrt{x}\right)\right),
 \end{align*}
 
 \end_inset
@@ -1717,9 +1863,8 @@ FP: I have some error estimates derived in my notes.
 \end_layout
 
 \begin_layout Standard
-One pecularity of the two-dimensional case is the two-branchedness of the
- function 
-\begin_inset Formula $\gamma\left(z\right)$
+One pecularity of the two-dimensional case is the two-branchedness of 
+\begin_inset Formula $\gamma_{\vect k_{\vect K}}\left(\kappa\right)$
 \end_inset
 
  and the incomplete 
@@ -1735,7 +1880,7 @@ One pecularity of the two-dimensional case is the two-branchedness of the
 \end_inset
 
  the function 
-\begin_inset Formula $\gamma\left(z\right)$
+\begin_inset Formula $\gamma_{\vect k_{\vect K}}\left(\kappa\right)$
 \end_inset
 
  appears with even powers, and 
@@ -1898,21 +2043,6 @@ Detailed physical interpretation of the remaining branch cuts is an open
 
 \end_inset
 
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Generally, a good choice for 
-\begin_inset Formula $\eta$
-\end_inset
-
- is TODO; in order to achieve accuracy TODO, one has to evaluate the terms
- on TODO lattice points.
-\end_layout
-
-\end_inset
-
  
 \begin_inset Note Note
 status open
@@ -1925,23 +2055,6 @@ status open
 \end_inset
 
 
-\end_layout
-
-\begin_layout Paragraph
-Case 
-\begin_inset Formula $d=1$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For one-dimensional chains, the easiest choice is to align the lattice with
- the 
-\begin_inset Formula $z$
-\end_inset
-
- axis.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2016,7 +2129,10 @@ Whatabout different geometries?
 
  However, in floating point arithmetics, the magnitude of the summands must
  be taken into account as well in order to maintain accuracy.
- There is a particular problem with the 
+\end_layout
+
+\begin_layout Standard
+There is a particular problem with the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2026,7 +2142,7 @@ central
 
  reciprocal lattice points in the long-range sums for which the real part
  of 
-\begin_inset Formula $\left|\vect k+\vect K\right|^{2}-\kappa^{2}$
+\begin_inset Formula $\left|\vect k_{\vect K}\right|^{2}-\kappa^{2}$
 \end_inset
 
  is negative: the incomplete 
@@ -2077,7 +2193,7 @@ central
 \end_inset
 
  needs to be adjusted in a way that keeps the value of 
-\begin_inset Formula $\Gamma\left(a,\frac{\left|\vect k+\vect K\right|^{2}-\kappa^{2}}{4\eta^{2}}\right)$
+\begin_inset Formula $\Gamma\left(a,\left(\left|\vect k_{\vect K}\right|^{2}-\kappa^{2}\right)/4\eta^{2}\right)$
 \end_inset
 
  within reasonable bounds.
@@ -2197,6 +2313,13 @@ left out for the time being
 
 \begin_layout Subsection
 Scattering cross sections and field intensities in periodic system
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Periodic scattering and fields"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2391,14 +2514,36 @@ TODO fix signs and exponential phase factors
 
 
 \begin_inset Formula 
-\begin{align*}
-\vect E_{\mathrm{scat}}\left(\vect r\right) & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\\
- & =\sum_{\alpha\in\mathcal{P}_{1}}e^{-i\vect k\cdot\left(\vect r-\vect r_{\alpha}\right)}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(\vect k,\vect r-\vect r_{\alpha}\right).
-\end{align*}
+\begin{align}
+\vect E_{\mathrm{scat}}\left(\vect r\right) & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\nonumber \\
+ & =\sum_{\alpha\in\mathcal{P}_{1}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\vswfrtlm 21{m'}\left(0\right)\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(-\vect k,\vect r-\vect r_{\alpha}\right).\label{eq:Scattered fields in periodic systems}
+\end{align}
 
 \end_inset
 
+In the scattering problem, the total field intensity is obtained by adding
+ the incident field to 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Scattered fields in periodic systems"
+plural "false"
+caps "false"
+noprefix "false"
 
+\end_inset
+
+; whereas in the lattice mode problem the total field is directly given
+ by 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Scattered fields in periodic systems"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
 \end_layout
 
 \end_body
