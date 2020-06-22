@@ -55,8 +55,8 @@ figs-within-sections
 \pdf_colorlinks false
 \pdf_backref false
 \pdf_pdfusetitle true
-\papersize a4paper
-\use_geometry true
+\papersize default
+\use_geometry false
 \use_package amsmath 2
 \use_package amssymb 1
 \use_package cancel 1

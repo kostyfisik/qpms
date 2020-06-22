@@ -2514,10 +2514,10 @@ TODO fix signs and exponential phase factors
 
 
 \begin_inset Formula 
-\begin{align}
-\vect E_{\mathrm{scat}}\left(\vect r\right) & =\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)\nonumber \\
- & =\sum_{\alpha\in\mathcal{P}_{1}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\vswfrtlm 21{m'}\left(0\right)\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(-\vect k,\vect r-\vect r_{\alpha}\right).\label{eq:Scattered fields in periodic systems}
-\end{align}
+\begin{multline}
+\vect E_{\mathrm{scat}}\left(\vect r\right)=\sum_{\left(\vect n,\alpha\right)\in\mathcal{P}}\sum_{\tau lm}\outcoeffptlm{\vect n,\alpha}{\tau}lm\vect u_{\tau lm}\left(\kappa\left(\vect r-\text{\vect R_{\vect n}-\vect r_{\alpha}}\right)\right)=\\
+=\sum_{\alpha\in\mathcal{P}_{1}}\sum_{\tau lm}\outcoeffptlm{\vect 0,\alpha}{\tau}lm\sum_{m'=-1}^{1}\vswfrtlm 21{m'}\left(0\right)\sum_{\lambda=\left|l-1\right|+\left|\tau-2\right|}^{l+1}\tropcoeff_{\tau lm;21m'}^{\lambda}\sigma_{\lambda,m-m'}\left(-\vect k,\vect r-\vect r_{\alpha}\right).\label{eq:Scattered fields in periodic systems}
+\end{multline}
 
 \end_inset
 
