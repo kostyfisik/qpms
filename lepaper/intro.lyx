@@ -338,7 +338,7 @@ literal "false"
  has been FaSTMM 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "markkanen_fast_2017,markkanen_fastmm_2017"
+key "markkanen_fast_2017,markkanen_fastmm_2018"
 literal "false"
 
 \end_inset
@@ -468,7 +468,7 @@ QPMS Photonic Multiple Scattering
  suite 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "necada_qpms_2019"
+key "QPMS"
 literal "false"
 
 \end_inset

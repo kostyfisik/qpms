@@ -722,7 +722,7 @@ We thank Nicki Källman, Kristian Arjas and Javier Cuerda for useful discussions
 LatexCommand bibtex
 btprint "btPrintCited"
 bibfiles "Tmatrix"
-options "plain"
+options "bibtotoc,amsplain"
 encoding "default"
 
 \end_inset
