@@ -1,10 +1,12 @@
 QPMS README
 ===========
 
-QPMS is a toolkit for frequency-domain simulations of photonic systems
+QPMS (standing for QPMS Photonic Multiple Scattering) 
+is a toolkit for frequency-domain simulations of photonic systems
 consisting of compact objects (particles) inside a homogeneous medium. Scattering
 properties of the individual particles are described by their T-matrices
-(which can be obtained e.g. with the `scuff-tmatrix` tool from 
+(which can be obtained using one of the built-in generators or
+ e.g. with the `scuff-tmatrix` tool from 
 the [SCUFF-EM] suite).
 
 QPMS handles the multiple scattering of electromagnetic radiation between 
@@ -17,21 +19,24 @@ Features
 
 Finite systems
 --------------
- * Computing multipole excitations *and fields (TODO)* scattered from nanoparticle
+ * Computing multipole excitations and fields scattered from nanoparticle
    clusters illuminated by plane, spherical or *cylindrical (TODO)* waves.
- * Finding eigenmodes.
- * *Calculating cross sections (TODO).*
+ * Finding eigenmodes (optical resonances).
+ * Calculating cross sections.
  * Reducing numerical complexity of the computations by exploiting
    symmetries of the cluster (decomposition to irreducible representations).
 
+
 Infinite systems (lattices)
 ---------------------------
- * 2D-periodic systems supported. (TODO 1D and 3D.)
- * *Calculation of transmission and reflection properties (TODO).*
+ * 2D-periodic systems with arbitrary unit cell geometry supported. (TODO 1D and 3D.)
+ * Computing multipole excitations and fields scattered from nanoparticle
+   arrays illuminated by plane (or other periodic) waves.
  * Finding eigenmodes and calculating dispersion relations.
- * *Calculation of far-field radiation patterns of an excited array (TODO).*
- * Reducing numerical complexity of the computations by exploiting
-   symmetries of the lattice (decomposition to irreducible representations).
+ * Calculation of the scattered fields.
+ * *Calculation of total transmission and reflection properties (TODO).*
+ * *Reducing numerical complexity of the computations by exploiting
+   symmetries of the lattice (decomposition to irreducible representations) (in development).* 
 
 
 Installation
@@ -66,6 +71,7 @@ Special care might need to be taken when installing QPMS in cluster environments
 Specific installation instructions for Aalto University's Triton cluster
 can be found in a [separate document][TRITON-README].
 
+
 Documentation
 =============
 
@@ -86,6 +92,8 @@ Tutorials
 
   * [Infinite system (lattice) tutorial][tutorial-infinite]
   * [Finite system tutorial][tutorial-finite]
+
+See also the examples directory.
 
 [SCUFF-EM]: https://homerreid.github.io/scuff-em-documentation/
 [OpenBLAS]: https://www.openblas.net/
