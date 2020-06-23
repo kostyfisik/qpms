@@ -1,0 +1,1114 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 584
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass amsart
+\begin_preamble
+
+\usepackage{xr}
+\externaldocument{arrayscat}
+\end_preamble
+\options supplementary
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language finnish
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\rightmargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Derivation of the 1D and 2D lattice sums for the 3D Helmholtz equation with
+ general lattice offset
+\end_layout
+
+\begin_layout Author
+Marek Nečada
+\end_layout
+
+\begin_layout Section
+Periodic Green's functions vs.
+ VSWF lattice sums
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\ud}{\mathrm{d}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\abs}[1]{\left|#1\right|}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\uvec}[1]{\hat{\mathbf{#1}}}
+\end_inset
+
+
+\lang english
+
+\begin_inset FormulaMacro
+\newcommand{\ush}[2]{Y_{#1}^{#2}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ushD}[2]{Y'_{#1}^{#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vsh}{\vect A}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\vshD}{\vect{A'}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wfkc}{\vect y}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wfkcout}{\vect u}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wfkcreg}{\vect v}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wckcreg}{a}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\wckcout}{f}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Some definitions and useful relations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathcal{H}_{l}^{m}\left(\vect d\right)\equiv h_{l}^{+}\left(\left|\vect d\right|\right)\ush lm\left(\uvec d\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\mathcal{J}_{l}^{m}\left(\vect d\right)\equiv j_{l}\left(\left|\vect d\right|\right)\ush lm\left(\uvec d\right).
+\]
+
+\end_inset
+
+Dual spherical harmonics and waves:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\int\ush lm\ushD{l'}{m'}\,\ud\Omega=\delta_{l,l'}\delta_{m,m'},
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\mathcal{J}'_{l}^{m}\left(\vect d\right)\equiv j_{l}\left(\left|\vect d\right|\right)\ushD lm\left(\uvec d\right).
+\]
+
+\end_inset
+
+Expansion of a plane wave: 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+(CHECKME whether this is really convention-independent, but it seems so)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+e^{i\kappa\vect r\cdot\uvec r'}=4\pi\sum_{l,m}i^{n}\mathcal{J}'_{l}^{m}\left(\kappa\vect r\right)\ush lm\left(\uvec r'\right)=4\pi\sum_{l,m}i^{n}\mathcal{J}{}_{l}^{m}\left(\kappa\vect r\right)\ushD lm\left(\uvec r'\right).
+\]
+
+\end_inset
+
+This one is also convention independent (similarly for 
+\begin_inset Formula $\mathcal{H}_{l}^{m}$
+\end_inset
+
+):
+\begin_inset Formula 
+\[
+\mathcal{J}_{l}^{m}\left(-\vect r\right)=\left(-1\right)^{l}\mathcal{J}_{l}^{m}\left(\vect r\right).
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Helmholtz equation and Green's functions (in 3D)
+\end_layout
+
+\begin_layout Standard
+Note that the notation does not follow Linton's (where the wavenumbers are
+ often implicit)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\nabla^{2}+\kappa^{2}\right)G^{(\kappa)}\left(\vect x,\vect x_{0}\right)=\delta\left(\vect x-\vect x_{0}\right),
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+G_{0}^{(\kappa)}\left(\vect x,\vect x_{0}\right) & =G_{0}^{(\kappa)}\left(\vect x-\vect x_{0}\right)==-\frac{e^{i\kappa\left|\vect x-\vect x_{0}\right|}}{4\pi\left|\vect x-\vect x_{0}\right|}=-\frac{i\kappa}{4\pi}h_{0}^{+}\left(\kappa\left|\vect x-\vect x_{0}\right|\right)=-\frac{i\kappa}{\sqrt{4\pi}}\mathcal{H}_{0}^{0}\left(\kappa\left|\vect x-\vect x_{0}\right|\right).
+\end{align*}
+
+\end_inset
+
+In case of wacky conventions, 
+\begin_inset Formula $G_{0}^{(\kappa)}\left(\vect x,\vect x_{0}\right)=-\frac{i\kappa}{\ush 00}\mathcal{H}_{0}^{0}\left(\kappa\left|\vect x-\vect x_{0}\right|\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Lattice GF 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(2.3)"
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+G_{\Lambda}^{(\kappa)}\left(\vect s,\vect k\right)\equiv\sum_{\vect R\in\Lambda}G_{0}^{\kappa}\left(\vect s-\vect R\right)e^{i\vect k\cdot\vect R}\label{eq:Lattice GF}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+GF expansion and lattice sum definition
+\end_layout
+
+\begin_layout Standard
+Let's define 
+\begin_inset Formula 
+\[
+\sigma_{l}^{m}\left(\vect s,\vect k\right)=\sum_{\vect R\in\Lambda}\mathcal{H}_{l}^{m}\left(\kappa\left(\vect s+\vect R\right)\right)e^{i\vect k\cdot\vect R},
+\]
+
+\end_inset
+
+and also its dual version
+\begin_inset Formula 
+\[
+\sigma'_{l}^{m}\left(\vect s,\vect k\right)=\sum_{\vect R\in\Lambda}\mathcal{H}'_{l}^{m}\left(\kappa\left(\vect s+\vect R\right)\right)e^{i\vect k\cdot\vect R}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inspired by 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(4.1)"
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+: assuming that 
+\begin_inset Formula $\vect s\notin\Lambda$
+\end_inset
+
+, let's expand the lattice Green's function around 
+\begin_inset Formula $\vect s$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)=-i\kappa\sum_{l,m}\tau_{l}^{m}\left(\vect s,\vect k\right)\mathcal{J}_{l}^{m}\left(\kappa\vect r\right),
+\]
+
+\end_inset
+
+and multiply with a dual SH + integrate
+\begin_inset Formula 
+\begin{align}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right) & =-i\kappa\sum_{l,m}\tau_{l}^{m}\left(\vect s,\vect k\right)j_{l}\left(\kappa\left|\vect r\right|\right)\delta_{ll'}\delta_{mm'}\nonumber \\
+ & =-i\kappa\tau_{l'}^{m'}\left(\vect s,\vect k\right)j_{l'}\left(\kappa\left|\vect r\right|\right).\label{eq:tau extraction}
+\end{align}
+
+\end_inset
+
+The expansion coefficients 
+\begin_inset Formula $\tau_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+ is then typically extracted by taking the limit 
+\begin_inset Formula $\left|\vect r\right|\to0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The relation between 
+\begin_inset Formula $\sigma_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\tau_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+ can be obtained e.g.
+ from the addition theorem for scalar spherical wavefunctions 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(C.3)"
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+, 
+\begin_inset Formula 
+\[
+\mathcal{H}_{l}^{m}\left(\vect a+\vect b\right)=\sum_{l'm'}S_{ll'}^{mm'}\left(\vect b\right)\mathcal{J}_{l'}^{m'}\left(\vect a\right),\quad\left|\vect a\right|<\left|\vect b\right|,
+\]
+
+\end_inset
+
+where for the zeroth degree and order one has 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(C.3)"
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In a totally convention-independent version probably looks like 
+\begin_inset Formula $S_{0l'}^{0m'}\left(\vect b\right)=\ush 00\mathcal{H}'_{l'}^{m'}\left(-\vect b\right)$
+\end_inset
+
+, but the 
+\begin_inset Formula $Y_{0}^{0}$
+\end_inset
+
+ will cancel with the expression for GF anyways, so no harm to the final
+ result.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+S_{0l'}^{0m'}\left(\vect b\right)=\sqrt{4\pi}\mathcal{H}'_{l'}^{m'}\left(-\vect b\right).
+\]
+
+\end_inset
+
+From the lattice GF definition 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:Lattice GF"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right) & \equiv\frac{-i\kappa}{\sqrt{4\pi}}\sum_{\vect R\in\Lambda}\mathcal{H}_{0}^{0}\left(\kappa\left(\vect s+\vect r-\vect R\right)\right)e^{i\vect k\cdot\vect R}\\
+ & =\frac{-i\kappa}{\sqrt{4\pi}}\sum_{\vect R\in\Lambda}\mathcal{H}_{0}^{0}\left(\kappa\left(\vect s+\vect r-\vect R\right)\right)e^{i\vect k\cdot\vect R}\\
+ & =\frac{-i\kappa}{\sqrt{4\pi}}\sum_{\vect R\in\Lambda}\sum_{l'm'}S_{0l'}^{0m'}\left(\kappa\left(\vect s-\vect R\right)\right)\mathcal{J}_{l'}^{m'}\left(\kappa\vect r\right)e^{i\vect k\cdot\vect R}\\
+ & =-i\kappa\sum_{\vect R\in\Lambda}\sum_{lm}\mathcal{H}'_{l}^{m}\left(-\kappa\left(\vect s-\vect R\right)\right)\mathcal{J}_{l}^{m}\left(\kappa\vect r\right)e^{i\vect k\cdot\vect R},
+\end{align*}
+
+\end_inset
+
+and mutliplying with a dual SH and integrating 
+\begin_inset Formula 
+\begin{align*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right) & =-i\kappa\sum_{\vect R\in\Lambda}\sum_{lm}\mathcal{H}'_{l}^{m}\left(-\kappa\left(\vect s-\vect R\right)\right)j_{l}\left(\kappa\left|\vect r\right|\right)\delta_{ll'}\delta_{mm'}e^{i\vect k\cdot\vect R}\\
+ & =-i\kappa\sum_{\vect R\in\Lambda}\mathcal{H}'_{l'}^{m'}\left(\kappa\left(-\vect s+\vect R\right)\right)j_{l'}\left(\kappa\left|\vect r\right|\right)e^{i\vect k\cdot\vect R}\\
+ & =-i\kappa\sigma'_{l'}^{m'}\left(-\vect s,\vect k\right)j_{l'}\left(\kappa\left|\vect r\right|\right),
+\end{align*}
+
+\end_inset
+
+and comparing with 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we have
+\begin_inset Formula 
+\[
+\tau_{l}^{m}\left(\vect s,\vect k\right)=\sigma'_{l}^{m}\left(-\vect s,\vect k\right).
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO maybe also define some 
+\begin_inset Formula $\tau'_{l}^{m}$
+\end_inset
+
+ as expansion coefficients of GF into dual regular SSWFs.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Derivation of the 1D and 2D lattice sum
+\end_layout
+
+\begin_layout Standard
+With 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+ in hand, the short-range part is rather easy.
+ Let's get the long-range part.
+\end_layout
+
+\begin_layout Standard
+We first need to find the long-range part of the expansion coefficient
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{i}{\kappa j_{l'}\left(\kappa\left|\vect r\right|\right)}\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(\kappa)}\left(\vect s+\vect r,\vect k\right)\ushD{l'}{m'}\left(\uvec r\right).\label{eq:tau extraction formula}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We take 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(2.24)"
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+ with slightly modified notation 
+\begin_inset Formula $\left(\vect k_{\vect K}\equiv\vect K+\vect k\right)$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect r}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t
+\]
+
+\end_inset
+
+or, evaluated at point 
+\begin_inset Formula $\vect s+\vect r$
+\end_inset
+
+ instead
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\int_{1/\eta}^{\infty e^{i\pi/4}}e^{-\kappa^{2}\gamma^{2}t^{2}/4}e^{-\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2}/t^{2}}t^{1-d_{c}}\ud t.
+\]
+
+\end_inset
+
+The integral can be by substitutions taken into the form 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\lang english
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{2\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\int_{1/\eta}^{\infty\exp\left(i\pi/4\right)}e^{-\kappa^{2}\gamma_{m}^{2}\zeta^{2}/4}e^{-\left|\vect r_{\bot}\right|^{2}/\zeta^{2}}\zeta^{1-d_{c}}\ud\zeta
+\]
+
+\end_inset
+
+Try substitution 
+\begin_inset Formula $t=\zeta^{2}$
+\end_inset
+
+: then 
+\begin_inset Formula $\ud t=2\zeta\,\ud\zeta$
+\end_inset
+
+ (
+\begin_inset Formula $\ud\zeta=\ud t/2t^{1/2}$
+\end_inset
+
+) and
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\int_{1/\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\kappa^{2}\gamma_{m}^{2}t/4}e^{-\left|\vect r_{\bot}\right|^{2}/t}t^{\frac{-d_{c}}{2}}\ud t
+\]
+
+\end_inset
+
+Try subst.
+ 
+\begin_inset Formula $\tau=k^{2}\gamma_{m}^{2}/4$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang english
+\begin_inset Formula 
+\[
+G_{\Lambda}^{\left(1\right)}\left(\vect r\right)=\frac{\pi^{-d_{c}/2}}{4\mathcal{A}}\sum_{\vect K_{m}\in\Lambda^{*}}e^{i\vect K_{m}\cdot\vect r}\left(\frac{\kappa\gamma_{m}}{2}\right)^{d_{c}}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{\frac{-d_{c}}{2}}\ud\tau
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{m}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{m}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+[Linton, (2.25)] with slightly modified notation:
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect r}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect{\vect k_{\vect K}}}}{2}\right)^{2j-1}\Gamma_{j\vect k_{\vect K}}
+\]
+
+\end_inset
+
+We want to express an expansion in a shifted point, so let's substitute
+ 
+\begin_inset Formula $\vect r\to\vect s+\vect r$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)=-\frac{1}{\sqrt{4\pi}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}\left|\vect s^{\bot}+\vect r^{\bot}\right|^{2j}}{j!}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j-1}\Gamma_{j\vect k_{\vect K}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+Let's do the integration to get 
+\begin_inset Formula $\tau_{l}^{m}\left(\vect s,\vect k\right)$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\left(\vect s+\vect r\right)}\int_{\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau.
+\]
+
+\end_inset
+
+The 
+\begin_inset Formula $\vect r$
+\end_inset
+
+-dependent plane wave factor can be also written as
+\begin_inset Formula 
+\begin{align*}
+e^{i\vect k_{\vect K}\cdot\vect r} & =e^{i\left|\vect k_{\vect K}\right|\vect r\cdot\uvec{\vect k_{\vect K}}}=4\pi\sum_{lm}i^{l}\mathcal{J}'_{l}^{m}\left(\left|\vect k_{\vect K}\right|\vect r\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\\
+ & =4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ushD lm\left(\uvec{\vect r}\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right),
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+or the other way around
+\begin_inset Formula 
+\[
+e^{i\vect k_{\vect K}\cdot\vect r}=4\pi\sum_{lm}i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect r}\right)\ushD lm\left(\uvec{\vect k_{\vect K}}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+so
+\begin_inset Formula 
+\begin{multline*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\frac{1}{2\pi\mathcal{A}}\times\\
+\times\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\int_{\kappa^{2}\gamma_{\vect{\vect k_{\vect K}}}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect{\vect k_{\vect K}}}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}}\ud\tau.
+\end{multline*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We also have
+\begin_inset Formula 
+\begin{align*}
+e^{-\left|\vect s_{\bot}+\vect r_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau} & =e^{-\left(\left|\vect s_{\bot}\right|^{2}+\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\\
+ & =e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\sum_{j=0}^{\infty}\frac{1}{j!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect K}^{2}}{4\tau}\right)^{j},
+\end{align*}
+
+\end_inset
+
+hence
+\begin_inset Formula 
+\begin{align*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right) & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ushD lm\left(\uvec r\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\times\\
+ & \quad\times\sum_{j=0}^{\infty}\frac{1}{j!}\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect{\vect k_{\vect K}}}^{2}}{4}\right)^{j}\underbrace{\int_{\kappa^{2}\gamma_{\vect K}^{2}/4\eta^{2}}^{\infty\exp\left(i\pi/2\right)}e^{-\tau}e^{-\left|\vect s_{\bot}\right|^{2}\kappa^{2}\gamma_{\vect K}^{2}/4\tau}\tau^{-\frac{d_{c}}{2}-j}\ud\tau}_{\Delta_{j}^{\left(d_{\Lambda}\right)}}\\
+ & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\sum_{j=0}^{\infty}\frac{\Delta_{j}^{\left(d_{\Lambda}\right)}}{j!}\times\\
+ & \quad\times\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(-\frac{\left(\left|\vect r_{\bot}\right|^{2}+2\vect r_{\bot}\cdot\vect s_{\bot}\right)\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}}{4}\right)^{j}\\
+ & =-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\times\\
+ & \quad\times\left(\frac{\kappa\gamma_{\vect{\vect k_{\vect K}}}}{2}\right)^{2j}\sum_{k=0}^{j}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2(j-k)}\left(2\vect r_{\bot}\cdot\vect s_{\bot}\right)^{k}.
+\end{align*}
+
+\end_inset
+
+The integral 
+\begin_inset Formula $\Delta_{j}^{\left(d_{\Lambda}\right)}$
+\end_inset
+
+ is (for the 2D case) equivalent to that in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If we label 
+\begin_inset Formula $\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|\cos\varphi\equiv\vect r_{\bot}\cdot\vect s_{\bot}$
+\end_inset
+
+, we have
+\begin_inset Formula 
+\begin{multline*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\times\\
+\times\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{k=0}^{j}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left|\vect r_{\bot}\right|^{2j-k}\left(\cos\varphi\right)^{k},
+\end{multline*}
+
+\end_inset
+
+and if we label 
+\begin_inset Formula $\left|\vect r\right|\sin\vartheta\equiv\left|\vect r_{\bot}\right|$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{multline*}
+\int\ud\Omega_{\vect r}\,G_{\Lambda}^{(1;\kappa)}\left(\vect s+\vect r\right)\ushD{l'}{m'}\left(\uvec r\right)=-\frac{1}{2\pi^{d_{c}/2}\mathcal{A}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\ush lm\left(\uvec{\vect k_{\vect K}}\right)\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\times\\
+\times\sum_{k=0}^{j}\left|\vect r\right|^{2j-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{2j-k}\left(\cos\varphi\right)^{k}.
+\end{multline*}
+
+\end_inset
+
+Now let's put the RHS into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction formula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and try eliminating some sum by taking the limit 
+\begin_inset Formula $\left|\vect r\right|\to0$
+\end_inset
+
+.
+ We have 
+\begin_inset Formula $j_{l}\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)\sim\left(\left|\vect k_{\vect K}\right|\left|\vect r\right|\right)^{l}/\left(2l+1\right)!!$
+\end_inset
+
+; the denominator from 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:tau extraction formula"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ behaves like 
+\begin_inset Formula $j_{l'}\left(\kappa\left|\vect r\right|\right)\sim\left(\kappa\left|\vect r\right|\right)^{l'}/\left(2l'+1\right)!!.$
+\end_inset
+
+ The leading terms are hence those with 
+\begin_inset Formula $\left|\vect r\right|^{l-l'+2j-k}$
+\end_inset
+
+.
+ So 
+\begin_inset Formula 
+\begin{multline*}
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa^{1+l'}}\left(2l'+1\right)!!\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{lm}4\pi i^{l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\ush lm\left(\uvec{\vect k_{\vect K}}\right)\times\\
+\times\sum_{j=0}^{\infty}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{k=0}^{j}\delta_{l'-l,2j-k}\left(2\left|\vect s_{\bot}\right|\right)^{k}\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{k}.
+\end{multline*}
+
+\end_inset
+
+Let's now focus on rearranging the sums; we have
+\begin_inset Formula 
+\[
+S(l')\equiv\sum_{l=0}^{\infty}\sum_{j=0}^{\infty}\sum_{k=0}^{j}\delta_{l'-l,2j-k}f(l',l,j,k)=\sum_{l=0}^{\infty}\sum_{j=0}^{\infty}\sum_{k=0}^{j}\delta_{l'-l,2j-k}f(l',l,j,2j-l'+l).
+\]
+
+\end_inset
+
+We have 
+\begin_inset Formula $0\le k\le j$
+\end_inset
+
+, hence 
+\begin_inset Formula $0\le2j-l'+l\le j$
+\end_inset
+
+, hence 
+\begin_inset Formula $-2j\le-l'+l\le-j$
+\end_inset
+
+, hence also 
+\begin_inset Formula $l'-2j\le l\le l'-j$
+\end_inset
+
+, which gives the opportunity to swap the 
+\begin_inset Formula $l,j$
+\end_inset
+
+ sums and the 
+\begin_inset Formula $l$
+\end_inset
+
+-sum becomes finite; so also consuming 
+\begin_inset Formula $\sum_{k=0}^{j}\delta_{l'-l,2j-k}$
+\end_inset
+
+ we get 
+\begin_inset Formula 
+\[
+S(l')=\sum_{j=0}^{\infty}\sum_{l=\max(0,l'-2j)}^{l'-j}f(l',l,j,2j-l'+l).
+\]
+
+\end_inset
+
+Finally, we see that the interval of valid 
+\begin_inset Formula $l$
+\end_inset
+
+ becomes empty when 
+\begin_inset Formula $l'-j<0$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $j>l'$
+\end_inset
+
+; so we get a finite sum
+\begin_inset Formula 
+\[
+S(l')=\sum_{j=0}^{l'}\sum_{l=\max(0,l'-2j)}^{l'-j}f(l',l,j,2j-l'+l).
+\]
+
+\end_inset
+
+Applying rearrangement,
+\begin_inset Formula 
+\begin{multline*}
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\times\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\\
+\times\sum_{m=-l}^{l}\ush lm\left(\uvec{\vect k_{\vect K}}\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\sin\vartheta\right)^{l'-l}\left(\cos\varphi\right)^{2j-l'+l},
+\end{multline*}
+
+\end_inset
+
+or replacing the angles with their original definition,
+\begin_inset Formula 
+\begin{multline*}
+\tau_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect K}}{2}\right)^{2j}\times\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\\
+\times\sum_{m=-l}^{l}\ush lm\left(\uvec K\right)\int\ud\Omega_{\vect r}\,\ushD{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2j-l'+l},
+\end{multline*}
+
+\end_inset
+
+and if we want a 
+\begin_inset Formula $\sigma_{l'}^{m'}\left(\vect s,\vect k\right)$
+\end_inset
+
+ instead, we reverse the sign of 
+\begin_inset Formula $\vect s$
+\end_inset
+
+ and replace all spherical harmonics with their dual counterparts:
+\begin_inset Formula 
+\begin{multline*}
+\sigma_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\times\\
+\times\sum_{m=-l}^{l}\ushD lm\left(\uvec{\vect k_{\vect K}}\right)\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ush lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{-\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2j-l'+l},
+\end{multline*}
+
+\end_inset
+
+and remembering that in the plane wave expansion the 
+\begin_inset Quotes eld
+\end_inset
+
+duality
+\begin_inset Quotes erd
+\end_inset
+
+ is interchangeable,
+\begin_inset Formula 
+\begin{multline*}
+\sigma_{l'}^{m'}\left(\vect s,\vect k\right)=\frac{-i}{2\pi^{d_{c}/2}\mathcal{A}\kappa}\frac{\left(2l'+1\right)!!}{\kappa^{l'}}\sum_{\vect K\in\Lambda^{*}}e^{-i\vect k_{\vect K}\cdot\vect s}\sum_{j=0}^{l'}\frac{\left(-1\right)^{j}}{j!}\Delta_{j}^{\left(d_{\Lambda}\right)}\left(\frac{\kappa\gamma_{\vect k_{\vect K}}}{2}\right)^{2j}\sum_{l=\max\left(0,l'-2j\right)}^{l'-j}4\pi i^{l}\left(2\left|\vect s_{\bot}\right|\right)^{2j-l'+l}\frac{\left|\vect k_{\vect K}\right|^{l}}{\left(2l+1\right)!!}\times\\
+\times\sum_{m=-l}^{l}\ush lm\left(\uvec{\vect k_{\vect K}}\right)\underbrace{\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{l'-l}\left(\frac{-\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|}\right)^{2j-l'+l}}_{\equiv A_{l',l,m',m,j}^{\left(d_{\Lambda}\right)}}.
+\end{multline*}
+
+\end_inset
+
+The angular integral is easier to evaluate when 
+\begin_inset Formula $d_{\Lambda}=2$
+\end_inset
+
+, because then 
+\begin_inset Formula $\vect r_{\bot}$
+\end_inset
+
+ is parallel (or antiparallel) to 
+\begin_inset Formula $\vect s_{\bot}$
+\end_inset
+
+, which gives 
+\begin_inset Formula 
+\[
+A_{l',l,m',m,j}^{\left(2\right)}=\left(-\frac{\vect r_{\bot}\cdot\vect s_{\bot}}{\left|\vect r_{\bot}\cdot\vect s_{\bot}\right|}\right)^{2j-l'+l}\int\ud\Omega_{\vect r}\,\ush{l'}{m'}\left(\uvec r\right)\ushD lm\left(\uvec r\right)\left(\frac{\left|\vect r_{\bot}\right|}{\left|\vect r\right|}\right)^{2j}
+\]
+
+\end_inset
+
+and if we set the normal of the lattice correspond to the 
+\begin_inset Formula $z$
+\end_inset
+
+ axis, the azimuthal part of the integral will become zero unless 
+\begin_inset Formula $m'=m$
+\end_inset
+
+ for any meaningful spherical harmonics convention, and the polar part for
+ the only nonzero case has a closed-form expression, see e.g.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(A.15)"
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+, so one arrives at an expression similar to 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "(3.15)"
+key "kambe_theory_1968"
+literal "false"
+
+\end_inset
+
+
+\lang english
+
+\begin_inset Formula 
+\begin{multline}
+\sigma_{l,m}^{\left(\mathrm{L},\eta\right)}\left(\vect k,\vect s\right)=-\frac{i^{l+1}}{\kappa^{2}\mathcal{A}}\pi^{3/2}2\left(\left(l-m\right)/2\right)!\left(\left(l+m\right)/2\right)!\times\\
+\times\sum_{\vect K\in\Lambda^{*}}e^{i\vect k_{\vect K}\cdot\vect s}\ush lm\left(\vect k_{\vect K}\right)\sum_{j=0}^{l-\left|m\right|}\left(-1\right)^{j}\gamma_{\vect k_{\vect K}}^{2}{}^{2j+1}\times\\
+\times\Delta_{j}\left(\frac{\kappa^{2}\gamma_{\vect k_{\vect K}}^{2}}{4\eta^{2}},-i\kappa\gamma_{\vect k_{\vect K}}^{2}s_{\perp}\right)\times\\
+\times\sum_{\substack{s\\
+j\le s\le\min\left(2j,l-\left|m\right|\right)\\
+l-j+\left|m\right|\,\mathrm{even}
+}
+}\frac{1}{\left(2j-s\right)!\left(s-j\right)!}\frac{\left(-\kappa s_{\perp}\right)^{2j-s}\left(\left|\vect k_{\vect K}\right|/\kappa\right)^{l-s}}{\left(\frac{1}{2}\left(l-m-s\right)\right)!\left(\frac{1}{2}\left(l+m-s\right)\right)!}\label{eq:Ewald in 3D long-range part 1D 2D-1}
+\end{multline}
+
+\end_inset
+
+where 
+\begin_inset Formula $s_{\perp}\equiv\vect s\cdot\uvec z=\vect s_{\bot}\cdot\uvec z$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $d_{\Lambda}=1$
+\end_inset
+
+, the angular becomes more complicated to evaluate due to the different
+ behaviour of the 
+\begin_inset Formula $\vect r_{\bot}\cdot\vect s_{\bot}/\left|\vect r_{\bot}\right|\left|\vect s_{\bot}\right|$
+\end_inset
+
+ factor.
+ The choice of coordinates can make most of the terms dissapear: if the
+ lattice is set parallel to the 
+\begin_inset Formula $z$
+\end_inset
+
+ axis, 
+\begin_inset Formula $A_{l',l,m',m,j}^{\left(1\right)}$
+\end_inset
+
+ is zero unless 
+\begin_inset Formula $m=0$
+\end_inset
+
+, but one still has 
+\begin_inset Formula 
+\[
+A_{l',l,m',0,j}^{\left(1\right)}=\pi\delta_{m',l'-l-2j}\lambda'_{l0}\lambda_{l'm'}\int_{-1}^{1}\ud x\,P_{l'}^{m'}\left(x\right)P_{l}^{0}\left(x\right)\left(1-x^{2}\right)^{\frac{l'-l}{2}}
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\lambda_{lm}$
+\end_inset
+
+ are constants depending on the conventions for spherical harmonics.
+ This does not seem to have such a nice closed-form expression as in the
+ 2D case, but it can be evaluated e.g.
+ using the common recurrence relations for associated Legendre polynomials.
+ Of course when 
+\begin_inset Formula $\vect s=0$
+\end_inset
+
+, one gets relatively nice closed expressions, such as those in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "linton_lattice_2010"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\lang english
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "Tmatrix"
+options "siam"
+encoding "default"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
