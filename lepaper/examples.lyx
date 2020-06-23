@@ -121,6 +121,50 @@ as well as benchmarks with BEM
 examples
 \family default
  directory of the QPMS source repository.
+ 
+\end_layout
+
+\begin_layout Standard
+For further results, used for explaining experiments, see Refs.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hakala_lasing_2017"
+literal "false"
+
+\end_inset
+
+ (scattering, finite system), 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "guo_lasing_2019,pourjamal_lasing_2019"
+literal "false"
+
+\end_inset
+
+ (approximate lattice mode search using a real-frequency-only scan), and
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "vakevainen_sub-picosecond_2020"
+literal "false"
+
+\end_inset
+
+ (resonances of a finite system).
+ Note that in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hakala_lasing_2017,guo_lasing_2019"
+literal "false"
+
+\end_inset
+
+, 
+\begin_inset Formula $T$
+\end_inset
+
+-matrices were calculated using a buggy version of SCUFF-EM.
 \end_layout
 
 \begin_layout Subsection
@@ -291,6 +335,13 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Graphics
+	filename figs/sqlat_inf_scatter.pdf
+	width 90col%
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
@@ -327,16 +378,15 @@ Response of an infinite square array of silver nanoparticles with periodicities
 \begin_inset Formula $xz$
 \end_inset
 
--plane.
- Left: 
+-plane, with 
 \begin_inset Formula $y$
 \end_inset
 
--polarised waves, right: 
+-polarised waves (left), and 
 \begin_inset Formula $x$
 \end_inset
 
--polarised waves.
+-polarised waves (right).
  The images show extinction, scattering and absorption cross section per
  unit cell.
  
@@ -373,19 +423,9 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\align center
 \begin_inset Graphics
 	filename figs/sqlat_scattering_cuts.pdf
 	width 90col%
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -507,11 +547,7 @@ TODO also details about the machines used.
 \end_layout
 
 \begin_layout Subsection
-Lattice mode structure
-\end_layout
-
-\begin_layout Subsection
-Square lattice
+Lattice mode structure of a square lattice
 \end_layout
 
 \begin_layout Standard
@@ -593,18 +629,25 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename figs/cyl_r30nm_h30nm_p375nmx375nm_mAg_bg1.52_φ0_θ(-0.0075_0.0075)π_ψ0.5π_χ0π_f2.11–2.23eV_L3.pdf
+	filename figs/examples/rectangular/modes/cyl_r30nm_h30nm_p375nmx375nm_mAg_bg1.52_f(2.001..0.001..2.25)eV_L3_SVGamma.pdf
 	width 80col%
 
 \end_inset
 
 
 \end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figs/sqlat_SVGamma.pdf
+	width 80col%
 
 \end_inset
 
@@ -678,6 +721,7 @@ noprefix "false"
  touching the empty lattice diffracted orders (from either above or below
  in the real part), and with major axis covering 1/5 of the interval between
  two diffracted orders.
+ The residual threshold was set to 0.1.
  At the 
 \begin_inset Formula $\Gamma$
 \end_inset
@@ -722,19 +766,9 @@ status open
 
 \begin_layout Plain Layout
 \align center
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-\align center
 \begin_inset Graphics
 	filename figs/sqlat_beyn_dispersion.pdf
 	width 80col%
-
-\end_inset
-
-
-\end_layout
 
 \end_inset
 
@@ -749,8 +783,8 @@ Solutions of the lattice mode problem
 \begin_inset Formula $\truncated{M\left(\omega,\vect k\right)}3$
 \end_inset
 
- found using Beyn's method nearby the first diffracted order crossing at
- the 
+ found using the Beyn's method near the first diffracted order crossing
+ at the 
 \begin_inset Formula $\Gamma$
 \end_inset
 
@@ -813,7 +847,7 @@ literal "false"
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Effects of multipole cutoff
 \end_layout
 
@@ -987,9 +1021,9 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Consequences of multipole degree cutoff: Eigenfrequencies found with Beyn's
- algorithm for an infinite square lattice of golden spherical nanoparticles
- with varying particle size.
+Consequences of multipole degree cutoff: Eigenfrequencies found with the
+ Beyn's algorithm for an infinite square lattice of golden spherical nanoparticl
+es with varying particle size.
 \begin_inset CommandInset label
 LatexCommand label
 name "square lattice var lMax, r at gamma point Au"
@@ -1016,7 +1050,7 @@ placement document
 alignment document
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
