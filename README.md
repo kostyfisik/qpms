@@ -52,7 +52,16 @@ you can [get the source and compile it yourself][GSL].
 
 You also need a fresh enough version of [cmake][].
 
-After GSL is installed, you can install qpms to your local python library using
+QPMS uses a C version of the Amos library for calculating Bessel function
+from a submodule. Before proceeding with running `cmake`, the submodules
+need to be downloaded first (in the QPMS source root directory):
+
+```{.sh}
+  git submodule init
+  git submodule update
+```
+
+After GSL is installed and submodules updated, you can install qpms to your local python library using
 
 ```{.sh}
   cmake -DCMAKE_INSTALL_PREFIX=${YOUR_PREFIX} .
