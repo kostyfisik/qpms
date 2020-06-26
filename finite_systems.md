@@ -1,6 +1,8 @@
 Using QPMS library for simulating finite systems
 ================================================
 
+*** This tutorial is partly obsolete, the interpolators are no longer the first choice of getting the T-matrices. ***
+
 The main C API for finite systems is defined in [scatsystem.h][], and the
 most relevant parts are wrapped into python modules. The central data structure
 defining the system of scatterers is [qpms_scatsys_t][],

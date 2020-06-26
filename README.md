@@ -14,8 +14,10 @@ the particles. The system can consist either of a finite number of particles
 or an infinite number of periodically arranged lattices (with finite number
 of particles in a single unit cell).
 
+
 Features
 ========
+
 
 Finite systems
 --------------
@@ -31,12 +33,19 @@ Infinite systems (lattices)
 ---------------------------
  * 2D-periodic systems with arbitrary unit cell geometry supported. (TODO 1D and 3D.)
  * Computing multipole excitations and fields scattered from nanoparticle
-   arrays illuminated by plane (or other periodic) waves.
  * Finding eigenmodes and calculating dispersion relations.
  * Calculation of the scattered fields.
  * *Calculation of total transmission and reflection properties (TODO).*
  * *Reducing numerical complexity of the computations by exploiting
    symmetries of the lattice (decomposition to irreducible representations) (in development).* 
+
+
+Getting the code
+================
+
+The main upstream public repository is located at <https://repo.or.cz/qpms.git>.
+Just clone the repository with `git` and proceed to the installation instructions
+below.
 
 
 Installation
@@ -99,16 +108,65 @@ under root.
 Tutorials
 ---------
 
-  * [Infinite system (lattice) tutorial][tutorial-infinite]
   * [Finite system tutorial][tutorial-finite]
 
-See also the examples directory.
+See also the examples directory in the source repository.
+
+Acknowledgments
+================
+
+This software has been developed in the [Quantum Dynamics research group][QD],
+Aalto University, Finland. If you use the code in your work, please cite 
+**M. Nečada and P. Törmä, Multiple-scattering T-matrix simulations for nanophotonics: symmetries and periodic lattices, [arXiv: 2006.12968][lepaper] (2020)**
+in your publications, presentations, and similar. 
+
+Please also have a look at other publications by the group 
+(google scholar Päivi Törmä), they may be useful for your work as well. 
+
+
+Bug reports
+===========
+
+If you believe that some parts of QPMS behave incorrectly, please mail
+a bug report to <marek@necada.org>. To ensure that your message is not
+considered spam, please start the subject line with `QPMS`.
+
+If you were able to fix a bug yourself, please include the patch as well,
+see below.
+
+
+Contributions
+=============
+
+Contributions to QPMS are welcome, be it bug fixes, improvements to the
+documentation, code quality, or new features.
+
+You can send patches prepared using the 
+[`git format-patch`](https://git-scm.com/docs/git-format-patch) tool
+to <marek@necada.org>. 
+
+If you plan to contribute with major changes to the codebase, it is 
+recommended to discuss that first (see the contact information below).
+
+
+Contact & discussion
+====================
+
+You can contact the main author e.g. via [e-mail](marek@necada.org) 
+or [Telegram](https://t.me/necadam).
+
+You are also warmly welcome to the [QPMS user chat](https://t.me/QPMScattering)
+in Telegram!
+
+
 
 [SCUFF-EM]: https://homerreid.github.io/scuff-em-documentation/
 [OpenBLAS]: https://www.openblas.net/
 [GSL]: https://www.gnu.org/software/gsl/
 [cmake]: https://cmake.org
-[TRITON-README]: README.Triton.md
+[tRITON-README]: README.Triton.md
 [tutorial-finite]: finite_systems.md
 [tutorial-infinite]: lattices.md
 [doxygen]: http://doxygen.nl/
+[QD]: https://www.aalto.fi/en/department-of-applied-physics/quantum-dynamics-qd
+[lepaper]: https://arxiv.org/abs/2006.12968
